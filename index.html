@@ -110,24 +110,22 @@ footer{background:#000;border-top:1px solid var(--border);padding:48px;display:f
 .meaning-en{display:block;font-size:11px;font-weight:700;letter-spacing:.25em;text-transform:uppercase;color:var(--ice);margin-bottom:8px;}
 .meaning-kr{display:block;font-size:28px;font-weight:800;color:#fff;letter-spacing:-.02em;margin-bottom:6px;}
 .meaning-sub{display:block;font-size:13px;color:var(--muted);line-height:1.65;}
-.neo-hover-zone,.ix-hover-zone{display:none;}
+/* 호버존 + 블러 오버레이 + 설명 (데스크탑/모바일 공통) */
+.neo-hover-zone,.ix-hover-zone{display:block;position:absolute;top:0;bottom:0;z-index:5;cursor:default;}
+.neo-hover-zone{left:0;width:67%;}
+.ix-hover-zone{right:0;width:33%;}
+.neo-blur-overlay,.ix-blur-overlay{position:absolute;top:0;bottom:0;z-index:3;opacity:0;transition:opacity .65s ease;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);background:rgba(0,0,0,0.92);}
+.neo-blur-overlay{left:0;width:67%;}
+.ix-blur-overlay{right:0;width:33%;}
+.logo-split-wrapper.hover-neo .ix-blur-overlay{opacity:1;}
+.logo-split-wrapper.hover-ix .neo-blur-overlay{opacity:1;}
+.logo-meaning.neo-meaning{left:67%;right:0;top:50%;transform:translateY(-50%);text-align:left;z-index:10;padding:8px 10px;}
+.logo-meaning.ix-meaning{left:4%;right:36%;top:50%;transform:translateY(-50%);text-align:left;z-index:10;padding:8px 10px;}
+.logo-split-wrapper.hover-neo .neo-meaning{opacity:1;}
+.logo-split-wrapper.hover-ix .ix-meaning{opacity:1;}
 
 /* DESKTOP HOVER */
 @media(min-width:769px){
-  .neo-hover-zone,.ix-hover-zone{display:block;position:absolute;top:0;bottom:0;z-index:5;cursor:default;}
-  .neo-hover-zone{left:0;width:67%;}
-  .ix-hover-zone{right:0;width:33%;}
-  /* 블러 오버레이: div로 영역 격리 → NEO 글씨 침범 없음 */
-  .neo-blur-overlay,.ix-blur-overlay{position:absolute;top:0;bottom:0;z-index:3;opacity:0;transition:opacity .65s ease;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);background:rgba(0,0,0,0.92);}
-  .neo-blur-overlay{left:0;width:67%;}
-  .ix-blur-overlay{right:0;width:33%;}
-  .logo-split-wrapper.hover-neo .ix-blur-overlay{opacity:1;}
-  .logo-split-wrapper.hover-ix .neo-blur-overlay{opacity:1;}
-  /* NEO 설명 → IX 영역 안에만, IX 설명 → NEO 위에 (교차 배치) */
-  .logo-meaning.neo-meaning{left:67%;right:0;top:68%;transform:translateY(-50%);text-align:left;z-index:10;padding:8px 10px;}
-  .logo-meaning.ix-meaning{left:4%;right:36%;top:68%;transform:translateY(-50%);text-align:left;z-index:10;padding:8px 10px;}
-  .logo-split-wrapper.hover-neo .neo-meaning{opacity:1;}
-  .logo-split-wrapper.hover-ix .ix-meaning{opacity:1;}
   .logo-meaning .meaning-en{font-size:9px;}
   .logo-meaning .meaning-kr{font-size:16px;}
   .logo-meaning .meaning-sub{font-size:11px;}
@@ -142,16 +140,10 @@ footer{background:#000;border-top:1px solid var(--border);padding:48px;display:f
   .hero-sticky-container{height:200vh;}
   .hero-logo-mobile{display:none !important;}
   .hero-logo-desktop>div>svg{width:min(485px,85vw);height:auto;}
-  #g-neo,#g-ix{transition:transform .9s cubic-bezier(.4,0,.2,1);}
-  .logo-meaning{display:block;width:42%;}
-  .logo-split-wrapper.split #g-neo{transform:translate(-60px,-80px);}
-  .logo-split-wrapper.split #g-ix{transform:translate(-369px,80px);}
-  .logo-meaning.neo-meaning{right:2%;top:15%;}
-  .logo-meaning.ix-meaning{right:2%;bottom:6%;}
-  .logo-split-wrapper.split .logo-meaning{opacity:1;}
-  .hero.split-active .hero-tagline,.hero.split-active .hero-actions,.hero.split-active .hero-eyebrow{animation:none;opacity:0;transition:opacity .5s ease;}
-  .meaning-kr{font-size:16px;}
-  .meaning-sub{font-size:11px;}
+  .neo-hover-zone,.ix-hover-zone{cursor:pointer;}
+  .logo-meaning .meaning-en{font-size:8px;}
+  .logo-meaning .meaning-kr{font-size:13px;}
+  .logo-meaning .meaning-sub{font-size:9px;line-height:1.45;}
   .hero-tagline{font-size:17px;margin-bottom:40px;}
   .hero-actions{flex-direction:column;width:100%;max-width:280px;gap:12px;}
   .btn-primary,.btn-secondary{text-align:center;padding:15px 28px;width:100%;}
@@ -390,11 +382,33 @@ window.addEventListener('scroll',function(){
 // 데스크탑: 호버 인터랙션
 var neoZone=document.getElementById('neoZone');
 var ixZone=document.getElementById('ixZone');
+var isTouch=('ontouchstart' in window)||navigator.maxTouchPoints>0;
 if(neoZone&&ixZone){
-  neoZone.addEventListener('mouseenter',function(){lw.classList.add('hover-neo');});
-  neoZone.addEventListener('mouseleave',function(){lw.classList.remove('hover-neo');});
-  ixZone.addEventListener('mouseenter',function(){lw.classList.add('hover-ix');});
-  ixZone.addEventListener('mouseleave',function(){lw.classList.remove('hover-ix');});
+  if(!isTouch){
+    // 데스크탑: 마우스 호버
+    neoZone.addEventListener('mouseenter',function(){lw.classList.add('hover-neo');});
+    neoZone.addEventListener('mouseleave',function(){lw.classList.remove('hover-neo');});
+    ixZone.addEventListener('mouseenter',function(){lw.classList.add('hover-ix');});
+    ixZone.addEventListener('mouseleave',function(){lw.classList.remove('hover-ix');});
+  } else {
+    // 모바일: 탭 토글
+    neoZone.addEventListener('click',function(e){
+      e.stopPropagation();
+      var on=lw.classList.contains('hover-neo');
+      lw.classList.remove('hover-neo','hover-ix');
+      if(!on) lw.classList.add('hover-neo');
+    });
+    ixZone.addEventListener('click',function(e){
+      e.stopPropagation();
+      var on=lw.classList.contains('hover-ix');
+      lw.classList.remove('hover-neo','hover-ix');
+      if(!on) lw.classList.add('hover-ix');
+    });
+    // 로고 바깥 탭하면 닫기
+    document.addEventListener('click',function(){
+      lw.classList.remove('hover-neo','hover-ix');
+    });
+  }
 }
 </script>
 </body>
