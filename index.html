@@ -30,9 +30,10 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
 .mobile-menu a:hover{color:#fff;}
 
 /* HERO */
-.hero{position:relative;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:120px 48px 80px;text-align:center;background:#000;}
+.hero-sticky-container{height:200vh;}
+.hero{position:sticky;top:0;height:100vh;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:120px 48px 80px;text-align:center;background:#000;}
 .hero-eyebrow{font-size:11px;font-weight:600;letter-spacing:.25em;text-transform:uppercase;color:var(--ice);margin-bottom:40px;opacity:0;animation:fadeUp .8s ease .2s forwards;}
-.hero-logo-desktop{margin-bottom:48px;opacity:0;animation:fadeUp .9s ease .4s forwards;padding-bottom:140px;}
+.hero-logo-desktop{margin-bottom:48px;opacity:0;animation:fadeUp .9s ease .4s forwards;}
 .hero-logo-mobile{display:none;margin-bottom:40px;opacity:0;animation:fadeUp .9s ease .4s forwards;}
 .hero-tagline{font-size:clamp(17px,3vw,28px);font-weight:300;color:var(--muted);line-height:1.65;max-width:580px;margin-bottom:56px;opacity:0;animation:fadeUp .9s ease .7s forwards;}
 .hero-tagline strong{color:#fff;font-weight:500;}
@@ -104,12 +105,14 @@ footer{background:#000;border-top:1px solid var(--border);padding:48px;display:f
 /* LOGO SPLIT ANIMATION */
 .logo-split-wrapper{position:relative;display:inline-flex;align-items:center;justify-content:center;user-select:none;}
 .logo-split-wrapper>svg{overflow:visible;}
-#g-neo,#g-ix{transition:transform .75s cubic-bezier(.4,0,.2,1);}
-.logo-split-wrapper.split #g-neo{transform:translateX(-140px);}
-.logo-split-wrapper.split #g-ix{transform:translateX(140px);}
-.logo-meaning{position:absolute;top:calc(100% + 24px);transform:none;opacity:0;transition:opacity .5s ease .3s;pointer-events:none;width:200px;white-space:normal;}
-.logo-meaning.neo-meaning{left:0;text-align:left;}
-.logo-meaning.ix-meaning{right:0;text-align:right;}
+#g-neo,#g-ix{transition:transform .9s cubic-bezier(.4,0,.2,1);}
+.logo-split-wrapper.split #g-neo{transform:translateY(-140px);}
+.logo-split-wrapper.split #g-ix{transform:translateY(140px);}
+.hero.split-active .hero-tagline,.hero.split-active .hero-actions,.hero.split-active .hero-eyebrow{animation:none;opacity:0;transition:opacity .5s ease;}
+.hero-tagline,.hero-actions{transition:opacity .5s ease;}
+.logo-meaning{position:absolute;opacity:0;transition:opacity .6s ease .4s;pointer-events:none;width:190px;white-space:normal;}
+.logo-meaning.neo-meaning{right:4%;top:20%;text-align:right;}
+.logo-meaning.ix-meaning{left:4%;bottom:8%;text-align:left;}
 .logo-split-wrapper.split .logo-meaning{opacity:1;}
 .meaning-en{display:block;font-size:11px;font-weight:700;letter-spacing:.25em;text-transform:uppercase;color:var(--ice);margin-bottom:8px;}
 .meaning-kr{display:block;font-size:28px;font-weight:800;color:#fff;letter-spacing:-.02em;margin-bottom:6px;}
@@ -123,10 +126,11 @@ footer{background:#000;border-top:1px solid var(--border);padding:48px;display:f
   .hero{padding:100px 24px 80px;background:#000;}
   .hero-logo-mobile{display:none !important;}
   .hero-logo-desktop>div>svg{width:min(485px,85vw);height:auto;}
-  .logo-meaning{display:block;width:42%;}
-  .meaning-kr{font-size:18px;}
+  .logo-meaning{display:block;width:38%;}
+  .logo-split-wrapper.split #g-neo{transform:translateY(-110px);}
+  .logo-split-wrapper.split #g-ix{transform:translateY(110px);}
+  .meaning-kr{font-size:16px;}
   .meaning-sub{font-size:11px;}
-  .hero-logo-desktop{padding-bottom:140px;}
   .hero-tagline{font-size:17px;margin-bottom:40px;}
   .hero-actions{flex-direction:column;width:100%;max-width:280px;gap:12px;}
   .btn-primary,.btn-secondary{text-align:center;padding:15px 28px;width:100%;}
@@ -205,6 +209,7 @@ footer{background:#000;border-top:1px solid var(--border);padding:48px;display:f
   <a href="#contact" onclick="cm()">연락하기 →</a>
 </div>
 
+<div class="hero-sticky-container">
 <div class="hero">
   <p class="hero-eyebrow">Web &amp; App Development Studio</p>
   <div class="hero-logo-desktop">
@@ -261,6 +266,7 @@ footer{background:#000;border-top:1px solid var(--border);padding:48px;display:f
     <a href="#contact" class="btn-secondary">연락하기</a>
   </div>
   <div class="hero-scroll"><div class="scroll-line"></div><span>Scroll</span></div>
+</div>
 </div>
 
 <div class="divider"></div>
@@ -345,15 +351,14 @@ orbit('satHero',28,12,-20,.025);orbit('satMobile',17,7,-20,.025);orbit('satNavD'
 var obs=new IntersectionObserver(function(e){e.forEach(function(x){if(x.isIntersecting)x.target.classList.add('visible');});},{threshold:.12});
 document.querySelectorAll('.reveal').forEach(function(el){obs.observe(el);});
 var lw=document.getElementById('logoWrapper');
-var splitTriggered=false;
+var heroEl=document.querySelector('.hero');
+var hsc=document.querySelector('.hero-sticky-container');
 window.addEventListener('scroll',function(){
-  if(!splitTriggered&&window.scrollY>30){
-    splitTriggered=true;
-    lw.classList.add('split');
-    document.documentElement.style.overflow='hidden';
-    setTimeout(function(){document.documentElement.style.overflow='';},1800);
-  }
-  if(window.scrollY===0){splitTriggered=false;lw.classList.remove('split');}
+  var max=hsc.offsetHeight-window.innerHeight;
+  var progress=window.scrollY/max;
+  var active=progress>0.12;
+  lw.classList.toggle('split',active);
+  heroEl.classList.toggle('split-active',active);
 });
 </script>
 </body>
