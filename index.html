@@ -131,13 +131,6 @@ footer{background:#000;border-top:1px solid var(--border);padding:48px;display:f
   .logo-meaning .meaning-sub{font-size:11px;}
 }
 
-/* MODALS */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.82);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);z-index:800;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s ease;}
-.modal-overlay.open{opacity:1;pointer-events:all;}
-.modal-box{background:#0a0a0a;border:1px solid rgba(255,255,255,0.09);border-radius:20px;width:min(900px,92vw);max-height:88vh;overflow-y:auto;padding:52px 48px 48px;position:relative;transform:translateY(24px);transition:transform .35s cubic-bezier(.4,0,.2,1);}
-.modal-overlay.open .modal-box{transform:translateY(0);}
-.modal-close{position:absolute;top:20px;right:22px;background:none;border:1px solid rgba(255,255,255,0.14);color:rgba(255,255,255,0.45);font-size:16px;width:34px;height:34px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;line-height:1;}
-.modal-close:hover{color:#fff;border-color:rgba(255,255,255,0.4);}
 
 /* MOBILE */
 @media(max-width:768px){
@@ -178,12 +171,19 @@ footer{background:#000;border-top:1px solid var(--border);padding:48px;display:f
   .step{border-right:none !important;border-bottom:1px solid var(--border);}
   .step:last-child{border-bottom:none;}
 }
+/* PAGE VIEWS */
+.page-view{display:none;}
+.page-view.active{display:block;animation:pgIn .38s ease;}
+@keyframes pgIn{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+body.page-open #home-wrap{display:none;}
+.page-content{max-width:1100px;margin:0 auto;padding:160px 48px 100px;}
+@media(max-width:768px){.page-content{padding:130px 24px 80px;}}
 </style>
 </head>
 <body>
 
 <nav>
-  <a href="#">
+  <a href="#" onclick="showPage(null);return false;">
     <svg class="dlogo" width="195" height="110" viewBox="0 0 195 110" style="display:block;">
       <defs>
         <linearGradient id="ixN" gradientUnits="userSpaceOnUse" x1="119" y1="0" x2="195" y2="0"><stop offset="0%" stop-color="#4FC3F7"/><stop offset="50%" stop-color="#B3E5FC"/><stop offset="100%" stop-color="#CE93D8"/></linearGradient>
@@ -214,22 +214,23 @@ footer{background:#000;border-top:1px solid var(--border);padding:48px;display:f
     </svg>
   </a>
   <ul class="nav-links">
-    <li><a href="#" onclick="openModal('services');return false;">서비스</a></li>
-    <li><a href="#" onclick="openModal('philosophy');return false;">철학</a></li>
-    <li><a href="#" onclick="openModal('process');return false;">프로세스</a></li>
-    <li><a href="#" onclick="openModal('contact');return false;">연락하기</a></li>
+    <li><a href="#about">소개</a></li>
+    <li><a href="#philosophy">철학</a></li>
+    <li><a href="#services">서비스</a></li>
+    <li><a href="#contact">연락하기</a></li>
   </ul>
-  <a href="#" class="nav-cta" onclick="openModal('contact');return false;">프로젝트 시작하기</a>
+  <a href="#contact" class="nav-cta">프로젝트 시작하기</a>
   <div class="hamburger" id="hbg"><span></span><span></span><span></span></div>
 </nav>
 
 <div class="mobile-menu" id="mmenu">
-  <a href="#" onclick="openModal('services');cm();return false;">서비스</a>
-  <a href="#" onclick="openModal('philosophy');cm();return false;">철학</a>
-  <a href="#" onclick="openModal('process');cm();return false;">프로세스</a>
-  <a href="#" onclick="openModal('contact');cm();return false;">연락하기 →</a>
+  <a href="#about" onclick="cm()">소개</a>
+  <a href="#philosophy" onclick="cm()">철학</a>
+  <a href="#services" onclick="cm()">서비스</a>
+  <a href="#contact" onclick="cm()">연락하기 →</a>
 </div>
 
+<div id="home-wrap">
 <div class="hero-sticky-container">
 <div class="hero">
   <p class="hero-eyebrow">Web &amp; App Development Studio</p>
@@ -343,7 +344,7 @@ footer{background:#000;border-top:1px solid var(--border);padding:48px;display:f
 </section>
 
 <div class="divider"></div>
-<div class="cta-wrap" id="contact">
+<div class="cta-wrap" id="contact-scroll">
   <div class="cta-section">
     <div class="reveal">
       <p class="section-label">Get Started</p>
@@ -357,12 +358,6 @@ footer{background:#000;border-top:1px solid var(--border);padding:48px;display:f
   </div>
 </div>
 
-<!-- MODALS -->
-<div class="modal-overlay" id="m-services"><div class="modal-box"><button class="modal-close" onclick="closeModal('services')">✕</button><div class="modal-inner"></div></div></div>
-<div class="modal-overlay" id="m-philosophy"><div class="modal-box"><button class="modal-close" onclick="closeModal('philosophy')">✕</button><div class="modal-inner"></div></div></div>
-<div class="modal-overlay" id="m-process"><div class="modal-box"><button class="modal-close" onclick="closeModal('process')">✕</button><div class="modal-inner"></div></div></div>
-<div class="modal-overlay" id="m-contact"><div class="modal-box"><button class="modal-close" onclick="closeModal('contact')">✕</button><div class="modal-inner"></div></div></div>
-
 <footer>
   <span class="footer-copy">2026 NEOIX. All rights reserved.</span>
   <ul class="footer-links">
@@ -371,8 +366,94 @@ footer{background:#000;border-top:1px solid var(--border);padding:48px;display:f
     <li><a href="#">LinkedIn</a></li>
   </ul>
 </footer>
+</div><!-- /home-wrap -->
+
+<!-- PAGE: 소개 -->
+<div id="view-about" class="page-view">
+  <div class="page-content">
+    <p class="section-label">About Us</p>
+    <h2 class="section-title">우리는<br><span class="grad">이런 팀입니다</span></h2>
+    <div class="process-steps" style="margin-top:56px;">
+      <div class="step"><div class="step-num">01</div><h4>발견 &amp; 기획</h4><p>문제를 깊이 이해합니다. 사용자가 진짜 원하는 게 무엇인지, 어떤 가치를 만들어야 하는지.</p></div>
+      <div class="step"><div class="step-num">02</div><h4>디자인 &amp; 프로토타입</h4><p>아이디어를 시각화합니다. 빠른 프로토타입으로 방향을 검증하고 피드백을 반영합니다.</p></div>
+      <div class="step"><div class="step-num">03</div><h4>개발 &amp; 구현</h4><p>깔끔하고 확장 가능한 코드로 실제 제품을 만듭니다. 속도와 품질, 두 가지를 모두 잡습니다.</p></div>
+      <div class="step"><div class="step-num">04</div><h4>출시 &amp; 성장</h4><p>출시가 끝이 아닙니다. 데이터를 보며 지속적으로 개선하고 함께 성장합니다.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE: 철학 -->
+<div id="view-philosophy" class="page-view">
+  <div class="page-content">
+    <div class="philosophy">
+      <div>
+        <p class="section-label">Our Philosophy</p>
+        <h2 class="section-title">우리가<br><span class="grad">믿는 것들</span></h2>
+        <blockquote class="philosophy-quote">"기존 질서를 깨고,<br><em>아이디어와 실천</em>으로<br>새로운 세대가 세상을 바꾼다."</blockquote>
+      </div>
+      <div class="philosophy-items">
+        <div class="phil-item"><div class="phil-dot"></div><div><h4>아이디어가 먼저입니다</h4><p>코딩 실력보다 무엇을 만들지가 더 중요합니다. 좋은 아이디어는 반드시 실현될 방법을 찾습니다.</p></div></div>
+        <div class="phil-item"><div class="phil-dot"></div><div><h4>실행이 전부입니다</h4><p>완벽한 계획보다 불완전한 실행. 빠르게 만들고, 배우고, 개선합니다.</p></div></div>
+        <div class="phil-item"><div class="phil-dot"></div><div><h4>사람을 위한 기술</h4><p>기술은 목적이 아닙니다. 사람들의 삶을 더 편하고 의미있게 만드는 것이 궁극적인 목표입니다.</p></div></div>
+        <div class="phil-item"><div class="phil-dot"></div><div><h4>새로운 세대, 새로운 방식</h4><p>학력, 나이, 스펙이 아닌 오직 가치와 임팩트로 평가받는 세상을 만들어갑니다.</p></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE: 서비스 -->
+<div id="view-services" class="page-view">
+  <div class="page-content">
+    <p class="section-label">What We Do</p>
+    <h2 class="section-title">아이디어를<br><span class="grad">현실로 만듭니다</span></h2>
+    <p class="section-desc" style="margin-top:20px;">기술은 도구입니다. 중요한 건 사람들의 삶을 더 편하고 풍요롭게 만드는 것.</p>
+    <div class="services-grid" style="margin-top:48px;">
+      <div class="service-card"><div class="service-num">01</div><svg class="service-icon" viewBox="0 0 40 40" fill="none"><rect x="4" y="8" width="32" height="22" rx="2" stroke="#4FC3F7" stroke-width="1.5"/><line x1="14" y1="30" x2="26" y2="30" stroke="#4FC3F7" stroke-width="1.5"/><line x1="20" y1="30" x2="20" y2="36" stroke="#4FC3F7" stroke-width="1.5"/><path d="M10 18L16 14L22 20L28 16" stroke="#CE93D8" stroke-width="1.5" stroke-linecap="round"/></svg><h3 class="service-title">웹사이트 제작</h3><p class="service-desc">브랜드의 철학을 담은 홈페이지부터 복잡한 웹 애플리케이션까지. 빠르고 아름답게 구현합니다.</p></div>
+      <div class="service-card"><div class="service-num">02</div><svg class="service-icon" viewBox="0 0 40 40" fill="none"><rect x="12" y="4" width="16" height="28" rx="3" stroke="#4FC3F7" stroke-width="1.5"/><line x1="18" y1="28" x2="22" y2="28" stroke="#4FC3F7" stroke-width="1.5" stroke-linecap="round"/><path d="M16 12L20 10L24 14L20 18" stroke="#CE93D8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><h3 class="service-title">앱 개발</h3><p class="service-desc">iOS, Android를 아우르는 모바일 앱. 사용자 경험 중심으로 설계하고 개발합니다.</p></div>
+      <div class="service-card"><div class="service-num">03</div><svg class="service-icon" viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="14" stroke="#4FC3F7" stroke-width="1.5"/><path d="M14 20C14 14 20 10 26 14" stroke="#CE93D8" stroke-width="1.5" stroke-linecap="round"/><path d="M26 20C26 26 20 30 14 26" stroke="#9FA8DA" stroke-width="1.5" stroke-linecap="round"/></svg><h3 class="service-title">디지털 브랜딩</h3><p class="service-desc">로고, BI, 디자인 시스템. 브랜드의 이야기를 시각 언어로 완성합니다.</p></div>
+      <div class="service-card"><div class="service-num">04</div><svg class="service-icon" viewBox="0 0 40 40" fill="none"><path d="M8 28L14 18L20 22L26 12L32 16" stroke="#4FC3F7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="14" cy="18" r="2" fill="#CE93D8"/><circle cx="26" cy="12" r="2" fill="#CE93D8"/></svg><h3 class="service-title">그로스 &amp; 마케팅</h3><p class="service-desc">만들고 끝이 아닙니다. 실제로 성장하는 제품을 위한 데이터 기반 전략을 함께 합니다.</p></div>
+      <div class="service-card"><div class="service-num">05</div><svg class="service-icon" viewBox="0 0 40 40" fill="none"><rect x="6" y="10" width="28" height="20" rx="2" stroke="#4FC3F7" stroke-width="1.5"/><path d="M13 20L17 16L21 20L27 14" stroke="#CE93D8" stroke-width="1.5" stroke-linecap="round"/></svg><h3 class="service-title">MVP 빠른 출시</h3><p class="service-desc">아이디어 검증을 위한 최소 기능 제품을 빠르게. 생각보다 훨씬 빠르게 시장에 선보입니다.</p></div>
+      <div class="service-card"><div class="service-num">06</div><svg class="service-icon" viewBox="0 0 40 40" fill="none"><circle cx="20" cy="16" r="6" stroke="#4FC3F7" stroke-width="1.5"/><path d="M8 34C8 28 12 24 20 24C28 24 32 28 32 34" stroke="#4FC3F7" stroke-width="1.5" stroke-linecap="round"/><circle cx="30" cy="14" r="3" stroke="#CE93D8" stroke-width="1"/><circle cx="10" cy="14" r="3" stroke="#9FA8DA" stroke-width="1"/></svg><h3 class="service-title">기술 자문</h3><p class="service-desc">어떤 기술 스택을 써야 할지, 어떻게 시작해야 할지. 경험을 나눕니다.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE: 연락하기 -->
+<div id="view-contact" class="page-view">
+  <div class="cta-wrap" style="min-height:calc(100vh - 72px);display:flex;align-items:center;">
+    <div class="cta-section" style="width:100%;">
+      <p class="section-label">Get Started</p>
+      <h2 class="section-title" style="margin-bottom:24px;">아이디어가 있으신가요?<br><span class="grad">함께 만들어봐요.</span></h2>
+      <p class="section-desc" style="margin:0 auto 48px;text-align:center;max-width:420px;">작은 아이디어도 괜찮습니다. 어디서부터 시작해야 할지 모르겠어도 괜찮습니다.</p>
+      <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;">
+        <a href="mailto:hello@neoix.io" class="btn-primary">이메일 보내기</a>
+        <a href="#" class="btn-secondary">포트폴리오 보기</a>
+      </div>
+    </div>
+  </div>
+</div>
 
 <script>
+var pages=['about','philosophy','services','contact'];
+function showPage(id){
+  document.querySelectorAll('.page-view').forEach(function(v){v.classList.remove('active');});
+  if(id&&pages.indexOf(id)>-1){
+    document.getElementById('view-'+id).classList.add('active');
+    document.body.classList.add('page-open');
+  } else {
+    document.body.classList.remove('page-open');
+    window.scrollTo(0,0);
+  }
+}
+function navigate(id){
+  window.location.hash=id?id:'';
+}
+window.addEventListener('hashchange',function(){
+  var h=window.location.hash.replace('#','');
+  showPage(pages.indexOf(h)>-1?h:null);
+});
+// 초기 로드 시 해시 확인
+(function(){var h=window.location.hash.replace('#','');if(pages.indexOf(h)>-1)showPage(h);})();
 function ul(){var m=window.innerWidth<=768;document.querySelector('.dlogo').style.display=m?'none':'block';document.querySelector('.mlogo').style.display=m?'block':'none';}
 ul();window.addEventListener('resize',ul);
 document.getElementById('hbg').addEventListener('click',function(){this.classList.toggle('open');document.getElementById('mmenu').classList.toggle('open');});
@@ -414,28 +495,6 @@ if(neoZone&&ixZone){
     ixZone.addEventListener('mouseleave',function(){lw.classList.remove('hover-ix');});
   }
 }
-// MODAL
-function openModal(id){
-  var src=document.getElementById(id);
-  var modal=document.getElementById('m-'+id);
-  var inner=modal.querySelector('.modal-inner');
-  if(src&&!inner.hasChildNodes()){
-    inner.innerHTML=src.innerHTML;
-    inner.querySelectorAll('.reveal').forEach(function(el){el.classList.add('visible');});
-  }
-  modal.classList.add('open');
-  document.body.style.overflow='hidden';
-}
-function closeModal(id){
-  document.getElementById('m-'+id).classList.remove('open');
-  document.body.style.overflow='';
-}
-document.querySelectorAll('.modal-overlay').forEach(function(ov){
-  ov.addEventListener('click',function(e){if(e.target===ov)closeModal(ov.id.slice(2));});
-});
-document.addEventListener('keydown',function(e){
-  if(e.key==='Escape')document.querySelectorAll('.modal-overlay.open').forEach(function(ov){closeModal(ov.id.slice(2));});
-});
 </script>
 </body>
 </html>
