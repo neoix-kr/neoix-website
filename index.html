@@ -23,7 +23,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
 .hamburger.open span:nth-child(1){transform:rotate(45deg) translate(4px,4px);}
 .hamburger.open span:nth-child(2){opacity:0;}
 .hamburger.open span:nth-child(3){transform:rotate(-45deg) translate(4px,-4px);}
-.mobile-menu{display:none;position:fixed;top:61px;left:0;right:0;background:rgba(0,0,0,.97);border-bottom:1px solid var(--border);flex-direction:column;padding:24px 28px;gap:4px;z-index:99;}
+.mobile-menu{display:none;position:fixed;top:111px;left:0;right:0;background:rgba(0,0,0,1);border-bottom:1px solid var(--border);flex-direction:column;padding:24px 28px;gap:4px;z-index:101;}
 .mobile-menu.open{display:flex;}
 .mobile-menu a{color:var(--muted);text-decoration:none;font-size:16px;font-weight:500;padding:14px 0;border-bottom:1px solid var(--border);transition:color .2s;}
 .mobile-menu a:last-child{border-bottom:none;color:var(--ice);font-weight:600;}
@@ -137,39 +137,51 @@ footer{background:#000;border-top:1px solid var(--border);padding:48px;display:f
   nav{padding:16px 20px;}
   .nav-links,.nav-cta{display:none;}
   .hamburger{display:flex;}
-  .hero{padding:100px 24px 80px;background:#000;}
+  .hero{padding:120px 20px 60px;background:#000;}
   .hero-sticky-container{height:200vh;}
   .hero-logo-mobile{display:none !important;}
-  .hero-logo-desktop>div>svg{width:min(485px,85vw);height:auto;}
+  .hero-logo-desktop>div>svg{width:min(485px,90vw);height:auto;}
+  .hero-eyebrow{font-size:9px;letter-spacing:.18em;margin-bottom:28px;}
   .neo-hover-zone,.ix-hover-zone{cursor:pointer;}
   .logo-meaning .meaning-en{font-size:8px;}
   .logo-meaning .meaning-kr{font-size:13px;}
   .logo-meaning .meaning-sub{font-size:9px;line-height:1.45;}
-  .hero-tagline{font-size:17px;margin-bottom:40px;}
-  .hero-actions{flex-direction:column;width:100%;max-width:280px;gap:12px;}
-  .btn-primary,.btn-secondary{text-align:center;padding:15px 28px;width:100%;}
+  .hero-tagline{font-size:16px;margin-bottom:36px;line-height:1.6;}
+  .hero-actions{flex-direction:column;width:100%;max-width:100%;gap:10px;}
+  .btn-primary,.btn-secondary{text-align:center;padding:14px 20px;width:100%;font-size:13px;}
+  .hero-scroll{bottom:28px;}
   .divider{margin:0 20px;}
-  section{padding:72px 24px;}
-  .section-title{font-size:34px;}
-  .section-desc{font-size:15px;}
-  .services-grid{grid-template-columns:1fr;margin-top:48px;}
-  .service-card{padding:32px 28px;}
-  .philosophy{grid-template-columns:1fr;gap:40px;}
-  .philosophy-quote{font-size:18px;padding-left:20px;margin-top:24px;}
-  .process-steps{grid-template-columns:1fr 1fr;margin-top:48px;}
-  .step{padding:28px 24px;border-right:none;border-bottom:1px solid var(--border);}
+  section{padding:60px 20px;}
+  .section-label{font-size:9px;margin-bottom:16px;}
+  .section-title{font-size:30px;letter-spacing:-.01em;}
+  .section-desc{font-size:14px;}
+  .services-grid{grid-template-columns:1fr;margin-top:32px;gap:1px;}
+  .service-card{padding:24px 20px;}
+  .service-num{margin-bottom:16px;}
+  .service-icon{width:32px;height:32px;margin-bottom:14px;}
+  .service-title{font-size:17px;margin-bottom:10px;}
+  .service-desc{font-size:13px;}
+  .philosophy{grid-template-columns:1fr;gap:32px;}
+  .philosophy-quote{font-size:16px;padding-left:18px;margin-top:20px;}
+  .process-steps{grid-template-columns:1fr 1fr;margin-top:32px;}
+  .step{padding:24px 18px;border-right:none;border-bottom:1px solid var(--border);}
   .step:nth-child(odd){border-right:1px solid var(--border);}
   .step:nth-child(3),.step:nth-child(4){border-bottom:none;}
-  .step-num{font-size:36px;margin-bottom:14px;}
-  .step h4{font-size:14px;}.step p{font-size:12px;}
-  .cta-section{padding:80px 24px;}
-  footer{padding:32px 24px;flex-direction:column;gap:20px;align-items:flex-start;}
+  .step-num{font-size:32px;margin-bottom:10px;}
+  .step h4{font-size:13px;}.step p{font-size:12px;}
+  .cta-section{padding:60px 20px;}
+  .cta-section .section-title{font-size:26px;}
+  footer{padding:28px 20px;flex-direction:column;gap:16px;align-items:flex-start;}
+  .footer-copy{font-size:11px;}
+  .footer-links{gap:20px;}
 }
 @media(max-width:480px){
-  .section-title{font-size:28px;}
+  .section-title{font-size:26px;}
+  .cta-section .section-title{font-size:22px;}
   .process-steps{grid-template-columns:1fr;}
   .step{border-right:none !important;border-bottom:1px solid var(--border);}
   .step:last-child{border-bottom:none;}
+  .hero-logo-desktop>div>svg{width:min(485px,95vw);}
 }
 /* CEO PROFILE */
 .ceo-profile{display:grid;grid-template-columns:280px 1fr;gap:80px;margin-top:56px;align-items:start;}
@@ -198,9 +210,19 @@ footer{background:#000;border-top:1px solid var(--border);padding:48px;display:f
 .ptag{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;background:linear-gradient(120deg,rgba(79,195,247,.12),rgba(206,147,216,.12));border:1px solid rgba(79,195,247,.2);color:var(--ice);padding:4px 12px;}
 
 @media(max-width:768px){
-  .ceo-profile{grid-template-columns:1fr;gap:40px;}
-  .ceo-photo{width:140px;height:140px;}
-  .portfolio-card{flex-direction:column;gap:24px;padding:28px;}
+  .ceo-profile{grid-template-columns:1fr;gap:32px;}
+  .ceo-photo{width:120px;height:120px;margin-bottom:20px;}
+  .ceo-photo svg{width:48px;height:48px;}
+  .ceo-name{font-size:22px;}
+  .ceo-bio-title{font-size:22px;margin-bottom:20px;}
+  .ceo-bio{font-size:14px;line-height:1.75;}
+  .ceo-tags{margin-top:24px;gap:8px;}
+  .ceo-tag{font-size:10px;padding:5px 10px;}
+  .portfolio-card{flex-direction:column;gap:20px;padding:24px 20px;}
+  .portfolio-icon{width:64px;height:64px;}
+  .portfolio-icon svg{width:36px;height:36px;}
+  .portfolio-title{font-size:18px;}
+  .portfolio-desc{font-size:13px;}
 }
 
 /* PAGE VIEWS */
@@ -412,9 +434,10 @@ body.page-open #home-wrap{display:none;}
             <svg width="64" height="64" viewBox="0 0 64 64" fill="none"><circle cx="32" cy="24" r="14" stroke="#4FC3F7" stroke-width="1.5"/><path d="M8 56C8 44 18 36 32 36C46 36 56 44 56 56" stroke="#4FC3F7" stroke-width="1.5" stroke-linecap="round"/></svg>
           </div>
         </div>
-        <h2 class="ceo-name">이름</h2>
+        <h2 class="ceo-name">박정겸</h2>
         <p class="ceo-role"><span class="grad">CEO &amp; Founder</span></p>
         <p class="ceo-role" style="font-size:13px;margin-top:6px;color:var(--muted);">NEOIX</p>
+        <p class="ceo-role" style="font-size:13px;margin-top:4px;color:var(--muted);">010-5890-3700</p>
         <div class="ceo-links">
           <a href="#" class="ceo-link">Instagram</a>
           <a href="#" class="ceo-link">LinkedIn</a>
