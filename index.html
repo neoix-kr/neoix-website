@@ -105,11 +105,6 @@ footer{background:#000;border-top:1px solid var(--border);padding:48px;display:f
 .logo-split-wrapper{position:relative;display:inline-flex;align-items:center;justify-content:center;user-select:none;}
 .logo-split-wrapper>svg{overflow:visible;}
 #g-neo,#g-ix{transition:transform .75s cubic-bezier(.4,0,.2,1);}
-@media(hover:hover){
-  .logo-split-wrapper:hover #g-neo{transform:translateX(-70px);}
-  .logo-split-wrapper:hover #g-ix{transform:translateX(70px);}
-  .logo-split-wrapper:hover .logo-meaning{opacity:1;}
-}
 .logo-split-wrapper.split #g-neo{transform:translateX(-70px);}
 .logo-split-wrapper.split #g-ix{transform:translateX(70px);}
 .logo-meaning{position:absolute;top:50%;transform:translateY(-50%);opacity:0;transition:opacity .5s ease .3s;pointer-events:none;white-space:nowrap;}
@@ -346,10 +341,10 @@ function orbit(id,rx,ry,deg,spd){var el=document.getElementById(id);if(!el)retur
 orbit('satHero',28,12,-20,.025);orbit('satMobile',17,7,-20,.025);orbit('satNavD',9,4,-20,.025);orbit('satNavM',6,2.5,-20,.025);
 var obs=new IntersectionObserver(function(e){e.forEach(function(x){if(x.isIntersecting)x.target.classList.add('visible');});},{threshold:.12});
 document.querySelectorAll('.reveal').forEach(function(el){obs.observe(el);});
-if('ontouchstart' in window||navigator.maxTouchPoints>0){
-  var lw=document.getElementById('logoWrapper');
-  new IntersectionObserver(function(e){lw.classList.toggle('split',e[0].isIntersecting);},{threshold:0.5}).observe(lw);
-}
+var lw=document.getElementById('logoWrapper');
+window.addEventListener('scroll',function(){
+  lw.classList.toggle('split',window.scrollY>80);
+});
 </script>
 </body>
 </html>
