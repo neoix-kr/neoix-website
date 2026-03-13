@@ -103,21 +103,24 @@ footer{background:#000;border-top:1px solid var(--border);padding:48px;display:f
 .reveal.visible{opacity:1;transform:translateY(0);}
 .d1{transition-delay:.1s;}.d2{transition-delay:.2s;}.d3{transition-delay:.3s;}
 
-/* LOGO SPLIT ANIMATION */
-.logo-split-wrapper{position:relative;display:inline-flex;align-items:center;justify-content:center;user-select:none;}
-.logo-split-wrapper>svg{overflow:visible;}
-#g-neo,#g-ix{transition:transform .9s cubic-bezier(.4,0,.2,1);}
-.logo-split-wrapper.split #g-neo{transform:translate(-90px,-100px);}
-.logo-split-wrapper.split #g-ix{transform:translate(-464px,100px);}
-.hero.split-active .hero-tagline,.hero.split-active .hero-actions,.hero.split-active .hero-eyebrow{animation:none;opacity:0;transition:opacity .5s ease;}
-.hero-tagline,.hero-actions{transition:opacity .5s ease;}
-.logo-meaning{position:absolute;opacity:0;transition:opacity .6s ease .4s;pointer-events:none;width:190px;white-space:normal;}
-.logo-meaning.neo-meaning{right:4%;top:18%;text-align:right;}
-.logo-meaning.ix-meaning{right:4%;bottom:8%;text-align:right;}
-.logo-split-wrapper.split .logo-meaning{opacity:1;}
-.meaning-en{display:block;font-size:11px;font-weight:700;letter-spacing:.25em;text-transform:uppercase;color:var(--ice);margin-bottom:8px;}
-.meaning-kr{display:block;font-size:28px;font-weight:800;color:#fff;letter-spacing:-.02em;margin-bottom:6px;}
-.meaning-sub{display:block;font-size:13px;color:var(--muted);line-height:1.65;}
+/* LOGO STAR OUTLINE */
+.logo-lit-wrapper{position:relative;display:inline-flex;align-items:center;justify-content:center;user-select:none;}
+.logo-lit-wrapper>svg{overflow:visible;}
+#g-neo path,#g-ix path{paint-order:stroke fill;transition:stroke-dashoffset 2.4s ease,stroke .3s ease,filter .3s ease;}
+.logo-lit-wrapper.lit #g-neo path{stroke:rgba(140,215,255,.85);stroke-width:2;filter:drop-shadow(0 0 5px rgba(100,200,255,.9)) drop-shadow(0 0 14px rgba(80,170,255,.5));}
+.logo-lit-wrapper.lit #g-ix path{stroke:rgba(210,150,255,.85);stroke-width:2;filter:drop-shadow(0 0 5px rgba(190,130,255,.9)) drop-shadow(0 0 14px rgba(160,100,255,.5));}
+/* Logo meanings below */
+.logo-meanings{display:flex;gap:48px;justify-content:center;margin-top:36px;opacity:0;transform:translateY(14px);transition:opacity .8s ease .4s,transform .8s ease .4s;pointer-events:none;}
+.hero.lit-active .logo-meanings{opacity:1;transform:translateY(0);pointer-events:auto;}
+.meaning-block{text-align:left;max-width:260px;}
+.m-label{display:block;font-size:10px;font-weight:700;letter-spacing:.3em;text-transform:uppercase;color:var(--ice);margin-bottom:6px;}
+.m-kr{display:block;font-size:20px;font-weight:800;color:#fff;letter-spacing:-.02em;margin-bottom:4px;}
+.m-sub{display:block;font-size:12px;color:rgba(255,255,255,.55);margin-bottom:14px;}
+.m-verse{display:block;font-size:11.5px;color:var(--muted);line-height:1.75;font-style:italic;border-left:2px solid var(--ice);padding-left:12px;margin-bottom:6px;}
+.m-ref{display:block;font-size:10px;color:var(--ice);letter-spacing:.08em;padding-left:14px;opacity:.8;}
+/* Fade tagline/actions when lit */
+.hero.lit-active .hero-tagline,.hero.lit-active .hero-actions,.hero.lit-active .hero-eyebrow{animation:none;opacity:0;transition:opacity .4s ease;}
+.hero-tagline,.hero-actions{transition:opacity .4s ease;}
 
 /* MOBILE */
 @media(max-width:768px){
@@ -127,13 +130,10 @@ footer{background:#000;border-top:1px solid var(--border);padding:48px;display:f
   .hero{padding:100px 24px 80px;background:#000;}
   .hero-logo-mobile{display:none !important;}
   .hero-logo-desktop>div>svg{width:min(485px,85vw);height:auto;}
-  .logo-meaning{display:block;width:42%;}
-  .logo-split-wrapper.split #g-neo{transform:translate(-60px,-80px);}
-  .logo-split-wrapper.split #g-ix{transform:translate(-369px,80px);}
-  .logo-meaning.neo-meaning{right:2%;top:15%;}
-  .logo-meaning.ix-meaning{right:2%;bottom:6%;}
-  .meaning-kr{font-size:16px;}
-  .meaning-sub{font-size:11px;}
+  .logo-meanings{flex-direction:column;gap:24px;margin-top:28px;}
+  .meaning-block{max-width:100%;}
+  .m-kr{font-size:17px;}
+  .m-verse{font-size:11px;}
   .hero-tagline{font-size:17px;margin-bottom:40px;}
   .hero-actions{flex-direction:column;width:100%;max-width:280px;gap:12px;}
   .btn-primary,.btn-secondary{text-align:center;padding:15px 28px;width:100%;}
@@ -216,12 +216,7 @@ footer{background:#000;border-top:1px solid var(--border);padding:48px;display:f
 <div class="hero">
   <p class="hero-eyebrow">Web &amp; App Development Studio</p>
   <div class="hero-logo-desktop">
-    <div class="logo-split-wrapper" id="logoWrapper">
-      <div class="logo-meaning neo-meaning">
-        <span class="meaning-en">Neo</span>
-        <span class="meaning-kr">새로운</span>
-        <span class="meaning-sub">기존의 틀을 깨고<br>새로운 방식으로</span>
-      </div>
+    <div class="logo-lit-wrapper" id="logoWrapper">
       <svg width="485" height="280" viewBox="0 0 485 280">
         <defs>
           <linearGradient id="ixH" gradientUnits="userSpaceOnUse" x1="295" y1="0" x2="485" y2="0"><stop offset="0%" stop-color="#4FC3F7"/><stop offset="30%" stop-color="#81D4FA"/><stop offset="55%" stop-color="#B3E5FC"/><stop offset="78%" stop-color="#CE93D8"/><stop offset="100%" stop-color="#9FA8DA"/></linearGradient>
@@ -240,10 +235,21 @@ footer{background:#000;border-top:1px solid var(--border);padding:48px;display:f
           </g>
         </g>
       </svg>
-      <div class="logo-meaning ix-meaning">
-        <span class="meaning-en">IX</span>
-        <span class="meaning-kr">실행</span>
-        <span class="meaning-sub">아이디어를 현실로<br>만드는 힘</span>
+    </div>
+    <div class="logo-meanings">
+      <div class="meaning-block">
+        <span class="m-label">NEO — 헬라어 Neos</span>
+        <span class="m-kr">새로운</span>
+        <span class="m-sub">기존의 틀을 깨고 새로운 방식으로</span>
+        <span class="m-verse">"새 포도주는 새 부대에 넣어야 둘이 다 보전되느니라"</span>
+        <span class="m-ref">마태복음 9장 17절</span>
+      </div>
+      <div class="meaning-block">
+        <span class="m-label">IX — 실행</span>
+        <span class="m-kr">행동</span>
+        <span class="m-sub">아이디어를 현실로 만드는 행동으로</span>
+        <span class="m-verse">"나의 이 말을 듣고 행하는 자는 그 집을 반석 위에 지은 지혜로운 사람 같으리니"</span>
+        <span class="m-ref">마태복음 7장 24절</span>
       </div>
     </div>
   </div>
@@ -356,12 +362,21 @@ document.querySelectorAll('.reveal').forEach(function(el){obs.observe(el);});
 var lw=document.getElementById('logoWrapper');
 var heroEl=document.querySelector('.hero');
 var hsc=document.querySelector('.hero-sticky-container');
+(function(){
+  document.querySelectorAll('#g-neo path,#g-ix path').forEach(function(p){
+    var len=p.getTotalLength();
+    p.style.strokeDasharray=len;
+    p.style.strokeDashoffset=len;
+  });
+})();
 window.addEventListener('scroll',function(){
   var max=hsc.offsetHeight-window.innerHeight;
-  var progress=window.scrollY/max;
-  var active=progress>0.12;
-  lw.classList.toggle('split',active);
-  heroEl.classList.toggle('split-active',active);
+  var isLit=Math.min(1,Math.max(0,window.scrollY/max))>0.15;
+  lw.classList.toggle('lit',isLit);
+  heroEl.classList.toggle('lit-active',isLit);
+  document.querySelectorAll('#g-neo path,#g-ix path').forEach(function(p){
+    p.style.strokeDashoffset=isLit?0:p.style.strokeDasharray;
+  });
 });
 </script>
 </body>
