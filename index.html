@@ -30,7 +30,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
 .mobile-menu a:hover{color:#fff;}
 
 /* HERO */
-.hero-sticky-container{height:200vh;}
+.hero-sticky-container{height:100vh;}
 .hero{position:sticky;top:0;height:100vh;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:120px 48px 80px;text-align:center;background:#000;}
 .hero-eyebrow{font-size:11px;font-weight:600;letter-spacing:.25em;text-transform:uppercase;color:var(--ice);margin-bottom:40px;opacity:0;animation:fadeUp .8s ease .2s forwards;}
 .hero-logo-desktop{margin-bottom:48px;opacity:0;animation:fadeUp .9s ease .4s forwards;}
@@ -103,21 +103,35 @@ footer{background:#000;border-top:1px solid var(--border);padding:48px;display:f
 .reveal.visible{opacity:1;transform:translateY(0);}
 .d1{transition-delay:.1s;}.d2{transition-delay:.2s;}.d3{transition-delay:.3s;}
 
-/* LOGO SPLIT ANIMATION */
+/* LOGO */
 .logo-split-wrapper{position:relative;display:inline-flex;align-items:center;justify-content:center;user-select:none;}
 .logo-split-wrapper>svg{overflow:visible;}
-#g-neo,#g-ix{transition:transform .9s cubic-bezier(.4,0,.2,1);}
-.logo-split-wrapper.split #g-neo{transform:translate(-90px,-100px);}
-.logo-split-wrapper.split #g-ix{transform:translate(-464px,100px);}
-.hero.split-active .hero-tagline,.hero.split-active .hero-actions,.hero.split-active .hero-eyebrow{animation:none;opacity:0;transition:opacity .5s ease;}
-.hero-tagline,.hero-actions{transition:opacity .5s ease;}
-.logo-meaning{position:absolute;opacity:0;transition:opacity .6s ease .4s;pointer-events:none;width:190px;white-space:normal;}
-.logo-meaning.neo-meaning{right:4%;top:18%;text-align:right;}
-.logo-meaning.ix-meaning{right:4%;bottom:8%;text-align:right;}
-.logo-split-wrapper.split .logo-meaning{opacity:1;}
+.logo-meaning{position:absolute;opacity:0;transition:opacity .5s ease .1s;pointer-events:none;}
 .meaning-en{display:block;font-size:11px;font-weight:700;letter-spacing:.25em;text-transform:uppercase;color:var(--ice);margin-bottom:8px;}
 .meaning-kr{display:block;font-size:28px;font-weight:800;color:#fff;letter-spacing:-.02em;margin-bottom:6px;}
 .meaning-sub{display:block;font-size:13px;color:var(--muted);line-height:1.65;}
+.neo-hover-zone,.ix-hover-zone{display:none;}
+
+/* DESKTOP HOVER */
+@media(min-width:769px){
+  .neo-hover-zone,.ix-hover-zone{display:block;position:absolute;top:0;bottom:0;z-index:5;cursor:default;}
+  .neo-hover-zone{left:0;width:67%;}
+  .ix-hover-zone{right:0;width:33%;}
+  /* 블러 오버레이: div로 영역 격리 → NEO 글씨 침범 없음 */
+  .neo-blur-overlay,.ix-blur-overlay{position:absolute;top:0;bottom:0;z-index:3;opacity:0;transition:opacity .65s ease;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);background:rgba(0,0,0,0.92);}
+  .neo-blur-overlay{left:0;width:67%;}
+  .ix-blur-overlay{right:0;width:33%;}
+  .logo-split-wrapper.hover-neo .ix-blur-overlay{opacity:1;}
+  .logo-split-wrapper.hover-ix .neo-blur-overlay{opacity:1;}
+  /* NEO 설명 → IX 영역 안에만, IX 설명 → NEO 위에 (교차 배치) */
+  .logo-meaning.neo-meaning{left:67%;right:0;top:68%;transform:translateY(-50%);text-align:left;z-index:10;padding:8px 10px;}
+  .logo-meaning.ix-meaning{left:4%;right:36%;top:68%;transform:translateY(-50%);text-align:left;z-index:10;padding:8px 10px;}
+  .logo-split-wrapper.hover-neo .neo-meaning{opacity:1;}
+  .logo-split-wrapper.hover-ix .ix-meaning{opacity:1;}
+  .logo-meaning .meaning-en{font-size:9px;}
+  .logo-meaning .meaning-kr{font-size:16px;}
+  .logo-meaning .meaning-sub{font-size:11px;}
+}
 
 /* MOBILE */
 @media(max-width:768px){
@@ -125,13 +139,17 @@ footer{background:#000;border-top:1px solid var(--border);padding:48px;display:f
   .nav-links,.nav-cta{display:none;}
   .hamburger{display:flex;}
   .hero{padding:100px 24px 80px;background:#000;}
+  .hero-sticky-container{height:200vh;}
   .hero-logo-mobile{display:none !important;}
   .hero-logo-desktop>div>svg{width:min(485px,85vw);height:auto;}
+  #g-neo,#g-ix{transition:transform .9s cubic-bezier(.4,0,.2,1);}
   .logo-meaning{display:block;width:42%;}
   .logo-split-wrapper.split #g-neo{transform:translate(-60px,-80px);}
   .logo-split-wrapper.split #g-ix{transform:translate(-369px,80px);}
   .logo-meaning.neo-meaning{right:2%;top:15%;}
   .logo-meaning.ix-meaning{right:2%;bottom:6%;}
+  .logo-split-wrapper.split .logo-meaning{opacity:1;}
+  .hero.split-active .hero-tagline,.hero.split-active .hero-actions,.hero.split-active .hero-eyebrow{animation:none;opacity:0;transition:opacity .5s ease;}
   .meaning-kr{font-size:16px;}
   .meaning-sub{font-size:11px;}
   .hero-tagline{font-size:17px;margin-bottom:40px;}
@@ -245,6 +263,10 @@ footer{background:#000;border-top:1px solid var(--border);padding:48px;display:f
         <span class="meaning-kr">실행</span>
         <span class="meaning-sub">아이디어를 현실로<br>만드는 힘</span>
       </div>
+      <div class="neo-blur-overlay"></div>
+      <div class="ix-blur-overlay"></div>
+      <div class="neo-hover-zone" id="neoZone"></div>
+      <div class="ix-hover-zone" id="ixZone"></div>
     </div>
   </div>
   <div class="hero-logo-mobile">
@@ -356,13 +378,24 @@ document.querySelectorAll('.reveal').forEach(function(el){obs.observe(el);});
 var lw=document.getElementById('logoWrapper');
 var heroEl=document.querySelector('.hero');
 var hsc=document.querySelector('.hero-sticky-container');
+// 모바일: 스크롤 애니메이션
 window.addEventListener('scroll',function(){
+  if(window.innerWidth>768)return;
   var max=hsc.offsetHeight-window.innerHeight;
   var progress=window.scrollY/max;
   var active=progress>0.12;
   lw.classList.toggle('split',active);
   heroEl.classList.toggle('split-active',active);
 });
+// 데스크탑: 호버 인터랙션
+var neoZone=document.getElementById('neoZone');
+var ixZone=document.getElementById('ixZone');
+if(neoZone&&ixZone){
+  neoZone.addEventListener('mouseenter',function(){lw.classList.add('hover-neo');});
+  neoZone.addEventListener('mouseleave',function(){lw.classList.remove('hover-neo');});
+  ixZone.addEventListener('mouseenter',function(){lw.classList.add('hover-ix');});
+  ixZone.addEventListener('mouseleave',function(){lw.classList.remove('hover-ix');});
+}
 </script>
 </body>
 </html>
