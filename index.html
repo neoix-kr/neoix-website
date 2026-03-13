@@ -131,6 +131,14 @@ footer{background:#000;border-top:1px solid var(--border);padding:48px;display:f
   .logo-meaning .meaning-sub{font-size:11px;}
 }
 
+/* MODALS */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.82);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);z-index:800;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s ease;}
+.modal-overlay.open{opacity:1;pointer-events:all;}
+.modal-box{background:#0a0a0a;border:1px solid rgba(255,255,255,0.09);border-radius:20px;width:min(900px,92vw);max-height:88vh;overflow-y:auto;padding:52px 48px 48px;position:relative;transform:translateY(24px);transition:transform .35s cubic-bezier(.4,0,.2,1);}
+.modal-overlay.open .modal-box{transform:translateY(0);}
+.modal-close{position:absolute;top:20px;right:22px;background:none;border:1px solid rgba(255,255,255,0.14);color:rgba(255,255,255,0.45);font-size:16px;width:34px;height:34px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;line-height:1;}
+.modal-close:hover{color:#fff;border-color:rgba(255,255,255,0.4);}
+
 /* MOBILE */
 @media(max-width:768px){
   nav{padding:16px 20px;}
@@ -206,20 +214,20 @@ footer{background:#000;border-top:1px solid var(--border);padding:48px;display:f
     </svg>
   </a>
   <ul class="nav-links">
-    <li><a href="#services">서비스</a></li>
-    <li><a href="#philosophy">철학</a></li>
-    <li><a href="#process">프로세스</a></li>
-    <li><a href="#contact">연락하기</a></li>
+    <li><a href="#" onclick="openModal('services');return false;">서비스</a></li>
+    <li><a href="#" onclick="openModal('philosophy');return false;">철학</a></li>
+    <li><a href="#" onclick="openModal('process');return false;">프로세스</a></li>
+    <li><a href="#" onclick="openModal('contact');return false;">연락하기</a></li>
   </ul>
-  <a href="#contact" class="nav-cta">프로젝트 시작하기</a>
+  <a href="#" class="nav-cta" onclick="openModal('contact');return false;">프로젝트 시작하기</a>
   <div class="hamburger" id="hbg"><span></span><span></span><span></span></div>
 </nav>
 
 <div class="mobile-menu" id="mmenu">
-  <a href="#services" onclick="cm()">서비스</a>
-  <a href="#philosophy" onclick="cm()">철학</a>
-  <a href="#process" onclick="cm()">프로세스</a>
-  <a href="#contact" onclick="cm()">연락하기 →</a>
+  <a href="#" onclick="openModal('services');cm();return false;">서비스</a>
+  <a href="#" onclick="openModal('philosophy');cm();return false;">철학</a>
+  <a href="#" onclick="openModal('process');cm();return false;">프로세스</a>
+  <a href="#" onclick="openModal('contact');cm();return false;">연락하기 →</a>
 </div>
 
 <div class="hero-sticky-container">
@@ -349,6 +357,12 @@ footer{background:#000;border-top:1px solid var(--border);padding:48px;display:f
   </div>
 </div>
 
+<!-- MODALS -->
+<div class="modal-overlay" id="m-services"><div class="modal-box"><button class="modal-close" onclick="closeModal('services')">✕</button><div class="modal-inner"></div></div></div>
+<div class="modal-overlay" id="m-philosophy"><div class="modal-box"><button class="modal-close" onclick="closeModal('philosophy')">✕</button><div class="modal-inner"></div></div></div>
+<div class="modal-overlay" id="m-process"><div class="modal-box"><button class="modal-close" onclick="closeModal('process')">✕</button><div class="modal-inner"></div></div></div>
+<div class="modal-overlay" id="m-contact"><div class="modal-box"><button class="modal-close" onclick="closeModal('contact')">✕</button><div class="modal-inner"></div></div></div>
+
 <footer>
   <span class="footer-copy">2026 NEOIX. All rights reserved.</span>
   <ul class="footer-links">
@@ -400,6 +414,28 @@ if(neoZone&&ixZone){
     ixZone.addEventListener('mouseleave',function(){lw.classList.remove('hover-ix');});
   }
 }
+// MODAL
+function openModal(id){
+  var src=document.getElementById(id);
+  var modal=document.getElementById('m-'+id);
+  var inner=modal.querySelector('.modal-inner');
+  if(src&&!inner.hasChildNodes()){
+    inner.innerHTML=src.innerHTML;
+    inner.querySelectorAll('.reveal').forEach(function(el){el.classList.add('visible');});
+  }
+  modal.classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeModal(id){
+  document.getElementById('m-'+id).classList.remove('open');
+  document.body.style.overflow='';
+}
+document.querySelectorAll('.modal-overlay').forEach(function(ov){
+  ov.addEventListener('click',function(e){if(e.target===ov)closeModal(ov.id.slice(2));});
+});
+document.addEventListener('keydown',function(e){
+  if(e.key==='Escape')document.querySelectorAll('.modal-overlay.open').forEach(function(ov){closeModal(ov.id.slice(2));});
+});
 </script>
 </body>
 </html>
