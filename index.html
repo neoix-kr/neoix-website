@@ -370,14 +370,22 @@ document.querySelectorAll('.reveal').forEach(function(el){obs.observe(el);});
 var lw=document.getElementById('logoWrapper');
 var heroEl=document.querySelector('.hero');
 var hsc=document.querySelector('.hero-sticky-container');
-// 모바일: 스크롤 애니메이션
+// 모바일: 스크롤로 NEO → IX 순서로 설명 표시
 window.addEventListener('scroll',function(){
   if(window.innerWidth>768)return;
   var max=hsc.offsetHeight-window.innerHeight;
   var progress=window.scrollY/max;
-  var active=progress>0.12;
-  lw.classList.toggle('split',active);
-  heroEl.classList.toggle('split-active',active);
+  if(progress<0.15){
+    lw.classList.remove('hover-neo','hover-ix');
+  }else if(progress<0.55){
+    lw.classList.add('hover-neo');
+    lw.classList.remove('hover-ix');
+  }else if(progress<0.9){
+    lw.classList.remove('hover-neo');
+    lw.classList.add('hover-ix');
+  }else{
+    lw.classList.remove('hover-neo','hover-ix');
+  }
 });
 // 데스크탑: 호버 인터랙션
 var neoZone=document.getElementById('neoZone');
@@ -390,24 +398,6 @@ if(neoZone&&ixZone){
     neoZone.addEventListener('mouseleave',function(){lw.classList.remove('hover-neo');});
     ixZone.addEventListener('mouseenter',function(){lw.classList.add('hover-ix');});
     ixZone.addEventListener('mouseleave',function(){lw.classList.remove('hover-ix');});
-  } else {
-    // 모바일: 탭 토글
-    neoZone.addEventListener('click',function(e){
-      e.stopPropagation();
-      var on=lw.classList.contains('hover-neo');
-      lw.classList.remove('hover-neo','hover-ix');
-      if(!on) lw.classList.add('hover-neo');
-    });
-    ixZone.addEventListener('click',function(e){
-      e.stopPropagation();
-      var on=lw.classList.contains('hover-ix');
-      lw.classList.remove('hover-neo','hover-ix');
-      if(!on) lw.classList.add('hover-ix');
-    });
-    // 로고 바깥 탭하면 닫기
-    document.addEventListener('click',function(){
-      lw.classList.remove('hover-neo','hover-ix');
-    });
   }
 }
 </script>
