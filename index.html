@@ -171,6 +171,38 @@ footer{background:#000;border-top:1px solid var(--border);padding:48px;display:f
   .step{border-right:none !important;border-bottom:1px solid var(--border);}
   .step:last-child{border-bottom:none;}
 }
+/* CEO PROFILE */
+.ceo-profile{display:grid;grid-template-columns:280px 1fr;gap:80px;margin-top:56px;align-items:start;}
+.ceo-photo{width:200px;height:200px;border-radius:50%;border:1px solid var(--border);background:#0a0a0a;display:flex;align-items:center;justify-content:center;margin-bottom:28px;overflow:hidden;}
+.ceo-photo-placeholder{display:flex;align-items:center;justify-content:center;opacity:.4;}
+.ceo-name{font-size:26px;font-weight:700;margin-bottom:6px;}
+.ceo-role{font-size:15px;font-weight:600;}
+.ceo-links{display:flex;flex-direction:column;gap:10px;margin-top:28px;}
+.ceo-link{font-size:13px;color:var(--muted);text-decoration:none;transition:color .2s;display:flex;align-items:center;gap:8px;}
+.ceo-link::before{content:'→';color:var(--ice);font-size:11px;}
+.ceo-link:hover{color:#fff;}
+.ceo-bio-title{font-size:clamp(24px,3vw,36px);font-weight:700;line-height:1.2;margin-bottom:32px;letter-spacing:-.02em;}
+.ceo-bio{font-size:16px;color:var(--muted);line-height:1.8;margin-bottom:20px;}
+.ceo-tags{display:flex;flex-wrap:wrap;gap:10px;margin-top:32px;}
+.ceo-tag{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ice);border:1px solid rgba(79,195,247,.2);padding:6px 14px;}
+
+/* PORTFOLIO */
+.portfolio-grid{display:flex;flex-direction:column;gap:2px;}
+.portfolio-card{background:#0a0a0a;border:1px solid var(--border);padding:40px;display:flex;gap:40px;align-items:flex-start;transition:border-color .3s;}
+.portfolio-card:hover{border-color:rgba(79,195,247,.2);}
+.portfolio-icon{flex-shrink:0;width:80px;height:80px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;background:#000;}
+.portfolio-platform{font-size:10px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--ice);margin-bottom:10px;}
+.portfolio-title{font-size:22px;font-weight:700;margin-bottom:12px;}
+.portfolio-desc{font-size:14px;color:var(--muted);line-height:1.75;max-width:560px;}
+.portfolio-tags{display:flex;gap:8px;margin-top:16px;}
+.ptag{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;background:linear-gradient(120deg,rgba(79,195,247,.12),rgba(206,147,216,.12));border:1px solid rgba(79,195,247,.2);color:var(--ice);padding:4px 12px;}
+
+@media(max-width:768px){
+  .ceo-profile{grid-template-columns:1fr;gap:40px;}
+  .ceo-photo{width:140px;height:140px;}
+  .portfolio-card{flex-direction:column;gap:24px;padding:28px;}
+}
+
 /* PAGE VIEWS */
 .page-view{display:none;}
 .page-view.active{display:block;animation:pgIn .38s ease;}
@@ -217,9 +249,9 @@ body.page-open #home-wrap{display:none;}
     <li><a href="#about">소개</a></li>
     <li><a href="#philosophy">철학</a></li>
     <li><a href="#services">서비스</a></li>
+    <li><a href="#portfolio">포트폴리오</a></li>
     <li><a href="#contact">연락하기</a></li>
   </ul>
-  <a href="#contact" class="nav-cta">프로젝트 시작하기</a>
   <div class="hamburger" id="hbg"><span></span><span></span><span></span></div>
 </nav>
 
@@ -227,6 +259,7 @@ body.page-open #home-wrap{display:none;}
   <a href="#about" onclick="cm()">소개</a>
   <a href="#philosophy" onclick="cm()">철학</a>
   <a href="#services" onclick="cm()">서비스</a>
+  <a href="#portfolio" onclick="cm()">포트폴리오</a>
   <a href="#contact" onclick="cm()">연락하기 →</a>
 </div>
 
@@ -352,7 +385,7 @@ body.page-open #home-wrap{display:none;}
       <p class="section-desc" style="margin:0 auto 48px;text-align:center;max-width:420px;">작은 아이디어도 괜찮습니다. 어디서부터 시작해야 할지 모르겠어도 괜찮습니다.</p>
       <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;">
         <a href="mailto:hello@neoix.io" class="btn-primary">이메일 보내기</a>
-        <a href="#" class="btn-secondary">포트폴리오 보기</a>
+        <a href="#portfolio" class="btn-secondary">포트폴리오 보기</a>
       </div>
     </div>
   </div>
@@ -371,13 +404,34 @@ body.page-open #home-wrap{display:none;}
 <!-- PAGE: 소개 -->
 <div id="view-about" class="page-view">
   <div class="page-content">
-    <p class="section-label">About Us</p>
-    <h2 class="section-title">우리는<br><span class="grad">이런 팀입니다</span></h2>
-    <div class="process-steps" style="margin-top:56px;">
-      <div class="step"><div class="step-num">01</div><h4>발견 &amp; 기획</h4><p>문제를 깊이 이해합니다. 사용자가 진짜 원하는 게 무엇인지, 어떤 가치를 만들어야 하는지.</p></div>
-      <div class="step"><div class="step-num">02</div><h4>디자인 &amp; 프로토타입</h4><p>아이디어를 시각화합니다. 빠른 프로토타입으로 방향을 검증하고 피드백을 반영합니다.</p></div>
-      <div class="step"><div class="step-num">03</div><h4>개발 &amp; 구현</h4><p>깔끔하고 확장 가능한 코드로 실제 제품을 만듭니다. 속도와 품질, 두 가지를 모두 잡습니다.</p></div>
-      <div class="step"><div class="step-num">04</div><h4>출시 &amp; 성장</h4><p>출시가 끝이 아닙니다. 데이터를 보며 지속적으로 개선하고 함께 성장합니다.</p></div>
+    <p class="section-label">CEO</p>
+    <div class="ceo-profile">
+      <div class="ceo-left">
+        <div class="ceo-photo">
+          <div class="ceo-photo-placeholder">
+            <svg width="64" height="64" viewBox="0 0 64 64" fill="none"><circle cx="32" cy="24" r="14" stroke="#4FC3F7" stroke-width="1.5"/><path d="M8 56C8 44 18 36 32 36C46 36 56 44 56 56" stroke="#4FC3F7" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </div>
+        </div>
+        <h2 class="ceo-name">이름</h2>
+        <p class="ceo-role"><span class="grad">CEO &amp; Founder</span></p>
+        <p class="ceo-role" style="font-size:13px;margin-top:6px;color:var(--muted);">NEOIX</p>
+        <div class="ceo-links">
+          <a href="#" class="ceo-link">Instagram</a>
+          <a href="#" class="ceo-link">LinkedIn</a>
+          <a href="#" class="ceo-link">GitHub</a>
+        </div>
+      </div>
+      <div class="ceo-right">
+        <h3 class="ceo-bio-title">안녕하세요,<br><span class="grad">NEOIX를 이끌고 있습니다.</span></h3>
+        <p class="ceo-bio">아이디어와 실행으로 세상을 바꿀 수 있다고 믿습니다. 학력도 스펙도 아닌, 오직 무엇을 만들어냈는지로 평가받는 세상을 만들어가고 있습니다.</p>
+        <p class="ceo-bio">NEOIX는 단순한 개발사가 아닙니다. 새로운 세대의 아이디어를 현실로 만드는 파트너입니다. 함께 더 나은 세상을 만들어갈 사람들을 기다립니다.</p>
+        <div class="ceo-tags">
+          <span class="ceo-tag">Web &amp; App Development</span>
+          <span class="ceo-tag">Product Design</span>
+          <span class="ceo-tag">Growth Strategy</span>
+          <span class="ceo-tag">Startup</span>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -418,6 +472,43 @@ body.page-open #home-wrap{display:none;}
   </div>
 </div>
 
+<!-- PAGE: 포트폴리오 -->
+<div id="view-portfolio" class="page-view">
+  <div class="page-content">
+    <p class="section-label">Our Work</p>
+    <h2 class="section-title">우리가 만든<br><span class="grad">제품들</span></h2>
+    <p class="section-desc" style="margin-top:20px;">아이디어에서 출발해 실제 상용화된 앱과 서비스들입니다.</p>
+    <div class="portfolio-grid" style="margin-top:56px;">
+      <div class="portfolio-card">
+        <div class="portfolio-icon">
+          <svg width="48" height="48" viewBox="0 0 48 48" fill="none"><rect x="6" y="6" width="36" height="36" rx="10" stroke="#4FC3F7" stroke-width="1.5"/><path d="M16 24h16M24 16v16" stroke="#CE93D8" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </div>
+        <div class="portfolio-info">
+          <div class="portfolio-platform">iOS · Android</div>
+          <h3 class="portfolio-title">앱 이름</h3>
+          <p class="portfolio-desc">앱에 대한 간단한 설명을 여기에 작성합니다. 어떤 문제를 해결했는지, 어떤 사람들이 쓰는지 한두 문장으로 담습니다.</p>
+          <div class="portfolio-tags">
+            <span class="ptag">출시</span>
+          </div>
+        </div>
+      </div>
+      <div class="portfolio-card">
+        <div class="portfolio-icon">
+          <svg width="48" height="48" viewBox="0 0 48 48" fill="none"><rect x="6" y="6" width="36" height="36" rx="10" stroke="#9FA8DA" stroke-width="1.5"/><circle cx="24" cy="24" r="8" stroke="#4FC3F7" stroke-width="1.5"/><path d="M24 16v-4M24 36v-4M16 24h-4M36 24h-4" stroke="#CE93D8" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </div>
+        <div class="portfolio-info">
+          <div class="portfolio-platform">Web</div>
+          <h3 class="portfolio-title">서비스 이름</h3>
+          <p class="portfolio-desc">서비스에 대한 간단한 설명을 여기에 작성합니다. 어떤 문제를 해결했는지, 어떤 사람들이 쓰는지 한두 문장으로 담습니다.</p>
+          <div class="portfolio-tags">
+            <span class="ptag">출시</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- PAGE: 연락하기 -->
 <div id="view-contact" class="page-view">
   <div class="cta-wrap" style="min-height:calc(100vh - 72px);display:flex;align-items:center;">
@@ -427,14 +518,14 @@ body.page-open #home-wrap{display:none;}
       <p class="section-desc" style="margin:0 auto 48px;text-align:center;max-width:420px;">작은 아이디어도 괜찮습니다. 어디서부터 시작해야 할지 모르겠어도 괜찮습니다.</p>
       <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;">
         <a href="mailto:hello@neoix.io" class="btn-primary">이메일 보내기</a>
-        <a href="#" class="btn-secondary">포트폴리오 보기</a>
+        <a href="#portfolio" class="btn-secondary">포트폴리오 보기</a>
       </div>
     </div>
   </div>
 </div>
 
 <script>
-var pages=['about','philosophy','services','contact'];
+var pages=['about','philosophy','services','portfolio','contact'];
 function showPage(id){
   document.querySelectorAll('.page-view').forEach(function(v){v.classList.remove('active');});
   if(id&&pages.indexOf(id)>-1){
