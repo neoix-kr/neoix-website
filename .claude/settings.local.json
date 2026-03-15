@@ -43,7 +43,8 @@
       "Bash(NETLIFY_AUTH_TOKEN=nfp_UxRWFZcnSazuXCZDQpBdPRms4Ga8VFCXf353 NETLIFY_SITE_ID=8e1aebbf-dce6-41fd-9080-57ab8c531ec0 npx netlify-cli sites:list)",
       "Bash(curl -s -X POST \"https://api.netlify.com/api/v1/sites/8e1aebbf-dce6-41fd-9080-57ab8c531ec0/ssl\" -H \"Authorization: Bearer nfp_UxRWFZcnSazuXCZDQpBdPRms4Ga8VFCXf353\")",
       "Bash(mkdir -p /Users/junggyeom/Desktop/문자사이트/.claude)",
-      "Read(//Users/junggyeom/Desktop/문자사이트/.claude/**)"
+      "Read(//Users/junggyeom/Desktop/문자사이트/.claude/**)",
+      "Bash(python3:*)"
     ]
   }
 }
