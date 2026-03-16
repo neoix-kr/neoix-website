@@ -103,6 +103,46 @@ footer{background:#000;border-top:1px solid var(--border);padding:48px;display:f
 .reveal.visible{opacity:1;transform:translateY(0);}
 .d1{transition-delay:.1s;}.d2{transition-delay:.2s;}.d3{transition-delay:.3s;}
 
+/* CURSOR GLOW */
+.cursor-glow{position:fixed;width:320px;height:320px;border-radius:50%;pointer-events:none;z-index:9999;background:radial-gradient(circle,rgba(79,195,247,.08) 0%,rgba(206,147,216,.04) 40%,transparent 70%);transform:translate(-50%,-50%);transition:opacity .3s ease;opacity:0;mix-blend-mode:screen;will-change:transform;}
+.cursor-glow.active{opacity:1;}
+
+/* MAGNETIC BUTTON */
+.magnetic-btn{transition:transform .3s cubic-bezier(.23,1,.32,1);}
+.magnetic-btn .btn-text{display:inline-block;transition:transform .3s cubic-bezier(.23,1,.32,1);}
+
+/* SERVICE CARD HOVER ENHANCED */
+.service-card{transform-style:preserve-3d;will-change:transform;}
+.service-card .service-icon{transition:transform .4s cubic-bezier(.23,1,.32,1),opacity .3s;}
+.service-card:hover .service-icon{transform:translateY(-4px) scale(1.1);opacity:1;}
+.service-card .service-title{transition:color .3s;}
+.service-card:hover .service-title{color:var(--ice);}
+.service-card .service-num{transition:opacity .3s;}
+.service-card:hover .service-num{opacity:1;}
+
+/* PORTFOLIO CARD HOVER ENHANCED */
+.portfolio-card{transform-style:preserve-3d;will-change:transform;}
+.portfolio-card .portfolio-icon{transition:transform .4s cubic-bezier(.23,1,.32,1),border-color .3s;}
+.portfolio-card:hover .portfolio-icon{transform:scale(1.05);border-color:rgba(79,195,247,.3);}
+.portfolio-card .portfolio-title{transition:color .3s;}
+.portfolio-card:hover .portfolio-title{color:var(--ice);}
+
+/* NAV LINK HOVER EFFECT */
+.nav-links a{position:relative;}
+.nav-links a::after{content:'';position:absolute;bottom:-4px;left:0;width:0;height:1px;background:linear-gradient(90deg,var(--ice),var(--lav));transition:width .3s cubic-bezier(.23,1,.32,1);}
+.nav-links a:hover::after{width:100%;}
+
+/* PROCESS STEP HOVER */
+.step{transition:background .3s,transform .2s;}
+.step:hover{background:rgba(79,195,247,.02);transform:translateY(-2px);}
+.step:hover .step-num{-webkit-text-fill-color:transparent;background:linear-gradient(120deg,rgba(79,195,247,.5),rgba(206,147,216,.5));-webkit-background-clip:text;background-clip:text;}
+
+/* PHIL ITEM HOVER */
+.phil-item{transition:transform .3s cubic-bezier(.23,1,.32,1);}
+.phil-item:hover{transform:translateX(8px);}
+.phil-item:hover h4{color:var(--ice);}
+.phil-item h4{transition:color .3s;}
+
 /* LOGO */
 .logo-split-wrapper{position:relative;display:inline-flex;align-items:center;justify-content:center;user-select:none;}
 .logo-split-wrapper>svg{overflow:visible;}
@@ -547,6 +587,12 @@ body.page-open #home-wrap{display:none;}
   </div>
 </div>
 
+<!-- Cursor Glow -->
+<div class="cursor-glow" id="cursorGlow"></div>
+
+<!-- vanilla-tilt.js CDN -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.1/vanilla-tilt.min.js"></script>
+
 <script>
 var pages=['about','philosophy','services','portfolio','contact'];
 function showPage(id){
@@ -609,6 +655,69 @@ if(neoZone&&ixZone){
     ixZone.addEventListener('mouseleave',function(){lw.classList.remove('hover-ix');});
   }
 }
+
+/* ─── HOVER EFFECTS ─── */
+(function(){
+  var isTouch2=('ontouchstart' in window)||navigator.maxTouchPoints>0;
+  if(isTouch2) return; // 모바일에서는 비활성화
+
+  /* 1. Cursor Glow */
+  var glow=document.getElementById('cursorGlow');
+  var mx=0,my=0,gx=0,gy=0;
+  document.addEventListener('mousemove',function(e){
+    mx=e.clientX; my=e.clientY;
+    if(!glow.classList.contains('active')) glow.classList.add('active');
+  });
+  document.addEventListener('mouseleave',function(){
+    glow.classList.remove('active');
+  });
+  (function glowTick(){
+    gx+=(mx-gx)*.12; gy+=(my-gy)*.12;
+    glow.style.left=gx+'px'; glow.style.top=gy+'px';
+    requestAnimationFrame(glowTick);
+  })();
+
+  /* 2. Vanilla Tilt on cards */
+  if(typeof VanillaTilt!=='undefined'){
+    // 서비스 카드
+    VanillaTilt.init(document.querySelectorAll('.service-card'),{
+      max:8, speed:400, glare:true, 'max-glare':.08, scale:1.02
+    });
+    // 포트폴리오 카드
+    VanillaTilt.init(document.querySelectorAll('.portfolio-card'),{
+      max:5, speed:400, glare:true, 'max-glare':.06, scale:1.01
+    });
+    // 프로세스 스텝
+    VanillaTilt.init(document.querySelectorAll('.step'),{
+      max:6, speed:400, glare:true, 'max-glare':.05
+    });
+  }
+
+  /* 3. Magnetic Button Effect */
+  function magnetize(el,strength){
+    strength=strength||0.3;
+    el.classList.add('magnetic-btn');
+    el.addEventListener('mousemove',function(e){
+      var rect=el.getBoundingClientRect();
+      var cx=rect.left+rect.width/2;
+      var cy=rect.top+rect.height/2;
+      var dx=(e.clientX-cx)*strength;
+      var dy=(e.clientY-cy)*strength;
+      el.style.transform='translate('+dx+'px,'+dy+'px)';
+    });
+    el.addEventListener('mouseleave',function(){
+      el.style.transform='translate(0,0)';
+    });
+  }
+  // CTA 버튼들
+  document.querySelectorAll('.btn-primary,.btn-secondary,.nav-cta').forEach(function(btn){
+    magnetize(btn,0.25);
+  });
+  // 네비게이션 링크
+  document.querySelectorAll('.nav-links a').forEach(function(a){
+    magnetize(a,0.15);
+  });
+})();
 </script>
 </body>
 </html>
