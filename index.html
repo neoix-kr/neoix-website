@@ -237,27 +237,20 @@ footer{background:#000;border-top:1px solid var(--border);padding:48px;display:f
 .ceo-tag{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ice);border:1px solid rgba(79,195,247,.2);padding:6px 14px;}
 
 /* PORTFOLIO */
-.portfolio-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
-.portfolio-card{background:linear-gradient(160deg,#0d0d0d 0%,#111 100%);border:1px solid var(--border);border-radius:16px;padding:0;display:flex;flex-direction:column;transition:border-color .4s,transform .4s cubic-bezier(.23,1,.32,1),box-shadow .4s;overflow:hidden;position:relative;}
+.portfolio-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+.portfolio-card{background:linear-gradient(160deg,#0d0d0d 0%,#111 100%);border:1px solid var(--border);border-radius:16px;padding:32px 28px 28px;display:flex;flex-direction:column;align-items:center;text-align:center;transition:border-color .4s,transform .4s cubic-bezier(.23,1,.32,1),box-shadow .4s;position:relative;}
 .portfolio-card:hover{border-color:rgba(79,195,247,.25);transform:translateY(-4px);box-shadow:0 20px 60px rgba(0,0,0,.4),0 0 40px rgba(79,195,247,.06);}
-.portfolio-card.featured{grid-column:1/-1;}
-.portfolio-preview{width:100%;aspect-ratio:16/9;overflow:hidden;position:relative;background:#080808;}
-.portfolio-preview img{width:100%;height:100%;object-fit:cover;transition:transform .6s cubic-bezier(.23,1,.32,1),filter .4s;filter:brightness(.85);}
-.portfolio-card:hover .portfolio-preview img{transform:scale(1.03);filter:brightness(1);}
-.portfolio-preview-overlay{position:absolute;inset:0;background:linear-gradient(180deg,transparent 50%,rgba(0,0,0,.7) 100%);pointer-events:none;}
-.portfolio-body{padding:28px 28px 24px;}
-.portfolio-header{display:flex;align-items:center;gap:14px;margin-bottom:16px;}
-.portfolio-logo{width:40px;height:40px;border-radius:10px;background:#1a1a1a;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;}
-.portfolio-logo img{width:24px;height:24px;object-fit:contain;}
-.portfolio-logo svg{width:22px;height:22px;}
-.portfolio-meta{display:flex;flex-direction:column;gap:2px;}
-.portfolio-platform{font-size:10px;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--ice);}
-.portfolio-title{font-size:20px;font-weight:700;line-height:1.3;}
+.portfolio-logo{width:64px;height:64px;border-radius:16px;background:#1a1a1a;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;margin-bottom:20px;transition:border-color .4s,box-shadow .4s;}
+.portfolio-card:hover .portfolio-logo{border-color:rgba(79,195,247,.3);box-shadow:0 0 24px rgba(79,195,247,.1);}
+.portfolio-logo img{width:36px;height:36px;object-fit:contain;}
+.portfolio-logo svg{width:30px;height:30px;}
+.portfolio-platform{font-size:10px;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--ice);margin-bottom:6px;}
+.portfolio-title{font-size:18px;font-weight:700;line-height:1.3;margin-bottom:10px;}
 .portfolio-desc{font-size:13px;color:var(--muted);line-height:1.75;margin-bottom:16px;}
-.portfolio-tags{display:flex;flex-wrap:wrap;gap:6px;}
+.portfolio-tags{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;}
 .ptag{font-size:9px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);color:var(--muted);padding:4px 10px;border-radius:6px;transition:border-color .3s,color .3s;}
 .portfolio-card:hover .ptag{border-color:rgba(79,195,247,.2);color:var(--ice);}
-.portfolio-visit{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:16px;transition:color .3s;}
+.portfolio-visit{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:auto;padding-top:16px;transition:color .3s;}
 .portfolio-card:hover .portfolio-visit{color:var(--ice);}
 .portfolio-visit svg{transition:transform .3s;}.portfolio-card:hover .portfolio-visit svg{transform:translateX(3px);}
 
@@ -271,13 +264,11 @@ footer{background:#000;border-top:1px solid var(--border);padding:48px;display:f
   .ceo-tags{margin-top:24px;gap:8px;}
   .ceo-tag{font-size:10px;padding:5px 10px;}
   .portfolio-grid{grid-template-columns:1fr;gap:12px;}
-  .portfolio-card.featured{grid-column:auto;}
-  .portfolio-body{padding:20px 20px 18px;}
-  .portfolio-title{font-size:17px;}
+  .portfolio-card{padding:24px 20px 20px;}
+  .portfolio-logo{width:52px;height:52px;border-radius:12px;margin-bottom:16px;}
+  .portfolio-logo img{width:30px;height:30px;}
+  .portfolio-title{font-size:16px;}
   .portfolio-desc{font-size:12px;margin-bottom:12px;}
-  .portfolio-logo{width:34px;height:34px;border-radius:8px;}
-  .portfolio-logo img{width:20px;height:20px;}
-  .portfolio-header{gap:10px;margin-bottom:12px;}
 }
 
 /* PAGE VIEWS */
@@ -560,73 +551,44 @@ body.page-open #home-wrap{display:none;}
     <p class="section-desc" style="margin-top:20px;">아이디어에서 출발해 실제 상용화된 앱과 서비스들입니다.</p>
     <div class="portfolio-grid" style="margin-top:56px;">
       <!-- 바른문자 (featured — 전체 폭) -->
-      <a href="https://barunsms.com/" target="_blank" rel="noopener" class="portfolio-card featured" style="text-decoration:none;color:inherit;cursor:pointer;">
-        <div class="portfolio-preview">
-          <img src="https://api.microlink.io/?url=https://barunsms.com&screenshot=true&meta=false&embed=screenshot.url&viewport.width=1280&viewport.height=720&viewport.deviceScaleFactor=1" alt="바른문자 스크린샷" loading="lazy">
-          <div class="portfolio-preview-overlay"></div>
+      <!-- 바른문자 -->
+      <a href="https://barunsms.com/" target="_blank" rel="noopener" class="portfolio-card" style="text-decoration:none;color:inherit;cursor:pointer;">
+        <div class="portfolio-logo">
+          <img src="https://barunsms.com/icon.svg" alt="바른문자 로고">
         </div>
-        <div class="portfolio-body">
-          <div class="portfolio-header">
-            <div class="portfolio-logo">
-              <img src="https://barunsms.com/icon.svg" alt="바른문자 로고">
-            </div>
-            <div class="portfolio-meta">
-              <div class="portfolio-platform">Web · SaaS</div>
-              <h3 class="portfolio-title">바른문자</h3>
-            </div>
-          </div>
-          <p class="portfolio-desc">SMS, LMS, MMS, RCS를 지원하는 대량 문자 발송 플랫폼. 선거문자, 광고문자, 업무문자 발송에 특화된 서비스입니다.</p>
-          <div class="portfolio-tags">
-            <span class="ptag">출시</span><span class="ptag">Next.js</span><span class="ptag">AWS</span>
-          </div>
-          <div class="portfolio-visit">사이트 방문 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7"/><path d="M7 7h10v10"/></svg></div>
+        <div class="portfolio-platform">Web · SaaS</div>
+        <h3 class="portfolio-title">바른문자</h3>
+        <p class="portfolio-desc">SMS, LMS, MMS, RCS를 지원하는 대량 문자 발송 플랫폼. 선거문자, 광고문자, 업무문자 발송에 특화된 서비스입니다.</p>
+        <div class="portfolio-tags">
+          <span class="ptag">출시</span><span class="ptag">Next.js</span><span class="ptag">AWS</span>
         </div>
+        <div class="portfolio-visit">사이트 방문 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7"/><path d="M7 7h10v10"/></svg></div>
       </a>
       <!-- 고양시정 -->
       <a href="https://goyangjung.kr/" target="_blank" rel="noopener" class="portfolio-card" style="text-decoration:none;color:inherit;cursor:pointer;">
-        <div class="portfolio-preview">
-          <img src="https://goyangjung.kr/images/og-image.png" alt="고양시정 스크린샷" loading="lazy">
-          <div class="portfolio-preview-overlay"></div>
+        <div class="portfolio-logo">
+          <img src="https://goyangjung.kr/images/logo-cube.png" alt="고양시정 로고">
         </div>
-        <div class="portfolio-body">
-          <div class="portfolio-header">
-            <div class="portfolio-logo">
-              <img src="https://goyangjung.kr/images/logo-cube.png" alt="고양시정 로고">
-            </div>
-            <div class="portfolio-meta">
-              <div class="portfolio-platform">Web</div>
-              <h3 class="portfolio-title">고양시정 당원협의회</h3>
-            </div>
-          </div>
-          <p class="portfolio-desc">국민의힘 고양시정 당원협의회 공식 홈페이지. 민원 접수, 예비후보 소개, 활동 소식 등을 제공합니다.</p>
-          <div class="portfolio-tags">
-            <span class="ptag">출시</span><span class="ptag">Next.js</span>
-          </div>
-          <div class="portfolio-visit">사이트 방문 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7"/><path d="M7 7h10v10"/></svg></div>
+        <div class="portfolio-platform">Web</div>
+        <h3 class="portfolio-title">고양시정 당원협의회</h3>
+        <p class="portfolio-desc">국민의힘 고양시정 당원협의회 공식 홈페이지. 민원 접수, 예비후보 소개, 활동 소식 등을 제공합니다.</p>
+        <div class="portfolio-tags">
+          <span class="ptag">출시</span><span class="ptag">Next.js</span>
         </div>
+        <div class="portfolio-visit">사이트 방문 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7"/><path d="M7 7h10v10"/></svg></div>
       </a>
       <!-- 폴리랩 -->
       <a href="https://polyx.kr/lab" target="_blank" rel="noopener" class="portfolio-card" style="text-decoration:none;color:inherit;cursor:pointer;">
-        <div class="portfolio-preview">
-          <img src="https://api.microlink.io/?url=https://polyx.kr/lab&screenshot=true&meta=false&embed=screenshot.url&viewport.width=1280&viewport.height=720&viewport.deviceScaleFactor=1" alt="폴리랩 스크린샷" loading="lazy">
-          <div class="portfolio-preview-overlay"></div>
+        <div class="portfolio-logo">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#4FC3F7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2"/></svg>
         </div>
-        <div class="portfolio-body">
-          <div class="portfolio-header">
-            <div class="portfolio-logo">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#4FC3F7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2"/></svg>
-            </div>
-            <div class="portfolio-meta">
-              <div class="portfolio-platform">Web · Data</div>
-              <h3 class="portfolio-title">폴리랩</h3>
-            </div>
-          </div>
-          <p class="portfolio-desc">데이터 기반 선거 전략 분석 플랫폼. 여론조사 분석, 비례대표 계산기, 유동인구 지도 등의 분석 도구를 제공합니다.</p>
-          <div class="portfolio-tags">
-            <span class="ptag">출시</span><span class="ptag">Next.js</span><span class="ptag">데이터</span>
-          </div>
-          <div class="portfolio-visit">사이트 방문 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7"/><path d="M7 7h10v10"/></svg></div>
+        <div class="portfolio-platform">Web · Data</div>
+        <h3 class="portfolio-title">폴리랩</h3>
+        <p class="portfolio-desc">데이터 기반 선거 전략 분석 플랫폼. 여론조사 분석, 비례대표 계산기, 유동인구 지도 등의 분석 도구를 제공합니다.</p>
+        <div class="portfolio-tags">
+          <span class="ptag">출시</span><span class="ptag">Next.js</span><span class="ptag">데이터</span>
         </div>
+        <div class="portfolio-visit">사이트 방문 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7"/><path d="M7 7h10v10"/></svg></div>
       </a>
     </div>
   </div>
