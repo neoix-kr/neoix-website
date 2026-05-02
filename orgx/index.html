@@ -1,0 +1,2954 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>OrgX — 조직 협업 보드</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" />
+<link
+  href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"
+  rel="stylesheet"
+/>
+<script>
+  window.ORGX_CONFIG = {
+    SUPABASE_URL: "https://nroddjekdjwnwguwkudl.supabase.co",
+    SUPABASE_ANON_KEY: "sb_publishable_Uygr7NmVn1wmqopNrb4FRw_CRWw7Xeg",
+    STORAGE_BUCKET: "orgx-files"
+  };
+</script>
+<script type="module">
+  import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+  window.supabase = createClient(window.ORGX_CONFIG.SUPABASE_URL, window.ORGX_CONFIG.SUPABASE_ANON_KEY);
+  window.dispatchEvent(new Event("supabase-ready"));
+</script>
+<style>
+  :root {
+    --bg: #f5f4f0;
+    --panel: #ffffff;
+    --panel-2: #efeee9;
+    --panel-3: #e6e4dd;
+    --border: #e6e4dd;
+    --border-strong: #d4d2ca;
+    --text: #18181b;
+    --text-2: #3f3f46;
+    --muted: #71717a;
+    --muted-2: #a1a1aa;
+    --primary: #18181b;
+    --primary-hover: #000000;
+    --primary-soft: #efeee9;
+    --primary-soft-2: #e6e4dd;
+    --accent: #d94e2a;
+    --accent-hover: #b9421f;
+    --accent-soft: #fbe9e3;
+    --accent-soft-2: #f5d4c6;
+    --success: #15803d;
+    --success-soft: #ecfdf5;
+    --warning: #b45309;
+    --warning-soft: #fef3c7;
+    --warning-strong: #92400e;
+    --danger: #b91c1c;
+    --danger-soft: #fee2e2;
+    --info: #0369a1;
+    --info-soft: #e0f2fe;
+    --shadow-sm: 0 1px 0 rgba(15, 18, 28, 0.04);
+    --shadow-md: 0 1px 0 rgba(15, 18, 28, 0.04), 0 2px 6px rgba(15, 18, 28, 0.04);
+    --shadow-lg: 0 4px 16px rgba(15, 18, 28, 0.08), 0 16px 32px rgba(15, 18, 28, 0.06);
+    --radius-sm: 4px;
+    --radius: 6px;
+    --radius-lg: 8px;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    margin: 0;
+    font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont,
+      "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif;
+    background: var(--bg); color: var(--text);
+    font-size: 14px; line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    letter-spacing: -0.01em;
+  }
+  button { font-family: inherit; cursor: pointer; }
+  input, textarea, select { font-family: inherit; font-size: 14px; color: var(--text); }
+  ::selection { background: var(--accent-soft); color: var(--accent); }
+
+  .app { display: grid; grid-template-columns: 280px 1fr; height: 100vh; }
+  .hidden { display: none !important; }
+
+  /* ───── Auth screen ───── */
+  .gate {
+    position: fixed; inset: 0;
+    background: var(--bg);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 500;
+  }
+  .gate-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 36px 32px;
+    width: 100%; max-width: 380px;
+    box-shadow: var(--shadow-md);
+  }
+  .gate-card .logo-row {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 24px;
+  }
+  .gate-card .logo-box {
+    width: 32px; height: 32px;
+    background: var(--text); color: #fff;
+    border-radius: 5px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 16px;
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    position: relative;
+  }
+  .gate-card .logo-box::after {
+    content: ""; position: absolute; right: -3px; bottom: -3px;
+    width: 10px; height: 10px;
+    background: var(--accent); border-radius: 2px;
+    border: 2px solid #fff;
+  }
+  .gate-card .logo-text {
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    font-weight: 800; font-size: 18px;
+    letter-spacing: -0.02em;
+  }
+  .gate-card .logo-text .x { color: var(--accent); }
+  .gate-card h1 {
+    font-size: 20px; font-weight: 700;
+    margin: 0 0 6px;
+    letter-spacing: -0.02em;
+  }
+  .gate-card .sub {
+    color: var(--muted); font-size: 13px;
+    margin-bottom: 20px;
+  }
+  .gate-card label {
+    display: block; font-weight: 600;
+    font-size: 12px; color: var(--text-2);
+    margin-bottom: 6px;
+  }
+  .gate-card .input {
+    width: 100%; padding: 10px 12px;
+    border: 1px solid var(--border-strong);
+    border-radius: 6px; background: #fff;
+    outline: none; transition: all 0.12s;
+    font-size: 14px;
+  }
+  .gate-card .input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(217, 78, 42, 0.12);
+  }
+  .gate-card .submit {
+    width: 100%; padding: 10px 14px;
+    margin-top: 14px;
+    background: var(--text); color: #fff;
+    border: none; border-radius: 6px;
+    font-weight: 600; font-size: 14px;
+    transition: background 0.12s;
+  }
+  .gate-card .submit:hover { background: #000; }
+  .gate-card .submit:disabled {
+    opacity: 0.6; cursor: not-allowed;
+  }
+  .gate-card .helper {
+    margin-top: 14px; font-size: 12.5px;
+    color: var(--muted); text-align: center;
+  }
+  .gate-card .helper a { color: var(--accent); text-decoration: none; cursor: pointer; }
+  .gate-card .success-banner {
+    background: var(--success-soft);
+    border: 1px solid #86efac;
+    color: var(--success);
+    padding: 12px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    margin-bottom: 14px;
+  }
+  .gate-card .error-banner {
+    background: var(--danger-soft);
+    border: 1px solid #fca5a5;
+    color: var(--danger);
+    padding: 10px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    margin-bottom: 14px;
+  }
+  .gate-card .label-row {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 6px;
+  }
+  .gate-card .label-row .signout {
+    font-size: 11.5px; color: var(--muted);
+    background: transparent; border: none;
+    cursor: pointer; padding: 0;
+    text-decoration: underline;
+  }
+
+  /* ───── Sidebar ───── */
+  .sidebar {
+    background: var(--panel);
+    border-right: 1px solid var(--border);
+    display: flex; flex-direction: column;
+    min-height: 0;
+  }
+  .brand {
+    padding: 16px 18px 12px;
+    display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  }
+  .brand-name {
+    display: flex; align-items: center; gap: 10px;
+    font-weight: 700; font-size: 14.5px; letter-spacing: -0.02em;
+  }
+  .brand-clickable {
+    background: transparent; border: none;
+    padding: 6px 8px; margin: -6px -8px;
+    border-radius: 8px; cursor: pointer;
+    transition: background 0.12s;
+    text-align: left; min-width: 0; flex: 1;
+  }
+  .brand-clickable:hover { background: var(--panel-2); }
+  .brand-text { min-width: 0; flex: 1; }
+  .brand-app {
+    font-size: 15px; font-weight: 800;
+    line-height: 1.2; letter-spacing: -0.03em;
+    color: var(--text);
+    font-family: ui-monospace, SFMono-Regular, monospace;
+  }
+  .brand-app .x { color: var(--accent); }
+  .brand-org {
+    font-size: 11px; color: var(--muted);
+    font-weight: 500;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .brand-logo {
+    width: 26px; height: 26px;
+    border-radius: 5px;
+    background: var(--text);
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-weight: 800; font-size: 14px;
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    position: relative;
+  }
+  .brand-logo::after {
+    content: ""; position: absolute;
+    right: -2px; bottom: -2px;
+    width: 8px; height: 8px;
+    background: var(--accent);
+    border-radius: 2px;
+    border: 2px solid var(--panel);
+  }
+  .brand-actions { display: flex; gap: 2px; }
+  .icon-btn {
+    width: 28px; height: 28px;
+    border-radius: 6px; border: 1px solid transparent;
+    background: transparent; color: var(--muted);
+    display: inline-flex; align-items: center; justify-content: center;
+    transition: all 0.12s; padding: 0;
+  }
+  .icon-btn:hover { background: var(--panel-2); color: var(--text); }
+  .icon-btn svg { width: 14px; height: 14px; }
+
+  .sidebar-cta { padding: 0 12px 10px; }
+  .new-task-btn {
+    width: 100%; padding: 8px 12px;
+    background: var(--text); color: #fff;
+    border: none; border-radius: 8px;
+    font-weight: 600; font-size: 13px;
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    transition: all 0.12s;
+  }
+  .new-task-btn:hover { background: #1f2330; }
+  .new-task-btn svg { width: 13px; height: 13px; }
+
+  .sidebar-section-label {
+    padding: 10px 18px 6px;
+    font-size: 11px; font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.06em;
+    display: flex; justify-content: space-between;
+  }
+  .task-count-badge {
+    background: var(--panel-2); color: var(--text-2);
+    padding: 1px 7px; border-radius: 10px;
+    font-size: 11px; font-weight: 600; letter-spacing: 0;
+  }
+  .task-list {
+    flex: 1; overflow-y: auto;
+    padding: 2px 8px 16px;
+  }
+  .task-list::-webkit-scrollbar { width: 8px; }
+  .task-list::-webkit-scrollbar-thumb { background: #e8e8eb; border-radius: 4px; }
+  .task-list::-webkit-scrollbar-track { background: transparent; }
+
+  .user-bar {
+    border-top: 1px solid var(--border);
+    padding: 10px 12px;
+    flex-shrink: 0;
+  }
+  .user-bar-btn {
+    width: 100%; background: transparent; border: none;
+    padding: 8px 8px;
+    display: flex; align-items: center; gap: 10px;
+    cursor: pointer; border-radius: 8px;
+    transition: background 0.12s; text-align: left;
+  }
+  .user-bar-btn:hover { background: var(--panel-2); }
+  .user-bar-info { flex: 1; min-width: 0; }
+  .user-bar-name {
+    font-weight: 700; font-size: 13px;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .user-bar-role { font-size: 11px; color: var(--muted); margin-top: -1px; }
+  .user-bar-arrow { color: var(--muted); }
+  .user-bar-arrow svg { width: 14px; height: 14px; }
+
+  .role-pill {
+    display: inline-flex; align-items: center; gap: 3px;
+    padding: 1px 6px; border-radius: 999px;
+    font-size: 10.5px; font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+  .role-pill.ceo {
+    background: linear-gradient(135deg, #fde68a, #fbbf24);
+    color: #78350f;
+    box-shadow: inset 0 0 0 1px rgba(180, 83, 9, 0.18);
+  }
+  .role-pill.ceo::before {
+    content: "♛"; font-size: 11px; line-height: 1;
+    margin-right: 1px;
+  }
+  .role-pill.admin { background: #fef3c7; color: var(--warning-strong); }
+  .role-pill.worker { background: var(--info-soft); color: #0369a1; }
+
+  .task-card {
+    background: #fff;
+    border: 1px solid var(--border); border-radius: 10px;
+    padding: 10px 11px 9px;
+    margin-bottom: 5px;
+    cursor: pointer;
+    transition: all 0.12s; position: relative;
+  }
+  .task-card:hover { border-color: var(--border-strong); background: #fbfbfc; }
+  .task-card.active {
+    border-color: var(--accent); background: #fff;
+    box-shadow: 0 0 0 3px rgba(217, 78, 42, 0.08);
+  }
+  .task-card-row { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+  .task-card-title {
+    font-weight: 600; font-size: 13px;
+    margin: 6px 0 8px; line-height: 1.4;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+    overflow: hidden; word-break: break-word;
+  }
+  .progress-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .progress-track { flex: 1; height: 4px; background: var(--panel-2); border-radius: 999px; overflow: hidden; }
+  .progress-fill {
+    height: 100%; background: var(--text);
+    border-radius: 999px;
+    transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .progress-fill.done { background: var(--success); }
+  .progress-fill.zero { background: #d4d4d8; }
+  .progress-text {
+    font-size: 11px; font-weight: 700;
+    color: var(--text-2); font-variant-numeric: tabular-nums;
+    min-width: 28px; text-align: right;
+  }
+  .task-card-meta {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 11px; color: var(--muted); font-weight: 500;
+  }
+  .task-card-meta .meta-item { display: inline-flex; align-items: center; gap: 3px; }
+  .task-card-meta svg { width: 11px; height: 11px; }
+
+  .due-badge {
+    display: inline-flex; align-items: center; gap: 3px;
+    padding: 1px 6px; border-radius: 4px;
+    background: var(--panel-2); color: var(--text-2);
+    font-weight: 600; font-size: 10.5px;
+  }
+  .due-badge.urgent { background: var(--danger-soft); color: var(--danger); }
+  .due-badge.soon { background: var(--warning-soft); color: var(--warning); }
+  .due-badge.over { background: var(--danger); color: #fff; }
+  .due-badge svg { width: 10px; height: 10px; }
+
+  .status-pill {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 2px 8px 2px 7px; border-radius: 999px;
+    font-size: 11px; font-weight: 600;
+    border: 1px solid transparent; line-height: 1.3;
+  }
+  .status-pill::before {
+    content: ""; width: 6px; height: 6px;
+    border-radius: 50%; background: currentColor; opacity: 0.7;
+  }
+  .status-pill.notstarted { background: var(--panel-2); color: var(--text-2); border-color: var(--border-strong); }
+  .status-pill.inprogress { background: var(--info-soft); color: #0369a1; border-color: #bae6fd; }
+  .status-pill.review { background: var(--warning-soft); color: var(--warning-strong); border-color: #fde68a; }
+  .status-pill.done { background: var(--success-soft); color: var(--success); border-color: #bbf7d0; }
+  .empty-side { padding: 28px 20px; text-align: center; color: var(--muted); font-size: 13px; }
+
+  /* Main */
+  .main { overflow: hidden; display: flex; flex-direction: column; background: var(--bg); }
+  .main-empty {
+    flex: 1; display: flex; align-items: center; justify-content: center;
+    flex-direction: column; gap: 10px;
+    color: var(--muted); text-align: center;
+  }
+  .main-empty .ill {
+    width: 60px; height: 60px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, var(--accent-soft) 0%, #fff 100%);
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--accent); margin-bottom: 6px;
+  }
+  .main-empty .ill svg { width: 26px; height: 26px; }
+  .main-empty h2 { margin: 0; font-size: 17px; font-weight: 700; color: var(--text); }
+  .main-empty p { margin: 0; font-size: 13px; }
+
+  .top-bar { background: #fff; border-bottom: 1px solid var(--border); padding: 14px 28px 0; flex-shrink: 0; }
+  .top-bar-row {
+    display: flex; justify-content: space-between;
+    align-items: flex-start; gap: 16px; margin-bottom: 12px;
+  }
+  .top-left { flex: 1; min-width: 0; }
+  .top-meta {
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: 6px; flex-wrap: wrap;
+  }
+  .top-title {
+    font-size: 22px; font-weight: 700; margin: 0 0 4px;
+    word-break: break-word; line-height: 1.25; letter-spacing: -0.025em;
+  }
+  .top-sub {
+    color: var(--muted); font-size: 12.5px;
+    display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
+  }
+  .top-actions { display: flex; gap: 6px; flex-shrink: 0; align-items: center; }
+  .members { display: flex; align-items: center; margin-right: 6px; }
+  .members .avatar-stack { display: flex; }
+  .members .avatar-stack .av {
+    width: 26px; height: 26px; border-radius: 50%;
+    border: 2px solid #fff; margin-left: -6px;
+    color: #fff; font-size: 11px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .members .avatar-stack .av:first-child { margin-left: 0; }
+  .members .more { background: var(--panel-2); color: var(--text-2); }
+
+  .tabs { display: flex; gap: 2px; margin: 0 -2px; }
+  .tab {
+    background: transparent; border: none;
+    padding: 10px 12px 12px;
+    font-size: 13.5px; font-weight: 600;
+    color: var(--muted);
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px; cursor: pointer;
+    transition: all 0.12s;
+    display: inline-flex; align-items: center; gap: 6px;
+    border-radius: 0;
+  }
+  .tab:hover { color: var(--text-2); }
+  .tab.active { color: var(--text); border-bottom-color: var(--text); }
+  .tab .tc {
+    background: var(--panel-2); color: var(--text-2);
+    padding: 1px 7px; border-radius: 10px;
+    font-size: 11px; font-weight: 700; line-height: 1.4;
+  }
+  .tab.active .tc { background: var(--text); color: #fff; }
+  .tab svg { width: 14px; height: 14px; }
+
+  .tab-body { flex: 1; overflow-y: auto; padding: 24px 28px 60px; }
+
+  .desc-block {
+    padding: 14px 16px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text-2);
+    white-space: pre-wrap; word-break: break-word;
+    font-size: 13.5px;
+    margin-bottom: 16px;
+  }
+  .desc-block.empty { color: var(--muted); font-style: italic; }
+
+  .progress-hero {
+    display: grid; grid-template-columns: 1fr auto;
+    align-items: center; gap: 24px;
+    padding: 18px 22px;
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: var(--radius); margin-bottom: 16px;
+  }
+  .progress-hero .label {
+    font-size: 11px; font-weight: 700;
+    color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.08em;
+    margin-bottom: 4px;
+  }
+  .progress-hero .value { font-size: 13px; color: var(--text-2); font-weight: 500; }
+  .progress-hero .bar { height: 8px; background: var(--panel-2); border-radius: 999px; overflow: hidden; margin: 10px 0 6px; }
+  .progress-hero .bar-fill {
+    height: 100%; background: var(--text);
+    border-radius: 999px;
+    transition: width 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .progress-hero .bar-fill.done { background: var(--success); }
+  .progress-hero .donut { width: 80px; height: 80px; position: relative; }
+  .progress-hero .donut svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+  .progress-hero .donut .track { stroke: var(--panel-2); }
+  .progress-hero .donut .fill {
+    stroke: var(--text); stroke-linecap: round;
+    transition: stroke-dashoffset 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .progress-hero .donut .fill.done { stroke: var(--success); }
+  .progress-hero .donut-text {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 17px; font-weight: 700; font-variant-numeric: tabular-nums;
+  }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 1100px) { .two-col { grid-template-columns: 1fr; } }
+
+  .section {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 18px;
+  }
+  .section-head {
+    display: flex; align-items: center;
+    justify-content: space-between; margin-bottom: 12px;
+  }
+  .section-head h3 {
+    margin: 0; font-size: 13.5px; font-weight: 700;
+    letter-spacing: -0.01em;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .section-head .icon-wrap {
+    width: 22px; height: 22px;
+    background: var(--panel-2); border-radius: 6px;
+    display: inline-flex; align-items: center; justify-content: center;
+    color: var(--text-2);
+  }
+  .section-head .icon-wrap svg { width: 12px; height: 12px; }
+  .section-head .count-pill {
+    font-size: 11px;
+    background: var(--panel-2); color: var(--text-2);
+    padding: 2px 8px; border-radius: 999px; font-weight: 600;
+  }
+
+  .plan-list { list-style: none; margin: 0; padding: 0; }
+  .plan-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 8px;
+    border-radius: 8px;
+    transition: background 0.12s;
+    cursor: pointer; position: relative;
+  }
+  .plan-item:hover { background: var(--panel-2); }
+  .plan-item .check {
+    width: 18px; height: 18px;
+    border: 1.5px solid var(--border-strong);
+    border-radius: 5px;
+    display: inline-flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: all 0.12s;
+    background: #fff; flex-shrink: 0;
+  }
+  .plan-item .check:hover { border-color: var(--accent); }
+  .plan-item .check svg { width: 12px; height: 12px; color: #fff; opacity: 0; }
+  .plan-item.done .check { background: var(--success); border-color: var(--success); }
+  .plan-item.done .check svg { opacity: 1; }
+  .plan-item.review .check { background: var(--warning); border-color: var(--warning); }
+  .plan-item.review .check svg { opacity: 1; }
+  .plan-item .plan-text {
+    flex: 1; word-break: break-word;
+    font-size: 13.5px;
+    display: flex; align-items: center; gap: 6px;
+    min-width: 0;
+  }
+  .plan-item.done .plan-text > span:first-child {
+    text-decoration: line-through; color: var(--muted);
+  }
+  .plan-item .plan-counts {
+    display: inline-flex; align-items: center; gap: 6px;
+    color: var(--muted); font-size: 11.5px; font-weight: 500;
+  }
+  .plan-item .plan-counts .pc {
+    display: inline-flex; align-items: center; gap: 2px;
+    padding: 1px 6px;
+    background: var(--panel-2);
+    border-radius: 999px;
+  }
+  .plan-item .plan-counts svg { width: 10px; height: 10px; }
+  .plan-item .plan-assignees { display: flex; margin-left: 4px; }
+  .plan-item .plan-assignees .av-mini {
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    margin-left: -5px;
+    color: #fff;
+    font-size: 9px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .plan-item .plan-assignees .av-mini:first-child { margin-left: 0; }
+  .plan-item .plan-arrow {
+    width: 16px; height: 16px;
+    color: var(--muted-2);
+    opacity: 0; transition: all 0.12s;
+    transform: translateX(-4px);
+  }
+  .plan-item:hover .plan-arrow { opacity: 1; transform: translateX(0); }
+  .plan-item .plan-del { opacity: 0; transition: opacity 0.12s; }
+  .plan-item:hover .plan-del { opacity: 1; }
+  .review-pill {
+    display: inline-flex; align-items: center; gap: 3px;
+    background: var(--warning-soft); color: var(--warning-strong);
+    padding: 1px 7px; border-radius: 999px;
+    font-size: 10.5px; font-weight: 700;
+    border: 1px solid #fde68a;
+  }
+  .review-pill svg { width: 10px; height: 10px; }
+
+  .add-row { display: flex; gap: 8px; margin-top: 10px; padding: 0 8px; }
+  .add-row .input { flex: 1; }
+
+  .feed-list { list-style: none; margin: 0; padding: 0; }
+  .feed-item { display: flex; gap: 12px; padding: 10px 0; align-items: flex-start; }
+  .feed-item + .feed-item { border-top: 1px solid var(--border); }
+  .feed-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%; background: var(--accent);
+    margin-top: 8px; flex-shrink: 0;
+    box-shadow: 0 0 0 4px var(--accent-soft);
+  }
+  .feed-body { flex: 1; min-width: 0; }
+  .feed-text { word-break: break-word; white-space: pre-wrap; font-size: 13.5px; }
+  .feed-time { color: var(--muted); font-size: 11.5px; margin-top: 2px; font-weight: 500; }
+  .feed-del { opacity: 0; transition: opacity 0.12s; }
+  .feed-item:hover .feed-del { opacity: 1; }
+
+  .tab-intro {
+    background: var(--accent-soft);
+    border: 1px solid var(--accent-soft-2);
+    color: var(--accent);
+    padding: 10px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    margin-bottom: 16px;
+    display: flex; align-items: flex-start; gap: 8px;
+  }
+  .tab-intro .ti-ic {
+    width: 22px; height: 22px;
+    background: #fff; border-radius: 4px;
+    display: inline-flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .tab-intro .ti-ic svg { width: 12px; height: 12px; }
+  .tab-intro strong { display: block; font-weight: 700; margin-bottom: 1px; color: var(--text); }
+  .tab-intro div div { color: var(--text-2); }
+
+  .files-tools {
+    display: flex; justify-content: space-between;
+    align-items: center; margin-bottom: 14px; gap: 12px;
+  }
+  .files-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 12px;
+  }
+  .file-card {
+    background: var(--panel);
+    border: 1px solid var(--border); border-radius: 6px;
+    overflow: hidden; cursor: pointer;
+    transition: all 0.12s; position: relative;
+  }
+  .file-card:hover {
+    border-color: var(--border-strong);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+  }
+  .file-thumb {
+    width: 100%; aspect-ratio: 16 / 10;
+    background: var(--panel-2);
+    background-size: cover; background-position: center;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--muted-2); overflow: hidden;
+    border-bottom: 1px solid var(--border); position: relative;
+  }
+  .file-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .file-thumb .ext-pill {
+    position: absolute; top: 8px; left: 8px;
+    background: rgba(15, 18, 28, 0.78); color: #fff;
+    padding: 2px 8px; border-radius: 4px;
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 0.04em; text-transform: uppercase;
+  }
+  .file-thumb .big-icon { width: 36px; height: 36px; color: var(--muted-2); }
+  .file-card-body { padding: 10px 12px; }
+  .file-card-title {
+    font-weight: 600; font-size: 13px;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .file-card-meta {
+    color: var(--muted); font-size: 11.5px;
+    display: flex; justify-content: space-between; margin-top: 2px;
+  }
+  .file-card-meta .cmt-count {
+    display: inline-flex; align-items: center; gap: 3px;
+    color: var(--text-2); font-weight: 600;
+  }
+  .file-card-meta svg { width: 11px; height: 11px; }
+  .file-card-actions {
+    position: absolute; top: 8px; right: 8px;
+    display: flex; gap: 4px;
+    opacity: 0; transition: opacity 0.12s;
+  }
+  .file-card:hover .file-card-actions { opacity: 1; }
+  .file-card-actions .icon-btn {
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(4px);
+    border: 1px solid var(--border);
+  }
+  .file-empty {
+    background: var(--panel);
+    border: 1.5px dashed var(--border-strong);
+    border-radius: 8px;
+    padding: 36px 20px;
+    text-align: center; color: var(--muted);
+    transition: all 0.15s;
+  }
+  .file-empty.drag { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
+  .file-empty .upicon {
+    width: 40px; height: 40px;
+    background: var(--panel-2); border-radius: 6px;
+    display: inline-flex; align-items: center; justify-content: center;
+    margin-bottom: 12px;
+  }
+  .file-empty.drag .upicon { background: #fff; color: var(--accent); }
+  .file-empty .upicon svg { width: 18px; height: 18px; }
+  .file-empty p { margin: 0 0 4px; }
+  .file-empty input { display: none; }
+  .file-empty .browse { color: var(--accent); font-weight: 700; text-decoration: underline; cursor: pointer; }
+
+  /* File overlay */
+  .file-overlay {
+    position: fixed; inset: 0;
+    background: rgba(15, 18, 28, 0.6);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 200;
+    display: flex; align-items: center; justify-content: center;
+    padding: 24px;
+    animation: fadein 0.18s ease-out;
+  }
+  @keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
+  .file-modal {
+    width: 100%; height: 100%;
+    max-width: 1280px;
+    background: #fff;
+    border-radius: 8px; overflow: hidden;
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    grid-template-rows: 56px 1fr;
+    grid-template-areas: "head head" "preview comments";
+    box-shadow: var(--shadow-lg);
+    animation: pop 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  @keyframes pop {
+    from { opacity: 0; transform: scale(0.97); }
+    to { opacity: 1; transform: scale(1); }
+  }
+  .file-modal-head {
+    grid-area: head;
+    display: flex; align-items: center;
+    padding: 0 16px;
+    border-bottom: 1px solid var(--border);
+    gap: 12px;
+  }
+  .file-modal-head .file-name {
+    flex: 1; font-weight: 600; font-size: 14px;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .file-modal-head .ctx-pill {
+    background: var(--panel-2); color: var(--text-2);
+    padding: 3px 8px; border-radius: 999px;
+    font-size: 11px; font-weight: 700;
+    display: inline-flex; align-items: center; gap: 4px;
+  }
+  .file-modal-head .ctx-pill svg { width: 11px; height: 11px; }
+  .file-modal-head .ctx-pill.work { background: var(--accent-soft); color: var(--accent); }
+  .file-modal-head .file-meta-text { color: var(--muted); font-size: 12px; }
+
+  .file-preview-area {
+    grid-area: preview;
+    background: var(--panel-2);
+    overflow: auto;
+    display: flex; align-items: center; justify-content: center;
+    padding: 0; position: relative;
+  }
+  .file-preview-area img { max-width: 100%; max-height: 100%; object-fit: contain; display: block; }
+  .file-preview-area iframe { width: 100%; height: 100%; border: none; background: #fff; }
+  .file-preview-area pre {
+    width: 100%; height: 100%;
+    margin: 0; padding: 24px;
+    background: #fff; overflow: auto;
+    font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, monospace;
+    font-size: 12.5px; line-height: 1.6; white-space: pre;
+  }
+  .file-preview-empty { text-align: center; color: var(--muted); padding: 40px; }
+  .file-preview-empty .big-icon {
+    width: 56px; height: 56px;
+    background: #fff; border-radius: 8px;
+    display: inline-flex; align-items: center; justify-content: center;
+    color: var(--muted-2); margin-bottom: 14px;
+    border: 1px solid var(--border);
+  }
+  .file-preview-empty .big-icon svg { width: 28px; height: 28px; }
+
+  .pin-layer { position: absolute; inset: 0; pointer-events: none; z-index: 5; }
+  .preview-pin {
+    position: absolute;
+    transform: translate(-50%, -100%);
+    pointer-events: auto; cursor: pointer;
+    transition: transform 0.15s, filter 0.15s;
+  }
+  .preview-pin .pin-tail {
+    position: absolute;
+    left: 50%; bottom: -3px;
+    transform: translateX(-50%) rotate(45deg);
+    width: 10px; height: 10px;
+    background: var(--accent);
+  }
+  .preview-pin .pin-head {
+    position: relative; z-index: 1;
+    width: 28px; height: 28px;
+    border-radius: 50% 50% 50% 0%;
+    transform: rotate(-45deg);
+    background: var(--accent);
+    color: #fff;
+    border: 2.5px solid #fff;
+    box-shadow: 0 4px 10px rgba(15, 18, 28, 0.25);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .preview-pin .pin-head > span {
+    transform: rotate(45deg);
+    font-size: 11px; font-weight: 800; line-height: 1;
+  }
+  .preview-pin.resolved .pin-head { background: var(--success); }
+  .preview-pin.resolved .pin-tail { background: var(--success); }
+  .preview-pin.dim { filter: grayscale(0.6); opacity: 0.45; }
+  .preview-pin.highlight { transform: translate(-50%, -100%) scale(1.18); z-index: 10; }
+  .preview-pin.pending { animation: pinPulse 1.4s infinite ease-in-out; }
+  @keyframes pinPulse {
+    0%, 100% { transform: translate(-50%, -100%) scale(1); }
+    50% { transform: translate(-50%, -100%) scale(1.1); }
+  }
+  .pin-drag-svg { position: fixed; inset: 0; pointer-events: none; z-index: 250; }
+
+  .file-comments-pane {
+    grid-area: comments;
+    border-left: 1px solid var(--border);
+    display: flex; flex-direction: column;
+    background: #fff; min-height: 0;
+  }
+  .file-comments-head {
+    padding: 14px 16px 10px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .file-comments-head h3 { margin: 0; font-size: 13.5px; font-weight: 700; }
+  .file-comments-head .sub { color: var(--muted); font-size: 11.5px; margin-top: 2px; }
+  .filter-tabs { display: flex; gap: 2px; }
+  .filter-tabs button {
+    background: transparent; border: 1px solid transparent;
+    color: var(--muted);
+    font-size: 11.5px; font-weight: 600;
+    padding: 3px 8px; border-radius: 999px;
+    cursor: pointer; transition: all 0.12s;
+  }
+  .filter-tabs button:hover { color: var(--text-2); }
+  .filter-tabs button.active {
+    color: var(--text); background: var(--panel-2);
+    border-color: var(--border-strong);
+  }
+
+  .file-comments-list {
+    list-style: none; margin: 0;
+    padding: 4px 16px;
+    flex: 1; overflow-y: auto;
+  }
+  .file-comments-list .empty-cm {
+    padding: 24px 0; color: var(--muted);
+    font-size: 13px; text-align: center;
+  }
+  .file-comments-list .com-item {
+    padding: 10px 0;
+    display: flex; gap: 10px;
+    transition: background 0.12s;
+    border-radius: 6px;
+    margin: 0 -8px; padding-left: 8px; padding-right: 8px;
+  }
+  .file-comments-list .com-item:hover { background: var(--panel-2); }
+  .file-comments-list .com-item + .com-item { border-top: 1px solid var(--border); margin-top: 0; }
+  .com-item.resolved { opacity: 0.55; }
+  .com-item.resolved .com-text { text-decoration: line-through; color: var(--muted); }
+  .com-item .com-pin-num {
+    width: 22px; height: 22px;
+    border-radius: 50% 50% 50% 0%;
+    transform: rotate(-45deg);
+    background: var(--accent);
+    color: #fff;
+    border: 2px solid #fff;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.18);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    margin-top: 4px;
+  }
+  .com-item .com-pin-num > span {
+    transform: rotate(45deg);
+    font-size: 10px; font-weight: 800;
+  }
+  .com-item.resolved .com-pin-num { background: var(--success); }
+  .com-item .com-resolve {
+    flex-shrink: 0;
+    width: 20px; height: 20px;
+    border-radius: 5px;
+    border: 1.5px solid var(--border-strong);
+    background: #fff; cursor: pointer;
+    display: inline-flex; align-items: center; justify-content: center;
+    transition: all 0.12s;
+  }
+  .com-item .com-resolve:hover { border-color: var(--success); }
+  .com-item .com-resolve svg { width: 12px; height: 12px; color: #fff; opacity: 0; }
+  .com-item.resolved .com-resolve { background: var(--success); border-color: var(--success); }
+  .com-item.resolved .com-resolve svg { opacity: 1; }
+
+  .file-comments-form {
+    padding: 12px;
+    border-top: 1px solid var(--border);
+    background: var(--panel-2);
+    flex-shrink: 0;
+  }
+  .file-comments-form .pending-pin-bar {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--accent-soft);
+    border: 1px solid var(--accent-soft-2);
+    border-radius: 6px;
+    padding: 6px 10px;
+    margin-bottom: 8px;
+    font-size: 12px; color: var(--accent);
+    font-weight: 600;
+  }
+  .file-comments-form .pending-pin-bar button {
+    margin-left: auto;
+    background: transparent; border: none;
+    color: var(--accent);
+    font-size: 11.5px; font-weight: 600;
+    cursor: pointer; text-decoration: underline; padding: 0;
+  }
+  .file-comments-form textarea {
+    width: 100%; background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px 12px;
+    min-height: 56px;
+    resize: none; font-size: 13px;
+    outline: none; transition: all 0.12s;
+  }
+  .file-comments-form textarea:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(217, 78, 42, 0.12);
+  }
+  .file-comments-form .row {
+    display: flex; gap: 6px;
+    margin-top: 8px; align-items: center;
+    flex-wrap: wrap;
+  }
+  .pin-drag-btn {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 6px 10px;
+    background: #fff;
+    border: 1px solid var(--border-strong);
+    border-radius: 6px;
+    font-size: 12px; font-weight: 600;
+    color: var(--text-2);
+    cursor: grab; transition: all 0.12s; user-select: none;
+  }
+  .pin-drag-btn:hover { background: var(--accent-soft); color: var(--accent); border-color: var(--accent); }
+  .pin-drag-btn:active { cursor: grabbing; }
+  .pin-drag-btn.has-pin { background: var(--accent-soft); color: var(--accent); border-color: var(--accent); }
+  .pin-drag-btn svg { width: 12px; height: 12px; }
+
+  .plan-ws { animation: slidein 0.2s cubic-bezier(0.16, 1, 0.3, 1); }
+  @keyframes slidein {
+    from { opacity: 0; transform: translateX(8px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+  .breadcrumb {
+    display: flex; align-items: center; gap: 6px;
+    color: var(--muted); font-size: 12.5px;
+    margin-bottom: 14px;
+  }
+  .breadcrumb a {
+    color: var(--text-2); cursor: pointer;
+    text-decoration: none; transition: color 0.1s;
+    display: inline-flex; align-items: center; gap: 4px;
+  }
+  .breadcrumb a:hover { color: var(--accent); }
+  .breadcrumb svg { width: 12px; height: 12px; }
+  .breadcrumb .sep { color: var(--muted-2); }
+  .breadcrumb .current { color: var(--text); font-weight: 600; }
+
+  .plan-hero {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    margin-bottom: 16px;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 16px;
+  }
+  .plan-hero .ph-left { display: flex; align-items: center; gap: 12px; min-width: 0; flex: 1; }
+  .plan-hero .ph-check {
+    width: 26px; height: 26px;
+    border: 2px solid var(--border-strong);
+    border-radius: 6px;
+    display: inline-flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: all 0.12s;
+    background: #fff; flex-shrink: 0;
+  }
+  .plan-hero .ph-check:hover { border-color: var(--accent); }
+  .plan-hero .ph-check svg { width: 16px; height: 16px; color: #fff; opacity: 0; }
+  .plan-hero.done .ph-check { background: var(--success); border-color: var(--success); }
+  .plan-hero.done .ph-check svg { opacity: 1; }
+  .plan-hero.review .ph-check { background: var(--warning); border-color: var(--warning); }
+  .plan-hero.review .ph-check svg { opacity: 1; }
+  .plan-hero .ph-info { min-width: 0; }
+  .plan-hero .ph-title { font-size: 18px; font-weight: 700; line-height: 1.3; word-break: break-word; }
+  .plan-hero.done .ph-title { color: var(--muted); text-decoration: line-through; }
+  .plan-hero .ph-sub { color: var(--muted); font-size: 12px; margin-top: 2px; }
+  .plan-hero .ph-actions { display: flex; gap: 6px; flex-shrink: 0; }
+
+  .review-banner {
+    background: var(--warning-soft);
+    border: 1px solid #fde68a;
+    border-radius: var(--radius);
+    padding: 12px 16px;
+    margin-bottom: 16px;
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  }
+  .review-banner .rb-left { display: flex; align-items: center; gap: 10px; }
+  .review-banner .rb-icon {
+    width: 28px; height: 28px;
+    background: var(--warning); color: #fff;
+    border-radius: 6px;
+    display: inline-flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .review-banner .rb-icon svg { width: 14px; height: 14px; }
+  .review-banner .rb-text strong { display: block; color: var(--warning-strong); font-size: 13px; font-weight: 700; }
+  .review-banner .rb-text { font-size: 12.5px; color: var(--text-2); }
+  .review-banner .rb-actions { display: flex; gap: 6px; flex-shrink: 0; }
+
+  .assignees-row {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 12px; margin-bottom: 16px;
+  }
+  .assignee-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px 14px;
+  }
+  .assignee-label {
+    font-size: 11px; font-weight: 700;
+    color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.06em;
+    margin-bottom: 6px;
+  }
+  .assignee-picker { display: flex; align-items: center; gap: 8px; min-height: 32px; }
+  .assignee-pill {
+    display: inline-flex; align-items: center; gap: 7px;
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 4px 10px 4px 4px;
+    font-size: 12.5px; cursor: pointer;
+    transition: all 0.12s;
+  }
+  .assignee-pill:hover { border-color: var(--border-strong); background: #fff; }
+  .assignee-pill .av-mini {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    color: #fff; font-size: 10px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .assignee-pill .av-mini.empty { background: var(--panel-3); color: var(--muted-2); }
+  .assignee-name { font-weight: 600; color: var(--text); }
+  .assignee-name.empty { color: var(--muted); font-weight: 500; font-style: italic; }
+
+  .assignee-popover {
+    position: absolute;
+    background: #fff;
+    border: 1px solid var(--border-strong);
+    border-radius: 6px;
+    box-shadow: var(--shadow-lg);
+    padding: 4px;
+    z-index: 50;
+    min-width: 200px;
+    max-height: 280px; overflow-y: auto;
+  }
+  .assignee-popover .item {
+    display: flex; align-items: center; gap: 8px;
+    padding: 7px 10px; border-radius: 4px;
+    cursor: pointer; font-size: 13px;
+    transition: background 0.12s;
+  }
+  .assignee-popover .item:hover { background: var(--panel-2); }
+  .assignee-popover .item.selected { background: var(--accent-soft); color: var(--accent); }
+  .assignee-popover .av-mini {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    color: #fff; font-size: 10px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .assignee-popover .item-info { flex: 1; min-width: 0; }
+  .assignee-popover .item-name { font-weight: 600; }
+  .assignee-popover .item-role { font-size: 11px; color: var(--muted); }
+  .assignee-popover .divider { height: 1px; background: var(--border); margin: 4px 0; }
+  .assignee-popover .clear { color: var(--danger); font-size: 12px; }
+
+  .ws-section-head {
+    display: flex; align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+  }
+  .ws-section-head h3 {
+    margin: 0; font-size: 14.5px; font-weight: 700;
+    letter-spacing: -0.01em;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .ws-section-head .count-pill {
+    background: var(--panel-2); color: var(--text-2);
+    padding: 2px 8px; border-radius: 999px;
+    font-size: 11px; font-weight: 700;
+  }
+
+  .com-list { list-style: none; margin: 0; padding: 0; }
+  .com-list .com-item { display: flex; gap: 10px; padding: 12px 0; }
+  .com-list .com-item + .com-item { border-top: 1px solid var(--border); }
+  .com-avatar {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    color: #fff; font-weight: 700; font-size: 12px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; text-transform: uppercase;
+  }
+  .com-body { flex: 1; min-width: 0; }
+  .com-head {
+    display: flex; justify-content: space-between;
+    margin-bottom: 2px; align-items: center;
+    gap: 8px;
+  }
+  .com-name { font-weight: 600; font-size: 13px; }
+  .com-time { color: var(--muted); font-size: 11.5px; font-weight: 500; }
+  .com-text { white-space: pre-wrap; word-break: break-word; font-size: 13.5px; }
+  .com-del { opacity: 0; transition: opacity 0.12s; }
+  .com-item:hover .com-del { opacity: 1; }
+
+  .com-form-card {
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 12px;
+    margin-top: 12px;
+  }
+  .com-form-card textarea {
+    width: 100%; border: 1px solid var(--border);
+    border-radius: 6px; padding: 10px 12px;
+    min-height: 64px; resize: vertical;
+    font-size: 13.5px; outline: none;
+    transition: all 0.12s;
+  }
+  .com-form-card textarea:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(217, 78, 42, 0.12);
+  }
+  .com-form-card .row { margin-top: 8px; display: flex; gap: 6px; align-items: center; }
+
+  .input, .textarea {
+    width: 100%; padding: 8px 11px;
+    border: 1px solid var(--border-strong);
+    border-radius: 6px; background: #fff;
+    outline: none; transition: all 0.12s;
+  }
+  .input:focus, .textarea:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(217, 78, 42, 0.12);
+  }
+  .textarea { resize: vertical; min-height: 80px; }
+
+  .btn {
+    padding: 7px 12px;
+    border: 1px solid var(--border-strong);
+    background: #fff; border-radius: 6px;
+    color: var(--text); font-size: 13px; font-weight: 500;
+    transition: all 0.12s;
+    display: inline-flex; align-items: center;
+    gap: 5px; line-height: 1;
+  }
+  .btn:hover { background: var(--panel-2); }
+  .btn svg { width: 13px; height: 13px; }
+  .btn-primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .btn-primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+  .btn-dark { background: var(--text); color: #fff; border-color: var(--text); }
+  .btn-dark:hover { background: #1f2330; }
+  .btn-danger { color: var(--danger); border-color: #fecaca; }
+  .btn-danger:hover { background: var(--danger-soft); }
+  .btn-success { background: var(--success); color: #fff; border-color: var(--success); }
+  .btn-success:hover { background: #15803d; border-color: #15803d; }
+  .btn-warning { background: var(--warning); color: #fff; border-color: var(--warning); }
+  .btn-warning:hover { background: #d97706; border-color: #d97706; }
+  .btn-icon-sm {
+    padding: 5px;
+    background: transparent;
+    border: 1px solid transparent;
+    color: var(--muted); border-radius: 4px;
+  }
+  .btn-icon-sm:hover { background: var(--panel-2); color: var(--text); }
+  .btn-icon-sm svg { width: 13px; height: 13px; }
+  .btn-sm { padding: 4px 9px; font-size: 12px; }
+
+  .modal-bg {
+    position: fixed; inset: 0;
+    background: rgba(15, 18, 28, 0.45);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 100; animation: fadein 0.15s ease-out;
+  }
+  .modal {
+    background: #fff; border-radius: 8px;
+    width: 480px; max-width: calc(100vw - 32px);
+    max-height: calc(100vh - 32px);
+    overflow-y: auto;
+    box-shadow: var(--shadow-lg);
+    animation: pop 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .modal-head {
+    padding: 18px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .modal-head h2 { margin: 0; font-size: 16px; font-weight: 700; letter-spacing: -0.01em; }
+  .modal-body { padding: 20px; }
+  .modal-body label { display: block; margin-bottom: 14px; font-weight: 600; font-size: 13px; }
+  .modal-body label > span { display: block; margin-bottom: 6px; }
+  .modal-foot {
+    padding: 14px 20px;
+    border-top: 1px solid var(--border);
+    background: var(--panel-2);
+    display: flex; justify-content: flex-end; gap: 6px;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+  }
+
+  .member-row {
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    margin-bottom: 6px;
+    background: #fff;
+  }
+  .member-row.current { border-color: var(--accent); background: var(--accent-soft); }
+  .member-row .av-mini {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    color: #fff; font-size: 11px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .member-row .mr-info { flex: 1; min-width: 0; }
+  .member-row .mr-name { font-weight: 600; font-size: 13px; }
+  .member-row .mr-role { font-size: 11px; color: var(--muted); }
+  .member-row .mr-actions { display: flex; gap: 4px; align-items: center; }
+  .member-row .mr-current-pill {
+    background: var(--accent); color: #fff;
+    padding: 2px 8px; border-radius: 999px;
+    font-size: 10.5px; font-weight: 700;
+  }
+
+  .toast {
+    position: fixed;
+    bottom: 24px; left: 50%;
+    transform: translateX(-50%) translateY(8px);
+    padding: 10px 18px;
+    background: var(--text); color: #fff;
+    border-radius: 999px;
+    font-size: 13px; font-weight: 500;
+    box-shadow: var(--shadow-lg);
+    z-index: 300;
+    opacity: 0;
+    transition: opacity 0.18s, transform 0.18s;
+    pointer-events: none; white-space: nowrap;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  .live-dot {
+    display: inline-block;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--success);
+    box-shadow: 0 0 0 0 rgba(21, 128, 61, 0.5);
+    animation: pulse 2s infinite;
+    margin-right: 4px;
+    vertical-align: middle;
+  }
+  @keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(21, 128, 61, 0.5); }
+    70% { box-shadow: 0 0 0 6px rgba(21, 128, 61, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(21, 128, 61, 0); }
+  }
+
+  @media (max-width: 820px) {
+    .app { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
+    .sidebar { max-height: 45vh; }
+    .top-bar { padding: 12px 14px 0; }
+    .tab-body { padding: 16px; }
+    .progress-hero { grid-template-columns: 1fr; gap: 14px; }
+    .progress-hero .donut { margin: 0 auto; }
+    .top-title { font-size: 18px; }
+    .file-modal {
+      grid-template-columns: 1fr;
+      grid-template-rows: 56px 1fr 320px;
+      grid-template-areas: "head" "preview" "comments";
+    }
+    .file-comments-pane { border-left: none; border-top: 1px solid var(--border); }
+    .assignees-row { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── Auth gate (login / org create) ── -->
+<div class="gate" id="gate">
+  <div class="gate-card" id="gateCard">
+    <div class="logo-row">
+      <div class="logo-box">X</div>
+      <div class="logo-text">Org<span class="x">X</span></div>
+    </div>
+    <h1>로딩 중…</h1>
+  </div>
+</div>
+
+<!-- ── App ── -->
+<div class="app hidden" id="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <button class="brand-name brand-clickable" id="brandBtn" title="회사 설정">
+        <div class="brand-logo">X</div>
+        <div class="brand-text">
+          <div class="brand-app">Org<span class="x">X</span></div>
+          <div class="brand-org" id="brandOrgName">회사 미설정</div>
+        </div>
+      </button>
+    </div>
+    <div class="sidebar-cta">
+      <button class="new-task-btn" id="btnNewTask">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        새 작업 만들기
+      </button>
+    </div>
+    <div class="sidebar-section-label">
+      <span><span class="live-dot"></span>작업</span>
+      <span class="task-count-badge" id="taskCountBadge">0</span>
+    </div>
+    <div class="task-list" id="taskList"></div>
+
+    <div class="user-bar">
+      <button class="user-bar-btn" id="userBarBtn">
+        <div class="com-avatar" id="userBarAv" style="width:32px;height:32px"></div>
+        <div class="user-bar-info">
+          <div class="user-bar-name" id="userBarName"></div>
+          <div class="user-bar-role" id="userBarRole"></div>
+        </div>
+        <div class="user-bar-arrow">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+      </button>
+    </div>
+  </aside>
+
+  <main class="main" id="main"></main>
+</div>
+
+<div class="modal-bg" id="taskModal" style="display:none">
+  <div class="modal">
+    <div class="modal-head">
+      <h2 id="modalTitle">새 작업 만들기</h2>
+      <button class="btn-icon-sm" id="modalClose">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <label><span>제목</span><input type="text" class="input" id="modalTaskTitle" placeholder="예: 메인 페이지 리뉴얼" /></label>
+      <label><span>설명</span><textarea class="textarea" id="modalTaskDesc" placeholder="작업의 목표나 배경을 적어주세요"></textarea></label>
+      <label><span>마감일</span><input type="date" class="input" id="modalTaskDue" /></label>
+    </div>
+    <div class="modal-foot">
+      <button class="btn" id="modalCancel">취소</button>
+      <button class="btn btn-primary" id="modalSave">저장</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="memberModal" style="display:none">
+  <div class="modal" style="width:520px">
+    <div class="modal-head">
+      <h2>회사 설정</h2>
+      <button class="btn-icon-sm" id="memberClose">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <label style="margin-bottom:18px">
+        <span>회사명</span>
+        <input type="text" class="input" id="orgNameInput" placeholder="예: 네오익스" />
+      </label>
+      <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px">멤버</div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:8px;line-height:1.5">
+        <span class="role-pill ceo">대표</span> 회사 전체 관리 ·
+        <span class="role-pill admin">관리자</span> 계획 완료 승인 ·
+        <span class="role-pill worker">작업자</span> 작업물 제출
+      </div>
+      <div id="memberList"></div>
+      <div style="font-size:12px;color:var(--muted);margin-top:12px;padding:10px;background:var(--panel-2);border-radius:6px">
+        💡 다른 사람을 멤버로 추가하려면, 그 사람이 같은 사이트에서 로그인 후 회사 합류 코드(회사 ID)를 입력하면 됩니다. (초대 메일 기능은 준비 중)
+        <br><br>회사 ID: <code id="orgIdCode" style="font-family:ui-monospace,monospace;font-size:11px;background:#fff;padding:2px 6px;border-radius:4px;cursor:pointer" title="클릭해서 복사"></code>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-danger" id="signOutBtn" style="margin-right:auto">로그아웃</button>
+      <button class="btn btn-primary" id="orgSaveBtn">저장하고 닫기</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+  // Wait for supabase client to load
+  if (!window.supabase) {
+    await new Promise(r => window.addEventListener("supabase-ready", r, { once: true }));
+  }
+  const sb = window.supabase;
+  const BUCKET = window.ORGX_CONFIG.STORAGE_BUCKET;
+
+  // ─────────── State ───────────
+  let state = {
+    user: null,
+    org: null,
+    membership: null,
+    members: [],
+    orgs: [],
+    tasks: [],
+  };
+  let selectedId = null;
+  let currentTab = "overview";
+  let openPlanId = null;
+  let openFile = null;
+  let pendingPin = null;
+  let commentFilter = "all";
+  let activeChannel = null;
+  let activeTaskChannel = null;
+
+  // ─────────── Helpers ───────────
+  const fmtDate = (ts) => new Date(ts).toLocaleDateString("ko-KR", { year: "numeric", month: "2-digit", day: "2-digit" });
+  const fmtDateTime = (ts) => new Date(ts).toLocaleString("ko-KR", { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" });
+  const fmtSize = (b) => {
+    if (b < 1024) return b + " B";
+    if (b < 1024 * 1024) return (b / 1024).toFixed(1) + " KB";
+    return (b / 1024 / 1024).toFixed(1) + " MB";
+  };
+  const escapeHtml = (s) => String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;");
+  const calcProgress = (task) => {
+    const plans = task.plans || [];
+    if (plans.length === 0) return 0;
+    return Math.round((plans.filter(p => p.done).length / plans.length) * 100);
+  };
+  const taskStatus = (task) => {
+    const p = calcProgress(task);
+    if ((task.plans || []).some(pl => pl.pending_review)) return { key: "review", label: "검토 대기" };
+    if (p === 0) return { key: "notstarted", label: "시작 전" };
+    if (p === 100) return { key: "done", label: "완료" };
+    return { key: "inprogress", label: "진행중" };
+  };
+  function dueInfo(dateStr) {
+    if (!dateStr) return null;
+    const today = new Date(); today.setHours(0,0,0,0);
+    const due = new Date(dateStr); due.setHours(0,0,0,0);
+    const diff = Math.round((due - today) / 86400000);
+    let cls = "", label = "";
+    if (diff < 0) { cls = "over"; label = `${Math.abs(diff)}일 지남`; }
+    else if (diff === 0) { cls = "urgent"; label = "오늘"; }
+    else if (diff <= 3) { cls = "urgent"; label = `D-${diff}`; }
+    else if (diff <= 7) { cls = "soon"; label = `D-${diff}`; }
+    else { label = `D-${diff}`; }
+    return { cls, label, full: fmtDate(due) };
+  }
+  const AVATAR_COLORS = ["#6366f1","#8b5cf6","#ec4899","#ef4444","#f97316","#eab308","#22c55e","#14b8a6","#0ea5e9","#3b82f6"];
+  function avatarColor(name) {
+    let h = 0; for (let i = 0; i < (name||"").length; i++) h = (h * 31 + name.charCodeAt(i)) >>> 0;
+    return AVATAR_COLORS[h % AVATAR_COLORS.length];
+  }
+  const initial = (name) => (name?.[0] || "?").toUpperCase();
+  const memberById = (id) => state.members.find(m => m.id === id) || null;
+  const currentMember = () => state.membership;
+  const currentName = () => state.membership?.display_name || "";
+  const currentIsAdmin = () => ["admin","ceo"].includes(state.membership?.role);
+  const roleLabel = (role) => role === "ceo" ? "대표" : role === "admin" ? "관리자" : "작업자";
+
+  function uniqueContributors(task) {
+    const set = new Set();
+    (task.comments || []).forEach(c => set.add(c.author_name));
+    (task.attachments || []).forEach(a => (a.comments || []).forEach(c => set.add(c.author_name)));
+    (task.plans || []).forEach(p => (p.works || []).forEach(w => (w.comments || []).forEach(c => set.add(c.author_name))));
+    return Array.from(set);
+  }
+  function totalCommentCount(task) {
+    let n = (task.comments || []).length;
+    (task.attachments || []).forEach(a => n += (a.comments || []).length);
+    (task.plans || []).forEach(p => (p.works || []).forEach(w => n += (w.comments || []).length));
+    return n;
+  }
+  function fileExt(name) { const i = name.lastIndexOf("."); return i >= 0 ? name.slice(i+1).toLowerCase() : ""; }
+  function fileKind(att) {
+    const t = att.mime_type || "";
+    if (t.startsWith("image/")) return "image";
+    if (t === "application/pdf") return "pdf";
+    if (t.startsWith("text/") || /(json|xml|javascript|css|html|csv|markdown)/.test(t)) return "text";
+    const ext = fileExt(att.name);
+    if (["jpg","jpeg","png","gif","webp","svg","bmp"].includes(ext)) return "image";
+    if (ext === "pdf") return "pdf";
+    if (["txt","md","json","xml","csv","js","ts","html","css","yml","yaml","log"].includes(ext)) return "text";
+    return "other";
+  }
+
+  // SVG icons
+  const I = {
+    plus: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>',
+    check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>',
+    x: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',
+    paperclip: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>',
+    chat: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>',
+    list: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>',
+    activity: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>',
+    file: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>',
+    upload: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>',
+    download: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>',
+    cal: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>',
+    edit: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>',
+    trash: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>',
+    inbox: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>',
+    arrow: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>',
+    arrowRight: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>',
+    eye: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>',
+    palette: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/><circle cx="8.5" cy="7.5" r=".5"/><circle cx="6.5" cy="12.5" r=".5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125 0-.937.748-1.688 1.689-1.688h1.875c2.762 0 5-2.238 5-5C21.337 6.012 17.114 2 12 2z"/></svg>',
+    info: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>',
+    pin: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="17" x2="12" y2="22"/><path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V17z"/></svg>',
+    clock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
+  };
+
+  // ─────────── Toast ───────────
+  let toastTimer;
+  function toast(msg) {
+    const el = document.getElementById("toast");
+    el.textContent = msg;
+    el.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => el.classList.remove("show"), 2200);
+  }
+
+  // ─────────── Auth Gate ───────────
+  function showGate(html) {
+    document.getElementById("app").classList.add("hidden");
+    const gate = document.getElementById("gate");
+    gate.classList.remove("hidden");
+    gate.querySelector(".gate-card").innerHTML = html;
+  }
+  function hideGate() {
+    document.getElementById("gate").classList.add("hidden");
+    document.getElementById("app").classList.remove("hidden");
+  }
+  const logoMark = `
+    <div class="logo-row">
+      <div class="logo-box">X</div>
+      <div class="logo-text">Org<span class="x">X</span></div>
+    </div>`;
+
+  function renderLogin() {
+    showGate(`
+      ${logoMark}
+      <h1>로그인</h1>
+      <div class="sub">이메일로 매직 링크를 받아 로그인합니다.</div>
+      <div id="loginMsg"></div>
+      <label for="loginEmail">이메일</label>
+      <input class="input" type="email" id="loginEmail" placeholder="you@example.com" autocomplete="email" />
+      <button class="submit" id="loginBtn">매직 링크 보내기</button>
+      <div class="helper">처음이신가요? 이메일을 입력하고 받은 링크를 누르면 자동 가입 + 로그인됩니다.</div>
+    `);
+    const btn = document.getElementById("loginBtn");
+    const input = document.getElementById("loginEmail");
+    const msg = document.getElementById("loginMsg");
+    const submit = async () => {
+      const email = input.value.trim();
+      if (!email) return;
+      btn.disabled = true; btn.textContent = "보내는 중…";
+      const { error } = await sb.auth.signInWithOtp({
+        email,
+        options: { emailRedirectTo: window.location.origin + window.location.pathname }
+      });
+      if (error) {
+        msg.innerHTML = `<div class="error-banner">${escapeHtml(error.message)}</div>`;
+        btn.disabled = false; btn.textContent = "매직 링크 보내기";
+      } else {
+        msg.innerHTML = `<div class="success-banner">${escapeHtml(email)} 으로 매직 링크를 보냈어요. 이메일을 열어 링크를 눌러주세요.</div>`;
+        btn.disabled = true; btn.textContent = "확인 메일 발송됨";
+      }
+    };
+    btn.onclick = submit;
+    input.onkeydown = (e) => { if (e.key === "Enter") submit(); };
+    setTimeout(() => input.focus(), 80);
+  }
+
+  function renderOrgCreate() {
+    showGate(`
+      ${logoMark}
+      <div class="label-row">
+        <h1 style="margin:0">회사 만들기</h1>
+        <button class="signout" id="signOutBtn2">다른 계정으로 로그인</button>
+      </div>
+      <div class="sub" style="margin-top:6px">처음이라 소속 회사가 없네요. 첫 회사를 만들면 자동으로 <b>대표</b>가 됩니다.</div>
+      <div id="ocMsg"></div>
+      <label for="ocName">회사 이름</label>
+      <input class="input" type="text" id="ocName" placeholder="예: 네오익스" />
+      <label for="ocDisplay" style="margin-top:14px">내 표시 이름</label>
+      <input class="input" type="text" id="ocDisplay" placeholder="예: 정겸" value="${escapeHtml((state.user?.email || "").split("@")[0])}" />
+      <button class="submit" id="ocBtn">만들기</button>
+      <div class="helper">또는 기존 회사 ID로 합류하려면 <a id="joinLink">합류</a></div>
+    `);
+    const btn = document.getElementById("ocBtn");
+    const ocName = document.getElementById("ocName");
+    const ocDisplay = document.getElementById("ocDisplay");
+    const msg = document.getElementById("ocMsg");
+    btn.onclick = async () => {
+      const name = ocName.value.trim();
+      const display = ocDisplay.value.trim();
+      if (!name || !display) { msg.innerHTML = `<div class="error-banner">회사 이름과 표시 이름을 입력해주세요.</div>`; return; }
+      btn.disabled = true; btn.textContent = "만드는 중…";
+      try {
+        const { data: org, error: e1 } = await sb.from("orgs").insert({ name, owner_id: state.user.id }).select().single();
+        if (e1) throw e1;
+        const { error: e2 } = await sb.from("memberships").insert({
+          org_id: org.id, user_id: state.user.id, display_name: display, role: "ceo"
+        });
+        if (e2) throw e2;
+        await bootstrapAfterAuth();
+      } catch (err) {
+        msg.innerHTML = `<div class="error-banner">${escapeHtml(err.message)}</div>`;
+        btn.disabled = false; btn.textContent = "만들기";
+      }
+    };
+    document.getElementById("signOutBtn2").onclick = async () => { await sb.auth.signOut(); };
+    document.getElementById("joinLink").onclick = renderJoinOrg;
+    setTimeout(() => ocName.focus(), 80);
+  }
+
+  function renderJoinOrg() {
+    showGate(`
+      ${logoMark}
+      <h1>회사에 합류</h1>
+      <div class="sub">대표에게 받은 회사 ID와 본인 표시 이름을 입력하세요.</div>
+      <div id="joinMsg"></div>
+      <label for="joinId">회사 ID</label>
+      <input class="input" type="text" id="joinId" placeholder="00000000-0000-0000-0000-000000000000" />
+      <label for="joinDisplay" style="margin-top:14px">내 표시 이름</label>
+      <input class="input" type="text" id="joinDisplay" value="${escapeHtml((state.user?.email || "").split("@")[0])}" />
+      <button class="submit" id="joinBtn">합류하기 (작업자로)</button>
+      <div class="helper"><a id="backToCreate">← 회사 만들기로 돌아가기</a></div>
+    `);
+    document.getElementById("backToCreate").onclick = renderOrgCreate;
+    const btn = document.getElementById("joinBtn");
+    const msg = document.getElementById("joinMsg");
+    btn.onclick = async () => {
+      const orgId = document.getElementById("joinId").value.trim();
+      const display = document.getElementById("joinDisplay").value.trim();
+      if (!orgId || !display) { msg.innerHTML = `<div class="error-banner">회사 ID와 표시 이름이 필요해요.</div>`; return; }
+      btn.disabled = true; btn.textContent = "합류 중…";
+      const { error } = await sb.from("memberships").insert({
+        org_id: orgId, user_id: state.user.id, display_name: display, role: "worker"
+      });
+      if (error) {
+        msg.innerHTML = `<div class="error-banner">${escapeHtml(error.message)}</div>`;
+        btn.disabled = false; btn.textContent = "합류하기 (작업자로)";
+      } else {
+        await bootstrapAfterAuth();
+      }
+    };
+  }
+
+  // ─────────── DB Functions ───────────
+  async function loadOrgs() {
+    const { data, error } = await sb.from("memberships")
+      .select("role, orgs(id, name, owner_id, created_at)")
+      .eq("user_id", state.user.id);
+    if (error) { console.error(error); return []; }
+    return (data || []).filter(m => m.orgs).map(m => ({ ...m.orgs, _role: m.role }));
+  }
+
+  async function selectOrg(orgId) {
+    const [orgRes, memRes, taskRes] = await Promise.all([
+      sb.from("orgs").select("*").eq("id", orgId).single(),
+      sb.from("memberships").select("*").eq("org_id", orgId),
+      sb.from("tasks").select("*").eq("org_id", orgId).order("created_at", { ascending: false }),
+    ]);
+    if (orgRes.error) return console.error(orgRes.error);
+    state.org = orgRes.data;
+    state.members = memRes.data || [];
+    state.membership = state.members.find(m => m.user_id === state.user.id);
+    state.tasks = (taskRes.data || []).map(t => ({ ...t, plans: [], attachments: [], comments: [], feedbacks: [] }));
+    if (state.tasks.length > 0) {
+      selectedId = state.tasks[0].id;
+      await loadTaskDeep(selectedId);
+    } else {
+      selectedId = null;
+    }
+    subscribeOrg(orgId);
+  }
+
+  async function loadTaskDeep(taskId) {
+    const task = state.tasks.find(t => t.id === taskId);
+    if (!task) return;
+    const [plans, atts, fbs] = await Promise.all([
+      sb.from("plans").select("*").eq("task_id", taskId).order("position").order("created_at"),
+      sb.from("attachments").select("*").eq("task_id", taskId).order("created_at"),
+      sb.from("feedbacks").select("*").eq("task_id", taskId).order("created_at"),
+    ]);
+    if (plans.error) console.error(plans.error);
+    const plansArr = (plans.data || []).map(p => ({ ...p, works: [] }));
+    const attsArr = (atts.data || []).map(a => ({ ...a, comments: [] }));
+
+    // Load all comments for this task and its attachments
+    const attIds = attsArr.map(a => a.id);
+    const orFilter = attIds.length > 0
+      ? `task_id.eq.${taskId},attachment_id.in.(${attIds.join(",")})`
+      : `task_id.eq.${taskId}`;
+    const { data: comments } = await sb.from("comments").select("*").or(orFilter).order("created_at");
+    (comments || []).forEach(c => {
+      if (c.attachment_id) {
+        const a = attsArr.find(x => x.id === c.attachment_id);
+        if (a) a.comments.push(c);
+      }
+    });
+    const generalComments = (comments || []).filter(c => !c.attachment_id);
+
+    // Group attachments into plans (plan_id) vs reference (no plan_id)
+    plansArr.forEach(p => { p.works = attsArr.filter(a => a.plan_id === p.id); });
+    const refAttachments = attsArr.filter(a => !a.plan_id);
+
+    task.plans = plansArr;
+    task.attachments = refAttachments;
+    task.feedbacks = fbs.data || [];
+    task.comments = generalComments;
+
+    subscribeTask(taskId);
+  }
+
+  // ─────────── Realtime ───────────
+  function subscribeOrg(orgId) {
+    if (activeChannel) sb.removeChannel(activeChannel);
+    activeChannel = sb.channel(`org:${orgId}`)
+      .on("postgres_changes", { event: "*", schema: "public", table: "tasks", filter: `org_id=eq.${orgId}` }, async (payload) => {
+        if (payload.eventType === "INSERT") {
+          if (!state.tasks.find(t => t.id === payload.new.id)) {
+            state.tasks.unshift({ ...payload.new, plans: [], attachments: [], comments: [], feedbacks: [] });
+            renderAll();
+          }
+        } else if (payload.eventType === "UPDATE") {
+          const t = state.tasks.find(x => x.id === payload.new.id);
+          if (t) Object.assign(t, payload.new);
+          renderAll();
+        } else if (payload.eventType === "DELETE") {
+          state.tasks = state.tasks.filter(t => t.id !== payload.old.id);
+          if (selectedId === payload.old.id) selectedId = state.tasks[0]?.id || null;
+          renderAll();
+        }
+      })
+      .on("postgres_changes", { event: "*", schema: "public", table: "memberships", filter: `org_id=eq.${orgId}` }, async () => {
+        const { data } = await sb.from("memberships").select("*").eq("org_id", orgId);
+        state.members = data || [];
+        state.membership = state.members.find(m => m.user_id === state.user.id);
+        renderAll();
+      })
+      .subscribe();
+  }
+
+  function subscribeTask(taskId) {
+    if (activeTaskChannel) sb.removeChannel(activeTaskChannel);
+    const refresh = async () => {
+      await loadTaskDeep(taskId);
+      renderAll();
+    };
+    activeTaskChannel = sb.channel(`task:${taskId}`)
+      .on("postgres_changes", { event: "*", schema: "public", table: "plans", filter: `task_id=eq.${taskId}` }, refresh)
+      .on("postgres_changes", { event: "*", schema: "public", table: "attachments", filter: `task_id=eq.${taskId}` }, refresh)
+      .on("postgres_changes", { event: "*", schema: "public", table: "feedbacks", filter: `task_id=eq.${taskId}` }, refresh)
+      .on("postgres_changes", { event: "*", schema: "public", table: "comments" }, async (payload) => {
+        // Only refresh if comment is for this task or one of its attachments
+        const c = payload.new || payload.old;
+        const task = state.tasks.find(t => t.id === taskId);
+        if (!task) return;
+        const attIds = new Set(task.attachments.map(a => a.id).concat((task.plans || []).flatMap(p => (p.works || []).map(w => w.id))));
+        if (c?.task_id === taskId || attIds.has(c?.attachment_id)) await refresh();
+      })
+      .subscribe();
+  }
+
+  // ─────────── User bar ───────────
+  function renderUserBar() {
+    const m = currentMember();
+    const av = document.getElementById("userBarAv");
+    const nm = document.getElementById("userBarName");
+    const rl = document.getElementById("userBarRole");
+    const orgEl = document.getElementById("brandOrgName");
+    const orgName = state.org?.name?.trim() || "";
+    if (orgEl) orgEl.textContent = orgName || "회사 미설정";
+    document.title = orgName ? `${orgName} · OrgX` : "OrgX — 조직 협업 보드";
+    if (!m) {
+      av.style.background = "var(--panel-3)"; av.textContent = "?";
+      nm.textContent = state.user?.email || "익명"; rl.innerHTML = "";
+      return;
+    }
+    av.style.background = avatarColor(m.display_name);
+    av.textContent = initial(m.display_name);
+    nm.textContent = m.display_name;
+    rl.innerHTML = `<span class="role-pill ${m.role}">${roleLabel(m.role)}</span>`;
+  }
+
+  // ─────────── Member modal ───────────
+  function openMemberModal() {
+    document.getElementById("memberModal").style.display = "flex";
+    document.getElementById("orgNameInput").value = state.org?.name || "";
+    document.getElementById("orgIdCode").textContent = state.org?.id || "";
+    renderMemberList();
+  }
+  function closeMemberModal() { document.getElementById("memberModal").style.display = "none"; }
+  function renderMemberList() {
+    const wrap = document.getElementById("memberList");
+    if (state.members.length === 0) {
+      wrap.innerHTML = '<div style="padding:12px;text-align:center;color:var(--muted);font-size:13px">아직 멤버가 없어요</div>';
+      return;
+    }
+    wrap.innerHTML = state.members.map(m => `
+      <div class="member-row ${m.id === state.membership?.id ? "current" : ""}" data-id="${m.id}">
+        <div class="av-mini" style="background:${avatarColor(m.display_name)}">${initial(m.display_name)}</div>
+        <div class="mr-info">
+          <div class="mr-name">${escapeHtml(m.display_name)}</div>
+          <div class="mr-role"><span class="role-pill ${m.role}">${roleLabel(m.role)}</span></div>
+        </div>
+        <div class="mr-actions">
+          ${m.id === state.membership?.id ? '<span class="mr-current-pill">나</span>' : ''}
+          ${currentIsAdmin() && m.id !== state.membership?.id ? `<select class="mr-role-sel" style="font-size:11px;padding:2px 4px;border:1px solid var(--border);border-radius:4px">
+            <option value="worker" ${m.role === "worker" ? "selected" : ""}>작업자</option>
+            <option value="admin" ${m.role === "admin" ? "selected" : ""}>관리자</option>
+            <option value="ceo" ${m.role === "ceo" ? "selected" : ""}>대표</option>
+          </select>` : ''}
+        </div>
+      </div>
+    `).join("");
+
+    wrap.querySelectorAll(".member-row").forEach(row => {
+      const id = row.dataset.id;
+      row.querySelector(".mr-role-sel")?.addEventListener("change", async (e) => {
+        const newRole = e.target.value;
+        const { error } = await sb.from("memberships").update({ role: newRole }).eq("id", id);
+        if (error) toast("권한 변경 실패: " + error.message);
+        else toast("역할이 변경됐어요");
+      });
+    });
+  }
+
+  // ─────────── Sidebar ───────────
+  function renderSidebar() {
+    const list = document.getElementById("taskList");
+    document.getElementById("taskCountBadge").textContent = state.tasks.length;
+    if (state.tasks.length === 0) {
+      list.innerHTML = '<div class="empty-side">아직 작업이 없어요.<br>위 버튼으로 첫 작업을 만들어보세요</div>';
+      return;
+    }
+    list.innerHTML = state.tasks.map(t => {
+      const p = calcProgress(t);
+      const st = taskStatus(t);
+      const due = dueInfo(t.due_date);
+      const fillCls = p === 100 ? "done" : p === 0 ? "zero" : "";
+      const totalAtt = (t.attachments || []).length + (t.plans || []).reduce((s, pl) => s + (pl.works || []).length, 0);
+      return `
+        <div class="task-card ${t.id === selectedId ? "active" : ""}" data-id="${t.id}">
+          <div class="task-card-row">
+            <span class="status-pill ${st.key}">${st.label}</span>
+            ${due ? `<span class="due-badge ${due.cls}">${I.cal}${due.label}</span>` : ""}
+          </div>
+          <div class="task-card-title">${escapeHtml(t.title)}</div>
+          <div class="progress-row">
+            <div class="progress-track"><div class="progress-fill ${fillCls}" style="width:${p}%"></div></div>
+            <div class="progress-text">${p}%</div>
+          </div>
+          <div class="task-card-meta">
+            <span class="meta-item">${I.list}${(t.plans || []).length}</span>
+            <span class="meta-item">${I.paperclip}${totalAtt}</span>
+            <span class="meta-item">${I.chat}${totalCommentCount(t)}</span>
+          </div>
+        </div>`;
+    }).join("");
+
+    list.querySelectorAll(".task-card").forEach(el => {
+      el.onclick = async () => {
+        if (selectedId !== el.dataset.id) {
+          selectedId = el.dataset.id;
+          currentTab = "overview";
+          openPlanId = null;
+          await loadTaskDeep(selectedId);
+          renderAll();
+        }
+      };
+    });
+  }
+
+  // ─────────── Main ───────────
+  function renderMain() {
+    const main = document.getElementById("main");
+    const task = state.tasks.find(t => t.id === selectedId);
+    if (!task) {
+      main.innerHTML = `
+        <div class="main-empty">
+          <div class="ill">${I.inbox}</div>
+          <h2>작업을 선택해주세요</h2>
+          <p>왼쪽에서 작업을 클릭하거나, 새 작업을 만들어보세요</p>
+        </div>`;
+      return;
+    }
+    const st = taskStatus(task);
+    const due = dueInfo(task.due_date);
+    const totalComments = totalCommentCount(task);
+    const contributors = uniqueContributors(task);
+    const memberAvatars = contributors.slice(0, 4).map(n => `<div class="av" style="background:${avatarColor(n)}" title="${escapeHtml(n)}">${initial(n)}</div>`).join("");
+    const moreCount = contributors.length - 4;
+
+    main.innerHTML = `
+      <div class="top-bar">
+        <div class="top-bar-row">
+          <div class="top-left">
+            <div class="top-meta">
+              <span class="status-pill ${st.key}">${st.label}</span>
+              ${due ? `<span class="due-badge ${due.cls}">${I.cal}${due.full} · ${due.label}</span>` : ""}
+            </div>
+            <h2 class="top-title">${escapeHtml(task.title)}</h2>
+            <div class="top-sub"><span>생성 ${fmtDate(task.created_at)}</span></div>
+          </div>
+          <div class="top-actions">
+            ${contributors.length ? `<div class="members"><div class="avatar-stack">${memberAvatars}${moreCount > 0 ? `<div class="av more">+${moreCount}</div>` : ""}</div></div>` : ""}
+            <button class="btn btn-sm" id="btnEditTask">${I.edit}수정</button>
+            <button class="btn btn-sm btn-danger" id="btnDeleteTask">${I.trash}</button>
+          </div>
+        </div>
+        <div class="tabs">
+          <button class="tab ${currentTab === "overview" ? "active" : ""}" data-tab="overview">${I.list} 개요</button>
+          <button class="tab ${currentTab === "files" ? "active" : ""}" data-tab="files">${I.paperclip} 자료 <span class="tc">${(task.attachments || []).length}</span></button>
+          <button class="tab ${currentTab === "comments" ? "active" : ""}" data-tab="comments">${I.chat} 댓글 <span class="tc">${totalComments}</span></button>
+        </div>
+      </div>
+      <div class="tab-body" id="tabBody"></div>
+    `;
+    renderTabBody(task);
+    bindTopEvents(task);
+  }
+
+  function renderTabBody(task) {
+    const body = document.getElementById("tabBody");
+    if (currentTab === "overview" && openPlanId) {
+      const plan = (task.plans || []).find(p => p.id === openPlanId);
+      if (!plan) { openPlanId = null; return renderTabBody(task); }
+      body.innerHTML = renderPlanWorkspace(task, plan);
+      bindPlanWorkspace(task, plan);
+    } else if (currentTab === "overview") {
+      body.innerHTML = renderOverview(task);
+      bindOverview(task);
+    } else if (currentTab === "files") {
+      body.innerHTML = renderFiles(task);
+      bindFiles(task);
+    } else if (currentTab === "comments") {
+      body.innerHTML = renderComments(task);
+      bindComments(task);
+    }
+  }
+
+  // ─────────── Overview ───────────
+  function renderOverview(task) {
+    const p = calcProgress(task);
+    const doneCount = (task.plans || []).filter(x => x.done).length;
+    const C = 2 * Math.PI * 36;
+    const offset = C - (p / 100) * C;
+    const fillCls = p === 100 ? "done" : "";
+    return `
+      <div class="desc-block ${task.description ? "" : "empty"}">${task.description ? escapeHtml(task.description) : "설명이 없습니다"}</div>
+      <div class="progress-hero">
+        <div>
+          <div class="label">진행 상황</div>
+          <div class="value">전체 ${(task.plans || []).length}개 중 <strong>${doneCount}개</strong> 완료</div>
+          <div class="bar"><div class="bar-fill ${fillCls}" style="width:${p}%"></div></div>
+          <div class="value" style="color:var(--muted);font-size:12px">계획을 클릭하면 작업 공간 · 관리자 승인 시 완료 처리</div>
+        </div>
+        <div class="donut">
+          <svg viewBox="0 0 80 80">
+            <circle class="track" cx="40" cy="40" r="36" fill="none" stroke-width="7"/>
+            <circle class="fill ${fillCls}" cx="40" cy="40" r="36" fill="none" stroke-width="7" stroke-dasharray="${C}" stroke-dashoffset="${offset}"/>
+          </svg>
+          <div class="donut-text">${p}%</div>
+        </div>
+      </div>
+      <div class="two-col">
+        <div class="section">
+          <div class="section-head">
+            <h3><span class="icon-wrap">${I.list}</span>계획</h3>
+            <span class="count-pill">${doneCount} / ${(task.plans || []).length}</span>
+          </div>
+          <ul class="plan-list" id="planList"></ul>
+          <div class="add-row">
+            <input type="text" class="input" id="planInput" placeholder="새 계획 추가 (Enter)" />
+            <button class="btn btn-primary btn-sm" id="planAdd">${I.plus}추가</button>
+          </div>
+        </div>
+        <div class="section">
+          <div class="section-head">
+            <h3><span class="icon-wrap">${I.activity}</span>진행 피드백</h3>
+            <span class="count-pill">${(task.feedbacks || []).length}</span>
+          </div>
+          <ul class="feed-list" id="feedbackList"></ul>
+          <div class="add-row">
+            <input type="text" class="input" id="feedbackInput" placeholder="진행 상황을 한 줄로" />
+            <button class="btn btn-primary btn-sm" id="feedbackAdd">남기기</button>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  function bindOverview(task) {
+    renderPlans(task);
+    renderFeedbacks(task);
+    const planInput = document.getElementById("planInput");
+    document.getElementById("planAdd").onclick = () => addPlan(task, planInput);
+    planInput.onkeydown = (e) => e.key === "Enter" && addPlan(task, planInput);
+    const fbInput = document.getElementById("feedbackInput");
+    document.getElementById("feedbackAdd").onclick = () => addFeedback(task, fbInput);
+    fbInput.onkeydown = (e) => e.key === "Enter" && addFeedback(task, fbInput);
+  }
+
+  function renderPlans(task) {
+    const list = document.getElementById("planList");
+    const plans = task.plans || [];
+    if (plans.length === 0) {
+      list.innerHTML = '<li style="color:var(--muted);padding:8px;font-size:13px">계획 항목을 추가하세요. 클릭하면 작업 공간이 열립니다.</li>';
+      return;
+    }
+    list.innerHTML = plans.map(p => {
+      const works = (p.works || []).length;
+      const cm = (p.works || []).reduce((s, w) => s + (w.comments || []).length, 0);
+      const stCls = p.done ? "done" : (p.pending_review ? "review" : "");
+      const primary = memberById(p.primary_assignee_id);
+      const secondary = memberById(p.secondary_assignee_id);
+      const assignees = [primary, secondary].filter(Boolean);
+      return `
+        <li class="plan-item ${stCls}" data-id="${p.id}">
+          <span class="check">${I.check}</span>
+          <span class="plan-text">
+            <span>${escapeHtml(p.text)}</span>
+            ${p.pending_review ? `<span class="review-pill">${I.clock}검토 대기</span>` : ""}
+            <span class="plan-counts">
+              ${works > 0 ? `<span class="pc">${I.paperclip}${works}</span>` : ""}
+              ${cm > 0 ? `<span class="pc">${I.chat}${cm}</span>` : ""}
+            </span>
+            ${assignees.length ? `<span class="plan-assignees">${assignees.map(m => `<span class="av-mini" style="background:${avatarColor(m.display_name)}" title="${escapeHtml(m.display_name)}">${initial(m.display_name)}</span>`).join("")}</span>` : ""}
+          </span>
+          <span class="plan-arrow">${I.arrowRight}</span>
+          <button class="btn-icon-sm plan-del" title="삭제">${I.x}</button>
+        </li>`;
+    }).join("");
+
+    list.querySelectorAll(".plan-item").forEach(el => {
+      const id = el.dataset.id;
+      el.querySelector(".check").onclick = (e) => {
+        e.stopPropagation();
+        togglePlanCompletion(plans.find(x => x.id === id));
+      };
+      el.querySelector(".plan-del").onclick = async (e) => {
+        e.stopPropagation();
+        if (!confirm("계획을 삭제할까요? 등록된 작업물도 함께 사라집니다.")) return;
+        const { error } = await sb.from("plans").delete().eq("id", id);
+        if (error) return toast(error.message);
+      };
+      el.onclick = () => { openPlanId = id; renderTabBody(task); };
+    });
+  }
+
+  async function togglePlanCompletion(plan) {
+    const isAdmin = currentIsAdmin();
+    let updates = {};
+    if (plan.done) {
+      updates = { done: false, pending_review: false };
+    } else if (plan.pending_review) {
+      if (isAdmin) { updates = { done: true, pending_review: false }; toast("완료 승인됐어요"); }
+      else { updates = { pending_review: false }; toast("검토 요청을 취소했어요"); }
+    } else {
+      if (isAdmin) updates = { done: true, pending_review: false };
+      else { updates = { pending_review: true }; toast("관리자/대표에게 검토를 요청했어요"); }
+    }
+    const { error } = await sb.from("plans").update(updates).eq("id", plan.id);
+    if (error) toast(error.message);
+  }
+
+  function renderFeedbacks(task) {
+    const list = document.getElementById("feedbackList");
+    const fbs = task.feedbacks || [];
+    if (fbs.length === 0) {
+      list.innerHTML = '<li style="color:var(--muted);padding:8px;font-size:13px">아직 피드백이 없어요.</li>';
+      return;
+    }
+    list.innerHTML = fbs.slice().reverse().map(f => `
+      <li class="feed-item" data-id="${f.id}">
+        <span class="feed-dot"></span>
+        <div class="feed-body">
+          <div class="feed-text">${escapeHtml(f.body)}</div>
+          <div class="feed-time">${fmtDateTime(f.created_at)}</div>
+        </div>
+        <button class="btn-icon-sm feed-del" title="삭제">${I.x}</button>
+      </li>`).join("");
+    list.querySelectorAll(".feed-del").forEach(el => {
+      el.onclick = async () => {
+        const id = el.closest(".feed-item").dataset.id;
+        await sb.from("feedbacks").delete().eq("id", id);
+      };
+    });
+  }
+
+  async function addPlan(task, input) {
+    const text = input.value.trim();
+    if (!text) return;
+    const position = (task.plans || []).length;
+    const { error } = await sb.from("plans").insert({ task_id: task.id, text, position });
+    if (error) return toast(error.message);
+    input.value = "";
+  }
+  async function addFeedback(task, input) {
+    const text = input.value.trim();
+    if (!text) return;
+    const { error } = await sb.from("feedbacks").insert({ task_id: task.id, body: text, author_id: state.user.id });
+    if (error) return toast(error.message);
+    input.value = "";
+  }
+
+  // ─────────── Plan workspace ───────────
+  function renderPlanWorkspace(task, plan) {
+    const works = plan.works || [];
+    const stCls = plan.done ? "done" : (plan.pending_review ? "review" : "");
+    const primary = memberById(plan.primary_assignee_id);
+    const secondary = memberById(plan.secondary_assignee_id);
+    const isAdmin = currentIsAdmin();
+
+    let actions = "";
+    if (plan.done) actions = `<button class="btn btn-sm" id="phReopen">${I.x}완료 해제</button>`;
+    else if (plan.pending_review) {
+      if (isAdmin) actions = `<button class="btn btn-sm btn-success" id="phApprove">${I.check}승인 (완료)</button> <button class="btn btn-sm btn-danger" id="phReject">${I.x}반려</button>`;
+      else actions = `<button class="btn btn-sm" id="phCancelReview">${I.x}검토 취소</button>`;
+    } else {
+      actions = isAdmin
+        ? `<button class="btn btn-sm btn-success" id="phMarkDone">${I.check}완료 처리</button>`
+        : `<button class="btn btn-sm btn-warning" id="phRequestReview">${I.clock}수정 완료 (검토 요청)</button>`;
+    }
+
+    const reviewBanner = plan.pending_review ? `
+      <div class="review-banner">
+        <div class="rb-left">
+          <span class="rb-icon">${I.clock}</span>
+          <div class="rb-text">
+            <strong>승인 대기 중</strong>
+            <div>작업자가 수정을 마쳤어요. 관리자나 대표가 검토하고 승인하면 계획이 완료됩니다.</div>
+          </div>
+        </div>
+        ${isAdmin ? `<div class="rb-actions">
+          <button class="btn btn-sm btn-success" id="rbApprove">${I.check}승인</button>
+          <button class="btn btn-sm btn-danger" id="rbReject">${I.x}반려</button>
+        </div>` : ""}
+      </div>` : "";
+
+    return `
+      <div class="plan-ws">
+        <div class="breadcrumb">
+          <a id="ws-back">${I.arrow}<span>개요</span></a>
+          <span class="sep">/</span>
+          <span class="current">${escapeHtml(plan.text)}</span>
+        </div>
+        <div class="plan-hero ${stCls}">
+          <div class="ph-left">
+            <span class="ph-check" id="phCheck">${I.check}</span>
+            <div class="ph-info">
+              <div class="ph-title">${escapeHtml(plan.text)}</div>
+              <div class="ph-sub">
+                ${plan.done ? "완료된 계획" : (plan.pending_review ? "승인 대기 중" : "진행 중")} · 작업물 ${works.length}개
+              </div>
+            </div>
+          </div>
+          <div class="ph-actions">
+            ${actions}
+            <button class="btn btn-sm" id="phEdit">${I.edit}이름</button>
+            <button class="btn btn-sm btn-danger" id="phDelete">${I.trash}</button>
+          </div>
+        </div>
+        ${reviewBanner}
+        <div class="assignees-row">
+          <div class="assignee-card">
+            <div class="assignee-label">주 작업자</div>
+            <div class="assignee-picker">
+              <div class="assignee-pill" id="primaryPicker">
+                <span class="av-mini ${primary ? "" : "empty"}" style="${primary ? `background:${avatarColor(primary.display_name)}` : ""}">${primary ? initial(primary.display_name) : "?"}</span>
+                <span class="assignee-name ${primary ? "" : "empty"}">${primary ? escapeHtml(primary.display_name) : "지정 안 됨"}</span>
+                ${primary ? `<span class="role-pill ${primary.role}">${roleLabel(primary.role)}</span>` : ""}
+              </div>
+            </div>
+          </div>
+          <div class="assignee-card">
+            <div class="assignee-label">부 작업자</div>
+            <div class="assignee-picker">
+              <div class="assignee-pill" id="secondaryPicker">
+                <span class="av-mini ${secondary ? "" : "empty"}" style="${secondary ? `background:${avatarColor(secondary.display_name)}` : ""}">${secondary ? initial(secondary.display_name) : "?"}</span>
+                <span class="assignee-name ${secondary ? "" : "empty"}">${secondary ? escapeHtml(secondary.display_name) : "지정 안 됨"}</span>
+                ${secondary ? `<span class="role-pill ${secondary.role}">${roleLabel(secondary.role)}</span>` : ""}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="tab-intro">
+          <span class="ti-ic">${I.palette}</span>
+          <div>
+            <strong>작업 공간 — 작업물에 위치 핀으로 피드백</strong>
+            <div>작업물 카드를 열고 댓글 박스의 <b>핀</b> 버튼을 작업물 위로 끌어다 놓으면 그 지점에 코멘트가 달려요. 수정이 끝나면 댓글 옆 체크로 해결 처리합니다.</div>
+          </div>
+        </div>
+        <div class="files-tools">
+          <div class="ws-section-head" style="margin-bottom:0">
+            <h3>작업물 <span class="count-pill">${works.length}</span></h3>
+          </div>
+          <label class="btn btn-dark btn-sm" for="wsFileInput">
+            ${I.upload}<span>작업물 추가</span>
+            <input type="file" id="wsFileInput" multiple style="display:none" />
+          </label>
+        </div>
+        ${works.length === 0
+          ? `<div class="file-empty" id="wsDrop">
+              <div class="upicon">${I.upload}</div>
+              <p>여기에 작업물을 끌어다 놓거나 <label for="wsFileInput2" class="browse">클릭해서 선택</label></p>
+              <p style="font-size:12px;color:var(--muted);margin-top:6px">파일당 최대 50MB</p>
+              <input type="file" id="wsFileInput2" multiple style="display:none" />
+            </div>`
+          : `<div class="files-grid" id="wsGrid">${works.map(w => fileCardHtml(w)).join("")}</div>
+            <div class="file-empty" id="wsDrop" style="margin-top:14px;padding:24px">
+              <div class="upicon">${I.upload}</div>
+              <p>새 작업물을 끌어다 놓거나 <label for="wsFileInput3" class="browse">클릭해서 선택</label></p>
+              <input type="file" id="wsFileInput3" multiple style="display:none" />
+            </div>`}
+      </div>
+    `;
+  }
+
+  function bindPlanWorkspace(task, plan) {
+    document.getElementById("ws-back").onclick = () => { openPlanId = null; renderTabBody(task); };
+    document.getElementById("phCheck").onclick = () => togglePlanCompletion(plan);
+    const bind = (id, fn) => { const el = document.getElementById(id); if (el) el.onclick = fn; };
+    const update = async (updates) => {
+      const { error } = await sb.from("plans").update(updates).eq("id", plan.id);
+      if (error) toast(error.message);
+    };
+    bind("phMarkDone", () => update({ done: true, pending_review: false }));
+    bind("phRequestReview", () => { update({ pending_review: true }); toast("관리자/대표에게 검토를 요청했어요"); });
+    bind("phReopen", () => update({ done: false, pending_review: false }));
+    bind("phCancelReview", () => update({ pending_review: false }));
+    bind("phApprove", () => { update({ done: true, pending_review: false }); toast("완료 승인됐어요"); });
+    bind("phReject", () => { update({ pending_review: false }); toast("반려했어요"); });
+    bind("rbApprove", () => { update({ done: true, pending_review: false }); toast("완료 승인됐어요"); });
+    bind("rbReject", () => { update({ pending_review: false }); toast("반려했어요"); });
+
+    document.getElementById("phEdit").onclick = async () => {
+      const next = prompt("계획 이름을 수정합니다", plan.text);
+      if (next != null && next.trim()) {
+        const { error } = await sb.from("plans").update({ text: next.trim() }).eq("id", plan.id);
+        if (error) toast(error.message);
+      }
+    };
+    document.getElementById("phDelete").onclick = async () => {
+      if (!confirm("이 계획과 작업물을 모두 삭제할까요?")) return;
+      const { error } = await sb.from("plans").delete().eq("id", plan.id);
+      if (!error) { openPlanId = null; }
+      else toast(error.message);
+    };
+
+    document.getElementById("primaryPicker").onclick = (e) => openAssigneePopover(e.currentTarget, "primary_assignee_id", plan);
+    document.getElementById("secondaryPicker").onclick = (e) => openAssigneePopover(e.currentTarget, "secondary_assignee_id", plan);
+
+    const handleFiles = (files) => Array.from(files).forEach(f => addFile(f, { task_id: task.id, plan_id: plan.id, kind: "work" }));
+    ["wsFileInput", "wsFileInput2", "wsFileInput3"].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.onchange = (e) => { handleFiles(e.target.files); e.target.value = ""; };
+    });
+    const drop = document.getElementById("wsDrop");
+    if (drop) {
+      ["dragenter","dragover"].forEach(ev => drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.add("drag"); }));
+      ["dragleave","drop"].forEach(ev => drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.remove("drag"); }));
+      drop.addEventListener("drop", (e) => handleFiles(e.dataTransfer.files));
+    }
+
+    document.querySelectorAll("#tabBody .file-card").forEach(el => {
+      const id = el.dataset.id;
+      const work = (plan.works || []).find(x => x.id === id);
+      el.onclick = (e) => {
+        if (e.target.closest(".file-card-actions")) return;
+        openFile = { taskId: task.id, planId: plan.id, fileId: id };
+        renderFileOverlay();
+      };
+      el.querySelector(".att-down").onclick = (e) => { e.stopPropagation(); downloadAttachment(work); };
+      el.querySelector(".att-del").onclick = async (e) => {
+        e.stopPropagation();
+        if (!confirm(`"${work.name}" 작업물을 삭제할까요?`)) return;
+        await deleteAttachment(work);
+      };
+    });
+  }
+
+  function openAssigneePopover(anchorEl, fieldKey, plan) {
+    closeAssigneePopover();
+    const popover = document.createElement("div");
+    popover.className = "assignee-popover";
+    popover.id = "assigneePopover";
+    const rect = anchorEl.getBoundingClientRect();
+    popover.style.top = `${window.scrollY + rect.bottom + 6}px`;
+    popover.style.left = `${rect.left}px`;
+    const currentVal = plan[fieldKey];
+    popover.innerHTML = `
+      ${state.members.map(m => `
+        <div class="item ${m.id === currentVal ? "selected" : ""}" data-id="${m.id}">
+          <span class="av-mini" style="background:${avatarColor(m.display_name)}">${initial(m.display_name)}</span>
+          <span class="item-info">
+            <div class="item-name">${escapeHtml(m.display_name)}</div>
+            <div class="item-role">${roleLabel(m.role)}</div>
+          </span>
+        </div>`).join("")}
+      ${currentVal ? '<div class="divider"></div><div class="item clear" data-id="">지정 해제</div>' : ""}
+    `;
+    document.body.appendChild(popover);
+    popover.querySelectorAll(".item").forEach(it => {
+      it.onclick = async () => {
+        const newId = it.dataset.id || null;
+        const { error } = await sb.from("plans").update({ [fieldKey]: newId }).eq("id", plan.id);
+        if (error) toast(error.message);
+        closeAssigneePopover();
+      };
+    });
+    setTimeout(() => document.addEventListener("click", popoverOutsideClick, true), 0);
+  }
+  function closeAssigneePopover() {
+    document.getElementById("assigneePopover")?.remove();
+    document.removeEventListener("click", popoverOutsideClick, true);
+  }
+  function popoverOutsideClick(e) {
+    if (!e.target.closest(".assignee-popover") && !e.target.closest(".assignee-pill")) closeAssigneePopover();
+  }
+
+  // ─────────── Files (reference) ───────────
+  function renderFiles(task) {
+    const empty = (task.attachments || []).length === 0;
+    return `
+      <div class="tab-intro">
+        <span class="ti-ic">${I.info}</span>
+        <div>
+          <strong>참고 자료를 모아두는 곳이에요</strong>
+          <div>작업 시작 전에 받아본 시안, 요구사항 문서, 가이드 같은 입력 자료를 올려주세요. 결과물(내가 만든 작업물)은 각 계획 안에서 관리해요.</div>
+        </div>
+      </div>
+      <div class="files-tools">
+        <div style="font-size:13px;color:var(--muted)">파일을 클릭하면 미리보기 + 자료에 대한 댓글을 남길 수 있어요</div>
+        <label class="btn btn-dark btn-sm" for="fileInput">
+          ${I.upload}<span>자료 추가</span>
+          <input type="file" id="fileInput" multiple style="display:none" />
+        </label>
+      </div>
+      ${empty
+        ? `<div class="file-empty" id="fileDrop">
+            <div class="upicon">${I.upload}</div>
+            <p>참고 자료를 끌어다 놓거나 <label for="fileInput2" class="browse">클릭해서 선택</label></p>
+            <p style="font-size:12px;color:var(--muted);margin-top:6px">파일당 최대 50MB</p>
+            <input type="file" id="fileInput2" multiple style="display:none" />
+          </div>`
+        : `<div class="files-grid" id="filesGrid">${task.attachments.map(a => fileCardHtml(a)).join("")}</div>
+          <div class="file-empty" id="fileDrop" style="margin-top:14px;padding:24px">
+            <div class="upicon">${I.upload}</div>
+            <p>자료를 끌어다 놓거나 <label for="fileInput3" class="browse">클릭해서 선택</label></p>
+            <input type="file" id="fileInput3" multiple style="display:none" />
+          </div>`}
+    `;
+  }
+
+  function bindFiles(task) {
+    const handleFiles = (files) => Array.from(files).forEach(f => addFile(f, { task_id: task.id, plan_id: null, kind: "reference" }));
+    ["fileInput","fileInput2","fileInput3"].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.onchange = (e) => { handleFiles(e.target.files); e.target.value = ""; };
+    });
+    const drop = document.getElementById("fileDrop");
+    if (drop) {
+      ["dragenter","dragover"].forEach(ev => drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.add("drag"); }));
+      ["dragleave","drop"].forEach(ev => drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.remove("drag"); }));
+      drop.addEventListener("drop", (e) => handleFiles(e.dataTransfer.files));
+    }
+    document.querySelectorAll("#tabBody .file-card").forEach(el => {
+      const id = el.dataset.id;
+      const att = (task.attachments || []).find(x => x.id === id);
+      el.onclick = (e) => {
+        if (e.target.closest(".file-card-actions")) return;
+        openFile = { taskId: task.id, planId: null, fileId: id };
+        renderFileOverlay();
+      };
+      el.querySelector(".att-down").onclick = (e) => { e.stopPropagation(); downloadAttachment(att); };
+      el.querySelector(".att-del").onclick = async (e) => {
+        e.stopPropagation();
+        if (!confirm(`"${att.name}" 자료를 삭제할까요?`)) return;
+        await deleteAttachment(att);
+      };
+    });
+  }
+
+  // ─────────── File ops (Storage + DB) ───────────
+  async function addFile(file, { task_id, plan_id, kind }) {
+    if (file.size > 50 * 1024 * 1024) return toast(`${file.name}: 50MB 이하만 가능합니다`);
+    const ext = fileExt(file.name);
+    const path = `${task_id}/${crypto.randomUUID()}${ext ? "." + ext : ""}`;
+    const { error: upErr } = await sb.storage.from(BUCKET).upload(path, file, { contentType: file.type || undefined });
+    if (upErr) return toast("업로드 실패: " + upErr.message);
+    const { error: insErr } = await sb.from("attachments").insert({
+      task_id, plan_id, kind,
+      name: file.name, size: file.size,
+      mime_type: file.type || "application/octet-stream",
+      storage_path: path, uploaded_by: state.user.id
+    });
+    if (insErr) toast("DB 저장 실패: " + insErr.message);
+  }
+
+  async function deleteAttachment(att) {
+    await sb.storage.from(BUCKET).remove([att.storage_path]);
+    const { error } = await sb.from("attachments").delete().eq("id", att.id);
+    if (error) toast(error.message);
+  }
+
+  async function getSignedUrl(att) {
+    const { data, error } = await sb.storage.from(BUCKET).createSignedUrl(att.storage_path, 60 * 60);
+    if (error) { toast(error.message); return null; }
+    return data.signedUrl;
+  }
+
+  async function downloadAttachment(att) {
+    const url = await getSignedUrl(att);
+    if (!url) return;
+    const a = document.createElement("a");
+    a.href = url; a.download = att.name;
+    document.body.appendChild(a); a.click(); a.remove();
+  }
+
+  function fileCardHtml(a) {
+    const kind = fileKind(a);
+    const ext = fileExt(a.name) || kind;
+    const cmt = (a.comments || []).length;
+    const open = (a.comments || []).filter(c => !c.resolved).length;
+    let thumb;
+    if (kind === "image") {
+      thumb = `<span class="big-icon">${I.file}</span><span class="ext-pill">${escapeHtml(ext.toUpperCase())}</span>`;
+      // Async load thumb
+      setTimeout(async () => {
+        const url = await getSignedUrl(a);
+        if (!url) return;
+        const card = document.querySelector(`.file-card[data-id="${a.id}"] .file-thumb`);
+        if (card) card.innerHTML = `<img src="${url}" alt="" />`;
+      }, 50);
+    } else if (kind === "pdf") {
+      thumb = `<span class="big-icon">${I.file}</span><span class="ext-pill">PDF</span>`;
+    } else {
+      thumb = `<span class="big-icon">${I.file}</span><span class="ext-pill">${escapeHtml(ext.toUpperCase())}</span>`;
+    }
+    return `
+      <div class="file-card" data-id="${a.id}">
+        <div class="file-thumb">${thumb}</div>
+        <div class="file-card-actions">
+          <button class="icon-btn att-down" title="다운로드">${I.download}</button>
+          <button class="icon-btn att-del" title="삭제">${I.trash}</button>
+        </div>
+        <div class="file-card-body">
+          <div class="file-card-title">${escapeHtml(a.name)}</div>
+          <div class="file-card-meta">
+            <span>${fmtSize(a.size)}</span>
+            ${cmt > 0
+              ? `<span class="cmt-count">${I.chat}${open > 0 ? `${open} 미해결` : `${cmt} 모두 해결`}</span>`
+              : `<span>${I.eye} 미리보기</span>`}
+          </div>
+        </div>
+      </div>`;
+  }
+
+  // ─────────── File overlay ───────────
+  function getOpenFile() {
+    if (!openFile) return null;
+    const task = state.tasks.find(t => t.id === openFile.taskId);
+    if (!task) return null;
+    if (openFile.planId) {
+      const plan = (task.plans || []).find(p => p.id === openFile.planId);
+      const file = plan?.works?.find(w => w.id === openFile.fileId);
+      return file ? { file, contextLabel: `작업물 · ${plan.text}`, isWork: true } : null;
+    }
+    const file = (task.attachments || []).find(a => a.id === openFile.fileId);
+    return file ? { file, contextLabel: "참고 자료", isWork: false } : null;
+  }
+
+  async function renderFileOverlay() {
+    const existing = document.getElementById("fileOverlay");
+    if (existing) existing.remove();
+    if (!openFile) return;
+    const ctx = getOpenFile();
+    if (!ctx) { openFile = null; return; }
+    const { file: att, contextLabel, isWork } = ctx;
+    const kind = fileKind(att);
+    const url = await getSignedUrl(att);
+    let preview = "";
+    if (!url) preview = `<div class="file-preview-empty"><div class="big-icon">${I.file}</div><div>파일을 불러올 수 없습니다</div></div>`;
+    else if (kind === "image") preview = `<img src="${url}" alt="${escapeHtml(att.name)}" />`;
+    else if (kind === "pdf") preview = `<iframe src="${url}" title="${escapeHtml(att.name)}"></iframe>`;
+    else if (kind === "text") {
+      try {
+        const text = await (await fetch(url)).text();
+        preview = `<pre>${escapeHtml(text)}</pre>`;
+      } catch { preview = `<div class="file-preview-empty">불러오기 실패</div>`; }
+    } else {
+      preview = `<div class="file-preview-empty">
+        <div class="big-icon">${I.file}</div>
+        <div style="font-weight:600;color:var(--text);font-size:14px;margin-bottom:4px">${escapeHtml(att.name)}</div>
+        <div style="font-size:12.5px">이 형식은 미리보기를 지원하지 않습니다.<br>다운로드해서 확인해주세요.</div>
+      </div>`;
+    }
+
+    const cm = att.comments || [];
+    const filtered = cm.filter(c => commentFilter === "open" ? !c.resolved : commentFilter === "resolved" ? c.resolved : true);
+    const openCount = cm.filter(c => !c.resolved).length;
+    const numberMap = new Map();
+    cm.forEach((c, i) => numberMap.set(c.id, i + 1));
+
+    const cmList = filtered.length
+      ? filtered.slice().reverse().map(c => {
+          const num = numberMap.get(c.id);
+          return `
+          <li class="com-item ${c.resolved ? "resolved" : ""}" data-id="${c.id}">
+            ${c.pin_x != null ? `<span class="com-pin-num"><span>${num}</span></span>` : `<span style="width:22px;flex-shrink:0"></span>`}
+            <div class="com-body">
+              <div class="com-head">
+                <span class="com-name-wrap"><span class="com-name">${escapeHtml(c.author_name)}</span></span>
+                <span style="display:flex;align-items:center;gap:6px">
+                  <span class="com-time">${fmtDateTime(c.created_at)}</span>
+                  <button class="btn-icon-sm fc-del" title="삭제">${I.x}</button>
+                </span>
+              </div>
+              <div class="com-text">${escapeHtml(c.body)}</div>
+            </div>
+            <button class="com-resolve" title="${c.resolved ? "해결 취소" : "해결됨으로 표시"}">${I.check}</button>
+          </li>`;
+        }).join("")
+      : '<li class="empty-cm">표시할 코멘트가 없어요</li>';
+
+    const overlay = document.createElement("div");
+    overlay.id = "fileOverlay";
+    overlay.className = "file-overlay";
+    overlay.innerHTML = `
+      <div class="file-modal" role="dialog">
+        <div class="file-modal-head">
+          <button class="btn btn-sm" id="fcBack">${I.arrow}뒤로</button>
+          <span class="ctx-pill ${isWork ? "work" : ""}">${isWork ? I.palette : I.info}${escapeHtml(contextLabel)}</span>
+          <span class="file-name">${escapeHtml(att.name)}</span>
+          <span class="file-meta-text">${fmtSize(att.size)}</span>
+          <button class="btn btn-sm" id="fcDown">${I.download}다운로드</button>
+          <button class="btn-icon-sm" id="fcClose" title="닫기 (Esc)">${I.x}</button>
+        </div>
+        <div class="file-preview-area">
+          ${preview}
+          <div class="pin-layer" id="pinLayer"></div>
+        </div>
+        <aside class="file-comments-pane">
+          <div class="file-comments-head">
+            <div>
+              <h3>${isWork ? "이 작업물에 대한 피드백" : "이 자료에 대한 의견"}</h3>
+              <div class="sub">${cm.length}개 (미해결 ${openCount})</div>
+            </div>
+            <div class="filter-tabs">
+              <button class="${commentFilter === "all" ? "active" : ""}" data-f="all">전체</button>
+              <button class="${commentFilter === "open" ? "active" : ""}" data-f="open">미해결</button>
+              <button class="${commentFilter === "resolved" ? "active" : ""}" data-f="resolved">해결</button>
+            </div>
+          </div>
+          <ul class="file-comments-list">${cmList}</ul>
+          <div class="file-comments-form">
+            ${pendingPin ? `<div class="pending-pin-bar">${I.pin} <span>이 위치에 핀이 찍혔어요</span><button id="clearPin">제거</button></div>` : ""}
+            <textarea id="fcText" placeholder="${isWork ? "어떤 점을 다듬으면 좋을지 알려주세요" : "자료에 대한 의견을 남겨주세요"}"></textarea>
+            <div class="row">
+              <button class="pin-drag-btn ${pendingPin ? "has-pin" : ""}" id="pinDragBtn" title="버튼을 작업물 위로 끌어다 놓으세요">
+                ${I.pin} ${pendingPin ? "위치 지정됨" : "위치 지정"}
+              </button>
+              <button class="btn btn-dark btn-sm" id="fcSubmit" style="margin-left:auto">의견 남기기</button>
+            </div>
+          </div>
+        </aside>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+    renderPins(att, numberMap);
+
+    const close = () => { openFile = null; pendingPin = null; overlay.remove(); };
+    document.getElementById("fcBack").onclick = close;
+    document.getElementById("fcClose").onclick = close;
+    overlay.onclick = (e) => { if (e.target === overlay) close(); };
+    document.getElementById("fcDown").onclick = () => downloadAttachment(att);
+    document.getElementById("fcSubmit").onclick = async () => {
+      const text = document.getElementById("fcText").value.trim();
+      if (!text) return toast("내용을 입력해주세요");
+      const task = state.tasks.find(t => t.id === openFile.taskId);
+      const insert = {
+        org_id: state.org.id,
+        target_type: "attachment",
+        attachment_id: att.id,
+        task_id: task.id,
+        author_id: state.user.id,
+        author_name: currentName(),
+        body: text,
+        pin_x: pendingPin?.x ?? null,
+        pin_y: pendingPin?.y ?? null,
+      };
+      const { error } = await sb.from("comments").insert(insert);
+      if (error) return toast(error.message);
+      pendingPin = null;
+      document.getElementById("fcText").value = "";
+    };
+    overlay.querySelectorAll(".filter-tabs button").forEach(btn => {
+      btn.onclick = () => { commentFilter = btn.dataset.f; renderFileOverlay(); };
+    });
+    overlay.querySelectorAll(".com-item").forEach(el => {
+      const id = el.dataset.id;
+      const c = (att.comments || []).find(x => x.id === id);
+      el.querySelector(".com-resolve").onclick = async (e) => {
+        e.stopPropagation();
+        const updates = c.resolved
+          ? { resolved: false, resolved_by: null, resolved_at: null }
+          : { resolved: true, resolved_by: state.user.id, resolved_at: new Date().toISOString() };
+        const { error } = await sb.from("comments").update(updates).eq("id", id);
+        if (error) toast(error.message);
+      };
+      el.querySelector(".fc-del").onclick = async () => {
+        const { error } = await sb.from("comments").delete().eq("id", id);
+        if (error) toast(error.message);
+      };
+      el.addEventListener("mouseenter", () => {
+        document.querySelectorAll(".preview-pin").forEach(p => p.classList.add("dim"));
+        const pin = document.querySelector(`.preview-pin[data-id="${id}"]`);
+        if (pin) { pin.classList.remove("dim"); pin.classList.add("highlight"); }
+      });
+      el.addEventListener("mouseleave", () => {
+        document.querySelectorAll(".preview-pin").forEach(p => p.classList.remove("dim", "highlight"));
+      });
+    });
+    document.getElementById("clearPin")?.addEventListener("click", () => { pendingPin = null; renderFileOverlay(); });
+    const pinBtn = document.getElementById("pinDragBtn");
+    pinBtn.addEventListener("mousedown", (e) => { e.preventDefault(); startPinDrag(e); });
+
+    if (!window._escListener) {
+      window._escListener = (e) => {
+        if (e.key === "Escape") {
+          if (document.getElementById("assigneePopover")) closeAssigneePopover();
+          else if (openFile) close();
+        }
+      };
+      document.addEventListener("keydown", window._escListener);
+    }
+  }
+
+  function renderPins(att, numberMap) {
+    const layer = document.getElementById("pinLayer");
+    if (!layer) return;
+    layer.innerHTML = "";
+    (att.comments || []).forEach(c => {
+      if (c.pin_x == null) return;
+      const num = numberMap.get(c.id);
+      const pin = document.createElement("div");
+      pin.className = `preview-pin ${c.resolved ? "resolved" : ""}`;
+      pin.dataset.id = c.id;
+      pin.style.left = `${c.pin_x * 100}%`;
+      pin.style.top = `${c.pin_y * 100}%`;
+      pin.innerHTML = `<div class="pin-tail"></div><div class="pin-head"><span>${num}</span></div>`;
+      pin.title = `${c.author_name}: ${c.body}`;
+      layer.appendChild(pin);
+    });
+    if (pendingPin) {
+      const pin = document.createElement("div");
+      pin.className = "preview-pin pending";
+      pin.style.left = `${pendingPin.x * 100}%`;
+      pin.style.top = `${pendingPin.y * 100}%`;
+      pin.innerHTML = `<div class="pin-tail"></div><div class="pin-head"><span>+</span></div>`;
+      layer.appendChild(pin);
+    }
+  }
+
+  function startPinDrag(startEvent) {
+    const startBtn = document.getElementById("pinDragBtn");
+    const r = startBtn.getBoundingClientRect();
+    const ox = r.left + r.width / 2;
+    const oy = r.top + r.height / 2;
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("class", "pin-drag-svg");
+    svg.innerHTML = `
+      <line x1="${ox}" y1="${oy}" x2="${startEvent.clientX}" y2="${startEvent.clientY}" stroke="#d94e2a" stroke-width="2" stroke-dasharray="6 5"/>
+      <circle cx="${ox}" cy="${oy}" r="5" fill="#d94e2a"/>
+      <circle id="dragHead" cx="${startEvent.clientX}" cy="${startEvent.clientY}" r="9" fill="#d94e2a" stroke="#fff" stroke-width="2.5"/>
+    `;
+    document.body.appendChild(svg);
+    const capture = document.createElement("div");
+    capture.style.cssText = "position:fixed;inset:0;cursor:crosshair;z-index:249;";
+    document.body.appendChild(capture);
+    const line = svg.querySelector("line");
+    const head = svg.querySelector("#dragHead");
+    const preview = document.querySelector(".file-preview-area");
+    const onMove = (e) => {
+      line.setAttribute("x2", e.clientX);
+      line.setAttribute("y2", e.clientY);
+      head.setAttribute("cx", e.clientX);
+      head.setAttribute("cy", e.clientY);
+      const pr = preview.getBoundingClientRect();
+      const inside = e.clientX >= pr.left && e.clientX <= pr.right && e.clientY >= pr.top && e.clientY <= pr.bottom;
+      preview.style.outline = inside ? "2px solid var(--accent)" : "";
+      preview.style.outlineOffset = "-2px";
+      head.setAttribute("fill", inside ? "#d94e2a" : "#9ca3af");
+    };
+    const onUp = (e) => {
+      document.removeEventListener("mousemove", onMove);
+      document.removeEventListener("mouseup", onUp);
+      svg.remove(); capture.remove();
+      preview.style.outline = "";
+      const pr = preview.getBoundingClientRect();
+      const inside = e.clientX >= pr.left && e.clientX <= pr.right && e.clientY >= pr.top && e.clientY <= pr.bottom;
+      if (inside) {
+        pendingPin = { x: (e.clientX - pr.left) / pr.width, y: (e.clientY - pr.top) / pr.height };
+        renderFileOverlay();
+        document.getElementById("fcText")?.focus();
+      }
+    };
+    document.addEventListener("mousemove", onMove);
+    document.addEventListener("mouseup", onUp);
+  }
+
+  // ─────────── Comments tab ───────────
+  function renderComments(task) {
+    return `
+      <div class="section">
+        <div class="section-head">
+          <h3><span class="icon-wrap">${I.chat}</span>작업에 대한 댓글</h3>
+          <span class="count-pill">${(task.comments || []).length}</span>
+        </div>
+        <ul class="com-list" id="commentList"></ul>
+      </div>
+      <div class="com-form-card">
+        <textarea id="commentText" placeholder="작업 전반에 대한 의견을 남겨주세요"></textarea>
+        <div class="row">
+          <button class="btn btn-dark btn-sm" id="commentAdd" style="margin-left:auto">댓글 달기</button>
+        </div>
+      </div>
+    `;
+  }
+
+  function bindComments(task) {
+    const list = document.getElementById("commentList");
+    const cm = task.comments || [];
+    if (cm.length === 0) {
+      list.innerHTML = '<li style="color:var(--muted);padding:12px;font-size:13px;text-align:center">아직 댓글이 없어요. 첫 의견을 남겨보세요.</li>';
+    } else {
+      list.innerHTML = cm.slice().reverse().map(c => `
+        <li class="com-item" data-id="${c.id}">
+          <div class="com-avatar" style="background:${avatarColor(c.author_name)}">${initial(c.author_name)}</div>
+          <div class="com-body">
+            <div class="com-head">
+              <span class="com-name">${escapeHtml(c.author_name)}</span>
+              <span style="display:flex;align-items:center;gap:6px">
+                <span class="com-time">${fmtDateTime(c.created_at)}</span>
+                <button class="btn-icon-sm com-del" title="삭제">${I.x}</button>
+              </span>
+            </div>
+            <div class="com-text">${escapeHtml(c.body)}</div>
+          </div>
+        </li>`).join("");
+      list.querySelectorAll(".com-del").forEach(el => {
+        el.onclick = async () => {
+          const id = el.closest(".com-item").dataset.id;
+          await sb.from("comments").delete().eq("id", id);
+        };
+      });
+    }
+    document.getElementById("commentAdd").onclick = async () => {
+      const text = document.getElementById("commentText").value.trim();
+      if (!text) return toast("댓글 내용을 입력해주세요");
+      const { error } = await sb.from("comments").insert({
+        org_id: state.org.id, target_type: "task", task_id: task.id,
+        author_id: state.user.id, author_name: currentName(), body: text
+      });
+      if (error) return toast(error.message);
+      document.getElementById("commentText").value = "";
+    };
+  }
+
+  function bindTopEvents(task) {
+    document.getElementById("btnEditTask").onclick = () => openTaskModal(task);
+    document.getElementById("btnDeleteTask").onclick = async () => {
+      if (!confirm(`"${task.title}" 작업을 삭제할까요?`)) return;
+      const { error } = await sb.from("tasks").delete().eq("id", task.id);
+      if (error) toast(error.message);
+    };
+    document.querySelectorAll(".tab").forEach(el => {
+      el.onclick = () => {
+        currentTab = el.dataset.tab; openPlanId = null;
+        renderTabBody(task);
+        document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+        el.classList.add("active");
+      };
+    });
+  }
+
+  function renderAll() {
+    renderUserBar();
+    renderSidebar();
+    renderMain();
+  }
+
+  // ─────────── Task modal ───────────
+  let modalEditingId = null;
+  function openTaskModal(task) {
+    modalEditingId = task ? task.id : null;
+    document.getElementById("modalTitle").textContent = task ? "작업 수정" : "새 작업 만들기";
+    document.getElementById("modalTaskTitle").value = task?.title || "";
+    document.getElementById("modalTaskDesc").value = task?.description || "";
+    document.getElementById("modalTaskDue").value = task?.due_date || "";
+    document.getElementById("taskModal").style.display = "flex";
+    setTimeout(() => document.getElementById("modalTaskTitle").focus(), 50);
+  }
+  function closeTaskModal() { document.getElementById("taskModal").style.display = "none"; }
+  async function saveTaskModal() {
+    const title = document.getElementById("modalTaskTitle").value.trim();
+    if (!title) return toast("제목을 입력해주세요");
+    const desc = document.getElementById("modalTaskDesc").value.trim();
+    const due = document.getElementById("modalTaskDue").value || null;
+    if (modalEditingId) {
+      const { error } = await sb.from("tasks").update({ title, description: desc, due_date: due }).eq("id", modalEditingId);
+      if (error) return toast(error.message);
+    } else {
+      const { data, error } = await sb.from("tasks").insert({
+        org_id: state.org.id, title, description: desc, due_date: due, created_by: state.user.id
+      }).select().single();
+      if (error) return toast(error.message);
+      selectedId = data.id;
+      currentTab = "overview"; openPlanId = null;
+      await loadTaskDeep(data.id);
+    }
+    closeTaskModal();
+  }
+
+  // ─────────── Init binding ───────────
+  document.getElementById("btnNewTask").onclick = () => openTaskModal(null);
+  document.getElementById("modalClose").onclick = closeTaskModal;
+  document.getElementById("modalCancel").onclick = closeTaskModal;
+  document.getElementById("modalSave").onclick = saveTaskModal;
+  document.getElementById("taskModal").onclick = (e) => { if (e.target.id === "taskModal") closeTaskModal(); };
+  document.getElementById("userBarBtn").onclick = openMemberModal;
+  document.getElementById("brandBtn").onclick = openMemberModal;
+  document.getElementById("memberClose").onclick = closeMemberModal;
+  document.getElementById("memberModal").onclick = (e) => { if (e.target.id === "memberModal") closeMemberModal(); };
+  document.getElementById("orgNameInput").oninput = (e) => {
+    const trimmed = e.target.value.trim();
+    document.getElementById("brandOrgName").textContent = trimmed || "회사 미설정";
+    document.title = trimmed ? `${trimmed} · OrgX` : "OrgX — 조직 협업 보드";
+  };
+  document.getElementById("orgSaveBtn").onclick = async () => {
+    const name = document.getElementById("orgNameInput").value.trim();
+    if (name && name !== state.org.name) {
+      const { error } = await sb.from("orgs").update({ name }).eq("id", state.org.id);
+      if (error) return toast(error.message);
+      state.org.name = name;
+      renderUserBar();
+    }
+    closeMemberModal();
+    toast("회사 설정을 저장했어요");
+  };
+  document.getElementById("signOutBtn").onclick = async () => {
+    if (activeChannel) sb.removeChannel(activeChannel);
+    if (activeTaskChannel) sb.removeChannel(activeTaskChannel);
+    await sb.auth.signOut();
+    closeMemberModal();
+  };
+  document.getElementById("orgIdCode").addEventListener("click", async () => {
+    if (!state.org?.id) return;
+    try { await navigator.clipboard.writeText(state.org.id); toast("회사 ID를 복사했어요"); }
+    catch { /* noop */ }
+  });
+
+  // ─────────── Bootstrap ───────────
+  async function bootstrapAfterAuth() {
+    state.orgs = await loadOrgs();
+    if (state.orgs.length === 0) { renderOrgCreate(); return; }
+    await selectOrg(state.orgs[0].id);
+    hideGate();
+    renderAll();
+  }
+
+  async function init() {
+    const { data: { session } } = await sb.auth.getSession();
+    if (session) {
+      state.user = session.user;
+      await bootstrapAfterAuth();
+    } else {
+      renderLogin();
+    }
+    sb.auth.onAuthStateChange(async (_event, session) => {
+      if (session?.user && session.user.id !== state.user?.id) {
+        state.user = session.user;
+        await bootstrapAfterAuth();
+      } else if (!session) {
+        state.user = null;
+        if (activeChannel) sb.removeChannel(activeChannel);
+        if (activeTaskChannel) sb.removeChannel(activeTaskChannel);
+        renderLogin();
+      }
+    });
+  }
+  init();
+</script>
+</body>
+</html>
