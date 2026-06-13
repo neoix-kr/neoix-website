@@ -872,12 +872,48 @@
     @media (max-width: 540px) {
       .lyrics-search { grid-template-columns: 1fr; }
     }
+    .lyrics-search-btns {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    @media (max-width: 540px) {
+      .lyrics-search-btns { display: grid; grid-template-columns: 1fr 1fr; }
+    }
     .lyrics-search-btn {
       padding: 13px 16px;
       white-space: nowrap;
     }
     .lyrics-search-btn svg { width: 16px; height: 16px; }
     .lyrics-search-btn:disabled { opacity: 0.6; cursor: progress; }
+    .naver-btn { color: #03c75a; }
+    .naver-btn:hover { background: rgba(3, 199, 90, 0.08); }
+
+    /* 검색 모달: 폴백 액션 (네이버 옆 창 / 악보 찾기) */
+    .fallback-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      margin-top: 16px;
+    }
+    .fallback-actions .naver-side-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: #03c75a;
+      color: #fff;
+      border: none;
+      border-radius: var(--radius-sm);
+      padding: 12px 18px;
+      font-size: 14px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+    .fallback-actions .naver-side-btn:hover { background: #02b350; }
+    .fallback-actions .naver-side-btn svg { width: 16px; height: 16px; }
 
     /* 검색 모달: 로딩 상태 */
     .search-loading {
@@ -1129,13 +1165,23 @@
                 placeholder="가수 (선택, 정확도 ↑)"
                 autocomplete="off"
               />
-              <button type="button" id="searchLyricsBtn" class="btn btn-ghost lyrics-search-btn">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <circle cx="11" cy="11" r="7" />
-                  <path d="M21 21l-4.3-4.3" />
-                </svg>
-                제목으로 가사 찾기
-              </button>
+              <div class="lyrics-search-btns">
+                <button type="button" id="searchLyricsBtn" class="btn btn-ghost lyrics-search-btn">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <circle cx="11" cy="11" r="7" />
+                    <path d="M21 21l-4.3-4.3" />
+                  </svg>
+                  제목으로 가사 찾기
+                </button>
+                <button type="button" id="naverLyricsBtn" class="btn btn-ghost lyrics-search-btn naver-btn" title="네이버에서 가사 찾기 (옆 창으로 열려요)">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M15 3h6v6" />
+                    <path d="M10 14 21 3" />
+                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                  </svg>
+                  네이버 옆 창
+                </button>
+              </div>
             </div>
             <textarea
               id="songLyrics"
@@ -1333,6 +1379,7 @@
     // 가사 검색 (제목으로 찾기)
     const artistInput = $("artistInput");
     const searchLyricsBtn = $("searchLyricsBtn");
+    const naverLyricsBtn = $("naverLyricsBtn");
     const searchModal = $("searchModal");
     const searchModalTitle = $("searchModalTitle");
     const searchModalBody = $("searchModalBody");
@@ -1971,6 +2018,65 @@
     }
 
     // sheet-finder 폴백 링크 마크업
+    // 네이버 가사 검색을 옆 창(팝업)으로 열기
+    let naverPopupRef = null;
+    function naverLyricsUrl(title) {
+      const q = ((title || "").trim() + " 가사").trim();
+      return "https://search.naver.com/search.naver?query=" + encodeURIComponent(q);
+    }
+    function openNaverLyrics(title) {
+      const t = (title || "").trim();
+      if (!t) {
+        showToast("먼저 찬양 제목을 입력해요");
+        titleInput.focus();
+        return;
+      }
+      const url = naverLyricsUrl(t);
+      const w = 480;
+      const h = Math.min(900, (screen.availHeight || screen.height || 900) - 120);
+      const left = Math.max(0, (screen.availWidth || screen.width || 1280) - w - 24);
+      const features =
+        "width=" + w + ",height=" + h + ",left=" + left + ",top=80,scrollbars=yes,resizable=yes";
+      try {
+        if (naverPopupRef && !naverPopupRef.closed) {
+          naverPopupRef.location.href = url;
+          naverPopupRef.focus();
+        } else {
+          naverPopupRef = window.open(url, "ogxNaverLyrics", features);
+        }
+      } catch (e) {
+        naverPopupRef = null;
+      }
+      if (!naverPopupRef) {
+        window.open(url, "_blank", "noopener"); // 팝업 차단 시 새 탭 폴백
+      }
+      showToast("네이버를 옆 창으로 열었어요. 가사를 복사해 붙여넣어요");
+    }
+
+    // 검색 모달 하단 폴백 액션 (네이버 옆 창 + 악보 찾기)
+    function appendFallbackActions(title) {
+      const wrap = document.createElement("div");
+      wrap.className = "fallback-actions";
+
+      const naver = document.createElement("button");
+      naver.type = "button";
+      naver.className = "naver-side-btn";
+      naver.innerHTML =
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+          '<path d="M15 3h6v6"/><path d="M10 14 21 3"/>' +
+          '<path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>' +
+        "</svg>네이버에서 가사 찾기";
+      naver.addEventListener("click", function () { openNaverLyrics(title); });
+      wrap.appendChild(naver);
+
+      const tmp = document.createElement("div");
+      tmp.innerHTML = sheetFinderLinkHtml(title);
+      const sheet = tmp.firstElementChild;
+      if (sheet) wrap.appendChild(sheet);
+
+      searchModalBody.appendChild(wrap);
+    }
+
     function sheetFinderLinkHtml(title) {
       const href = "sheet-finder.html?q=" + encodeURIComponent(title || "");
       return (
@@ -1993,10 +2099,10 @@
       searchModalTitle.textContent = "가사를 못 찾았어요";
       searchModalBody.innerHTML =
         '<div class="search-empty">' +
-          "가사를 못 찾았어요. 제목을 바꾸거나 가수를 입력해보세요.<br />" +
-          "또는 아래에서 직접 찾을 수 있어요." +
-          sheetFinderLinkHtml(title) +
+          "자동 검색(LRCLib)에는 이 곡이 없네요.<br />" +
+          "국내 찬양은 <strong>네이버</strong>에서 더 잘 나와요. 옆 창으로 열어 가사를 복사해 붙여넣어요." +
         "</div>";
+      appendFallbackActions(title);
       openSearchModal();
     }
 
@@ -2004,10 +2110,10 @@
       searchModalTitle.textContent = "검색에 실패했어요";
       searchModalBody.innerHTML =
         '<div class="search-empty">' +
-          "네트워크 문제로 가사를 불러오지 못했어요. 잠시 후 다시 시도해주세요.<br />" +
-          "또는 아래에서 직접 찾을 수 있어요." +
-          sheetFinderLinkHtml(title) +
+          "네트워크 문제로 자동 검색을 못 했어요.<br />" +
+          "네이버에서 직접 찾아볼까요?" +
         "</div>";
+      appendFallbackActions(title);
       openSearchModal();
     }
 
@@ -2132,6 +2238,9 @@
     }
 
     searchLyricsBtn.addEventListener("click", handleSearchLyrics);
+    naverLyricsBtn.addEventListener("click", function () {
+      openNaverLyrics(titleInput.value);
+    });
 
     // ============================================
     // PPT 생성
