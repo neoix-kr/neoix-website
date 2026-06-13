@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OGX 찬양팀</title>
+  <meta name="description" content="예배 준비부터 현장까지 — 찬양 추천, 악보 찾기, 찬양 PPT 자막, 실시간 악보 공유까지 한 곳에서." />
+
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css"
+  />
+
+  <style>
+    :root {
+      --bg: #ffffff;
+      --surface: #ffffff;
+      --surface-2: #f9fafb;
+      --surface-3: #f2f4f6;
+      --border: #e5e8eb;
+      --border-strong: #d1d6db;
+      --text: #191f28;
+      --text-secondary: #4e5968;
+      --text-caption: #8b95a1;
+      --text-disabled: #b0b8c1;
+      --blue: #3182f6;
+      --blue-strong: #0064ff;
+      --blue-soft: #e8f2fe;
+      --success: #16c098;
+      --warning: #ffc100;
+      --danger: #f04452;
+
+      --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.04), 0 8px 24px rgba(0, 0, 0, 0.04);
+      --shadow-card-hover: 0 1px 3px rgba(0, 0, 0, 0.06), 0 16px 40px rgba(0, 0, 0, 0.1);
+
+      --radius: 20px;
+      --radius-sm: 12px;
+      --radius-pill: 999px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont,
+        system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo",
+        "Noto Sans KR", "Malgun Gothic", sans-serif;
+      font-feature-settings: "ss03", "ss04", "tnum";
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      line-height: 1.6;
+      font-size: 15px;
+      letter-spacing: -0.003em;
+    }
+
+    body { min-height: 100vh; padding: 96px 24px 120px; }
+
+    /* ---------- 상단 네비 ---------- */
+    .topnav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 64px;
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: saturate(180%) blur(14px);
+      -webkit-backdrop-filter: saturate(180%) blur(14px);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0 28px;
+      gap: 24px;
+      z-index: 100;
+    }
+    .topnav .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .brand-logo {
+      width: 28px; height: 28px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, var(--blue) 0%, var(--blue-strong) 100%);
+      display: inline-flex; align-items: center; justify-content: center;
+      color: #fff; font-size: 13px; font-weight: 800; letter-spacing: -0.04em;
+      flex-shrink: 0;
+    }
+    .brand-name { font-size: 16px; font-weight: 700; color: var(--text); letter-spacing: -0.02em; }
+    .topnav .tabs { display: flex; gap: 4px; align-items: center; height: 100%; margin-left: 8px; }
+    .topnav .tabs a {
+      display: inline-flex; align-items: center; height: 100%;
+      font-size: 15px; color: var(--text-secondary); text-decoration: none;
+      padding: 0 14px; border-bottom: 3px solid transparent;
+      transition: color 0.15s ease, border-color 0.15s ease;
+      font-weight: 600; letter-spacing: -0.01em; white-space: nowrap;
+    }
+    .topnav .tabs a:hover { color: var(--text); }
+    .topnav .tabs a.active { color: var(--blue); border-bottom-color: var(--blue); }
+    @media (max-width: 640px) {
+      .topnav { padding: 0 14px; gap: 4px; overflow-x: auto; }
+      .brand-name { display: none; }
+      .topnav .tabs { margin-left: 0; }
+      .topnav .tabs a { padding: 0 10px; font-size: 13px; }
+    }
+
+    /* ---------- 컨테이너 ---------- */
+    .container { max-width: 1080px; margin: 0 auto; }
+
+    .hero { margin-bottom: 40px; }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 7px;
+      background: var(--blue-soft); color: var(--blue-strong);
+      font-size: 13px; font-weight: 700; padding: 6px 14px;
+      border-radius: var(--radius-pill); margin-bottom: 18px;
+    }
+    .hero h1 {
+      font-size: 40px; font-weight: 800; letter-spacing: -0.03em;
+      line-height: 1.2; margin-bottom: 12px;
+    }
+    .hero .lead { font-size: 18px; color: var(--text-secondary); font-weight: 500; max-width: 600px; }
+
+    /* ---------- 카드 그리드 ---------- */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 18px;
+    }
+    @media (max-width: 720px) {
+      body { padding: 88px 16px 100px; }
+      .grid { grid-template-columns: 1fr; }
+      .hero h1 { font-size: 30px; }
+      .hero .lead { font-size: 15px; }
+    }
+
+    .tool {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      text-decoration: none;
+      color: inherit;
+      box-shadow: var(--shadow-card);
+      transition: box-shadow 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+      overflow: hidden;
+    }
+    .tool:hover {
+      box-shadow: var(--shadow-card-hover);
+      transform: translateY(-3px);
+      border-color: var(--border-strong);
+    }
+    .tool-icon {
+      width: 52px; height: 52px;
+      border-radius: 14px;
+      display: inline-flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .tool-icon svg { width: 26px; height: 26px; stroke-width: 2; }
+    .tool-icon.blue { background: var(--blue-soft); color: var(--blue-strong); }
+    .tool-icon.green { background: #e4f8f1; color: #08916a; }
+    .tool-icon.amber { background: #fff7e0; color: #b88400; }
+    .tool-icon.violet { background: #efeafe; color: #6a3fe0; }
+    .tool-body { flex: 1; }
+    .tool-title {
+      font-size: 19px; font-weight: 700; letter-spacing: -0.02em;
+      margin-bottom: 6px; display: flex; align-items: center; gap: 8px;
+    }
+    .tool-desc { font-size: 14px; color: var(--text-secondary); line-height: 1.55; }
+    .tool-go {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-size: 14px; font-weight: 700; color: var(--blue);
+      margin-top: 2px;
+    }
+    .tool-go svg { width: 16px; height: 16px; stroke-width: 2.2; transition: transform 0.2s ease; }
+    .tool:hover .tool-go svg { transform: translateX(3px); }
+
+    .footer {
+      margin-top: 48px;
+      font-size: 13px;
+      color: var(--text-disabled);
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <nav class="topnav">
+    <a class="brand" href="index.html">
+      <span class="brand-logo">O</span>
+      <span class="brand-name">OGX 찬양팀</span>
+    </a>
+    <div class="tabs">
+      <a href="recommend.html">추천</a>
+      <a href="sheet-finder.html">악보 찾기</a>
+      <a href="praise-ppt.html">찬양 PPT</a>
+      <a href="worship-team.html">실시간 악보</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <header class="hero">
+      <span class="hero-badge">예배팀 도구 모음</span>
+      <h1>찬양팀에 필요한 모든 것</h1>
+      <p class="lead">곡 추천부터 악보 찾기, 자막 PPT, 현장 실시간 공유까지 한 곳에서 준비해요.</p>
+    </header>
+
+    <div class="grid">
+      <a class="tool" href="recommend.html">
+        <span class="tool-icon blue">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+        </span>
+        <div class="tool-body">
+          <div class="tool-title">추천</div>
+          <div class="tool-desc">키와 분위기, 코드 진행을 고르면 어울리는 찬양을 골라줘요.</div>
+        </div>
+        <span class="tool-go">바로 가기 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+      </a>
+
+      <a class="tool" href="sheet-finder.html">
+        <span class="tool-icon green">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+        </span>
+        <div class="tool-body">
+          <div class="tool-title">악보 찾기</div>
+          <div class="tool-desc">여러 사이트에서 한 번에 검색하고, 가사도 바로 가져와요.</div>
+        </div>
+        <span class="tool-go">바로 가기 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+      </a>
+
+      <a class="tool" href="praise-ppt.html">
+        <span class="tool-icon amber">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+        </span>
+        <div class="tool-body">
+          <div class="tool-title">찬양 PPT</div>
+          <div class="tool-desc">가사를 넣으면 예배 자막 PPT를 만들어요. 제목으로 가사 자동 검색도 돼요.</div>
+        </div>
+        <span class="tool-go">바로 가기 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+      </a>
+
+      <a class="tool" href="worship-team.html">
+        <span class="tool-icon violet">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </span>
+        <div class="tool-body">
+          <div class="tool-title">실시간 악보</div>
+          <div class="tool-desc">팀과 악보·페이지·큐를 실시간으로 맞춰요. 링크만 공유하면 바로 들어와요.</div>
+        </div>
+        <span class="tool-go">바로 가기 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+      </a>
+    </div>
+
+    <p class="footer">OGX 찬양팀 · 예배를 위한 작은 도구들</p>
+  </div>
+</body>
+</html>

@@ -1,0 +1,1261 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>코드 추천 — OGX 찬양팀</title>
+  <meta name="description" content="키와 분위기를 고르면 어울리는 한국 찬양을 추천해드려요. 워십팀 콘티 구성용." />
+
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css"
+  />
+
+  <style>
+    :root {
+      /* ----- 토스 컬러 토큰 (index.html과 동일) ----- */
+      --bg: #ffffff;
+      --surface: #ffffff;
+      --surface-2: #f9fafb;
+      --surface-3: #f2f4f6;
+      --border: #e5e8eb;
+      --border-strong: #d1d6db;
+      --text: #191f28;
+      --text-secondary: #4e5968;
+      --text-caption: #8b95a1;
+      --text-disabled: #b0b8c1;
+      --blue: #3182f6;
+      --blue-strong: #0064ff;
+      --blue-soft: #e8f2fe;
+      --success: #16c098;
+      --warning: #ffc100;
+      --danger: #f04452;
+
+      --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.04), 0 8px 24px rgba(0, 0, 0, 0.04);
+      --shadow-card-hover: 0 1px 3px rgba(0, 0, 0, 0.06), 0 12px 32px rgba(0, 0, 0, 0.08);
+      --shadow-button: 0 2px 6px rgba(49, 130, 246, 0.18);
+      --shadow-button-hover: 0 6px 16px rgba(49, 130, 246, 0.28);
+      --shadow-segment: 0 1px 2px rgba(0, 0, 0, 0.04), 0 2px 6px rgba(0, 0, 0, 0.04);
+
+      --radius: 20px;
+      --radius-sm: 12px;
+      --radius-pill: 999px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont,
+        system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo",
+        "Noto Sans KR", "Malgun Gothic", sans-serif;
+      font-feature-settings: "ss03", "ss04", "tnum";
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      line-height: 1.6;
+      font-size: 15px;
+      letter-spacing: -0.003em;
+    }
+
+    body {
+      min-height: 100vh;
+      padding: 96px 24px 120px;
+    }
+
+    /* ---------- 상단 네비 (index.html과 동일) ---------- */
+    .topnav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 64px;
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: saturate(180%) blur(14px);
+      -webkit-backdrop-filter: saturate(180%) blur(14px);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0 28px;
+      gap: 36px;
+      z-index: 100;
+    }
+    .topnav .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .brand-logo {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, var(--blue) 0%, var(--blue-strong) 100%);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+    }
+    .brand-name {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.02em;
+    }
+    .topnav .tabs {
+      display: flex;
+      gap: 4px;
+      align-items: center;
+      height: 100%;
+    }
+    .topnav .tabs a {
+      display: inline-flex;
+      align-items: center;
+      height: 100%;
+      font-size: 15px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      padding: 0 16px;
+      border-bottom: 3px solid transparent;
+      transition: color 0.15s ease, border-color 0.15s ease;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      white-space: nowrap;
+    }
+    .topnav .tabs a:hover { color: var(--text); }
+    .topnav .tabs a.active {
+      color: var(--blue);
+      border-bottom-color: var(--blue);
+    }
+    @media (max-width: 640px) {
+      .topnav { gap: 12px; padding: 0 16px; overflow-x: auto; }
+      .topnav .tabs { gap: 0; }
+      .topnav .tabs a { padding: 0 10px; font-size: 13px; }
+      .brand-name { font-size: 15px; }
+    }
+
+    /* ---------- 컨테이너 ---------- */
+    .container {
+      max-width: 1080px;
+      margin: 0 auto;
+    }
+
+    .hero {
+      margin-bottom: 32px;
+      padding: 12px 4px 0;
+    }
+    .hero h1 {
+      font-size: 36px;
+      font-weight: 700;
+      letter-spacing: -0.025em;
+      line-height: 1.25;
+      margin-bottom: 10px;
+      color: var(--text);
+    }
+    .hero .lead {
+      font-size: 17px;
+      color: var(--text-secondary);
+      max-width: 560px;
+      font-weight: 500;
+      letter-spacing: -0.012em;
+      line-height: 1.5;
+    }
+
+    /* ---------- 카드 ---------- */
+    .card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 32px;
+      box-shadow: var(--shadow-card);
+      transition: box-shadow 0.2s ease;
+    }
+    .card:hover { box-shadow: var(--shadow-card-hover); }
+
+    .card + .card { margin-top: 20px; }
+
+    /* ---------- 입력 영역: 필드 묶음 ---------- */
+    .field-group + .field-group {
+      margin-top: 28px;
+      padding-top: 28px;
+      border-top: 1px solid var(--border);
+    }
+    .field-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .field-title {
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: -0.015em;
+      color: var(--text);
+    }
+    .field-hint {
+      font-size: 13px;
+      color: var(--text-caption);
+      font-weight: 500;
+      letter-spacing: -0.005em;
+    }
+
+    /* ---------- 키 그리드 (12개 작은 정사각 칩) ---------- */
+    .key-grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 8px;
+    }
+    @media (max-width: 720px) {
+      .key-grid { grid-template-columns: repeat(6, 1fr); }
+    }
+    .key-chip {
+      aspect-ratio: 1 / 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--surface-3);
+      border: none;
+      border-radius: var(--radius-sm);
+      color: var(--text-secondary);
+      font-size: 15px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      transition: background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -0.01em;
+    }
+    .key-chip:hover { color: var(--text); }
+    .key-chip:active { transform: scale(0.95); }
+    .key-chip.is-active {
+      background: var(--surface);
+      color: var(--text);
+      box-shadow: var(--shadow-segment), 0 0 0 1.5px var(--blue) inset;
+    }
+
+    /* ---------- 무드 칩 (4개 큰 칩) ---------- */
+    .mood-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+    @media (max-width: 720px) {
+      .mood-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    .mood-chip {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      padding: 20px 12px;
+      background: var(--surface-3);
+      border: none;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: background 0.15s ease, color 0.15s ease, transform 0.1s ease;
+      font-family: inherit;
+      text-align: center;
+    }
+    .mood-chip:active { transform: scale(0.97); }
+    .mood-name {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.01em;
+      transition: color 0.15s ease;
+    }
+    .mood-desc {
+      font-size: 12px;
+      color: var(--text-caption);
+      font-weight: 500;
+      transition: color 0.15s ease;
+    }
+    .mood-chip:hover .mood-name { color: var(--text); }
+    .mood-chip.is-active {
+      background: var(--blue);
+    }
+    .mood-chip.is-active .mood-name { color: #fff; }
+    .mood-chip.is-active .mood-desc { color: rgba(255, 255, 255, 0.8); }
+
+    /* ---------- 진행 칩 (6개 코드 모양) ---------- */
+    .prog-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+    @media (max-width: 720px) {
+      .prog-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    .prog-chip {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 4px;
+      padding: 16px 18px;
+      background: var(--surface-3);
+      border: none;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: background 0.15s ease, color 0.15s ease, transform 0.1s ease;
+      font-family: inherit;
+      text-align: left;
+    }
+    .prog-chip:active { transform: scale(0.97); }
+    .prog-code {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.01em;
+      font-family: "JetBrains Mono", "D2Coding", "SF Mono", ui-monospace, Menlo, monospace;
+      transition: color 0.15s ease;
+    }
+    .prog-desc {
+      font-size: 12px;
+      color: var(--text-caption);
+      font-weight: 500;
+      transition: color 0.15s ease;
+    }
+    .prog-chip:hover .prog-code { color: var(--text); }
+    .prog-chip.is-active {
+      background: var(--blue-soft);
+    }
+    .prog-chip.is-active .prog-code { color: var(--blue-strong); }
+    .prog-chip.is-active .prog-desc { color: var(--blue); }
+
+    /* ---------- BPM 듀얼 슬라이더 (토스식) ---------- */
+    .bpm-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .bpm-display {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .bpm-range {
+      display: inline-flex;
+      align-items: baseline;
+      gap: 6px;
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.02em;
+      font-variant-numeric: tabular-nums;
+    }
+    .bpm-range .sep {
+      color: var(--text-caption);
+      font-weight: 500;
+      font-size: 18px;
+    }
+    .bpm-range .unit {
+      font-size: 13px;
+      color: var(--text-caption);
+      font-weight: 600;
+      margin-left: 4px;
+    }
+    .bpm-bounds {
+      font-size: 12px;
+      color: var(--text-caption);
+      font-weight: 500;
+      letter-spacing: -0.005em;
+    }
+    .bpm-track {
+      position: relative;
+      height: 36px;
+      display: flex;
+      align-items: center;
+    }
+    .bpm-track .rail {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      height: 4px;
+      background: var(--surface-3);
+      border-radius: 2px;
+    }
+    .bpm-track .fill {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      height: 4px;
+      background: var(--blue);
+      border-radius: 2px;
+    }
+    .bpm-track input[type="range"] {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      width: 100%;
+      height: 36px;
+      -webkit-appearance: none;
+      appearance: none;
+      background: transparent;
+      pointer-events: none;
+      margin: 0;
+    }
+    .bpm-track input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #fff;
+      border: 4px solid var(--blue);
+      cursor: pointer;
+      pointer-events: auto;
+      box-shadow: 0 2px 6px rgba(49, 130, 246, 0.25);
+      transition: transform 0.1s ease;
+    }
+    .bpm-track input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.1); }
+    .bpm-track input[type="range"]::-moz-range-thumb {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #fff;
+      border: 4px solid var(--blue);
+      cursor: pointer;
+      pointer-events: auto;
+      box-shadow: 0 2px 6px rgba(49, 130, 246, 0.25);
+    }
+    .bpm-track input[type="range"]::-webkit-slider-runnable-track { background: transparent; }
+
+    /* ---------- 액션 버튼 ---------- */
+    .actions-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 24px;
+      flex-wrap: wrap;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 14px 22px;
+      border-radius: var(--radius-sm);
+      font-size: 15px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      border: none;
+      transition: background 0.15s ease, color 0.15s ease, transform 0.1s ease, box-shadow 0.2s ease;
+      white-space: nowrap;
+      text-decoration: none;
+      letter-spacing: -0.01em;
+    }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn:active:not(:disabled) { transform: scale(0.98); }
+
+    .btn-primary {
+      background: var(--blue);
+      color: #fff;
+      box-shadow: var(--shadow-button);
+    }
+    .btn-primary:hover:not(:disabled) {
+      background: var(--blue-strong);
+      box-shadow: var(--shadow-button-hover);
+    }
+
+    .btn-secondary {
+      background: var(--surface-3);
+      color: var(--text-secondary);
+    }
+    .btn-secondary:hover:not(:disabled) {
+      background: var(--blue-soft);
+      color: var(--blue-strong);
+    }
+
+    .actions-row .btn { flex: 1; min-width: 140px; }
+
+    /* ---------- 결과 헤더 ---------- */
+    .results-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin: 40px 0 18px;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 0 4px;
+    }
+    .results-title {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--text);
+    }
+    .results-meta {
+      font-size: 13px;
+      color: var(--text-caption);
+      font-weight: 500;
+      letter-spacing: -0.005em;
+    }
+
+    /* ---------- 결과 카드 그리드 ---------- */
+    .card-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+    @media (min-width: 720px) {
+      .card-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (min-width: 1024px) {
+      .card-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+
+    .song-card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      box-shadow: var(--shadow-card);
+      transition: box-shadow 0.2s ease, transform 0.15s ease;
+      position: relative;
+    }
+    .song-card:hover {
+      box-shadow: var(--shadow-card-hover);
+      transform: translateY(-2px);
+    }
+    .song-card.is-top::before {
+      content: "TOP MATCH";
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      color: #fff;
+      background: var(--blue);
+      padding: 4px 9px;
+      border-radius: var(--radius-pill);
+      font-weight: 700;
+    }
+
+    .song-head .song-title {
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: -0.015em;
+      line-height: 1.35;
+      color: var(--text);
+      padding-right: 88px;
+    }
+    .song-card:not(.is-top) .song-head .song-title { padding-right: 0; }
+    .song-artist {
+      font-size: 13px;
+      color: var(--text-caption);
+      font-weight: 500;
+      margin-top: 4px;
+      letter-spacing: -0.005em;
+    }
+
+    .song-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 12px;
+      color: var(--text-secondary);
+      background: var(--surface-3);
+      padding: 5px 10px;
+      border-radius: var(--radius-pill);
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -0.005em;
+    }
+    .chip.key {
+      color: var(--blue-strong);
+      background: var(--blue-soft);
+    }
+    .chip.prog-tag {
+      font-family: "JetBrains Mono", "SF Mono", ui-monospace, Menlo, monospace;
+      font-size: 11px;
+    }
+
+    .score-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 12px;
+      color: var(--text-caption);
+      font-weight: 600;
+    }
+    .score-rail {
+      flex: 1;
+      height: 4px;
+      background: var(--surface-3);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .score-fill {
+      height: 100%;
+      background: var(--blue);
+      border-radius: 2px;
+      transition: width 0.3s ease;
+    }
+    .score-val {
+      color: var(--text);
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+
+    .song-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: auto;
+      padding-top: 4px;
+    }
+    .song-actions .btn-action {
+      flex: 1;
+      min-width: 0;
+      padding: 10px 12px;
+      font-size: 12.5px;
+      font-weight: 600;
+      background: var(--surface-3);
+      color: var(--text-secondary);
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: background 0.15s ease, color 0.15s ease, transform 0.1s ease;
+      font-family: inherit;
+      letter-spacing: -0.005em;
+      white-space: nowrap;
+    }
+    .song-actions .btn-action:hover {
+      background: var(--blue-soft);
+      color: var(--blue-strong);
+    }
+    .song-actions .btn-action:active { transform: scale(0.97); }
+    .song-actions .btn-action svg {
+      width: 14px;
+      height: 14px;
+      flex-shrink: 0;
+    }
+
+    .fallback-note {
+      background: var(--blue-soft);
+      color: var(--blue-strong);
+      border-radius: var(--radius-sm);
+      padding: 13px 16px;
+      font-size: 13.5px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      margin-bottom: 16px;
+      line-height: 1.5;
+    }
+    .fallback-note b { font-weight: 800; }
+
+    .empty-results {
+      background: var(--surface-2);
+      border-radius: var(--radius);
+      padding: 72px 24px;
+      text-align: center;
+    }
+    .empty-results .empty-title {
+      display: block;
+      color: var(--text);
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      letter-spacing: -0.015em;
+    }
+    .empty-results .empty-sub {
+      color: var(--text-caption);
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: -0.005em;
+    }
+
+    /* ---------- 푸터 ---------- */
+    .footer {
+      margin-top: 64px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+      font-size: 13px;
+      color: var(--text-caption);
+      text-align: center;
+      font-weight: 500;
+    }
+    .footer a {
+      color: var(--text-secondary);
+      text-decoration: none;
+    }
+    .footer a:hover { color: var(--blue); }
+
+    @media (max-width: 960px) {
+      body { padding: 88px 16px 120px; }
+      .card { padding: 24px; }
+      .hero h1 { font-size: 28px; }
+      .hero .lead { font-size: 15px; }
+      .results-title { font-size: 18px; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="topnav">
+    <a class="brand" href="index.html">
+      <span class="brand-logo">O</span>
+      <span class="brand-name">OGX 찬양팀</span>
+    </a>
+    <div class="tabs">
+      <a href="recommend.html" class="active">추천</a>
+      <a href="sheet-finder.html">악보 찾기</a>
+      <a href="praise-ppt.html">찬양 PPT</a>
+      <a href="worship-team.html">실시간 악보</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <section class="hero">
+      <h1>코드 추천</h1>
+      <p class="lead">키와 분위기를 고르면 어울리는 찬양을 추천해요.</p>
+    </section>
+
+    <!-- 입력 카드 -->
+    <section class="card">
+      <!-- 키 -->
+      <div class="field-group">
+        <div class="field-head">
+          <h2 class="field-title">키</h2>
+          <span class="field-hint">여러 개 선택 가능. 전체 해제 시 모든 키</span>
+        </div>
+        <div class="key-grid" id="keyGrid"></div>
+      </div>
+
+      <!-- 분위기 -->
+      <div class="field-group">
+        <div class="field-head">
+          <h2 class="field-title">분위기</h2>
+          <span class="field-hint">하나만 선택해요</span>
+        </div>
+        <div class="mood-grid" id="moodGrid"></div>
+      </div>
+
+      <!-- 진행 패턴 -->
+      <div class="field-group">
+        <div class="field-head">
+          <h2 class="field-title">진행 패턴</h2>
+          <span class="field-hint">선택사항</span>
+        </div>
+        <div class="prog-grid" id="progGrid"></div>
+      </div>
+
+      <!-- BPM -->
+      <div class="field-group">
+        <div class="field-head">
+          <h2 class="field-title">빠르기</h2>
+          <span class="field-hint">곡의 BPM 범위를 설정해요</span>
+        </div>
+        <div class="bpm-wrap">
+          <div class="bpm-display">
+            <span class="bpm-range">
+              <span id="bpmMinVal">60</span>
+              <span class="sep">–</span>
+              <span id="bpmMaxVal">90</span>
+              <span class="unit">BPM</span>
+            </span>
+            <span class="bpm-bounds">40 ~ 180</span>
+          </div>
+          <div class="bpm-track">
+            <div class="rail"></div>
+            <div class="fill" id="bpmFill"></div>
+            <input type="range" id="bpmMin" min="40" max="180" value="60" step="1" aria-label="최소 BPM" />
+            <input type="range" id="bpmMax" min="40" max="180" value="90" step="1" aria-label="최대 BPM" />
+          </div>
+        </div>
+      </div>
+
+      <!-- 액션 -->
+      <div class="actions-row">
+        <button type="button" class="btn btn-secondary" id="resetBtn">조건 초기화</button>
+        <button type="button" class="btn btn-primary" id="searchBtn">찬양 추천받기</button>
+      </div>
+    </section>
+
+    <!-- 결과 -->
+    <div class="results-head">
+      <div class="results-title" id="resultsTitle">추천 결과</div>
+      <div class="results-meta" id="resultsMeta">조건을 고르면 바로 갱신돼요.</div>
+    </div>
+
+    <div id="resultsArea"></div>
+
+    <footer class="footer">
+      OGX 찬양팀 · 코드 추천 · 한국 CCM 메타데이터 기반
+    </footer>
+  </div>
+
+  <script>
+    /* =========================================================
+     *  내장 한국 찬양 DB
+     *  mood: calm | hope | awe | joy
+     *  progression: "x-y-z-w" (디그리), youtube: 선택
+     * ========================================================= */
+    const SONGS = [
+      // 잔잔 / 은혜 (calm)
+      { title: "주 품에", artist: "마커스워십", key: "G", mood: "calm", bpm: 68, progression: "1-6m-4-5", youtube: "https://www.youtube.com/results?search_query=주+품에+마커스" },
+      { title: "주의 임재 앞에 잠잠해", artist: "어노인팅", key: "D", mood: "calm", bpm: 64, progression: "1-5-6m-4", youtube: "https://www.youtube.com/results?search_query=주의+임재+앞에+잠잠해" },
+      { title: "은혜", artist: "손경민", key: "C", mood: "calm", bpm: 72, progression: "4-1-5-6m", youtube: "https://www.youtube.com/results?search_query=손경민+은혜" },
+      { title: "그 사랑", artist: "위러브", key: "D", mood: "calm", bpm: 70, progression: "1-5-6m-4", youtube: "https://www.youtube.com/results?search_query=위러브+그+사랑" },
+      { title: "내 영혼이 은총 입어", artist: "찬송가", key: "F", mood: "calm", bpm: 76, progression: "1-4-1-5" },
+      { title: "주께 가오니", artist: "송정미", key: "G", mood: "calm", bpm: 66, progression: "4-1-5-6m", youtube: "https://www.youtube.com/results?search_query=주께+가오니" },
+      { title: "주만 바라볼지라", artist: "박성호", key: "D", mood: "calm", bpm: 74, progression: "1-6m-4-5", youtube: "https://www.youtube.com/results?search_query=주만+바라볼지라" },
+      { title: "임재", artist: "어노인팅", key: "E", mood: "calm", bpm: 62, progression: "1-5-6m-4" },
+      { title: "주께서 주신 동산에", artist: "예수전도단", key: "F", mood: "calm", bpm: 72, progression: "4-1-5-6m" },
+      { title: "거룩하신 주님", artist: "마커스워십", key: "A", mood: "calm", bpm: 68, progression: "1-5-6m-4" },
+
+      // 회복 / 소망 (hope)
+      { title: "주 사랑이 내려와", artist: "위러브", key: "G", mood: "hope", bpm: 78, progression: "1-5-6m-4", youtube: "https://www.youtube.com/results?search_query=주+사랑이+내려와" },
+      { title: "주 보좌로부터", artist: "어노인팅", key: "D", mood: "hope", bpm: 80, progression: "4-1-5-6m", youtube: "https://www.youtube.com/results?search_query=주+보좌로부터" },
+      { title: "내게 강 같은 평화", artist: "찬송가", key: "C", mood: "hope", bpm: 84, progression: "1-4-1-5" },
+      { title: "주를 처음 만난 날", artist: "마커스워십", key: "E", mood: "hope", bpm: 82, progression: "1-5-6m-4", youtube: "https://www.youtube.com/results?search_query=주를+처음+만난+날" },
+      { title: "너는 내것이라", artist: "박종호", key: "G", mood: "hope", bpm: 76, progression: "4-1-5-6m", youtube: "https://www.youtube.com/results?search_query=너는+내것이라+박종호" },
+      { title: "주께서 다스리네", artist: "예수전도단", key: "A", mood: "hope", bpm: 88, progression: "1-6m-4-5" },
+      { title: "내가 너를 도우리라", artist: "이권희", key: "D", mood: "hope", bpm: 76, progression: "1-5-6m-4", youtube: "https://www.youtube.com/results?search_query=내가+너를+도우리라" },
+      { title: "광야를 지나며", artist: "마커스워십", key: "F", mood: "hope", bpm: 80, progression: "4-1-5-6m", youtube: "https://www.youtube.com/results?search_query=광야를+지나며+마커스" },
+      { title: "나의 안에 거하라", artist: "위러브", key: "E", mood: "hope", bpm: 78, progression: "1-6m-4-5" },
+      { title: "주의 손에 나의 손을 포개고", artist: "이권희", key: "G", mood: "hope", bpm: 82, progression: "1-5-6m-4" },
+
+      // 경배 / 장엄 (awe)
+      { title: "거룩하신 하나님", artist: "어노인팅", key: "A", mood: "awe", bpm: 72, progression: "1-5-6m-4", youtube: "https://www.youtube.com/results?search_query=거룩하신+하나님+어노인팅" },
+      { title: "예수 우리 왕이여", artist: "다윗과요나단", key: "D", mood: "awe", bpm: 70, progression: "4-1-5-6m", youtube: "https://www.youtube.com/results?search_query=예수+우리+왕이여" },
+      { title: "주의 보좌 앞에 나아가", artist: "예수전도단", key: "E", mood: "awe", bpm: 74, progression: "1-5-6m-4" },
+      { title: "왕이신 나의 하나님", artist: "어노인팅", key: "G", mood: "awe", bpm: 78, progression: "1-6m-4-5", youtube: "https://www.youtube.com/results?search_query=왕이신+나의+하나님" },
+      { title: "주 예수 이름 높이 부르세", artist: "찬송가", key: "F", mood: "awe", bpm: 80, progression: "Canon" },
+      { title: "온 땅이여 주를 찬양", artist: "어노인팅", key: "D", mood: "awe", bpm: 96, progression: "1-5-6m-4" },
+      { title: "주님 큰 영광 받으소서", artist: "다윗과요나단", key: "A", mood: "awe", bpm: 72, progression: "4-1-5-6m" },
+      { title: "내가 주를 사랑합니다", artist: "예수전도단", key: "C", mood: "awe", bpm: 76, progression: "1-5-6m-4", youtube: "https://www.youtube.com/results?search_query=내가+주를+사랑합니다" },
+      { title: "주께 영광", artist: "마커스워십", key: "E", mood: "awe", bpm: 82, progression: "1-6m-4-5" },
+      { title: "오 신실하신 주", artist: "캐스팅크라운즈 번안", key: "G", mood: "awe", bpm: 74, progression: "Canon" },
+
+      // 환희 / 축제 (joy)
+      { title: "내 영혼이 주를 찬양", artist: "어노인팅", key: "A", mood: "joy", bpm: 120, progression: "1-5-6m-4", youtube: "https://www.youtube.com/results?search_query=내+영혼이+주를+찬양" },
+      { title: "예수의 이름 권세여", artist: "마커스워십", key: "B", mood: "joy", bpm: 124, progression: "4-1-5-6m", youtube: "https://www.youtube.com/results?search_query=예수의+이름+권세여" },
+      { title: "주는 평화", artist: "다윗과요나단", key: "D", mood: "joy", bpm: 108, progression: "1-6m-4-5" },
+      { title: "주의 영광이 빛나는 이곳에", artist: "예수전도단", key: "E", mood: "joy", bpm: 116, progression: "1-5-6m-4", youtube: "https://www.youtube.com/results?search_query=주의+영광이+빛나는+이곳에" },
+      { title: "기쁘다 구주 오셨네", artist: "찬송가", key: "D", mood: "joy", bpm: 128, progression: "1-4-1-5" },
+      { title: "주의 인자하심이 생명보다 나으니", artist: "어노인팅", key: "G", mood: "joy", bpm: 100, progression: "1-5-6m-4" },
+      { title: "주를 높이 부르세", artist: "마커스워십", key: "A", mood: "joy", bpm: 122, progression: "4-1-5-6m" },
+      { title: "찬양하라 내 영혼아", artist: "위러브", key: "E", mood: "joy", bpm: 118, progression: "1-6m-4-5", youtube: "https://www.youtube.com/results?search_query=찬양하라+내+영혼아+위러브" },
+      { title: "춤추는 다윗처럼", artist: "예수전도단", key: "G", mood: "joy", bpm: 132, progression: "1-5-6m-4" },
+      { title: "주 안에 우린 하나", artist: "어노인팅", key: "F", mood: "joy", bpm: 112, progression: "Canon" },
+      { title: "주께 영광 돌리세", artist: "다윗과요나단", key: "D", mood: "joy", bpm: 124, progression: "1-6m-4-5" },
+      { title: "할렐루야 살아계신 주", artist: "마커스워십", key: "C", mood: "joy", bpm: 130, progression: "1-5-6m-4", youtube: "https://www.youtube.com/results?search_query=할렐루야+살아계신+주" },
+    ];
+
+    /* =========================================================
+     *  메타 데이터
+     * ========================================================= */
+    const KEYS = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+
+    const MOODS = [
+      { value: "calm", name: "잔잔", desc: "임재 · 묵상" },
+      { value: "hope", name: "회복", desc: "치유 · 위로" },
+      { value: "awe",  name: "경배", desc: "보좌 · 거룩" },
+      { value: "joy",  name: "환희", desc: "찬양 · 기쁨" },
+    ];
+
+    const PROGRESSIONS = [
+      { value: "4-1-5-6m", name: "4-1-5-6m", desc: "워십 골든" },
+      { value: "1-5-6m-4", name: "1-5-6m-4", desc: "팝 클래식" },
+      { value: "1-6m-4-5", name: "1-6m-4-5", desc: "50s 발라드" },
+      { value: "Canon",    name: "Canon",    desc: "캐논 진행" },
+      { value: "1-4-1-5",  name: "1-4-1-5",  desc: "전통 찬송가" },
+      { value: "free",     name: "프리스타일", desc: "조건 없음" },
+    ];
+
+    const MOOD_LABEL = {
+      calm: "잔잔",
+      hope: "회복",
+      awe:  "경배",
+      joy:  "환희",
+    };
+
+    /* =========================================================
+     *  상태
+     * ========================================================= */
+    const state = {
+      selectedKeys: new Set(),
+      mood: null,
+      progression: null,
+      bpmMin: 60,
+      bpmMax: 90,
+    };
+
+    /* =========================================================
+     *  DOM 헬퍼
+     * ========================================================= */
+    const $ = (id) => document.getElementById(id);
+
+    function escapeHtml(s) {
+      return String(s)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    /* =========================================================
+     *  렌더링
+     * ========================================================= */
+    function renderKeyGrid() {
+      const wrap = $("keyGrid");
+      wrap.innerHTML = "";
+      KEYS.forEach((k) => {
+        const b = document.createElement("button");
+        b.type = "button";
+        b.className = "key-chip";
+        b.dataset.key = k;
+        b.textContent = k;
+        b.addEventListener("click", () => {
+          if (state.selectedKeys.has(k)) {
+            state.selectedKeys.delete(k);
+            b.classList.remove("is-active");
+          } else {
+            state.selectedKeys.add(k);
+            b.classList.add("is-active");
+          }
+          scheduleSearch();
+        });
+        wrap.appendChild(b);
+      });
+    }
+
+    function renderMoodGrid() {
+      const wrap = $("moodGrid");
+      wrap.innerHTML = "";
+      MOODS.forEach((m) => {
+        const card = document.createElement("button");
+        card.type = "button";
+        card.className = "mood-chip";
+        card.dataset.mood = m.value;
+        card.innerHTML = `
+          <span class="mood-name">${escapeHtml(m.name)}</span>
+          <span class="mood-desc">${escapeHtml(m.desc)}</span>
+        `;
+        card.addEventListener("click", () => {
+          if (state.mood === m.value) {
+            state.mood = null;
+            card.classList.remove("is-active");
+          } else {
+            state.mood = m.value;
+            wrap.querySelectorAll(".mood-chip").forEach((c) => c.classList.remove("is-active"));
+            card.classList.add("is-active");
+          }
+          scheduleSearch();
+        });
+        wrap.appendChild(card);
+      });
+    }
+
+    function renderProgGrid() {
+      const wrap = $("progGrid");
+      wrap.innerHTML = "";
+      PROGRESSIONS.forEach((p) => {
+        const card = document.createElement("button");
+        card.type = "button";
+        card.className = "prog-chip";
+        card.dataset.prog = p.value;
+        card.innerHTML = `
+          <span class="prog-code">${escapeHtml(p.name)}</span>
+          <span class="prog-desc">${escapeHtml(p.desc)}</span>
+        `;
+        card.addEventListener("click", () => {
+          if (state.progression === p.value) {
+            state.progression = null;
+            card.classList.remove("is-active");
+          } else {
+            state.progression = p.value;
+            wrap.querySelectorAll(".prog-chip").forEach((c) => c.classList.remove("is-active"));
+            card.classList.add("is-active");
+          }
+          scheduleSearch();
+        });
+        wrap.appendChild(card);
+      });
+    }
+
+    /* =========================================================
+     *  BPM 듀얼 슬라이더
+     * ========================================================= */
+    function updateBpmDisplay() {
+      $("bpmMinVal").textContent = state.bpmMin;
+      $("bpmMaxVal").textContent = state.bpmMax;
+      const min = 40, max = 180;
+      const left = ((state.bpmMin - min) / (max - min)) * 100;
+      const right = ((state.bpmMax - min) / (max - min)) * 100;
+      $("bpmFill").style.left = `${left}%`;
+      $("bpmFill").style.width = `${right - left}%`;
+    }
+
+    function bindBpmSliders() {
+      const minEl = $("bpmMin");
+      const maxEl = $("bpmMax");
+      const minGap = 5;
+      minEl.addEventListener("input", () => {
+        let v = parseInt(minEl.value, 10);
+        if (v > state.bpmMax - minGap) {
+          v = state.bpmMax - minGap;
+          minEl.value = v;
+        }
+        state.bpmMin = v;
+        updateBpmDisplay();
+        scheduleSearch();
+      });
+      maxEl.addEventListener("input", () => {
+        let v = parseInt(maxEl.value, 10);
+        if (v < state.bpmMin + minGap) {
+          v = state.bpmMin + minGap;
+          maxEl.value = v;
+        }
+        state.bpmMax = v;
+        updateBpmDisplay();
+        scheduleSearch();
+      });
+    }
+
+    /* =========================================================
+     *  추천 로직 (가중 점수 매칭)
+     * ========================================================= */
+    function scoreSong(song) {
+      let score = 0;
+      const reasons = [];
+
+      // 키 일치 (3점)
+      if (state.selectedKeys.size === 0) {
+        score += 1;
+      } else if (state.selectedKeys.has(song.key)) {
+        score += 3;
+        reasons.push("key");
+      }
+
+      // 무드 일치 (3점)
+      if (state.mood === null) {
+        score += 1;
+      } else if (song.mood === state.mood) {
+        score += 3;
+        reasons.push("mood");
+      }
+
+      // 진행 일치 (4점)
+      if (state.progression === null || state.progression === "free") {
+        score += 1;
+      } else if (song.progression === state.progression) {
+        score += 4;
+        reasons.push("prog");
+      }
+
+      // BPM 범위 안 (2점)
+      if (song.bpm >= state.bpmMin && song.bpm <= state.bpmMax) {
+        score += 2;
+        reasons.push("bpm");
+      }
+
+      return { score, reasons };
+    }
+
+    function recommend() {
+      const midBpm = (state.bpmMin + state.bpmMax) / 2;
+      const byScore = (a, b) => {
+        if (b.score !== a.score) return b.score - a.score;
+        return Math.abs(a.song.bpm - midBpm) - Math.abs(b.song.bpm - midBpm);
+      };
+
+      const scored = SONGS.map((s) => {
+        const { score, reasons } = scoreSong(s);
+        return { song: s, score, reasons };
+      }).sort(byScore);
+
+      // 사용자가 고른 '하드' 필터(키/무드/진행)가 있는데 그걸 만족한 곡이
+      // 하나도 없으면 fallback. (BPM 은 항상 켜진 소프트 범위라 매칭 판정에서 제외)
+      const hasFilter =
+        state.selectedKeys.size > 0 ||
+        state.mood !== null ||
+        (state.progression !== null && state.progression !== "free");
+
+      // 키/무드/진행 중 하나라도 실제로 맞은 곡이 있으면 정상 결과.
+      const hasRealMatch = scored.some((r) =>
+        r.reasons.some((x) => x === "key" || x === "mood" || x === "prog")
+      );
+
+      if (hasFilter && !hasRealMatch) {
+        // fallback: 무드/키만으로 다시 추천 (진행·BPM 무시)
+        const fbScored = SONGS.map((s) => {
+          let score = 0;
+          const reasons = [];
+          if (state.selectedKeys.size > 0 && state.selectedKeys.has(s.key)) {
+            score += 3; reasons.push("key");
+          }
+          if (state.mood !== null && s.mood === state.mood) {
+            score += 3; reasons.push("mood");
+          }
+          if (reasons.length === 0) score += 1; // 그래도 채워 보여주기
+          return { song: s, score, reasons };
+        }).sort(byScore);
+        return { results: fbScored.slice(0, 9), fallback: true };
+      }
+
+      return { results: scored.slice(0, 9), fallback: false };
+    }
+
+    /* =========================================================
+     *  결과 렌더링
+     * ========================================================= */
+    function renderResults({ results, fallback }) {
+      const area = $("resultsArea");
+      const maxScore = 12; // 3 + 3 + 4 + 2
+
+      if (results.length === 0) {
+        // SONGS 가 비지 않는 한 도달 불가하지만 안전망으로 유지.
+        area.innerHTML = `
+          <div class="empty-results">
+            <span class="empty-title">조건에 맞는 곡이 없어요.</span>
+            <span class="empty-sub">무드나 키만 골라보세요.</span>
+          </div>
+        `;
+        $("resultsMeta").textContent = "0곡";
+        return;
+      }
+
+      const cards = results.map((r, idx) => {
+        const s = r.song;
+        const moodLabel = MOOD_LABEL[s.mood] || s.mood;
+        const sheetQuery = encodeURIComponent(s.title);
+        const pptQuery = encodeURIComponent(s.title);
+        const youtubeBtn = s.youtube
+          ? `<a class="btn-action" href="${escapeHtml(s.youtube)}" target="_blank" rel="noopener" title="유튜브에서 찾기">
+               <svg viewBox="0 0 24 24" fill="currentColor"><path d="M21.58 7.19a2.52 2.52 0 0 0-1.77-1.78C18.25 5 12 5 12 5s-6.25 0-7.81.41a2.52 2.52 0 0 0-1.77 1.78A26 26 0 0 0 2 12a26 26 0 0 0 .42 4.81 2.52 2.52 0 0 0 1.77 1.78C5.75 19 12 19 12 19s6.25 0 7.81-.41a2.52 2.52 0 0 0 1.77-1.78A26 26 0 0 0 22 12a26 26 0 0 0-.42-4.81zM10 15V9l5.2 3z"/></svg>
+               유튜브
+             </a>`
+          : "";
+        const isTop = !fallback && idx === 0 && r.score >= 6;
+        const scorePct = Math.min(100, (r.score / maxScore) * 100);
+
+        return `
+          <article class="song-card${isTop ? " is-top" : ""}">
+            <div class="song-head">
+              <h3 class="song-title">${escapeHtml(s.title)}</h3>
+              ${s.artist ? `<div class="song-artist">${escapeHtml(s.artist)}</div>` : ""}
+            </div>
+
+            <div class="song-chips">
+              <span class="chip key">${escapeHtml(s.key)}</span>
+              <span class="chip">BPM ${s.bpm}</span>
+              <span class="chip">${escapeHtml(moodLabel)}</span>
+              <span class="chip prog-tag">${escapeHtml(s.progression)}</span>
+            </div>
+
+            <div class="score-bar" title="매칭 점수">
+              <span>매칭</span>
+              <div class="score-rail"><div class="score-fill" style="width:${scorePct}%"></div></div>
+              <span class="score-val">${r.score}점</span>
+            </div>
+
+            <div class="song-actions">
+              <a class="btn-action" href="sheet-finder.html?q=${sheetQuery}" title="악보 찾기">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                악보 찾기
+              </a>
+              <a class="btn-action" href="praise-ppt.html?title=${pptQuery}" target="_blank" rel="noopener" title="찬양 PPT 만들기">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="13" rx="2"/><line x1="12" y1="17" x2="12" y2="21"/><line x1="8" y1="21" x2="16" y2="21"/></svg>
+                찬양 PPT
+              </a>
+              ${youtubeBtn}
+            </div>
+          </article>
+        `;
+      }).join("");
+
+      const notice = fallback
+        ? `<div class="fallback-note">조건에 딱 맞는 곡이 없어 <b>무드·키</b> 기준으로 비슷한 곡을 추천했어요.</div>`
+        : "";
+
+      area.innerHTML = `${notice}<div class="card-grid">${cards}</div>`;
+
+      const conds = [];
+      if (state.selectedKeys.size > 0) conds.push(`키 ${Array.from(state.selectedKeys).join("/")}`);
+      if (state.mood) conds.push(MOOD_LABEL[state.mood]);
+      if (state.progression && state.progression !== "free") conds.push(state.progression);
+      conds.push(`${state.bpmMin}–${state.bpmMax} BPM`);
+      const prefix = fallback ? "추천(유사) " : "";
+      $("resultsMeta").textContent = `${prefix}${results.length}곡 · ${conds.join(" · ")}`;
+    }
+
+    /* =========================================================
+     *  이벤트
+     * ========================================================= */
+    /* 실시간 추천: 입력 변경 시 디바운스로 결과 즉시 갱신 (스크롤 없음) */
+    let searchTimer = null;
+    function scheduleSearch() {
+      if (searchTimer) clearTimeout(searchTimer);
+      searchTimer = setTimeout(() => {
+        searchTimer = null;
+        renderResults(recommend());
+      }, 160);
+    }
+
+    function reset() {
+      if (searchTimer) { clearTimeout(searchTimer); searchTimer = null; }
+      state.selectedKeys.clear();
+      state.mood = null;
+      state.progression = null;
+      state.bpmMin = 60;
+      state.bpmMax = 90;
+      $("bpmMin").value = 60;
+      $("bpmMax").value = 90;
+      updateBpmDisplay();
+      document.querySelectorAll(".key-chip").forEach((b) => b.classList.remove("is-active"));
+      document.querySelectorAll(".mood-chip").forEach((c) => c.classList.remove("is-active"));
+      document.querySelectorAll(".prog-chip").forEach((c) => c.classList.remove("is-active"));
+      // 초기화해도 기본(인기) 추천이 계속 보이게.
+      renderResults(recommend());
+    }
+
+    function search() {
+      if (searchTimer) { clearTimeout(searchTimer); searchTimer = null; }
+      renderResults(recommend());
+      setTimeout(() => {
+        const head = document.querySelector(".results-head");
+        if (head) head.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 50);
+    }
+
+    /* =========================================================
+     *  초기화
+     * ========================================================= */
+    window.addEventListener("DOMContentLoaded", () => {
+      renderKeyGrid();
+      renderMoodGrid();
+      renderProgGrid();
+      bindBpmSliders();
+      updateBpmDisplay();
+
+      $("resetBtn").addEventListener("click", reset);
+      $("searchBtn").addEventListener("click", search);
+
+      // 초기 로드 시 기본 추천(전체 인기 상위) 바로 표시.
+      renderResults(recommend());
+    });
+  </script>
+</body>
+</html>

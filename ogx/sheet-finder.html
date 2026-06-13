@@ -1,0 +1,1543 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>악보 찾기 — OGX 찬양팀</title>
+  <meta name="description" content="가사는 여기서 바로, 악보 이미지와 영상은 사이트에서. 찬양 제목으로 한 번에 찾아요." />
+
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css"
+  />
+
+  <style>
+    :root {
+      /* ----- 토스 컬러 토큰 ----- */
+      --bg: #ffffff;
+      --surface: #ffffff;
+      --surface-2: #f9fafb;
+      --surface-3: #f2f4f6;
+      --border: #e5e8eb;
+      --border-strong: #d1d6db;
+      --text: #191f28;
+      --text-secondary: #4e5968;
+      --text-caption: #8b95a1;
+      --text-disabled: #b0b8c1;
+      --blue: #3182f6;
+      --blue-strong: #0064ff;
+      --blue-soft: #e8f2fe;
+      --success: #16c098;
+      --warning: #ffc100;
+      --danger: #f04452;
+
+      --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.04), 0 8px 24px rgba(0, 0, 0, 0.04);
+      --shadow-card-hover: 0 1px 3px rgba(0, 0, 0, 0.06), 0 12px 32px rgba(0, 0, 0, 0.08);
+      --shadow-button: 0 2px 6px rgba(49, 130, 246, 0.18);
+      --shadow-button-hover: 0 6px 16px rgba(49, 130, 246, 0.28);
+      --shadow-segment: 0 1px 2px rgba(0, 0, 0, 0.04), 0 2px 6px rgba(0, 0, 0, 0.04);
+
+      --radius: 20px;
+      --radius-sm: 12px;
+      --radius-pill: 999px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont,
+        system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo",
+        "Noto Sans KR", "Malgun Gothic", sans-serif;
+      font-feature-settings: "ss03", "ss04", "tnum";
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      line-height: 1.6;
+      font-size: 15px;
+      letter-spacing: -0.003em;
+    }
+
+    body {
+      min-height: 100vh;
+      padding: 96px 24px 160px;
+    }
+
+    /* ---------- 상단 네비 (토스 스타일) ---------- */
+    .topnav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 64px;
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: saturate(180%) blur(14px);
+      -webkit-backdrop-filter: saturate(180%) blur(14px);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0 28px;
+      gap: 36px;
+      z-index: 100;
+    }
+    .topnav .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .brand-logo {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, var(--blue) 0%, var(--blue-strong) 100%);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+    }
+    .brand-name {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.02em;
+    }
+    .topnav .tabs {
+      display: flex;
+      gap: 4px;
+      align-items: center;
+      height: 100%;
+    }
+    .topnav .tabs a {
+      display: inline-flex;
+      align-items: center;
+      height: 100%;
+      font-size: 15px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      padding: 0 16px;
+      border-bottom: 3px solid transparent;
+      transition: color 0.15s ease, border-color 0.15s ease;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      white-space: nowrap;
+    }
+    .topnav .tabs a:hover { color: var(--text); }
+    .topnav .tabs a.active {
+      color: var(--blue);
+      border-bottom-color: var(--blue);
+    }
+    @media (max-width: 640px) {
+      .topnav { gap: 12px; padding: 0 16px; overflow-x: auto; }
+      .topnav .tabs { gap: 0; }
+      .topnav .tabs a { padding: 0 10px; font-size: 13px; }
+      .brand-name { font-size: 15px; }
+    }
+
+    /* ---------- 컨테이너 ---------- */
+    .container {
+      max-width: 1080px;
+      margin: 0 auto;
+    }
+
+    .hero {
+      margin-bottom: 32px;
+      padding: 12px 4px 0;
+    }
+    .hero h1 {
+      font-size: 36px;
+      font-weight: 700;
+      letter-spacing: -0.025em;
+      line-height: 1.25;
+      margin-bottom: 10px;
+      color: var(--text);
+    }
+    .hero .lead {
+      font-size: 17px;
+      color: var(--text-secondary);
+      max-width: 620px;
+      font-weight: 500;
+      letter-spacing: -0.012em;
+      line-height: 1.5;
+    }
+    @media (max-width: 960px) {
+      body { padding: 88px 16px 160px; }
+      .hero h1 { font-size: 28px; }
+      .hero .lead { font-size: 15px; }
+    }
+
+    /* ---------- 카드 공통 ---------- */
+    .card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 32px;
+      box-shadow: var(--shadow-card);
+      transition: box-shadow 0.2s ease;
+    }
+    .card:hover { box-shadow: var(--shadow-card-hover); }
+    .card + .card { margin-top: 20px; }
+    @media (max-width: 960px) {
+      .card { padding: 24px; }
+    }
+    .card-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+    .card-title {
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: -0.015em;
+      color: var(--text);
+    }
+    .card-hint {
+      font-size: 13px;
+      color: var(--text-caption);
+      font-weight: 500;
+      letter-spacing: -0.005em;
+    }
+    .card-hint b {
+      color: var(--text);
+      font-weight: 700;
+    }
+
+    /* ---------- 검색 입력 ---------- */
+    .search-row {
+      display: grid;
+      grid-template-columns: 1.7fr 1fr auto;
+      gap: 10px;
+      align-items: stretch;
+    }
+    @media (max-width: 560px) {
+      .search-row { grid-template-columns: 1fr; }
+    }
+    .search-input.artist { font-size: 15px; }
+    .search-input {
+      width: 100%;
+      background: var(--surface-3);
+      border: 2px solid transparent;
+      border-radius: var(--radius-sm);
+      color: var(--text);
+      padding: 18px 20px;
+      font-size: 17px;
+      font-weight: 600;
+      font-family: inherit;
+      letter-spacing: -0.012em;
+      transition: border-color 0.15s ease, background 0.15s ease;
+    }
+    .search-input::placeholder {
+      color: var(--text-disabled);
+      font-weight: 500;
+    }
+    .search-input:focus {
+      outline: none;
+      border-color: var(--blue);
+      background: var(--surface);
+    }
+
+    /* ---------- 옵션 칩 ---------- */
+    .options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 16px;
+    }
+    .opt-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 16px;
+      background: var(--surface-3);
+      border: none;
+      border-radius: var(--radius-pill);
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: background 0.15s ease, color 0.15s ease, transform 0.1s ease;
+      user-select: none;
+      letter-spacing: -0.01em;
+      font-family: inherit;
+    }
+    .opt-chip:hover { background: var(--blue-soft); color: var(--blue-strong); }
+    .opt-chip:active { transform: scale(0.97); }
+    .opt-chip input { display: none; }
+    .opt-chip.is-active {
+      background: var(--blue-soft);
+      color: var(--blue-strong);
+    }
+
+    /* ---------- 버튼 ---------- */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 12px 20px;
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      border: none;
+      transition: background 0.15s ease, color 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease;
+      white-space: nowrap;
+      text-decoration: none;
+      letter-spacing: -0.01em;
+    }
+    .btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+    .btn:active:not(:disabled) { transform: scale(0.97); }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--blue) 0%, var(--blue-strong) 100%);
+      color: #fff;
+      box-shadow: var(--shadow-button);
+    }
+    .btn-primary:hover:not(:disabled) {
+      box-shadow: var(--shadow-button-hover);
+    }
+    .btn-primary:disabled {
+      background: var(--surface-3);
+      color: var(--text-disabled);
+      box-shadow: none;
+    }
+
+    .btn-secondary {
+      background: var(--surface-3);
+      color: var(--text-secondary);
+    }
+    .btn-secondary:hover:not(:disabled) {
+      background: var(--blue-soft);
+      color: var(--blue-strong);
+    }
+
+    .btn-search {
+      padding: 0 28px;
+      font-size: 15px;
+    }
+    .btn-sm {
+      padding: 9px 14px;
+      font-size: 13px;
+      border-radius: 10px;
+    }
+
+    /* ---------- 결과 헤더 ---------- */
+    .results-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      margin: 20px 4px 14px;
+      flex-wrap: wrap;
+    }
+    .results-head h3 {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.012em;
+    }
+    .results-head .query-echo {
+      font-size: 13px;
+      color: var(--text-caption);
+      font-variant-numeric: tabular-nums;
+      font-weight: 500;
+    }
+    .results-head .query-echo b {
+      color: var(--text);
+      font-weight: 700;
+    }
+
+    /* ---------- 소스 카드 그리드 ---------- */
+    .source-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+    @media (max-width: 960px) {
+      .source-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 560px) {
+      .source-grid { grid-template-columns: 1fr; }
+    }
+
+    .source-card {
+      background: var(--surface);
+      border-radius: var(--radius-sm);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      box-shadow: var(--shadow-card);
+      transition: box-shadow 0.2s ease, transform 0.15s ease;
+      min-height: 184px;
+    }
+    .source-card:hover {
+      box-shadow: var(--shadow-card-hover);
+      transform: translateY(-2px);
+    }
+    .source-card.is-disabled {
+      opacity: 0.55;
+      pointer-events: none;
+    }
+
+    .source-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .source-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 800;
+      flex-shrink: 0;
+      letter-spacing: -0.04em;
+    }
+    .source-name {
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: -0.015em;
+      color: var(--text);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .source-star {
+      color: var(--warning);
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .source-desc {
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.55;
+      flex: 1;
+      font-weight: 500;
+      letter-spacing: -0.005em;
+    }
+    .source-actions {
+      display: flex;
+      gap: 6px;
+      margin-top: 4px;
+      flex-wrap: wrap;
+    }
+    .source-actions .btn {
+      flex: 1;
+      min-width: 0;
+    }
+
+    /* 소스별 아이콘 색상 (흰 배경에 어울리게) */
+    .icn-naver { background: #03c75a; color: #fff; }
+    .icn-google { background: #f2f4f6; color: #1a73e8; border: 1px solid var(--border); }
+    .icn-youtube { background: #ff0000; color: #fff; }
+    .icn-gospelpia { background: #2b5fdb; color: #fff; }
+    .icn-mychan { background: #8a4af3; color: #fff; }
+    .icn-ccli { background: #f57c00; color: #fff; }
+    .icn-pdf { background: #d32f2f; color: #fff; }
+
+    /* ---------- 섹션 구분 ---------- */
+    .section-block { margin-top: 28px; }
+    .section-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 0 4px 6px;
+      flex-wrap: wrap;
+    }
+    .section-head h2 {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--text);
+    }
+    .section-head .pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 11px;
+      border-radius: var(--radius-pill);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+    .pill-inapp { background: var(--blue-soft); color: var(--blue-strong); }
+    .pill-external { background: var(--surface-3); color: var(--text-secondary); }
+    .section-sub {
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin: 0 4px 16px;
+      font-weight: 500;
+      letter-spacing: -0.008em;
+      line-height: 1.5;
+    }
+
+    /* ---------- 가사 결과 (인앱) ---------- */
+    .lyrics-status {
+      padding: 18px 20px;
+      border-radius: var(--radius-sm);
+      background: var(--surface-2);
+      color: var(--text-secondary);
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 1.55;
+      letter-spacing: -0.008em;
+    }
+    .lyrics-status b { color: var(--text); font-weight: 700; }
+    .lyrics-status.is-loading {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .spinner {
+      width: 16px;
+      height: 16px;
+      border: 2px solid var(--border-strong);
+      border-top-color: var(--blue);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      flex-shrink: 0;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .lyrics-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .lyric-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 20px 22px;
+      box-shadow: var(--shadow-card);
+      transition: box-shadow 0.2s ease;
+    }
+    .lyric-card:hover { box-shadow: var(--shadow-card-hover); }
+    .lyric-card-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .lyric-meta { min-width: 0; flex: 1; }
+    .lyric-title {
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: -0.015em;
+      color: var(--text);
+      line-height: 1.35;
+    }
+    .lyric-artist {
+      font-size: 13px;
+      color: var(--text-secondary);
+      font-weight: 600;
+      margin-top: 3px;
+      letter-spacing: -0.008em;
+    }
+    .lyric-artist .album {
+      color: var(--text-caption);
+      font-weight: 500;
+    }
+    .lyric-actions {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      flex-shrink: 0;
+    }
+    .lyric-body {
+      margin-top: 14px;
+      position: relative;
+    }
+    .lyric-text {
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-size: 14.5px;
+      line-height: 1.7;
+      color: var(--text);
+      background: var(--surface-2);
+      border-radius: var(--radius-sm);
+      padding: 16px 18px;
+      max-height: 220px;
+      overflow-y: auto;
+      letter-spacing: -0.006em;
+      transition: max-height 0.2s ease;
+    }
+    .lyric-card.is-expanded .lyric-text { max-height: 1400px; }
+    .lyric-fade {
+      position: absolute;
+      left: 0; right: 6px; bottom: 0;
+      height: 44px;
+      pointer-events: none;
+      border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+      background: linear-gradient(to bottom, rgba(249,250,251,0), var(--surface-2));
+    }
+    .lyric-card.is-expanded .lyric-fade { display: none; }
+
+    /* ---------- 유튜브 임베드 (인앱, 선택) ---------- */
+    .yt-embed-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      margin-top: 14px;
+    }
+    @media (max-width: 560px) {
+      .yt-embed-row { grid-template-columns: 1fr; }
+    }
+    .yt-frame-wrap {
+      margin-top: 14px;
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      background: #000;
+      aspect-ratio: 16 / 9;
+      box-shadow: var(--shadow-card);
+      display: none;
+    }
+    .yt-frame-wrap.is-on { display: block; }
+    .yt-frame-wrap iframe {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      display: block;
+    }
+
+    /* ---------- 한계 안내문 ---------- */
+    .note-inline {
+      display: flex;
+      align-items: flex-start;
+      gap: 9px;
+      padding: 13px 16px;
+      background: var(--surface-2);
+      border-radius: var(--radius-sm);
+      font-size: 12.5px;
+      color: var(--text-caption);
+      font-weight: 500;
+      line-height: 1.55;
+      letter-spacing: -0.005em;
+      margin: 0 4px 16px;
+    }
+    .note-inline .note-ico {
+      flex-shrink: 0;
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    /* ---------- 안내 (검색 전) ---------- */
+    .empty-hint {
+      padding: 16px 18px;
+      text-align: center;
+      color: var(--text-caption);
+      font-size: 13px;
+      font-weight: 500;
+      background: var(--surface-2);
+      border-radius: var(--radius-sm);
+      margin-top: 16px;
+    }
+
+    /* ---------- 클립보드 도크 (하단 sticky) ---------- */
+    .clipboard-dock {
+      position: fixed;
+      left: 24px;
+      right: 24px;
+      bottom: 24px;
+      max-width: 1032px;
+      margin: 0 auto;
+      background: rgba(255, 255, 255, 0.96);
+      backdrop-filter: saturate(180%) blur(14px);
+      -webkit-backdrop-filter: saturate(180%) blur(14px);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 14px 18px;
+      z-index: 40;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04), 0 16px 36px rgba(0, 0, 0, 0.08);
+      transition: padding 0.2s ease;
+    }
+    @media (max-width: 720px) {
+      .clipboard-dock {
+        left: 12px;
+        right: 12px;
+        bottom: 12px;
+        padding: 12px 14px;
+      }
+    }
+    .clipboard-dock.is-expanded {
+      padding-bottom: 16px;
+    }
+
+    .dock-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .dock-title {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.012em;
+    }
+    .dock-title .ico {
+      width: 28px;
+      height: 28px;
+      border-radius: 9px;
+      background: var(--blue-soft);
+      color: var(--blue-strong);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+    }
+    .dock-actions {
+      display: flex;
+      gap: 6px;
+      margin-left: auto;
+      flex-wrap: wrap;
+    }
+
+    .dock-body {
+      display: none;
+      margin-top: 12px;
+    }
+    .dock-body.is-open { display: block; }
+
+    .dock-textarea {
+      width: 100%;
+      background: var(--surface-3);
+      border: 2px solid transparent;
+      border-radius: var(--radius-sm);
+      color: var(--text);
+      padding: 14px 16px;
+      font-size: 14px;
+      font-family: inherit;
+      line-height: 1.6;
+      min-height: 120px;
+      max-height: 240px;
+      resize: vertical;
+      transition: border-color 0.15s ease, background 0.15s ease;
+    }
+    .dock-textarea::placeholder {
+      color: var(--text-disabled);
+      font-weight: 500;
+    }
+    .dock-textarea:focus {
+      outline: none;
+      border-color: var(--blue);
+      background: var(--surface);
+    }
+
+    .dock-footer {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 12px;
+      flex-wrap: wrap;
+    }
+    .dock-footer .hint {
+      font-size: 12px;
+      color: var(--text-caption);
+      flex: 1;
+      min-width: 200px;
+      font-weight: 500;
+    }
+
+    /* ---------- 토스트 ---------- */
+    .toast {
+      position: fixed;
+      bottom: 130px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--text);
+      color: #fff;
+      padding: 12px 22px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 600;
+      opacity: 0;
+      pointer-events: none;
+      transition: transform 0.25s ease, opacity 0.25s ease;
+      z-index: 200;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+      letter-spacing: -0.01em;
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* ---------- 푸터 ---------- */
+    .footer {
+      margin-top: 64px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+      font-size: 13px;
+      color: var(--text-caption);
+      text-align: center;
+      font-weight: 500;
+    }
+    .footer a {
+      color: var(--text-secondary);
+      text-decoration: none;
+    }
+    .footer a:hover { color: var(--blue); }
+  </style>
+</head>
+<body>
+  <nav class="topnav">
+    <a class="brand" href="index.html">
+      <span class="brand-logo">O</span>
+      <span class="brand-name">OGX 찬양팀</span>
+    </a>
+    <div class="tabs">
+      <a href="recommend.html">추천</a>
+      <a href="sheet-finder.html" class="active">악보 찾기</a>
+      <a href="praise-ppt.html">찬양 PPT</a>
+      <a href="worship-team.html">실시간 악보</a>
+    </div>
+  </nav>
+
+  <div class="container">
+
+    <section class="hero">
+      <h1>악보 찾기</h1>
+      <p class="lead">가사는 여기서 바로 보여드려요. 악보 이미지와 영상은 아래 사이트에서 이어서 찾을 수 있어요.</p>
+    </section>
+
+    <!-- ===== 검색 카드 ===== -->
+    <section class="card">
+      <div class="card-head">
+        <h2 class="card-title">찬양 검색</h2>
+        <span class="card-hint">가수를 함께 넣으면 가사를 더 잘 찾아요</span>
+      </div>
+
+      <form id="searchForm" class="search-row" autocomplete="off">
+        <input
+          id="q"
+          class="search-input"
+          type="text"
+          placeholder="찬양 제목 (예: 은혜)"
+          autocomplete="off"
+          autocapitalize="off"
+          spellcheck="false"
+        />
+        <input
+          id="artist"
+          class="search-input artist"
+          type="text"
+          placeholder="가수 (선택)"
+          autocomplete="off"
+          autocapitalize="off"
+          spellcheck="false"
+        />
+        <button type="submit" class="btn btn-primary btn-search">검색</button>
+      </form>
+
+      <div class="options" id="optionRow">
+        <label class="opt-chip" data-opt="chord">
+          <input type="checkbox" id="optChord" />
+          <span>코드 악보</span>
+        </label>
+        <label class="opt-chip" data-opt="pdf">
+          <input type="checkbox" id="optPdf" />
+          <span>PDF 우선</span>
+        </label>
+        <label class="opt-chip" data-opt="youtube">
+          <input type="checkbox" id="optYoutube" />
+          <span>유튜브 영상</span>
+        </label>
+      </div>
+    </section>
+
+    <!-- ===== 가사 (바로 보기) — 인앱 ===== -->
+    <section class="section-block" id="lyricsSection">
+      <div class="section-head">
+        <h2>가사</h2>
+        <span class="pill pill-inapp">바로 보기</span>
+      </div>
+      <p class="section-sub">검색하면 가사를 이 페이지 안에서 바로 보여드려요. 복사하거나 찬양 PPT로 바로 보낼 수 있어요.</p>
+
+      <div class="lyrics-status" id="lyricsStatus">
+        제목을 입력하고 검색하면 가사를 여기에서 바로 찾아드려요.
+      </div>
+      <div class="lyrics-list" id="lyricsList"></div>
+
+      <!-- 유튜브 임베드 (선택) -->
+      <div class="yt-embed-row">
+        <input
+          id="ytUrl"
+          class="search-input artist"
+          type="text"
+          placeholder="유튜브 영상 주소를 붙여넣으면 여기서 바로 미리보기 돼요 (선택)"
+          autocomplete="off"
+          spellcheck="false"
+        />
+        <button type="button" class="btn btn-secondary" id="ytEmbedBtn">미리보기</button>
+      </div>
+      <div class="yt-frame-wrap" id="ytFrameWrap"></div>
+    </section>
+
+    <!-- ===== 악보·영상 사이트 — 외부 ===== -->
+    <section class="section-block">
+      <div class="section-head">
+        <h2>악보·영상 사이트</h2>
+        <span class="pill pill-external">외부 링크</span>
+      </div>
+      <div class="note-inline">
+        <span class="note-ico">ℹ️</span>
+        <span>악보 이미지와 PDF는 사이트들이 외부 표시를 막아둬서 이 페이지 안에 직접 띄울 수는 없어요. 아래 버튼으로 사이트에서 바로 이어 보세요.</span>
+      </div>
+
+      <div class="results-head">
+        <h3>검색 소스</h3>
+        <div class="query-echo" id="queryEcho">제목을 입력하면 검색 링크가 자동으로 만들어져요.</div>
+      </div>
+
+      <div class="source-grid" id="sourceGrid">
+        <!-- JS로 렌더링 -->
+      </div>
+
+      <div class="empty-hint" id="emptyHint" style="display:none;">
+        제목을 입력하고 검색을 누르면 각 소스가 활성화돼요.
+      </div>
+    </section>
+
+    <footer class="footer">
+      OGX 찬양팀 · 악보 찾기 · 외부 사이트 검색 결과는 각 사이트 정책을 따라요
+    </footer>
+  </div>
+
+  <!-- ===== 클립보드 도크 (하단 sticky) ===== -->
+  <div class="clipboard-dock" id="dock">
+    <div class="dock-head">
+      <span class="dock-title">
+        <span class="ico">📋</span>
+        클립보드 도우미
+      </span>
+      <div class="dock-actions">
+        <button type="button" class="btn btn-secondary btn-sm" id="clipReadBtn">클립보드에서 가져오기</button>
+        <button type="button" class="btn btn-secondary btn-sm" id="dockToggleBtn">펼치기</button>
+      </div>
+    </div>
+
+    <div class="dock-body" id="dockBody">
+      <textarea
+        id="clipText"
+        class="dock-textarea"
+        placeholder="가져온 가사가 여기에 표시돼요. 직접 붙여넣어도 돼요."
+        spellcheck="false"
+      ></textarea>
+      <div class="dock-footer">
+        <span class="hint">제목 + 가사를 정리해서 다음 단계로 넘겨요.</span>
+        <button type="button" class="btn btn-secondary btn-sm" id="copyFormatted">정리해서 복사</button>
+        <button type="button" class="btn btn-primary btn-sm" id="sendPpt">PPT로 보내기</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    /* =========================================================
+     *  상태
+     *  ========================================================= */
+    const state = {
+      query: '',
+      artist: '',
+      opts: { chord: false, pdf: false, youtube: false },
+      lastPopup: null,
+    };
+
+    const $ = (id) => document.getElementById(id);
+
+    /* =========================================================
+     *  소스 정의
+     *  ========================================================= */
+    const SOURCES = [
+      {
+        id: 'naver-web',
+        name: '네이버 통합검색',
+        desc: '한국 찬양 악보·블로그 위주예요. 작은 창으로 옆에 두기 좋아요.',
+        icon: 'N',
+        iconClass: 'icn-naver',
+        popup: true,
+        buildUrl: (q, opts) => {
+          const extra = opts.chord ? '+코드' : '';
+          return `https://search.naver.com/search.naver?query=${encodeURIComponent(q + ' 악보' + extra)}`;
+        },
+      },
+      {
+        id: 'naver-image',
+        name: '네이버 이미지',
+        desc: '악보 이미지·코드보 이미지를 빠르게 훑어볼 수 있어요.',
+        icon: 'N',
+        iconClass: 'icn-naver',
+        popup: true,
+        buildUrl: (q, opts) => {
+          const extra = opts.chord ? '+코드' : '';
+          return `https://search.naver.com/search.naver?where=image&query=${encodeURIComponent(q + ' 악보' + extra)}`;
+        },
+      },
+      {
+        id: 'google-web',
+        name: '구글 검색',
+        desc: '영문·국문 혼합 + 해외 사이트(Hymnal.net, SongSelect 등).',
+        icon: 'G',
+        iconClass: 'icn-google',
+        popup: false,
+        buildUrl: (q, opts) => {
+          const extra = opts.chord ? ' 코드' : '';
+          return `https://www.google.com/search?q=${encodeURIComponent(q + ' 악보' + extra)}`;
+        },
+      },
+      {
+        id: 'google-image',
+        name: '구글 이미지',
+        desc: 'PDF 스캔본·악보 이미지를 폭넓게 찾을 수 있어요.',
+        icon: 'G',
+        iconClass: 'icn-google',
+        popup: false,
+        buildUrl: (q) => {
+          return `https://www.google.com/search?q=${encodeURIComponent(q + ' 악보')}&tbm=isch`;
+        },
+      },
+      {
+        id: 'youtube',
+        name: '유튜브',
+        desc: '연주 영상·MR·튜토리얼로 키와 템포 감을 잡아요.',
+        icon: '▶',
+        iconClass: 'icn-youtube',
+        popup: false,
+        buildUrl: (q) => {
+          return `https://www.youtube.com/results?search_query=${encodeURIComponent(q + ' 찬양 악보')}`;
+        },
+      },
+      {
+        id: 'gospelpia',
+        name: '가스펠피아',
+        desc: '한국 찬양 악보 전문 사이트예요. 코드 악보가 풍부해요.',
+        icon: 'GP',
+        iconClass: 'icn-gospelpia',
+        popup: true,
+        buildUrl: (q) => {
+          return `https://www.gospelpia.com/?act=search&query=${encodeURIComponent(q)}`;
+        },
+      },
+      {
+        id: 'mychan',
+        name: '마이찬양',
+        desc: '국내 찬양 자료실이에요. 가사·코드 위주로 보여줘요.',
+        icon: 'M',
+        iconClass: 'icn-mychan',
+        popup: true,
+        buildUrl: (q) => {
+          return `https://www.mychan.com/?keyword=${encodeURIComponent(q)}`;
+        },
+      },
+      {
+        id: 'ccli',
+        name: 'CCLI Korea',
+        desc: '저작권 라이선스 + 공식 악보 (SongSelect).',
+        icon: 'C',
+        iconClass: 'icn-ccli',
+        popup: false,
+        buildUrl: (q) => {
+          return `https://kr.songselect.ccli.com/search/results?search=${encodeURIComponent(q)}`;
+        },
+      },
+      {
+        id: 'pdf-search',
+        name: 'PDF 검색',
+        desc: '구글에서 PDF 파일만 추려서 보여줘요.',
+        icon: 'PDF',
+        iconClass: 'icn-pdf',
+        popup: false,
+        buildUrl: (q) => {
+          return `https://www.google.com/search?q=${encodeURIComponent(q + ' 악보 filetype:pdf')}`;
+        },
+        highlightIf: (opts) => opts.pdf,
+      },
+    ];
+
+    /* =========================================================
+     *  팝업 열기 (옆 작은 창)
+     *  ========================================================= */
+    function openSidePopup(url, name) {
+      try {
+        if (state.lastPopup && !state.lastPopup.closed) {
+          state.lastPopup.close();
+        }
+      } catch (e) { /* 크로스오리진 */ }
+
+      const w = 480;
+      const h = Math.min(900, (window.screen.availHeight || 900) - 80);
+      const left = Math.max(0, (window.screen.availWidth || 1280) - w - 10);
+      const top = 80;
+      const features = `width=${w},height=${h},left=${left},top=${top},menubar=no,toolbar=no,location=yes,status=no,resizable=yes,scrollbars=yes`;
+
+      const popup = window.open(url, name || 'ogx_sheet_popup', features);
+      if (!popup) {
+        showToast('팝업이 차단됐어요. 브라우저 팝업 허용을 켜주세요.');
+        window.open(url, '_blank', 'noopener');
+        return;
+      }
+      state.lastPopup = popup;
+      try { popup.focus(); } catch (e) {}
+    }
+
+    function openNewTab(url) {
+      window.open(url, '_blank', 'noopener,noreferrer');
+    }
+
+    /* =========================================================
+     *  렌더링
+     *  ========================================================= */
+    function renderSources() {
+      const grid = $('sourceGrid');
+      const q = state.query.trim();
+      const hasQuery = q.length > 0;
+
+      $('emptyHint').style.display = hasQuery ? 'none' : 'block';
+
+      if (hasQuery) {
+        $('queryEcho').innerHTML = `검색어 <b>${escapeHtml(q)}</b> · ${SOURCES.length}개 소스`;
+      } else {
+        $('queryEcho').textContent = '제목을 입력하면 검색 링크가 자동으로 만들어져요.';
+      }
+
+      grid.innerHTML = '';
+
+      SOURCES.forEach((src) => {
+        const card = document.createElement('div');
+        card.className = 'source-card';
+        if (!hasQuery) card.classList.add('is-disabled');
+
+        const url = hasQuery ? src.buildUrl(q, state.opts) : '#';
+        const highlighted = src.highlightIf && src.highlightIf(state.opts);
+
+        card.innerHTML = `
+          <div class="source-head">
+            <div class="source-icon ${src.iconClass}">${escapeHtml(src.icon)}</div>
+            <div class="source-name">
+              ${escapeHtml(src.name)}
+              ${highlighted ? '<span class="source-star">추천</span>' : ''}
+            </div>
+          </div>
+          <div class="source-desc">${escapeHtml(src.desc)}</div>
+          <div class="source-actions">
+            <button type="button" class="btn btn-secondary btn-sm" data-action="tab" ${hasQuery ? '' : 'disabled'}>새 탭에서 열기</button>
+            ${src.popup ? `<button type="button" class="btn btn-secondary btn-sm" data-action="popup" ${hasQuery ? '' : 'disabled'}>옆 창으로 열기</button>` : ''}
+          </div>
+        `;
+
+        card.querySelectorAll('button[data-action]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            if (!hasQuery) return;
+            const action = btn.dataset.action;
+            if (action === 'tab') openNewTab(url);
+            else if (action === 'popup') openSidePopup(url, 'ogx_' + src.id);
+          });
+        });
+
+        grid.appendChild(card);
+      });
+    }
+
+    function escapeHtml(s) {
+      return String(s)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    /* =========================================================
+     *  검색
+     *  ========================================================= */
+    function doSearch() {
+      const q = $('q').value.trim();
+      const artist = $('artist').value.trim();
+      state.query = q;
+      state.artist = artist;
+      renderSources();
+      if (!q) {
+        $('q').focus();
+        showToast('찬양 제목을 입력해주세요.');
+        return;
+      }
+      // 가사 인앱 검색 (LRCLib)
+      fetchLyrics(q, artist);
+      try {
+        const url = new URL(window.location.href);
+        url.searchParams.set('q', q);
+        if (artist) url.searchParams.set('artist', artist);
+        else url.searchParams.delete('artist');
+        window.history.replaceState(null, '', url.toString());
+      } catch (e) {}
+    }
+
+    /* =========================================================
+     *  토스트
+     *  ========================================================= */
+    const toast = $('toast');
+    function showToast(msg) {
+      toast.textContent = msg;
+      toast.classList.add('show');
+      clearTimeout(showToast._t);
+      showToast._t = setTimeout(() => toast.classList.remove('show'), 2200);
+    }
+
+    /* =========================================================
+     *  클립보드 도크
+     *  ========================================================= */
+    const dock = $('dock');
+    const dockBody = $('dockBody');
+    const dockToggleBtn = $('dockToggleBtn');
+    const clipText = $('clipText');
+
+    function setDockOpen(open) {
+      dockBody.classList.toggle('is-open', open);
+      dock.classList.toggle('is-expanded', open);
+      dockToggleBtn.textContent = open ? '접기' : '펼치기';
+    }
+
+    dockToggleBtn.addEventListener('click', () => {
+      setDockOpen(!dockBody.classList.contains('is-open'));
+    });
+
+    $('clipReadBtn').addEventListener('click', async () => {
+      setDockOpen(true);
+      try {
+        if (!navigator.clipboard || !navigator.clipboard.readText) {
+          throw new Error('이 브라우저에서는 클립보드 읽기를 지원하지 않아요.');
+        }
+        const text = await navigator.clipboard.readText();
+        if (!text || !text.trim()) {
+          showToast('클립보드가 비어있어요.');
+          clipText.focus();
+          return;
+        }
+        clipText.value = text.trim();
+        showToast('클립보드에서 불러왔어요.');
+        clipText.focus();
+      } catch (err) {
+        console.warn('clipboard read failed:', err);
+        showToast('클립보드 권한이 없어요. 직접 붙여넣어 주세요.');
+        clipText.focus();
+      }
+    });
+
+    $('copyFormatted').addEventListener('click', async () => {
+      const title = state.query || $('q').value.trim() || '(제목 없음)';
+      const lyrics = clipText.value.trim();
+      if (!lyrics) {
+        showToast('정리할 가사가 없어요.');
+        clipText.focus();
+        return;
+      }
+      const formatted = `${title}\n\n${lyrics}`;
+      try {
+        await navigator.clipboard.writeText(formatted);
+        showToast('정리해서 복사했어요.');
+      } catch (err) {
+        console.warn('copy failed:', err);
+        try {
+          clipText.value = formatted;
+          clipText.select();
+          document.execCommand('copy');
+          showToast('정리해서 복사했어요.');
+        } catch (e2) {
+          showToast('복사에 실패했어요. 수동으로 복사해 주세요.');
+        }
+      }
+    });
+
+    $('sendPpt').addEventListener('click', () => {
+      const title = state.query || $('q').value.trim() || '';
+      const lyrics = clipText.value.trim();
+      if (!title && !lyrics) {
+        showToast('제목 또는 가사를 먼저 입력해주세요.');
+        return;
+      }
+      const base = 'praise-ppt.html';
+      const params = new URLSearchParams();
+      if (title) params.set('title', title);
+      if (lyrics) params.set('lyrics', lyrics);
+      const url = base + (params.toString() ? ('?' + params.toString()) : '');
+
+      const formatted = title ? (lyrics ? `${title}\n\n${lyrics}` : title) : lyrics;
+      if (formatted) {
+        try { navigator.clipboard.writeText(formatted); } catch (e) {}
+      }
+      window.open(url, '_blank', 'noopener');
+      showToast('PPT 생성기로 이동해요.');
+    });
+
+    /* =========================================================
+     *  가사 인앱 표시 (LRCLib)
+     *  ========================================================= */
+    let lyricsReqToken = 0;
+
+    function setLyricsStatus(html, loading) {
+      const el = $('lyricsStatus');
+      el.style.display = 'block';
+      el.className = 'lyrics-status' + (loading ? ' is-loading' : '');
+      el.innerHTML = loading
+        ? `<span class="spinner"></span><span>${html}</span>`
+        : html;
+    }
+
+    function clearLyrics() {
+      $('lyricsList').innerHTML = '';
+    }
+
+    async function fetchLyrics(title, artist) {
+      const myToken = ++lyricsReqToken;
+      clearLyrics();
+
+      if (!title) {
+        setLyricsStatus('제목을 입력하고 검색하면 가사를 여기에서 바로 찾아드려요.', false);
+        return;
+      }
+
+      setLyricsStatus('가사를 찾고 있어요…', true);
+
+      let url = `https://lrclib.net/api/search?q=${encodeURIComponent(title)}`;
+      if (artist) url += `&artist_name=${encodeURIComponent(artist)}`;
+
+      let data;
+      try {
+        const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        data = await res.json();
+      } catch (err) {
+        if (myToken !== lyricsReqToken) return;
+        console.warn('LRCLib fetch failed:', err);
+        setLyricsStatus('가사를 불러오는 중 문제가 생겼어요. 잠시 후 다시 시도해주세요.', false);
+        showToast('가사를 불러오지 못했어요.');
+        return;
+      }
+
+      if (myToken !== lyricsReqToken) return; // 더 최신 검색이 있으면 무시
+
+      const items = (Array.isArray(data) ? data : [])
+        .filter(d => d && !d.instrumental && d.plainLyrics && d.plainLyrics.trim());
+
+      if (items.length === 0) {
+        setLyricsStatus('가사를 못 찾았어요. <b>가수를 함께 입력</b>해보세요. (예: 제목 “은혜” + 가수 “손경민”)', false);
+        return;
+      }
+
+      $('lyricsStatus').style.display = 'none';
+      renderLyrics(items.slice(0, 12));
+    }
+
+    function renderLyrics(items) {
+      const list = $('lyricsList');
+      list.innerHTML = '';
+
+      items.forEach((item) => {
+        const title = item.trackName || item.name || '(제목 없음)';
+        const artist = item.artistName || '';
+        const album = item.albumName || '';
+        const lyrics = (item.plainLyrics || '').trim();
+
+        const card = document.createElement('div');
+        card.className = 'lyric-card';
+
+        const metaLine = [
+          artist ? escapeHtml(artist) : '',
+          album ? `<span class="album">· ${escapeHtml(album)}</span>` : '',
+        ].filter(Boolean).join(' ');
+
+        card.innerHTML = `
+          <div class="lyric-card-head">
+            <div class="lyric-meta">
+              <div class="lyric-title">${escapeHtml(title)}</div>
+              ${metaLine ? `<div class="lyric-artist">${metaLine}</div>` : ''}
+            </div>
+            <div class="lyric-actions">
+              <button type="button" class="btn btn-secondary btn-sm" data-act="copy">가사 복사</button>
+              <button type="button" class="btn btn-primary btn-sm" data-act="ppt">찬양 PPT로 보내기</button>
+              <button type="button" class="btn btn-secondary btn-sm" data-act="toggle">펼치기</button>
+            </div>
+          </div>
+          <div class="lyric-body">
+            <div class="lyric-text"></div>
+            <div class="lyric-fade"></div>
+          </div>
+        `;
+
+        card.querySelector('.lyric-text').textContent = lyrics;
+
+        card.querySelector('[data-act="copy"]').addEventListener('click', () => {
+          copyText(lyrics, '가사를 복사했어요.');
+        });
+        card.querySelector('[data-act="ppt"]').addEventListener('click', () => {
+          sendToPpt(title, lyrics);
+        });
+        const toggleBtn = card.querySelector('[data-act="toggle"]');
+        toggleBtn.addEventListener('click', () => {
+          const expanded = card.classList.toggle('is-expanded');
+          toggleBtn.textContent = expanded ? '접기' : '펼치기';
+        });
+
+        list.appendChild(card);
+      });
+    }
+
+    async function copyText(text, okMsg) {
+      try {
+        await navigator.clipboard.writeText(text);
+        showToast(okMsg || '복사했어요.');
+      } catch (err) {
+        try {
+          const ta = document.createElement('textarea');
+          ta.value = text;
+          ta.style.position = 'fixed';
+          ta.style.opacity = '0';
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand('copy');
+          document.body.removeChild(ta);
+          showToast(okMsg || '복사했어요.');
+        } catch (e2) {
+          showToast('복사에 실패했어요. 직접 복사해주세요.');
+        }
+      }
+    }
+
+    function sendToPpt(title, lyrics) {
+      // 가사를 클립보드로 넘기고 찬양 PPT 새 탭으로 이동
+      const formatted = lyrics ? `${title}\n\n${lyrics}` : title;
+      try { navigator.clipboard.writeText(formatted); } catch (e) {}
+
+      const params = new URLSearchParams();
+      if (title) params.set('title', title);
+      if (lyrics) params.set('lyrics', lyrics);
+      const url = 'praise-ppt.html' + (params.toString() ? ('?' + params.toString()) : '');
+      window.open(url, '_blank', 'noopener');
+      showToast('가사를 복사하고 찬양 PPT로 보냈어요.');
+    }
+
+    /* =========================================================
+     *  유튜브 인앱 미리보기 (선택)
+     *  ========================================================= */
+    function extractYouTubeId(input) {
+      const s = (input || '').trim();
+      if (!s) return null;
+      // 11자리 ID 직접 입력
+      if (/^[a-zA-Z0-9_-]{11}$/.test(s)) return s;
+      try {
+        const u = new URL(s);
+        const host = u.hostname.replace(/^www\./, '');
+        if (host === 'youtu.be') {
+          const id = u.pathname.slice(1).split('/')[0];
+          return /^[a-zA-Z0-9_-]{11}$/.test(id) ? id : null;
+        }
+        if (host.endsWith('youtube.com')) {
+          if (u.searchParams.get('v')) return u.searchParams.get('v');
+          const m = u.pathname.match(/\/(embed|shorts|live)\/([a-zA-Z0-9_-]{11})/);
+          if (m) return m[2];
+        }
+      } catch (e) { /* URL 아님 */ }
+      return null;
+    }
+
+    function embedYouTube() {
+      const wrap = $('ytFrameWrap');
+      const id = extractYouTubeId($('ytUrl').value);
+      if (!id) {
+        wrap.classList.remove('is-on');
+        wrap.innerHTML = '';
+        showToast('유튜브 영상 주소를 확인해주세요.');
+        return;
+      }
+      wrap.innerHTML = `<iframe src="https://www.youtube.com/embed/${id}" title="유튜브 미리보기" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+      wrap.classList.add('is-on');
+    }
+
+    $('ytEmbedBtn').addEventListener('click', embedYouTube);
+    $('ytUrl').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') { e.preventDefault(); embedYouTube(); }
+    });
+
+    /* =========================================================
+     *  옵션 칩
+     *  ========================================================= */
+    function bindOptionChips() {
+      document.querySelectorAll('.opt-chip').forEach(chip => {
+        const cb = chip.querySelector('input[type="checkbox"]');
+        const opt = chip.dataset.opt;
+        chip.addEventListener('click', () => {
+          setTimeout(() => {
+            const checked = cb.checked;
+            chip.classList.toggle('is-active', checked);
+            state.opts[opt] = checked;
+            if (state.query) renderSources();
+          }, 0);
+        });
+      });
+    }
+
+    /* =========================================================
+     *  URL 파라미터 진입
+     *  ========================================================= */
+    function applyUrlParams() {
+      try {
+        const url = new URL(window.location.href);
+        const q = url.searchParams.get('q');
+        const artist = url.searchParams.get('artist');
+        if (q && q.trim()) {
+          $('q').value = q.trim();
+          state.query = q.trim();
+          if (artist && artist.trim()) {
+            $('artist').value = artist.trim();
+            state.artist = artist.trim();
+          }
+          renderSources();
+          fetchLyrics(state.query, state.artist); // 자동 가사 검색
+          return true;
+        }
+      } catch (e) {}
+      return false;
+    }
+
+    /* =========================================================
+     *  바인딩 & 초기화
+     *  ========================================================= */
+    $('searchForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      doSearch();
+    });
+
+    $('q').addEventListener('input', (e) => {
+      state.query = e.target.value.trim();
+      renderSources();
+    });
+
+    bindOptionChips();
+
+    const fromUrl = applyUrlParams();
+    if (!fromUrl) {
+      renderSources();
+      setTimeout(() => $('q').focus(), 50);
+    }
+  </script>
+</body>
+</html>
