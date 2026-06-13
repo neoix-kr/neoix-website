@@ -493,6 +493,75 @@
       letter-spacing: -0.01em;
     }
 
+    /* 색상 (배경색 / 글자색) */
+    .color-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .swatches {
+      display: inline-flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .swatch {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      border: 2px solid var(--border);
+      cursor: pointer;
+      padding: 0;
+      position: relative;
+      transition: transform 0.1s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+      box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.04);
+    }
+    .swatch:hover { transform: translateY(-1px); }
+    .swatch:active { transform: scale(0.94); }
+    .swatch.is-active {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px var(--blue-soft);
+    }
+    .swatch.is-active::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      margin: auto;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--blue);
+      box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.9);
+    }
+    .color-pick {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: var(--surface-3);
+      border-radius: var(--radius-sm);
+      padding: 5px 12px 5px 6px;
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+    .color-pick:hover { background: var(--blue-soft); }
+    .color-pick input[type="color"] {
+      width: 30px;
+      height: 30px;
+      border: none;
+      background: none;
+      padding: 0;
+      cursor: pointer;
+      border-radius: 8px;
+    }
+    .color-pick input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+    .color-pick input[type="color"]::-webkit-color-swatch { border: 1px solid var(--border); border-radius: 8px; }
+    .color-pick-label {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-secondary);
+      letter-spacing: -0.01em;
+    }
+
     /* 안내문 (폰트 임베드 한계 등) */
     .note {
       display: flex;
@@ -685,6 +754,34 @@
     }
     .meta-chip-key { color: var(--text-caption); font-weight: 500; }
     .meta-chip-val { color: var(--text); font-weight: 700; }
+    .meta-chip.is-manual {
+      background: var(--blue-soft);
+      color: var(--blue-strong);
+    }
+    .meta-chip.is-manual .meta-chip-val { color: var(--blue-strong); }
+
+    /* 목록 칩 안의 줄 수 ± 스텝퍼 */
+    .meta-chip.chip-stepper { padding: 3px 6px 3px 10px; gap: 4px; }
+    .chip-step-btn {
+      width: 22px;
+      height: 22px;
+      border: none;
+      border-radius: 7px;
+      background: var(--surface-3);
+      color: var(--text-secondary);
+      font-size: 15px;
+      font-weight: 700;
+      line-height: 1;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.12s ease, color 0.12s ease, transform 0.1s ease;
+    }
+    .chip-step-btn:hover:not(:disabled) { background: var(--blue-soft); color: var(--blue-strong); }
+    .chip-step-btn:active:not(:disabled) { transform: scale(0.9); }
+    .chip-step-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+    .chip-step-val { min-width: 28px; text-align: center; }
 
     /* ---------- CTA 영역 ---------- */
     .cta-bar {
@@ -832,6 +929,116 @@
       gap: 8px;
       justify-content: flex-end;
       margin-top: 24px;
+    }
+    .modal.modal-wide { max-width: 680px; }
+
+    /* ---------- 슬라이드 직접 편집 모달 ---------- */
+    .slide-modal-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 6px;
+    }
+    .slide-modal-head h3 { margin-bottom: 0; }
+    .btn-revert {
+      padding: 9px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 700;
+      font-family: inherit;
+      border: none;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .slide-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .slide-card {
+      border-radius: var(--radius-sm);
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      padding: 12px;
+      display: flex;
+      gap: 12px;
+      align-items: stretch;
+    }
+    .slide-card-main { flex: 1; min-width: 0; }
+    .slide-card-no {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-caption);
+      margin-bottom: 6px;
+      letter-spacing: -0.01em;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    /* 카드 안 textarea = 슬라이드처럼 보이게 (현재 설정 배경/글자색, 가운데 정렬) */
+    .slide-text {
+      width: 100%;
+      min-height: 110px;
+      resize: vertical;
+      border: 2px solid transparent;
+      border-radius: var(--radius-sm);
+      padding: 16px 14px;
+      font-family: inherit;
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 1.5;
+      text-align: center;
+      letter-spacing: -0.01em;
+      aspect-ratio: 16 / 9;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+      /* 배경/글자색은 JS로 인라인 지정 */
+    }
+    .slide-text:focus {
+      outline: none;
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px var(--blue-soft);
+    }
+    .slide-text::selection { background: rgba(49, 130, 246, 0.45); }
+    .slide-card-ctrls {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+    .slide-ctrl-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      background: var(--surface-3);
+      border: none;
+      color: var(--text-secondary);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.13s ease, color 0.13s ease, transform 0.1s ease;
+      font-size: 15px;
+      font-weight: 700;
+      line-height: 1;
+    }
+    .slide-ctrl-btn svg { width: 16px; height: 16px; }
+    .slide-ctrl-btn:hover:not(:disabled) { background: var(--blue-soft); color: var(--blue-strong); }
+    .slide-ctrl-btn:active:not(:disabled) { transform: scale(0.9); }
+    .slide-ctrl-btn:disabled { opacity: 0.32; cursor: not-allowed; }
+    .slide-ctrl-btn.is-danger:hover { background: var(--danger-soft); color: var(--danger); }
+    .slide-ctrl-spacer { flex: 1; }
+    .is-block-add {
+      width: 100%;
+      margin-top: 14px;
+      border: 2px dashed var(--border-strong);
+      background: transparent;
+    }
+    .is-block-add:hover { background: var(--blue-soft); border-color: var(--blue); color: var(--blue-strong); }
+    @media (max-width: 540px) {
+      .slide-card { flex-direction: column; }
+      .slide-card-ctrls { flex-direction: row; flex-wrap: wrap; }
+      .slide-ctrl-spacer { display: none; }
     }
 
     /* ---------- 토스트 ---------- */
@@ -1139,6 +1346,40 @@
             1~8줄까지 정할 수 있어요. 곡마다 따로 조절할 수도 있어요.
           </p>
         </div>
+
+        <!-- 배경색 -->
+        <div class="setting-block">
+          <span class="field-label">배경색</span>
+          <div class="color-row">
+            <div class="swatches" id="bgSwatches" role="group" aria-label="배경색 프리셋">
+              <button type="button" class="swatch" data-color="#000000" style="background:#000000" title="검정" aria-label="검정"></button>
+              <button type="button" class="swatch" data-color="#FFFFFF" style="background:#FFFFFF" title="흰색" aria-label="흰색"></button>
+              <button type="button" class="swatch" data-color="#0B1F3A" style="background:#0B1F3A" title="남색" aria-label="남색"></button>
+              <button type="button" class="swatch" data-color="#0D2B1F" style="background:#0D2B1F" title="딥그린" aria-label="딥그린"></button>
+              <button type="button" class="swatch" data-color="#2B0D12" style="background:#2B0D12" title="버건디" aria-label="버건디"></button>
+            </div>
+            <label class="color-pick" title="직접 고르기">
+              <input type="color" id="bgColorInput" value="#000000" aria-label="배경색 직접 선택" />
+              <span class="color-pick-label">직접</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- 글자색 -->
+        <div class="setting-block">
+          <span class="field-label">글자색</span>
+          <div class="color-row">
+            <div class="swatches" id="textSwatches" role="group" aria-label="글자색 프리셋">
+              <button type="button" class="swatch" data-color="#FFFFFF" style="background:#FFFFFF" title="흰색" aria-label="흰색"></button>
+              <button type="button" class="swatch" data-color="#000000" style="background:#000000" title="검정" aria-label="검정"></button>
+              <button type="button" class="swatch" data-color="#FFE9A8" style="background:#FFE9A8" title="연노랑" aria-label="연노랑"></button>
+            </div>
+            <label class="color-pick" title="직접 고르기">
+              <input type="color" id="textColorInput" value="#FFFFFF" aria-label="글자색 직접 선택" />
+              <span class="color-pick-label">직접</span>
+            </label>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -1289,6 +1530,29 @@
     </div>
   </div>
 
+  <!-- 슬라이드 직접 편집 모달 -->
+  <div class="modal-backdrop" id="slideModal">
+    <div class="modal modal-wide">
+      <div class="slide-modal-head">
+        <h3 id="slideModalTitle">슬라이드 직접 편집</h3>
+        <button type="button" class="btn-ghost btn-revert" id="slideRevert" title="가사 기반 자동 분할로 되돌려요">
+          자동으로 되돌리기
+        </button>
+      </div>
+      <p class="card-hint" style="margin-bottom: 14px;">
+        각 카드가 한 슬라이드예요. 카드 안에서 <strong>엔터로 줄을 추가</strong>하고 자유롭게 타이핑하세요.
+      </p>
+      <div id="slideCards" class="slide-cards"></div>
+      <button type="button" class="btn btn-ghost is-block-add" id="slideAdd">
+        + 슬라이드 추가
+      </button>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" id="slideCancel">취소</button>
+        <button class="btn btn-primary" id="slideDone">완료</button>
+      </div>
+    </div>
+  </div>
+
   <!-- 가사 검색 결과 모달 -->
   <div class="modal-backdrop" id="searchModal">
     <div class="modal">
@@ -1308,11 +1572,15 @@
     // ============================================
     // 상태
     // ============================================
-    /** @typedef {{ id: string, title: string, lyrics: string, linesPerSlide: number, showTitle: boolean }} Song */
+    /** @typedef {{ id: string, title: string, lyrics: string, linesPerSlide: number, showTitle: boolean, manualSlides: (string[][] | null) }} Song */
     /** @type {Song[]} */
     let songs = [];
     let currentPreviewIndex = 0;
     let editingSongId = null;
+    // 슬라이드 직접 편집 모달 상태
+    let slideEditSongId = null;
+    /** @type {string[][]} 편집 중인 슬라이드 작업본 */
+    let slideEditDraft = [];
 
     const LINES_MIN = 1;
     const LINES_MAX = 8;
@@ -1331,13 +1599,15 @@
     };
 
     // 전역 자막 설정
-    /** @typedef {{ fontKey: string, sizeMode: "auto"|"manual", fontSize: number, defaultLines: number }} Settings */
+    /** @typedef {{ fontKey: string, sizeMode: "auto"|"manual", fontSize: number, defaultLines: number, bgColor: string, textColor: string }} Settings */
     /** @type {Settings} */
     let settings = {
       fontKey: "Pretendard",
       sizeMode: "manual",
       fontSize: 40,
       defaultLines: 4,
+      bgColor: "#000000",
+      textColor: "#FFFFFF",
     };
 
     // 입력 폼 상태 (곡별)
@@ -1376,6 +1646,15 @@
     const editCancel = $("editCancel");
     const editSave = $("editSave");
 
+    // 슬라이드 직접 편집 모달
+    const slideModal = $("slideModal");
+    const slideModalTitle = $("slideModalTitle");
+    const slideCards = $("slideCards");
+    const slideAdd = $("slideAdd");
+    const slideRevert = $("slideRevert");
+    const slideCancel = $("slideCancel");
+    const slideDone = $("slideDone");
+
     // 가사 검색 (제목으로 찾기)
     const artistInput = $("artistInput");
     const searchLyricsBtn = $("searchLyricsBtn");
@@ -1394,6 +1673,12 @@
     const defLinesValue = $("defLinesValue");
     const defLinesMinus = $("defLinesMinus");
     const defLinesPlus = $("defLinesPlus");
+
+    // 배경색 / 글자색
+    const bgSwatches = $("bgSwatches");
+    const textSwatches = $("textSwatches");
+    const bgColorInput = $("bgColorInput");
+    const textColorInput = $("textColorInput");
 
     // 곡별 줄 수 스텝퍼
     const linesValue = $("linesValue");
@@ -1441,7 +1726,27 @@
       if (settings.sizeMode !== "auto") settings.sizeMode = "manual";
       settings.fontSize = clampSize(settings.fontSize || 40);
       settings.defaultLines = clampLines(settings.defaultLines || 4);
+      settings.bgColor = normalizeColor(settings.bgColor, "#000000");
+      settings.textColor = normalizeColor(settings.textColor, "#FFFFFF");
       formLinesPerSlide = settings.defaultLines;
+
+      // 곡 데이터 하위호환: 배열 형태 보정 + manualSlides 기본 null
+      if (!Array.isArray(songs)) songs = [];
+      songs.forEach((s) => {
+        if (!s || typeof s !== "object") return;
+        // 옛 데이터엔 manualSlides 필드가 없음 → null(자동 분할)
+        if (!Array.isArray(s.manualSlides)) {
+          s.manualSlides = null;
+        } else {
+          // 손상 방지: 각 슬라이드는 문자열 배열로 정리, 빈 슬라이드는 제거
+          s.manualSlides = s.manualSlides
+            .map((slide) =>
+              Array.isArray(slide) ? slide.map((l) => String(l)) : []
+            )
+            .filter((slide) => slide.length > 0);
+          if (s.manualSlides.length === 0) s.manualSlides = null;
+        }
+      });
     }
 
     function clampLines(n) {
@@ -1451,6 +1756,56 @@
     function clampSize(n) {
       n = Math.round(Number(n) || SIZE_MIN);
       return Math.max(SIZE_MIN, Math.min(SIZE_MAX, n));
+    }
+
+    // ----- 색상 유틸 (배경색/글자색) -----
+    // 입력을 "#RRGGBB" 형태로 정규화. 잘못된 값이면 fallback 반환.
+    function normalizeColor(value, fallback) {
+      if (typeof value !== "string") return fallback;
+      let s = value.trim();
+      if (!s) return fallback;
+      if (s[0] !== "#") s = "#" + s;
+      // #RGB → #RRGGBB 확장
+      if (/^#[0-9a-fA-F]{3}$/.test(s)) {
+        s = "#" + s[1] + s[1] + s[2] + s[2] + s[3] + s[3];
+      }
+      if (/^#[0-9a-fA-F]{6}$/.test(s)) return s.toUpperCase();
+      return fallback;
+    }
+    // pptxgenjs용: # 제거한 6자리 hex
+    function hex6(value, fallback) {
+      return normalizeColor(value, fallback).slice(1);
+    }
+    // 현재 설정의 배경/글자색 (CSS용 #RRGGBB)
+    function bgColor() {
+      return normalizeColor(settings.bgColor, "#000000");
+    }
+    function textColor() {
+      return normalizeColor(settings.textColor, "#FFFFFF");
+    }
+    // 제목 색(글자색에서 파생: 약간 흐린 톤). 배경에 글자색을 65% 섞음.
+    function titleColor() {
+      const t = textColor();
+      const b = bgColor();
+      const mix = (a, c) => Math.round(parseInt(a, 16) * 0.65 + parseInt(c, 16) * 0.35);
+      const r = mix(t.slice(1, 3), b.slice(1, 3));
+      const g = mix(t.slice(3, 5), b.slice(3, 5));
+      const bl = mix(t.slice(5, 7), b.slice(5, 7));
+      const h2 = (n) => n.toString(16).padStart(2, "0");
+      return ("#" + h2(r) + h2(g) + h2(bl)).toUpperCase();
+    }
+
+    // ----- 슬라이드 직접 편집(manualSlides) -----
+    // 곡의 슬라이드 목록을 구한다. manualSlides가 있으면 그걸, 없으면 자동 분할.
+    // 반환: string[][] (각 내부 배열 = 한 슬라이드의 줄들)
+    function slidesForSong(song) {
+      if (song && Array.isArray(song.manualSlides)) {
+        // 방어적으로 빈 슬라이드(줄 없음)는 제외하고 복사본 반환
+        return song.manualSlides
+          .map((slide) => (Array.isArray(slide) ? slide.slice() : []))
+          .filter((slide) => slide.length > 0);
+      }
+      return splitLyricsToSlides(song.lyrics, song.linesPerSlide);
     }
 
     // ============================================
@@ -1524,7 +1879,7 @@
 
     function totalSlideCount() {
       return songs.reduce(
-        (sum, s) => sum + splitLyricsToSlides(s.lyrics, s.linesPerSlide).length,
+        (sum, s) => sum + slidesForSong(s).length,
         0
       );
     }
@@ -1552,7 +1907,7 @@
     function flattenSlides() {
       const all = [];
       for (const song of songs) {
-        const slides = splitLyricsToSlides(song.lyrics, song.linesPerSlide);
+        const slides = slidesForSong(song);
         for (const lines of slides) {
           all.push({
             songId: song.id,
@@ -1578,7 +1933,8 @@
         songList.appendChild(empty);
       } else {
         songs.forEach((song, idx) => {
-          const slideCount = splitLyricsToSlides(song.lyrics, song.linesPerSlide).length;
+          const slideCount = slidesForSong(song).length;
+          const isManual = Array.isArray(song.manualSlides);
           const li = document.createElement("li");
           li.className = "song-item";
           li.dataset.id = song.id;
@@ -1594,7 +1950,13 @@
               <span class="song-index">${idx + 1}</span>
               <span class="song-title"></span>
               <div class="song-actions">
-                <button class="btn-icon" data-action="edit" title="편집" aria-label="편집">
+                <button class="btn-icon" data-action="slides" title="슬라이드 직접 편집" aria-label="슬라이드 편집">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="4" width="18" height="6" rx="1.5"/>
+                    <rect x="3" y="14" width="18" height="6" rx="1.5"/>
+                  </svg>
+                </button>
+                <button class="btn-icon" data-action="edit" title="제목·가사 편집" aria-label="편집">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M12 20h9"/>
                     <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/>
@@ -1614,10 +1976,18 @@
               <span class="meta-chip is-accent">
                 <span class="meta-chip-val">슬라이드 ${slideCount}장</span>
               </span>
-              <span class="meta-chip">
-                <span class="meta-chip-key">줄 수</span>
-                <span class="meta-chip-val">${song.linesPerSlide}줄</span>
-              </span>
+              ${isManual ? `
+                <span class="meta-chip is-manual">
+                  <span class="meta-chip-val">직접 편집됨</span>
+                </span>
+              ` : `
+                <span class="meta-chip chip-stepper" aria-label="줄 수 조절">
+                  <span class="meta-chip-key">줄 수</span>
+                  <button type="button" class="chip-step-btn" data-action="lines-minus" aria-label="줄 수 줄이기" ${song.linesPerSlide <= LINES_MIN ? "disabled" : ""}>−</button>
+                  <span class="meta-chip-val chip-step-val">${song.linesPerSlide}줄</span>
+                  <button type="button" class="chip-step-btn" data-action="lines-plus" aria-label="줄 수 늘리기" ${song.linesPerSlide >= LINES_MAX ? "disabled" : ""}>+</button>
+                </span>
+              `}
               ${song.showTitle ? `
                 <span class="meta-chip">
                   <span class="meta-chip-val">제목 표시</span>
@@ -1671,11 +2041,15 @@
         </div>
       `;
 
+      // 배경색/글자색을 설정값으로 반영
+      const slideEl = previewContainer.querySelector(".preview-slide");
+      if (slideEl) slideEl.style.background = bgColor();
+
       // 폰트·글자 크기를 실제 PPT 비율(슬라이드 높이 7.5in = 540pt)에 맞춰 미리보기에 반영
       const lyricsEl = previewContainer.querySelector(".preview-lyrics");
-      const slideEl = previewContainer.querySelector(".preview-slide");
       if (lyricsEl) {
         lyricsEl.style.fontFamily = font.css;
+        lyricsEl.style.color = textColor();
         const slideH = slideEl ? slideEl.clientHeight : 0;
         if (slideH > 0) {
           const pxSize = (ptSize / 540) * slideH;
@@ -1686,7 +2060,10 @@
         }
       }
       const titleEl = previewContainer.querySelector(".preview-title");
-      if (titleEl) titleEl.style.fontFamily = font.css;
+      if (titleEl) {
+        titleEl.style.fontFamily = font.css;
+        titleEl.style.color = titleColor();
+      }
 
       previewNav.style.display = "flex";
       currentSlideEl.textContent = currentPreviewIndex + 1;
@@ -1774,6 +2151,18 @@
       defLinesValue.textContent = settings.defaultLines;
       defLinesMinus.disabled = settings.defaultLines <= LINES_MIN;
       defLinesPlus.disabled = settings.defaultLines >= LINES_MAX;
+
+      // 배경색 / 글자색
+      const bg = bgColor();
+      const tc = textColor();
+      bgColorInput.value = bg;
+      textColorInput.value = tc;
+      bgSwatches.querySelectorAll(".swatch").forEach((sw) => {
+        sw.classList.toggle("is-active", normalizeColor(sw.dataset.color, "") === bg);
+      });
+      textSwatches.querySelectorAll(".swatch").forEach((sw) => {
+        sw.classList.toggle("is-active", normalizeColor(sw.dataset.color, "") === tc);
+      });
     }
 
     // 글자 크기 프리셋 클릭
@@ -1806,6 +2195,43 @@
       settings.fontKey = FONTS[fontSelect.value] ? fontSelect.value : "Pretendard";
       renderAll();
     });
+
+    // 배경색 / 글자색 — 프리셋 스와치
+    function setBgColor(value) {
+      settings.bgColor = normalizeColor(value, settings.bgColor);
+      syncSettingsUI();
+      renderPreview();
+      applySlideCardColors(); // 슬라이드 편집 모달이 열려 있으면 카드 색도 갱신
+      save();
+    }
+    function setTextColor(value) {
+      settings.textColor = normalizeColor(value, settings.textColor);
+      syncSettingsUI();
+      renderPreview();
+      applySlideCardColors();
+      save();
+    }
+    bgSwatches.querySelectorAll(".swatch").forEach((sw) => {
+      sw.addEventListener("click", () => setBgColor(sw.dataset.color));
+    });
+    textSwatches.querySelectorAll(".swatch").forEach((sw) => {
+      sw.addEventListener("click", () => setTextColor(sw.dataset.color));
+    });
+    // 커스텀 색상 (input[type=color]) — 드래그 중엔 input, 확정 시 change에 저장
+    bgColorInput.addEventListener("input", () => {
+      settings.bgColor = normalizeColor(bgColorInput.value, settings.bgColor);
+      syncSettingsUI();
+      renderPreview();
+      applySlideCardColors();
+    });
+    bgColorInput.addEventListener("change", save);
+    textColorInput.addEventListener("input", () => {
+      settings.textColor = normalizeColor(textColorInput.value, settings.textColor);
+      syncSettingsUI();
+      renderPreview();
+      applySlideCardColors();
+    });
+    textColorInput.addEventListener("change", save);
 
     // 새 곡 기본 줄 수 스텝퍼
     defLinesMinus.addEventListener("click", () => {
@@ -1846,6 +2272,7 @@
         lyrics,
         linesPerSlide: clampLines(formLinesPerSlide),
         showTitle: formShowTitle,
+        manualSlides: null,
       });
 
       titleInput.value = "";
@@ -1884,6 +2311,16 @@
         }
       } else if (action === "edit") {
         openEditModal(song);
+      } else if (action === "slides") {
+        openSlideEditModal(song);
+      } else if (action === "lines-minus" || action === "lines-plus") {
+        // 직접 편집(manualSlides) 상태면 줄 수 조절 무의미 → 무시(버튼도 표시 안 됨)
+        if (Array.isArray(song.manualSlides)) return;
+        const delta = action === "lines-plus" ? 1 : -1;
+        const next = clampLines(song.linesPerSlide + delta);
+        if (next === song.linesPerSlide) return;
+        song.linesPerSlide = next;
+        renderAll();
       }
     });
 
@@ -1900,7 +2337,11 @@
 
     // 키보드 네비
     document.addEventListener("keydown", (e) => {
-      if (editModal.classList.contains("open")) return;
+      if (
+        editModal.classList.contains("open") ||
+        slideModal.classList.contains("open") ||
+        searchModal.classList.contains("open")
+      ) return;
       if (document.activeElement && ["INPUT", "TEXTAREA", "SELECT"].includes(document.activeElement.tagName)) return;
       if (e.key === "ArrowLeft") prevBtn.click();
       if (e.key === "ArrowRight") nextBtn.click();
@@ -1945,11 +2386,274 @@
         showToast("가사를 입력해주세요");
         return;
       }
+      // 가사를 바꿨는데 직접 편집한 슬라이드가 있으면 충돌 → 초기화 여부 확인
+      const lyricsChanged = newLyrics !== song.lyrics;
+      if (lyricsChanged && Array.isArray(song.manualSlides)) {
+        if (!confirm("가사를 바꾸면 직접 편집한 슬라이드가 초기화돼요. 계속할까요?")) {
+          return;
+        }
+        song.manualSlides = null;
+      }
       song.title = newTitle;
       song.lyrics = newLyrics;
       closeEditModal();
       renderAll();
       showToast("수정했어요");
+    });
+
+    // ============================================
+    // 슬라이드 직접 편집 모달 (manualSlides)
+    // ============================================
+
+    // 현재 카드 textarea 내용을 작업본(slideEditDraft)으로 동기화
+    function syncDraftFromDOM() {
+      const cards = slideCards.querySelectorAll(".slide-text");
+      slideEditDraft = Array.from(cards).map((ta) =>
+        ta.value.split("\n").map((l) => l.replace(/\s+$/g, ""))
+      );
+    }
+
+    // 열린 카드들의 배경/글자색만 갱신 (구조·내용·커서 보존)
+    function applySlideCardColors() {
+      if (!slideModal.classList.contains("open")) return;
+      const bg = bgColor();
+      const tc = textColor();
+      const font = currentFont();
+      slideCards.querySelectorAll(".slide-text").forEach((ta) => {
+        ta.style.background = bg;
+        ta.style.color = tc;
+        ta.style.fontFamily = font.css;
+        ta.style.caretColor = tc;
+      });
+    }
+
+    // 작업본을 카드 리스트로 렌더 (구조가 바뀌는 작업 후 호출)
+    function renderSlideEditCards() {
+      if (!slideModal.classList.contains("open")) return;
+      slideCards.innerHTML = "";
+      const bg = bgColor();
+      const tc = textColor();
+      const font = currentFont();
+      const total = slideEditDraft.length;
+
+      slideEditDraft.forEach((lines, idx) => {
+        const card = document.createElement("div");
+        card.className = "slide-card";
+        card.dataset.idx = String(idx);
+
+        const main = document.createElement("div");
+        main.className = "slide-card-main";
+
+        const no = document.createElement("div");
+        no.className = "slide-card-no";
+        no.textContent = `슬라이드 ${idx + 1} / ${total}`;
+        main.appendChild(no);
+
+        const ta = document.createElement("textarea");
+        ta.className = "slide-text";
+        ta.value = lines.join("\n");
+        ta.style.background = bg;
+        ta.style.color = tc;
+        ta.style.caretColor = tc;
+        ta.style.fontFamily = font.css;
+        ta.setAttribute("aria-label", `슬라이드 ${idx + 1} 내용`);
+        // 입력 시 작업본 갱신 (엔터=줄바꿈은 textarea 기본동작)
+        ta.addEventListener("input", () => {
+          slideEditDraft[idx] = ta.value
+            .split("\n")
+            .map((l) => l.replace(/\s+$/g, ""));
+        });
+        main.appendChild(ta);
+        card.appendChild(main);
+
+        // 컨트롤 (▲▼ / 나누기 / 위와 합치기 / 삭제)
+        const ctrls = document.createElement("div");
+        ctrls.className = "slide-card-ctrls";
+
+        const upBtn = makeCtrlBtn("▲", "위로 이동", idx === 0);
+        upBtn.addEventListener("click", () => moveSlide(idx, -1));
+        ctrls.appendChild(upBtn);
+
+        const downBtn = makeCtrlBtn("▼", "아래로 이동", idx === total - 1);
+        downBtn.addEventListener("click", () => moveSlide(idx, 1));
+        ctrls.appendChild(downBtn);
+
+        const splitBtn = makeCtrlBtn(
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h18"/><path d="M8 7l-4 5 4 5"/></svg>',
+          "커서 위치에서 둘로 나누기",
+          false
+        );
+        splitBtn.addEventListener("click", () => splitSlideAtCursor(idx, ta));
+        ctrls.appendChild(splitBtn);
+
+        const mergeBtn = makeCtrlBtn(
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="M7 10l5-5 5 5"/></svg>',
+          "위 슬라이드와 합치기",
+          idx === 0
+        );
+        mergeBtn.addEventListener("click", () => mergeWithPrev(idx));
+        ctrls.appendChild(mergeBtn);
+
+        const spacer = document.createElement("div");
+        spacer.className = "slide-ctrl-spacer";
+        ctrls.appendChild(spacer);
+
+        const delBtn = makeCtrlBtn(
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>',
+          "이 슬라이드 삭제",
+          total <= 1
+        );
+        delBtn.classList.add("is-danger");
+        delBtn.addEventListener("click", () => deleteSlide(idx));
+        ctrls.appendChild(delBtn);
+
+        card.appendChild(ctrls);
+        slideCards.appendChild(card);
+      });
+    }
+
+    function makeCtrlBtn(inner, title, disabled) {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "slide-ctrl-btn";
+      b.title = title;
+      b.setAttribute("aria-label", title);
+      b.innerHTML = inner;
+      b.disabled = !!disabled;
+      return b;
+    }
+
+    function moveSlide(idx, dir) {
+      syncDraftFromDOM();
+      const j = idx + dir;
+      if (j < 0 || j >= slideEditDraft.length) return;
+      const tmp = slideEditDraft[idx];
+      slideEditDraft[idx] = slideEditDraft[j];
+      slideEditDraft[j] = tmp;
+      renderSlideEditCards();
+      // 이동한 카드에 포커스
+      const ta = slideCards.querySelector(`.slide-card[data-idx="${j}"] .slide-text`);
+      if (ta) ta.focus();
+    }
+
+    function deleteSlide(idx) {
+      syncDraftFromDOM();
+      if (slideEditDraft.length <= 1) return;
+      slideEditDraft.splice(idx, 1);
+      renderSlideEditCards();
+    }
+
+    function mergeWithPrev(idx) {
+      syncDraftFromDOM();
+      if (idx <= 0 || idx >= slideEditDraft.length) return;
+      slideEditDraft[idx - 1] = slideEditDraft[idx - 1].concat(slideEditDraft[idx]);
+      slideEditDraft.splice(idx, 1);
+      renderSlideEditCards();
+      const ta = slideCards.querySelector(`.slide-card[data-idx="${idx - 1}"] .slide-text`);
+      if (ta) ta.focus();
+    }
+
+    // 커서 위치에서 둘로 나누기 (커서 위/아래로 분할). 커서 정보가 없으면 절반에서.
+    function splitSlideAtCursor(idx, ta) {
+      const pos = ta ? (ta.selectionStart ?? ta.value.length) : ta.value.length;
+      const before = ta.value.slice(0, pos);
+      const after = ta.value.slice(pos);
+      syncDraftFromDOM();
+      const beforeLines = before.split("\n").map((l) => l.replace(/\s+$/g, ""));
+      const afterLines = after.split("\n").map((l) => l.replace(/\s+$/g, ""));
+      // 빈 슬라이드 방지: 한쪽이 완전히 비면 분할 취소
+      const beforeHas = beforeLines.some((l) => l.trim() !== "");
+      const afterHas = afterLines.some((l) => l.trim() !== "");
+      if (!beforeHas || !afterHas) {
+        showToast("나눌 위치에 커서를 두세요");
+        return;
+      }
+      slideEditDraft.splice(idx, 1, beforeLines, afterLines);
+      renderSlideEditCards();
+      const next = slideCards.querySelector(`.slide-card[data-idx="${idx + 1}"] .slide-text`);
+      if (next) { next.focus(); next.selectionStart = next.selectionEnd = 0; }
+    }
+
+    function openSlideEditModal(song) {
+      slideEditSongId = song.id;
+      // manualSlides가 있으면 그걸, 없으면 현재 자동 분할 결과로 초기화
+      const base = slidesForSong(song);
+      slideEditDraft = base.length
+        ? base.map((slide) => slide.slice())
+        : [[""]]; // 가사가 비어도 최소 한 장
+      slideModalTitle.textContent = `슬라이드 직접 편집 · ${song.title || "(제목 없음)"}`;
+      slideModal.classList.add("open");
+      renderSlideEditCards();
+      setTimeout(() => {
+        const first = slideCards.querySelector(".slide-text");
+        if (first) first.focus();
+      }, 50);
+    }
+
+    function closeSlideEditModal() {
+      slideEditSongId = null;
+      slideEditDraft = [];
+      slideModal.classList.remove("open");
+    }
+
+    // "+ 슬라이드 추가" — 맨 아래에 빈 슬라이드
+    slideAdd.addEventListener("click", () => {
+      syncDraftFromDOM();
+      slideEditDraft.push([""]);
+      renderSlideEditCards();
+      const cards = slideCards.querySelectorAll(".slide-text");
+      const last = cards[cards.length - 1];
+      if (last) last.focus();
+    });
+
+    // "자동으로 되돌리기" — manualSlides=null (가사 기반 자동 분할 복귀)
+    slideRevert.addEventListener("click", () => {
+      if (!slideEditSongId) return;
+      const song = songs.find((s) => s.id === slideEditSongId);
+      if (!song) return;
+      if (song.manualSlides && !confirm("직접 편집한 슬라이드를 버리고 가사 기준 자동 분할로 되돌릴까요?")) {
+        return;
+      }
+      song.manualSlides = null;
+      closeSlideEditModal();
+      renderAll();
+      showToast("자동 분할로 되돌렸어요");
+    });
+
+    // "완료" — 작업본을 manualSlides로 저장
+    slideDone.addEventListener("click", () => {
+      if (!slideEditSongId) return;
+      const song = songs.find((s) => s.id === slideEditSongId);
+      if (!song) { closeSlideEditModal(); return; }
+      syncDraftFromDOM();
+      // 각 슬라이드: 줄별로 가볍게 정리(앞뒤 공백 제거)하되 슬라이드 내 줄은 보존,
+      // 완전히 빈 줄만 제거. 줄이 하나도 없는(빈) 슬라이드는 통째로 제외.
+      const cleaned = slideEditDraft
+        .map((slide) =>
+          slide
+            .map((l) => l.replace(/[ \t 　]+/g, " ").trim())
+            .filter((l) => l !== "")
+        )
+        .filter((slide) => slide.length > 0);
+
+      if (cleaned.length === 0) {
+        showToast("슬라이드 내용을 입력해주세요");
+        return;
+      }
+      song.manualSlides = cleaned;
+      closeSlideEditModal();
+      renderAll();
+      showToast("슬라이드를 저장했어요");
+    });
+
+    slideCancel.addEventListener("click", closeSlideEditModal);
+    slideModal.addEventListener("click", (e) => {
+      if (e.target === slideModal) closeSlideEditModal();
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && slideModal.classList.contains("open")) {
+        closeSlideEditModal();
+      }
     });
 
     // 드래그앤드롭 순서 변경
@@ -2261,12 +2965,15 @@
         const SLIDE_H = 7.5;
 
         const fontFace = currentFont().ppt;
+        const bgHex = hex6(settings.bgColor, "000000");
+        const textHex = hex6(settings.textColor, "FFFFFF");
+        const titleHex = titleColor().slice(1); // 제목 색(글자색 파생, # 제거)
 
         for (const song of songs) {
-          const lines2 = splitLyricsToSlides(song.lyrics, song.linesPerSlide);
+          const lines2 = slidesForSong(song);
           for (const lines of lines2) {
             const slide = pptx.addSlide();
-            slide.background = { color: "000000" };
+            slide.background = { color: bgHex };
 
             // 글자 크기: 설정값 우선, "자동"이면 줄 수 기반 자동 계산
             const fontSize = effectiveFontSizePt(lines.length);
@@ -2283,7 +2990,7 @@
                 h: SLIDE_H,
                 align: "center",
                 valign: "middle",
-                color: "FFFFFF",
+                color: textHex,
                 fontFace,
                 fontSize,
                 bold: true,
@@ -2301,7 +3008,7 @@
                 h: 0.45,
                 align: "right",
                 valign: "top",
-                color: "8A8A8A",
+                color: titleHex,
                 fontFace,
                 fontSize: 14,
                 bold: false,
