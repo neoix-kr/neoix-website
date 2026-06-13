@@ -16,9 +16,7 @@
   <script type="importmap">
   {
     "imports": {
-      "yjs": "https://esm.sh/yjs@13.6.21",
-      "y-webrtc": "https://esm.sh/y-webrtc@10.3.0?deps=yjs@13.6.21",
-      "y-indexeddb": "https://esm.sh/y-indexeddb@9.0.12?deps=yjs@13.6.21",
+      "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2",
       "pdfjs-dist": "https://esm.sh/pdfjs-dist@4.5.136"
     }
   }
@@ -2465,19 +2463,26 @@
 
 <!-- ============ SCRIPT ============ -->
 <script type="module">
-  import * as Y from 'yjs';
-  import { WebrtcProvider } from 'y-webrtc';
-  import { IndexeddbPersistence } from 'y-indexeddb';
+  import { createClient } from '@supabase/supabase-js';
 
-  // PDF.js
+  // PDF.js — 리더가 PDF를 페이지별 이미지로 래스터화할 때만 사용 (멤버는 받은 이미지를 그대로 표시)
   const pdfjsLib = await import('pdfjs-dist');
   pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.5.136/build/pdf.worker.min.mjs';
+
+  // ---------------- Supabase (Realtime Broadcast + Presence) ----------------
+  const SUPABASE_URL = 'https://nroddjekdjwnwguwkudl.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_Uygr7NmVn1wmqopNrb4FRw_CRWw7Xeg'; // 공개(client-safe) 키
+  const supabase = createClient(SUPABASE_URL, SUPABASE_KEY, {
+    realtime: { params: { eventsPerSecond: 40 } },
+  });
 
   // ---------------- Storage keys ----------------
   const LS_ROLE = (room) => `worship:role:${room}`;
   const LS_NAME = (room) => `worship:name:${room}`;
   const LS_DEVICE = 'worship:deviceId';
   const LS_LAST_ROOM = 'worship:lastRoom';
+  const LS_SONGS = (room) => `worship:songs:${room}`;          // 리더: 곡 목록(악보 포함) 영속
+  const LS_ASSIGN = (room) => `worship:assign:${room}`;        // 리더: 역할 배정 영속
 
   // 역할 프리셋 — 리더 팀 관리 드롭다운 옵션으로만 존재 (목록을 미리 만들지 않음)
   const ROLE_PRESETS = ['메인 건반', '서브 건반', '싱어 1', '싱어 2', '싱어 3', '싱어 4', '싱어 5', '드럼', '방송실'];
@@ -2561,16 +2566,23 @@
   const monitorExit = $('monitorExit');
 
   // ---------------- State ----------------
-  let ydoc = null;
-  let provider = null;
-  let persistence = null;
+  let channel = null;         // supabase Realtime 채널 (방마다 1개)
   let roomId = null;
   let isLeader = false;
-  let songs = null;
-  let meta = null;
-  let viewerState = null;
-  let highlights = null;
-  let assignments = null;     // Y.Map<deviceId, { role, name }> — 리더가 배정
+  let subscribed = false;     // 채널 SUBSCRIBED 여부
+
+  // 동기화 데이터 (Yjs 대신 평범한 JS — 리더가 기준, 멤버는 받은 사본)
+  // song = { id, title, special, part, partCustom, youtube, note,
+  //          pages: [dataURL…]  // 악보(이미지·PDF 페이지를 축소한 이미지),
+  //          remoteUrl: ''      // CORS로 축소 못 한 원격 이미지면 URL 그대로 (pages 대신),
+  //          fileName, sheetKind: 'image'|'pdf'|'url'|'' }
+  let songsData = [];
+  let assignmentsData = {};   // { [deviceId]: { role, name } } — 리더가 배정
+  let viewerData = { songId: null, page: 0, scrollRatio: 0 }; // 리더 현재 보기
+  // highlights: { ["songId|page"]: [stroke…] } — 현재 페이지 펜 stroke (메모리)
+  let highlightsData = {};
+  // presence 사본 — presence sync 때 재구성: { [deviceId]: { deviceId, name, role, assignedRole, ts } }
+  let presenceData = {};
 
   let myName = '';            // 멤버 본인이 입력한 이름
   let myRole = '';            // 리더가 나(deviceId)에게 배정한 역할명
@@ -2629,6 +2641,84 @@
     const arr = new Uint8Array(bin.length);
     for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
     return arr;
+  }
+  // dataURL 대략 바이트 수 (base64 길이 * 3/4)
+  function dataURLBytes(dataURL) {
+    const i = (dataURL || '').indexOf(',');
+    const b64 = i >= 0 ? dataURL.slice(i + 1) : '';
+    return Math.floor(b64.length * 3 / 4);
+  }
+
+  const SHEET_MAX_PX = 1280;      // 악보 한 변 최대
+  const SHEET_JPEG_Q = 0.6;       // JPEG 품질
+  const SHEET_WARN_BYTES = 500 * 1024; // 한 장 경고 임계 (broadcast payload 한도 보호)
+
+  // 캔버스를 ≤SHEET_MAX_PX·JPEG로 축소해 dataURL 반환 (한 변이 더 크면 quality도 더 낮춤)
+  function canvasToSheetDataURL(srcCanvas) {
+    let { width, height } = srcCanvas;
+    const scale = Math.min(1, SHEET_MAX_PX / Math.max(width, height));
+    const w = Math.max(1, Math.round(width * scale));
+    const h = Math.max(1, Math.round(height * scale));
+    let out = srcCanvas;
+    if (w !== width || h !== height) {
+      const c = document.createElement('canvas');
+      c.width = w; c.height = h;
+      const ctx = c.getContext('2d');
+      ctx.fillStyle = '#fff';              // JPEG 투명 → 흰 배경
+      ctx.fillRect(0, 0, w, h);
+      ctx.drawImage(srcCanvas, 0, 0, w, h);
+      out = c;
+    }
+    let q = SHEET_JPEG_Q;
+    let url = out.toDataURL('image/jpeg', q);
+    // 여전히 과도하게 크면 품질을 더 낮춰 재시도
+    while (dataURLBytes(url) > SHEET_WARN_BYTES && q > 0.3) {
+      q -= 0.12;
+      url = out.toDataURL('image/jpeg', q);
+    }
+    return url;
+  }
+
+  // 이미지 dataURL 또는 동일출처/CORS 허용 URL → 축소 dataURL (1페이지 배열)
+  function imageToSheetPages(src) {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = () => {
+        try {
+          const c = document.createElement('canvas');
+          c.width = img.naturalWidth || img.width;
+          c.height = img.naturalHeight || img.height;
+          const ctx = c.getContext('2d');
+          ctx.drawImage(img, 0, 0);
+          resolve([canvasToSheetDataURL(c)]); // toDataURL이 CORS로 막히면 throw → reject
+        } catch (e) { reject(e); }
+      };
+      img.onerror = () => reject(new Error('image load failed'));
+      img.src = src;
+    });
+  }
+
+  // PDF dataURL → 각 페이지를 축소 이미지(dataURL) 배열로 래스터화 (리더 import 시)
+  async function pdfToSheetPages(dataURL, onProgress) {
+    const doc = await pdfjsLib.getDocument({ data: dataURLToUint8(dataURL) }).promise;
+    const pages = [];
+    for (let p = 1; p <= doc.numPages; p++) {
+      const page = await doc.getPage(p);
+      const base = page.getViewport({ scale: 1 });
+      const scale = Math.min(2, SHEET_MAX_PX / Math.max(base.width, base.height));
+      const vp = page.getViewport({ scale: Math.max(0.5, scale) });
+      const c = document.createElement('canvas');
+      c.width = vp.width; c.height = vp.height;
+      const ctx = c.getContext('2d');
+      ctx.fillStyle = '#fff';
+      ctx.fillRect(0, 0, c.width, c.height);
+      await page.render({ canvasContext: ctx, viewport: vp }).promise;
+      pages.push(canvasToSheetDataURL(c));
+      if (onProgress) onProgress(p, doc.numPages);
+    }
+    try { doc.destroy(); } catch (_) {}
+    return pages;
   }
 
   function escapeHtml(s) {
@@ -2726,114 +2816,309 @@
     url.searchParams.set('room', code);
     history.replaceState({}, '', url.toString());
 
-    setupYjs(code).then(() => {
-      const currentLeader = meta.get('leaderId');
-      if (!currentLeader && isLeader) {
-        meta.set('leaderId', provider.awareness.clientID);
-        meta.set('createdAt', Date.now());
-      }
-      // 역할 목록을 미리 만들지 않음 — 접속한 사람에게 리더가 직접 배정
-      renderApp();
-    });
-  }
-
-  async function setupYjs(code) {
-    ydoc = new Y.Doc();
-
-    persistence = new IndexeddbPersistence(`worship-team:${code}`, ydoc);
-    await persistence.whenSynced;
-
-    provider = new WebrtcProvider(`worship-team-room-${code}`, ydoc, {
-      signaling: [
-        'wss://signaling.yjs.dev',
-        'wss://y-webrtc-signaling-eu.herokuapp.com',
-        'wss://y-webrtc-signaling-us.herokuapp.com',
-      ],
-      maxConns: 20,
-    });
-
-    songs = ydoc.getArray('songs');
-    meta = ydoc.getMap('meta');
-    viewerState = ydoc.getMap('viewer');
-    highlights = ydoc.getMap('highlights');
-    assignments = ydoc.getMap('assignments');  // deviceId → { role, name }
-
     // 멤버가 이전에 입력한 이름 복원
     myName = localStorage.getItem(LS_NAME(code)) || '';
 
-    // 배정(assignments) 변경 → 내 deviceId의 역할을 반영 + 리더 목록/타겟칩 갱신
-    assignments.observe(() => {
-      applyMyAssignment();
-      renderRoster();
-      renderTargetChips();
-    });
+    // 리더면 영속해둔 곡 목록/역할 배정 복원 (멤버는 입장 후 리더에게서 받음)
+    if (isLeader) {
+      songsData = loadLeaderSongs(code);
+      assignmentsData = loadLeaderAssignments(code);
+      myRole = (assignmentsData[deviceId] && assignmentsData[deviceId].role) || '';
+    }
 
-    songs.observeDeep(() => {
-      renderSongList();
-      if (activeSongId) {
-        const s = findSong(activeSongId);
-        if (!s) { activeSongId = null; activePage = 0; renderCanvas(); }
-        else updateHeader();
-      }
-    });
-
-    viewerState.observe(() => {
-      if (!isLeader && isFollowing) {
-        const sid = viewerState.get('songId');
-        const pg = viewerState.get('page') || 0;
-        if (sid !== activeSongId || pg !== activePage) {
-          activeSongId = sid;
-          activePage = pg;
-          renderCanvas();
-        }
-      }
-    });
-
-    highlights.observeDeep(() => { renderHighlights(); });
-
-    provider.awareness.on('change', () => {
-      updatePeers();
-      renderRoster();        // 접속자 목록 갱신 (입장/퇴장/이름변경)
-      renderTargetChips();   // 접속자 배정 역할 기준 타겟 칩 갱신
-      provider.awareness.getStates().forEach((state, clientId) => {
-        if (clientId === provider.awareness.clientID) return;
-        const msg = state?.broadcast;
-        if (msg && msg.id && !shownMessageIds.has(msg.id)) {
-          shownMessageIds.add(msg.id);
-          // 만료된(6초 지난) 큐는 무시 — 5초 표시 + 약간의 지연 허용
-          if (msg.ts && Date.now() - msg.ts > 6000) return;
-          // 타겟 판정: 전체 or 내 역할일 때만 표시
-          const target = msg.target || '전체';
-          if (target !== '전체' && target !== myRole) return;
-          dispatchCue(msg);
-        }
-      });
-    });
-
-    publishAwarenessUser();
+    setupRealtime(code);
+    renderApp();
   }
 
-  // awareness user 필드 갱신 — 사람 식별(deviceId) + 입력 이름 + 배정 역할
-  function publishAwarenessUser() {
-    if (!provider) return;
-    provider.awareness.setLocalStateField('user', {
-      clientID: provider.awareness.clientID,
+  // ---------------- Realtime 채널 ----------------
+  function setupRealtime(code) {
+    channel = supabase.channel(`worship-room-${code}`, {
+      config: {
+        broadcast: { self: true },        // 리더가 자기 큐를 자기 화면에서도 봄
+        presence: { key: deviceId },
+      },
+    });
+
+    // ----- Broadcast 이벤트 -----
+    channel.on('broadcast', { event: 'cue' }, ({ payload }) => onCue(payload));
+    channel.on('broadcast', { event: 'viewer' }, ({ payload }) => onViewer(payload));
+    channel.on('broadcast', { event: 'conti' }, ({ payload }) => onConti(payload));
+    channel.on('broadcast', { event: 'sheet' }, ({ payload }) => onSheet(payload));
+    channel.on('broadcast', { event: 'assignments' }, ({ payload }) => onAssignments(payload));
+    channel.on('broadcast', { event: 'highlight' }, ({ payload }) => onHighlight(payload));
+    channel.on('broadcast', { event: 'sync-request' }, ({ payload }) => onSyncRequest(payload));
+
+    // ----- Presence (접속자/이름/역할) -----
+    channel.on('presence', { event: 'sync' }, () => {
+      rebuildPresence();
+      updatePeers();
+      renderRoster();
+      renderTargetChips();
+      applyMyAssignment();   // 리더가 내 역할을 presence로도 들고 있을 수 있어 동기화
+    });
+
+    channel.subscribe((status) => {
+      if (status === 'SUBSCRIBED') {
+        subscribed = true;
+        trackPresence();
+        if (isLeader) {
+          // 리더는 이미 가진 상태를 즉시 한 번 송신 (혹시 먼저 들어와 있던 멤버용)
+          broadcastConti();
+          broadcastAllSheets();
+          broadcastAssignments();
+          broadcastViewer();
+        } else {
+          // 멤버는 리더에게 현재 상태 요청
+          sendSyncRequest();
+        }
+      }
+    });
+  }
+
+  // 내 presence 갱신 (이름/역할 바뀌면 다시 호출)
+  function trackPresence() {
+    if (!channel || !subscribed) return;
+    channel.track({
       deviceId,
       name: myName || '',
       role: isLeader ? 'leader' : 'member',
       assignedRole: myRole || '',
-      joinedAt: Date.now(),
+      ts: Date.now(),
     });
+  }
+
+  // presenceState() → deviceId 기준 사본 재구성
+  function rebuildPresence() {
+    presenceData = {};
+    if (!channel) return;
+    const state = channel.presenceState();
+    Object.keys(state).forEach((key) => {
+      const metas = state[key] || [];
+      // 같은 deviceId의 최신 메타 사용
+      let latest = null;
+      metas.forEach((m) => { if (!latest || (m.ts || 0) >= (latest.ts || 0)) latest = m; });
+      const did = (latest && latest.deviceId) || key;
+      if (!did) return;
+      presenceData[did] = {
+        deviceId: did,
+        name: (latest && latest.name) || '',
+        role: (latest && latest.role) || 'member',
+        assignedRole: (latest && latest.assignedRole) || '',
+        ts: (latest && latest.ts) || 0,
+      };
+    });
+  }
+
+  // 새 멤버가 리더에게 현재 상태 요청
+  function sendSyncRequest() {
+    if (!channel) return;
+    channel.send({ type: 'broadcast', event: 'sync-request', payload: { deviceId } });
   }
 
   const shownMessageIds = new Set();
 
+  // 곡 찾기 (평범한 객체 배열)
   function findSong(id) {
-    for (let i = 0; i < songs.length; i++) {
-      const s = songs.get(i);
-      if (s.get('id') === id) return { song: s, index: i };
+    const idx = songsData.findIndex((s) => s && s.id === id);
+    if (idx < 0) return null;
+    return { song: songsData[idx], index: idx };
+  }
+
+  // ---------------- 리더 상태 영속 (localStorage, 방별) ----------------
+  function loadLeaderSongs(code) {
+    try {
+      const raw = localStorage.getItem(LS_SONGS(code));
+      const arr = raw ? JSON.parse(raw) : [];
+      return Array.isArray(arr) ? arr : [];
+    } catch (e) { return []; }
+  }
+  function loadLeaderAssignments(code) {
+    try {
+      const raw = localStorage.getItem(LS_ASSIGN(code));
+      const obj = raw ? JSON.parse(raw) : {};
+      return (obj && typeof obj === 'object') ? obj : {};
+    } catch (e) { return {}; }
+  }
+  function persistLeaderSongs() {
+    if (!isLeader || !roomId) return;
+    try { localStorage.setItem(LS_SONGS(roomId), JSON.stringify(songsData)); }
+    catch (e) { console.warn('곡 저장 실패(용량 초과 가능)', e); }
+  }
+  function persistLeaderAssignments() {
+    if (!isLeader || !roomId) return;
+    try { localStorage.setItem(LS_ASSIGN(roomId), JSON.stringify(assignmentsData)); } catch (e) {}
+  }
+
+  // ---------------- 리더 → 멤버 상태 송신 ----------------
+  // conti: 곡 목록 메타데이터 (악보 이미지는 제외 — 따로 sheet로)
+  function contiMeta() {
+    return songsData.map((s) => ({
+      id: s.id,
+      title: s.title || '',
+      special: !!s.special,
+      part: s.part || '',
+      partCustom: s.partCustom || '',
+      youtube: s.youtube || '',
+      note: s.note || '',
+      sheetKind: s.sheetKind || '',
+      sheetCount: (s.pages && s.pages.length) || 0,
+      remoteUrl: s.remoteUrl || '',      // 원격 이미지(축소 못 함)면 URL 그대로 공유
+      fileName: s.fileName || '',
+    }));
+  }
+  function broadcastConti() {
+    if (!isLeader || !channel) return;
+    channel.send({
+      type: 'broadcast', event: 'conti',
+      payload: { songs: contiMeta(), order: songsData.map((s) => s.id) },
+    });
+  }
+  // sheet: 악보 1장 (곡/페이지별로 따로 — payload 초과 방지)
+  function broadcastSheet(songId, page) {
+    if (!isLeader || !channel) return;
+    const s = findSong(songId)?.song;
+    if (!s || !s.pages || !s.pages[page]) return;
+    channel.send({
+      type: 'broadcast', event: 'sheet',
+      payload: { songId, page, dataURL: s.pages[page] },
+    });
+  }
+  // 모든 곡의 모든 페이지를 순차 송신 (throttle — 한 번에 한 장)
+  let _sheetQueue = [];
+  let _sheetTimer = null;
+  function broadcastAllSheets() {
+    if (!isLeader || !channel) return;
+    _sheetQueue = [];
+    songsData.forEach((s) => {
+      if (s.pages && s.pages.length) {
+        s.pages.forEach((_, p) => _sheetQueue.push({ songId: s.id, page: p }));
+      }
+    });
+    pumpSheetQueue();
+  }
+  function pumpSheetQueue() {
+    if (_sheetTimer) return;
+    const step = () => {
+      const job = _sheetQueue.shift();
+      if (!job) { _sheetTimer = null; return; }
+      broadcastSheet(job.songId, job.page);
+      _sheetTimer = setTimeout(step, 120); // 장당 간격 — payload/속도 보호
+    };
+    _sheetTimer = setTimeout(step, 0);
+  }
+  function broadcastAssignments() {
+    if (!isLeader || !channel) return;
+    channel.send({ type: 'broadcast', event: 'assignments', payload: { map: assignmentsData } });
+  }
+  function broadcastViewer() {
+    if (!isLeader || !channel) return;
+    channel.send({
+      type: 'broadcast', event: 'viewer',
+      payload: { songId: viewerData.songId, page: viewerData.page || 0, scrollRatio: viewerData.scrollRatio || 0 },
+    });
+  }
+
+  // ---------------- 수신 핸들러 ----------------
+  function onCue(msg) {
+    if (!msg || !msg.id) return;
+    if (shownMessageIds.has(msg.id)) return;
+    shownMessageIds.add(msg.id);
+    if (msg.ts && Date.now() - msg.ts > 6000) return; // 만료 큐 무시
+    const target = msg.target || '전체';
+    // 리더 자기 화면: 특정 역할 큐는 "→역할 에게" 미리보기로 항상 표시
+    const isSelfPreview = isLeader && target !== '전체' && !!msg.__selfPreview;
+    // 타겟 게이팅: 전체 or 내 역할일 때만 (self 포함 모두 수신)
+    if (target !== '전체' && target !== myRole && !isSelfPreview) return;
+    dispatchCue(msg, isSelfPreview);
+  }
+
+  function onViewer(payload) {
+    if (isLeader || !payload) return;       // 리더는 자기 viewer 따름 (자기 송신 메아리 무시)
+    viewerData = { songId: payload.songId || null, page: payload.page || 0, scrollRatio: payload.scrollRatio || 0 };
+    if (isFollowing) {
+      const sid = viewerData.songId;
+      const pg = viewerData.page || 0;
+      if (sid !== activeSongId || pg !== activePage) {
+        activeSongId = sid;
+        activePage = pg;
+        renderCanvas();
+      }
     }
-    return null;
+  }
+
+  function onConti(payload) {
+    if (isLeader || !payload) return;
+    const incoming = Array.isArray(payload.songs) ? payload.songs : [];
+    const order = Array.isArray(payload.order) ? payload.order : incoming.map((s) => s.id);
+    // 기존 페이지(sheet) 데이터는 보존하면서 메타 갱신
+    const prevById = {};
+    songsData.forEach((s) => { prevById[s.id] = s; });
+    const next = order.map((id) => {
+      const meta = incoming.find((s) => s.id === id) || { id };
+      const prev = prevById[id] || {};
+      return {
+        id,
+        title: meta.title || '',
+        special: !!meta.special,
+        part: meta.part || '',
+        partCustom: meta.partCustom || '',
+        youtube: meta.youtube || '',
+        note: meta.note || '',
+        sheetKind: meta.sheetKind || '',
+        sheetCount: meta.sheetCount || 0,
+        remoteUrl: meta.remoteUrl || '',
+        fileName: meta.fileName || '',
+        // 이미 받아둔 페이지 이미지는 유지 (sheet 이벤트로 채워짐)
+        pages: prev.pages && prev.pages.length ? prev.pages : [],
+      };
+    });
+    songsData = next;
+    renderSongList();
+    // 현재 보던 곡이 사라졌으면 정리
+    if (activeSongId && !findSong(activeSongId)) {
+      activeSongId = null; activePage = 0; renderCanvas();
+    } else {
+      updateHeader();
+      // 표시 중 곡이 아직 악보를 못 받았을 수 있으니 재렌더
+      renderCanvas();
+    }
+  }
+
+  function onSheet(payload) {
+    if (isLeader || !payload || !payload.songId) return;
+    const s = findSong(payload.songId)?.song;
+    if (!s) return;
+    if (!s.pages) s.pages = [];
+    s.pages[payload.page] = payload.dataURL;
+    if (!s.sheetKind) s.sheetKind = 'image';
+    renderSongList();
+    // 지금 이 곡/페이지를 보고 있으면 즉시 반영
+    if (activeSongId === payload.songId) renderCanvas();
+    if (presentMode && activeSongId === payload.songId) renderPresentStage();
+  }
+
+  function onAssignments(payload) {
+    if (isLeader || !payload) return;       // 배정 기준은 리더
+    assignmentsData = (payload.map && typeof payload.map === 'object') ? payload.map : {};
+    applyMyAssignment();
+    renderRoster();
+    renderTargetChips();
+  }
+
+  function onHighlight(payload) {
+    if (isLeader || !payload || !payload.songId) return;
+    const key = `${payload.songId}|${payload.page}`;
+    highlightsData[key] = Array.isArray(payload.strokes) ? payload.strokes : [];
+    if (activeSongId === payload.songId && activePage === payload.page) renderHighlights();
+  }
+
+  // 리더: 새 멤버가 들어오면 현재 상태 전체 재송신
+  function onSyncRequest(payload) {
+    if (!isLeader || !channel) return;
+    broadcastConti();
+    broadcastAllSheets();
+    broadcastAssignments();
+    broadcastViewer();
   }
 
   // ---------------- Render: app shell ----------------
@@ -2860,8 +3145,9 @@
 
     $('btnLeave').onclick = () => {
       if (!confirm('방에서 나갈까요? 내용은 그대로 유지돼요.')) return;
-      provider?.destroy();
-      persistence?.destroy();
+      try { channel?.untrack(); } catch (_) {}
+      try { if (channel) supabase.removeChannel(channel); } catch (_) {}
+      channel = null;
       const url = new URL(location.href);
       url.searchParams.delete('room');
       location.href = url.toString();
@@ -3017,8 +3303,8 @@
     btnFollowBack.onclick = () => {
       isFollowing = true;
       followIndicator.classList.add('hidden');
-      const sid = viewerState.get('songId');
-      const pg = viewerState.get('page') || 0;
+      const sid = viewerData.songId;
+      const pg = viewerData.page || 0;
       if (sid) {
         activeSongId = sid;
         activePage = pg;
@@ -3076,10 +3362,10 @@
     applyMyAssignment();   // 저장된 배정이 있으면 헤더에 반영
     syncMyRoleBadge();
 
-    // restore viewerState
-    const sid = viewerState.get('songId');
-    const pg = viewerState.get('page') || 0;
-    if (sid) {
+    // restore viewerState (리더: 영속 곡이 있으면 첫 곡 자동 표시 안 함 — 기존처럼 선택 대기)
+    const sid = viewerData.songId;
+    const pg = viewerData.page || 0;
+    if (sid && findSong(sid)) {
       activeSongId = sid;
       activePage = pg;
       renderCanvas();
@@ -3105,18 +3391,15 @@
   }
 
   function updatePeers() {
-    const states = provider.awareness.getStates();
-    peersCount.textContent = states.size;
-    peerDot.classList.toggle('is-alone', states.size <= 1);
+    const n = Math.max(1, Object.keys(presenceData).length);
+    peersCount.textContent = n;
+    peerDot.classList.toggle('is-alone', n <= 1);
   }
 
   // ---------------- Songs CRUD ----------------
   function getSongsByKind(special) {
     const arr = [];
-    for (let i = 0; i < songs.length; i++) {
-      const s = songs.get(i);
-      if (!!s.get('special') === special) arr.push({ song: s, index: i });
-    }
+    songsData.forEach((s, i) => { if (!!s.special === special) arr.push({ song: s, index: i }); });
     return arr;
   }
 
@@ -3134,29 +3417,38 @@
     special.forEach(({ song }) => specialListEl.appendChild(buildSongRow(song)));
   }
 
+  // 곡이 표시할 악보를 가졌는지 (받은/만든 페이지 또는 원격 URL)
+  function songHasSheet(s) {
+    return !!((s.pages && s.pages.length) || s.remoteUrl);
+  }
+
   function buildSongRow(song) {
     const li = document.createElement('li');
     li.className = 'song-item';
-    li.dataset.id = song.get('id');
-    if (song.get('id') === activeSongId) li.classList.add('is-active');
+    li.dataset.id = song.id;
+    if (song.id === activeSongId) li.classList.add('is-active');
 
-    const part = song.get('part') || '';
-    const customPart = song.get('partCustom') || '';
-    const youtube = song.get('youtube') || '';
-    const note = song.get('note') || '';
-    const fileType = song.get('fileType') || '';
+    const part = song.part || '';
+    const customPart = song.partCustom || '';
+    const youtube = song.youtube || '';
+    const note = song.note || '';
+    const hasSheet = songHasSheet(song);
+    const pageCount = (song.pages && song.pages.length) || song.sheetCount || 0;
 
     let metaLine = '';
     if (note) metaLine += note;
-    if (fileType) metaLine += (metaLine ? ' · ' : '') + (fileType === 'pdf' ? 'PDF' : '이미지');
+    if (hasSheet) {
+      const label = song.sheetKind === 'pdf' ? 'PDF' : '악보';
+      metaLine += (metaLine ? ' · ' : '') + label + (pageCount > 1 ? ` ${pageCount}장` : '');
+    }
     if (youtube) metaLine += (metaLine ? ' · ' : '') + 'YouTube';
-    if (!metaLine && !song.get('file')) metaLine = '악보 없음';
+    if (!metaLine && !hasSheet) metaLine = '악보 없음';
 
     li.innerHTML = `
       ${isLeader ? '<span class="song-handle" title="드래그로 순서 변경">⋮⋮</span>' : ''}
       <div class="song-info">
         <div class="song-title">
-          <span class="song-title-text">${escapeHtml(song.get('title') || '(제목 없음)')}</span>
+          <span class="song-title-text">${escapeHtml(song.title || '(제목 없음)')}</span>
           ${part ? `<span class="song-part" data-part="${part}">${part}</span>` : ''}
           ${customPart ? `<span class="song-part">${escapeHtml(customPart)}</span>` : ''}
         </div>
@@ -3171,7 +3463,7 @@
 
     li.addEventListener('click', (e) => {
       if (e.target.closest('[data-act]')) return;
-      selectSong(song.get('id'));
+      selectSong(song.id);
       sidebar.classList.remove('open');
       sidebarScrim.classList.remove('open');
     });
@@ -3183,10 +3475,13 @@
       });
       li.querySelector('[data-act="del"]')?.addEventListener('click', (e) => {
         e.stopPropagation();
-        if (!confirm(`"${song.get('title')}" 곡을 삭제할까요?`)) return;
-        const idx = findSong(song.get('id'))?.index;
-        if (idx != null) songs.delete(idx, 1);
-        if (song.get('id') === activeSongId) {
+        if (!confirm(`"${song.title}" 곡을 삭제할까요?`)) return;
+        const idx = findSong(song.id)?.index;
+        if (idx != null) songsData.splice(idx, 1);
+        persistLeaderSongs();
+        renderSongList();
+        broadcastConti();
+        if (song.id === activeSongId) {
           activeSongId = null;
           activePage = 0;
           renderCanvas();
@@ -3203,71 +3498,100 @@
     if (!moved) return;
     const target = kindList[newIdx];
     const movedAbs = moved.index;
-    const targetAbs = target ? target.index : songs.length - 1;
+    const targetAbs = target ? target.index : songsData.length - 1;
 
-    ydoc.transact(() => {
-      const clone = new Y.Map();
-      const src = songs.get(movedAbs);
-      src.forEach((v, k) => clone.set(k, v));
-      songs.delete(movedAbs, 1);
-      let insertAt = targetAbs;
-      if (insertAt > songs.length) insertAt = songs.length;
-      songs.insert(insertAt, [clone]);
-    });
+    const [src] = songsData.splice(movedAbs, 1);
+    let insertAt = targetAbs;
+    if (insertAt > songsData.length) insertAt = songsData.length;
+    songsData.splice(insertAt, 0, src);
+    persistLeaderSongs();
+    renderSongList();
+    broadcastConti();
   }
 
   // ---------------- Modal ----------------
   // source: 'file'(dataURL 업로드) | 'url'(원격 이미지 주소) | null
-  // existing: 편집 시 기존 파일 정보 (변경 안 하면 유지)
+  // 스테이징 결과:
+  //   pages: [dataURL…] (이미지/PDF를 축소한 페이지들),  staged: true 면 새 악보로 교체
+  //   remoteUrl: 'https…'  (CORS로 축소 못 한 원격 이미지면 URL 그대로)
+  //   existing: 편집 시 기존 악보 (변경 안 하면 유지)
   let modalContext = {
     song: null, special: false, part: '',
-    source: null, fileDataURL: null, fileType: null, fileName: '', sheetUrl: '',
+    staged: false, pages: null, remoteUrl: '', sheetKind: '', fileName: '',
     clearFile: false,
     existing: null,
   };
 
-  const MAX_FILE_BYTES = 8 * 1024 * 1024;
+  const MAX_FILE_BYTES = 24 * 1024 * 1024;
 
-  // 파일(이미지/PDF) 스테이징 — 파일 input/드래그/붙여넣기 공용
+  // 파일(이미지/PDF) 스테이징 — 캔버스로 축소해 페이지 이미지(dataURL) 배열로 변환
   async function stageSheetFile(f) {
     if (!f) return;
     const isPdf = f.type === 'application/pdf';
     const isImg = (f.type || '').startsWith('image/');
     if (!isPdf && !isImg) { miniToast('이미지 또는 PDF만 등록할 수 있어요'); return; }
     if (f.size > MAX_FILE_BYTES) {
-      if (!confirm('파일이 8MB보다 커요. P2P 동기화가 느려질 수 있어요. 계속할까요?')) return;
+      if (!confirm('파일이 커요. 변환에 시간이 걸릴 수 있어요. 계속할까요?')) return;
     }
+    miniToast(isPdf ? '악보 PDF를 변환하고 있어요…' : '악보 이미지를 변환하고 있어요…');
     try {
       const dataURL = await fileToDataURL(f);
-      modalContext.source = 'file';
-      modalContext.fileType = isPdf ? 'pdf' : 'image';
-      modalContext.fileDataURL = dataURL;
+      let pages;
+      if (isPdf) {
+        pages = await pdfToSheetPages(dataURL, (p, total) => {
+          if (total > 1) miniToast(`악보 변환 중… ${p}/${total}장`);
+        });
+      } else {
+        pages = await imageToSheetPages(dataURL);
+      }
+      if (!pages || !pages.length) { miniToast('악보를 변환하지 못했어요'); return; }
+      // 한 장이라도 너무 크면 경고 (broadcast payload 보호)
+      const big = pages.find((u) => dataURLBytes(u) > SHEET_WARN_BYTES);
+      if (big) miniToast('악보 한 장이 다소 커요. 더 선명도 낮은 이미지를 권장해요.');
+      modalContext.staged = true;
+      modalContext.pages = pages;
+      modalContext.remoteUrl = '';
+      modalContext.sheetKind = isPdf ? 'pdf' : 'image';
       modalContext.fileName = f.name || (isPdf ? '악보.pdf' : '악보 이미지');
-      modalContext.sheetUrl = '';
       modalContext.clearFile = false;
       $('songSheetUrl').value = '';
       renderSheetPreview();
+      miniToast(`악보 ${pages.length}장을 등록했어요`);
     } catch (e) {
-      console.error('파일 읽기 실패', e);
-      miniToast('파일을 읽지 못했어요');
+      console.error('악보 변환 실패', e);
+      miniToast('악보를 변환하지 못했어요');
     }
   }
 
-  // 이미지 주소(URL) 스테이징 — 원격 src 그대로 사용 (CORS 영향 없음)
-  function stageSheetUrl(raw) {
+  // 이미지 주소(URL) 스테이징 — 가능하면 캔버스로 축소 dataURL, CORS로 막히면 URL 그대로 공유
+  async function stageSheetUrl(raw) {
     const url = (raw || '').trim();
     if (!url) { miniToast('이미지 주소를 입력해주세요'); return; }
     let ok = false;
     try { const u = new URL(url); ok = (u.protocol === 'http:' || u.protocol === 'https:'); } catch (e) {}
     if (!ok) { miniToast('http(s) 이미지 주소를 입력해주세요'); return; }
-    modalContext.source = 'url';
-    modalContext.fileType = 'image';
-    modalContext.fileDataURL = null;
-    modalContext.sheetUrl = url;
-    modalContext.fileName = '이미지 주소';
-    modalContext.clearFile = false;
-    renderSheetPreview();
-    miniToast('이미지 주소를 악보로 등록했어요');
+    miniToast('이미지를 불러오고 있어요…');
+    try {
+      const pages = await imageToSheetPages(url); // CORS 허용 시 축소 성공
+      modalContext.staged = true;
+      modalContext.pages = pages;
+      modalContext.remoteUrl = '';
+      modalContext.sheetKind = 'image';
+      modalContext.fileName = '이미지 주소';
+      modalContext.clearFile = false;
+      renderSheetPreview();
+      miniToast('이미지 주소를 악보로 등록했어요');
+    } catch (e) {
+      // CORS 등으로 캔버스 축소 실패 → URL을 그대로 멤버에게 공유 (각자 직접 로드)
+      modalContext.staged = true;
+      modalContext.pages = null;
+      modalContext.remoteUrl = url;
+      modalContext.sheetKind = 'url';
+      modalContext.fileName = '이미지 주소';
+      modalContext.clearFile = false;
+      renderSheetPreview();
+      miniToast('이미지 주소를 그대로 공유해요 (축소 불가)');
+    }
   }
 
   // 스테이징한(또는 기존) 악보 미리보기 갱신
@@ -3278,25 +3602,33 @@
     const metaEl = $('spMeta');
     const pdfGlyph = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>';
 
-    let src = null, fileType = null, label = '', metaText = '';
-    if (modalContext.source === 'file') {
-      fileType = modalContext.fileType;
-      src = fileType === 'image' ? modalContext.fileDataURL : null;
-      label = modalContext.fileName || '새 악보';
-      metaText = fileType === 'pdf' ? 'PDF · 업로드' : '이미지 · 업로드';
-    } else if (modalContext.source === 'url') {
-      fileType = 'image'; src = modalContext.sheetUrl;
-      label = '이미지 주소'; metaText = modalContext.sheetUrl;
-    } else if (modalContext.existing && modalContext.existing.file && !modalContext.clearFile) {
-      fileType = modalContext.existing.fileType;
-      const ef = modalContext.existing.file;
-      const isRemote = /^https?:/i.test(ef);
-      src = fileType === 'image' ? ef : null;
-      label = modalContext.existing.fileName || (fileType === 'pdf' ? '기존 PDF' : (isRemote ? '이미지 주소' : '기존 이미지'));
-      metaText = (fileType === 'pdf' ? 'PDF' : '이미지') + ' · 기존' + (isRemote ? ' 주소' : '');
+    let src = null, label = '', metaText = '', show = false;
+    if (modalContext.staged) {
+      show = true;
+      if (modalContext.pages && modalContext.pages.length) {
+        src = modalContext.pages[0];
+        label = modalContext.fileName || '새 악보';
+        const n = modalContext.pages.length;
+        metaText = (modalContext.sheetKind === 'pdf' ? 'PDF' : '이미지') + ` · ${n}장 등록`;
+      } else if (modalContext.remoteUrl) {
+        src = modalContext.remoteUrl;
+        label = '이미지 주소'; metaText = modalContext.remoteUrl;
+      }
+    } else if (modalContext.existing && !modalContext.clearFile) {
+      show = true;
+      const ex = modalContext.existing;
+      if (ex.pages && ex.pages.length) {
+        src = ex.pages[0];
+        label = ex.fileName || '기존 악보';
+        metaText = (ex.sheetKind === 'pdf' ? 'PDF' : '이미지') + ` · 기존 ${ex.pages.length}장`;
+      } else if (ex.remoteUrl) {
+        src = ex.remoteUrl;
+        label = ex.fileName || '이미지 주소';
+        metaText = '이미지 주소 · 기존';
+      } else { show = false; }
     }
 
-    if (!fileType) { box.style.display = 'none'; return; }
+    if (!show) { box.style.display = 'none'; return; }
     box.style.display = 'flex';
     thumb.innerHTML = src
       ? `<img src="${escapeHtml(src)}" alt="미리보기" onerror="this.parentNode.innerHTML='${pdfGlyph.replace(/'/g, "\\'")}'"/>`
@@ -3374,12 +3706,12 @@
 
     // 악보 제거 (스테이징/기존 모두)
     $('spRemove').onclick = () => {
-      modalContext.source = null;
-      modalContext.fileDataURL = null;
-      modalContext.fileType = null;
+      modalContext.staged = false;
+      modalContext.pages = null;
+      modalContext.remoteUrl = '';
+      modalContext.sheetKind = '';
       modalContext.fileName = '';
-      modalContext.sheetUrl = '';
-      modalContext.clearFile = true;   // 기존 파일도 저장 시 제거
+      modalContext.clearFile = true;   // 기존 악보도 저장 시 제거
       $('songSheetUrl').value = '';
       renderSheetPreview();
     };
@@ -3404,27 +3736,28 @@
 
   function openSongModal({ song = null, special = false } = {}) {
     const isEditing = !!song;
+    const hasExisting = song && ((song.pages && song.pages.length) || song.remoteUrl);
     modalContext = {
       song,
-      special: song ? !!song.get('special') : special,
-      part: song?.get('part') || '',
-      source: null,
-      fileDataURL: null,
-      fileType: null,
+      special: song ? !!song.special : special,
+      part: song?.part || '',
+      staged: false,
+      pages: null,
+      remoteUrl: '',
+      sheetKind: '',
       fileName: '',
-      sheetUrl: '',
       clearFile: false,
-      existing: song && song.get('file')
-        ? { file: song.get('file'), fileType: song.get('fileType'), fileName: song.get('fileName') || '' }
+      existing: hasExisting
+        ? { pages: song.pages || null, remoteUrl: song.remoteUrl || '', sheetKind: song.sheetKind || '', fileName: song.fileName || '' }
         : null,
     };
     $('songModalTitle').textContent = isEditing ? '곡 편집' : (modalContext.special ? '특송 추가' : '곡 추가');
     $('songModalSub').textContent = isEditing ? '곡 정보를 수정해요.' : '악보를 끌어오거나 주소로 등록하고 유튜브를 연결해요.';
     $('songSave').textContent = isEditing ? '저장' : '추가';
-    $('songTitleInput').value = song?.get('title') || '';
-    $('songYoutube').value = song?.get('youtube') || '';
-    $('songNote').value = song?.get('note') || '';
-    $('partCustom').value = song?.get('partCustom') || '';
+    $('songTitleInput').value = song?.title || '';
+    $('songYoutube').value = song?.youtube || '';
+    $('songNote').value = song?.note || '';
+    $('partCustom').value = song?.partCustom || '';
     $('songFile').value = '';
     $('songSheetUrl').value = '';
     $('songFileName').textContent = '';
@@ -3462,44 +3795,54 @@
     const partCustom = $('partCustom').value.trim();
     const part = modalContext.part || '';
 
-    ydoc.transact(() => {
-      let song = modalContext.song;
-      if (!song) {
-        song = new Y.Map();
-        song.set('id', genId());
-        song.set('special', modalContext.special);
-        songs.push([song]);
-      } else {
-        song.set('special', modalContext.special);
-      }
-      song.set('title', title);
-      song.set('youtube', youtube);
-      song.set('note', note);
-      song.set('part', part);
-      song.set('partCustom', partCustom);
+    let song = modalContext.song;
+    let isNew = false;
+    if (!song) {
+      song = { id: genId(), pages: [], remoteUrl: '', sheetKind: '' };
+      songsData.push(song);
+      isNew = true;
+    }
+    song.special = modalContext.special;
+    song.title = title;
+    song.youtube = youtube;
+    song.note = note;
+    song.part = part;
+    song.partCustom = partCustom;
 
-      const sid = song.get('id');
-      if (modalContext.source === 'file' && modalContext.fileDataURL) {
-        // 업로드 파일 → dataURL 그대로 동기화
-        song.set('file', modalContext.fileDataURL);
-        song.set('fileType', modalContext.fileType);
-        song.set('fileName', modalContext.fileName || '');
-        pdfDocCache.delete(sid);
-      } else if (modalContext.source === 'url' && modalContext.sheetUrl) {
-        // 원격 이미지 주소 → URL을 그대로 src로 저장 (이미지 타입)
-        song.set('file', modalContext.sheetUrl);
-        song.set('fileType', 'image');
-        song.set('fileName', '이미지 주소');
-        pdfDocCache.delete(sid);
-      } else if (modalContext.clearFile) {
-        // 악보 제거
-        song.set('file', '');
-        song.set('fileType', '');
-        song.set('fileName', '');
-        pdfDocCache.delete(sid);
-      }
-      // 그 외에는 기존 파일 유지 (편집 시 악보 미변경)
-    });
+    let sheetsChanged = false;
+    if (modalContext.staged && modalContext.pages && modalContext.pages.length) {
+      // 새 악보(축소 이미지 페이지들)로 교체
+      song.pages = modalContext.pages;
+      song.remoteUrl = '';
+      song.sheetKind = modalContext.sheetKind || 'image';
+      song.fileName = modalContext.fileName || '';
+      sheetsChanged = true;
+    } else if (modalContext.staged && modalContext.remoteUrl) {
+      // CORS로 축소 못 한 원격 이미지 → URL 그대로 공유 (sheet 전송 없음, conti로 전달)
+      song.pages = [];
+      song.remoteUrl = modalContext.remoteUrl;
+      song.sheetKind = 'url';
+      song.fileName = '이미지 주소';
+      sheetsChanged = true;
+    } else if (modalContext.clearFile) {
+      song.pages = [];
+      song.remoteUrl = '';
+      song.sheetKind = '';
+      song.fileName = '';
+      sheetsChanged = true;
+    }
+    pdfDocCache.delete(song.id);
+
+    persistLeaderSongs();
+    renderSongList();
+    // 메타 변경은 항상, 악보가 바뀐 곡은 페이지별 sheet도 송신
+    broadcastConti();
+    if (sheetsChanged && song.pages && song.pages.length) {
+      song.pages.forEach((_, p) => broadcastSheet(song.id, p));
+    }
+    // 편집 중인 곡이 현재 표시 중이면 다시 렌더
+    if (activeSongId === song.id) renderCanvas();
+
     closeSongModal();
   }
 
@@ -3509,8 +3852,9 @@
     activePage = 0;
     if (isLeader) {
       isFollowing = true;
-      viewerState.set('songId', id);
-      viewerState.set('page', 0);
+      viewerData.songId = id;
+      viewerData.page = 0;
+      broadcastViewer();
     } else {
       isFollowing = false;
       followIndicator.classList.remove('hidden');
@@ -3527,38 +3871,31 @@
       isFollowing = false;
       followIndicator.classList.remove('hidden');
     }
-    const total = await getTotalPages(s);
+    const total = getTotalPages(s);
     let next = activePage + delta;
     if (next < 0) next = 0;
     if (next >= total) next = total - 1;
     if (next === activePage) return;
     activePage = next;
     if (isLeader) {
-      viewerState.set('page', activePage);
+      viewerData.page = activePage;
+      broadcastViewer();
     }
     await renderCanvas();
   }
 
-  async function getTotalPages(song) {
-    const fileType = song.get('fileType');
-    const file = song.get('file');
-    if (!file) return 1;
-    if (fileType === 'image') return 1;
-    if (fileType === 'pdf') {
-      const sid = song.get('id');
-      let doc = pdfDocCache.get(sid);
-      if (!doc) {
-        try {
-          doc = await pdfjsLib.getDocument({ data: dataURLToUint8(file) }).promise;
-          pdfDocCache.set(sid, doc);
-        } catch (e) {
-          console.error('PDF load fail', e);
-          return 1;
-        }
-      }
-      return doc.numPages;
-    }
+  // 페이지 수 = 받은/만든 악보 이미지 장수 (원격 URL은 1장)
+  function getTotalPages(song) {
+    if (song.pages && song.pages.length) return song.pages.length;
+    if (song.remoteUrl) return 1;
     return 1;
+  }
+
+  // 곡의 현재 페이지 표시용 이미지 src (없으면 null)
+  function sheetSrcFor(song, page) {
+    if (song.pages && song.pages.length) return song.pages[Math.min(page, song.pages.length - 1)] || null;
+    if (song.remoteUrl) return song.remoteUrl;
+    return null;
   }
 
   async function renderCanvas() {
@@ -3588,11 +3925,12 @@
     }
     const song = entry.song;
 
-    const file = song.get('file');
-    const fileType = song.get('fileType');
-    const youtube = song.get('youtube');
+    const hasSheet = songHasSheet(song);
+    const youtube = song.youtube;
+    const src = sheetSrcFor(song, activePage);
+    const isRemote = (song.sheetKind === 'url') || (!!src && /^https?:/i.test(src) && !/^data:/i.test(src));
 
-    const total = await getTotalPages(song);
+    const total = getTotalPages(song);
     if (activePage >= total) activePage = Math.max(0, total - 1);
 
     updateHeader();
@@ -3600,42 +3938,37 @@
     btnPrev.disabled = activePage <= 0;
     btnNext.disabled = activePage >= total - 1;
 
-    if (!file && !youtube) {
+    if (!hasSheet && !youtube) {
       const ph = document.createElement('div');
       ph.className = 'placeholder';
-      ph.innerHTML = `<strong>${escapeHtml(song.get('title') || '(제목 없음)')}</strong>
-        <small>이 곡에는 아직 악보가 등록되지 않았어요.${isLeader ? '<br/>좌측의 ✎ 버튼으로 악보를 추가해주세요.' : ''}</small>`;
+      const waiting = !isLeader && (song.sheetCount > 0);  // 멤버: 리더가 곧 보내줄 악보 대기
+      ph.innerHTML = `<strong>${escapeHtml(song.title || '(제목 없음)')}</strong>
+        <small>${waiting ? '리더가 보낸 악보를 받는 중이에요…' : ('이 곡에는 아직 악보가 등록되지 않았어요.' + (isLeader ? '<br/>좌측의 ✎ 버튼으로 악보를 추가해주세요.' : ''))}</small>`;
       canvas.appendChild(ph);
       pageNav.style.display = 'none';
       return;
     }
 
-    if (file) {
+    if (hasSheet && src) {
       pageNav.style.display = total > 1 ? '' : 'none';
-      if (fileType === 'image') {
-        const img = document.createElement('img');
-        img.alt = song.get('title') || '';
-        img.style.maxHeight = 'calc(100vh - 280px)';
-        const isRemote = /^https?:/i.test(file);
-        let failed = false;
-        await new Promise((res) => {
-          img.onload = () => res();
-          img.onerror = () => { failed = true; res(); };
-          img.src = file;
-          if (img.complete && img.naturalWidth) res();
-        });
-        if (failed) {
-          // 원격 이미지 로드 실패 (CORS·삭제·잘못된 주소 등) → 안내 표시
-          const ph = document.createElement('div');
-          ph.className = 'placeholder';
-          ph.innerHTML = `<strong>이미지를 불러올 수 없어요</strong>
-            <small>${isRemote ? '원격 이미지 주소가 막혔거나(CORS) 사라졌을 수 있어요.<br/>다른 주소를 쓰거나 이미지를 직접 업로드해주세요.' : '이미지를 표시할 수 없어요.'}</small>`;
-          canvas.appendChild(ph);
-        } else {
-          canvas.appendChild(img);
-        }
-      } else if (fileType === 'pdf') {
-        await renderPdfPage(song);
+      const img = document.createElement('img');
+      img.alt = song.title || '';
+      img.style.maxHeight = 'calc(100vh - 280px)';
+      let failed = false;
+      await new Promise((res) => {
+        img.onload = () => res();
+        img.onerror = () => { failed = true; res(); };
+        img.src = src;
+        if (img.complete && img.naturalWidth) res();
+      });
+      if (failed) {
+        const ph = document.createElement('div');
+        ph.className = 'placeholder';
+        ph.innerHTML = `<strong>이미지를 불러올 수 없어요</strong>
+          <small>${isRemote ? '원격 이미지 주소가 막혔거나(CORS) 사라졌을 수 있어요.<br/>다른 주소를 쓰거나 이미지를 직접 업로드해주세요.' : '이미지를 표시할 수 없어요.'}</small>`;
+        canvas.appendChild(ph);
+      } else {
+        canvas.appendChild(img);
       }
     } else {
       pageNav.style.display = 'none';
@@ -3666,12 +3999,12 @@
     const entry = findSong(activeSongId);
     if (!entry) return;
     const s = entry.song;
-    const title = s.get('title') || '(제목 없음)';
-    const part = s.get('part');
-    const partCustom = s.get('partCustom');
-    const note = s.get('note');
+    const title = s.title || '(제목 없음)';
+    const part = s.part;
+    const partCustom = s.partCustom;
+    const note = s.note;
     const tag = [];
-    if (s.get('special')) tag.push('특송');
+    if (s.special) tag.push('특송');
     if (part) tag.push(part);
     if (partCustom) tag.push(partCustom);
     if (note) tag.push(note);
@@ -3679,40 +4012,11 @@
     nowPage.textContent = tag.join(' · ');
   }
 
-  async function renderPdfPage(song) {
-    const sid = song.get('id');
-    let doc = pdfDocCache.get(sid);
-    if (!doc) {
-      try {
-        doc = await pdfjsLib.getDocument({ data: dataURLToUint8(song.get('file')) }).promise;
-        pdfDocCache.set(sid, doc);
-      } catch (e) {
-        console.error(e);
-        canvas.innerHTML = `<div class="placeholder"><strong>PDF를 불러올 수 없어요</strong><small>${escapeHtml(e.message || '')}</small></div>`;
-        return;
-      }
-    }
-    const pageNum = Math.min(activePage + 1, doc.numPages);
-    const page = await doc.getPage(pageNum);
-    const viewport = page.getViewport({ scale: 1 });
-    const wrapW = canvasWrap.clientWidth - 56;
-    const targetW = Math.min(900, wrapW);
-    const scale = targetW / viewport.width;
-    const vp = page.getViewport({ scale });
-    const c = document.createElement('canvas');
-    c.width = vp.width;
-    c.height = vp.height;
-    c.style.width = vp.width + 'px';
-    c.style.height = 'auto';
-    const ctx = c.getContext('2d');
-    await page.render({ canvasContext: ctx, viewport: vp }).promise;
-    canvas.appendChild(c);
-  }
-
   // ---------------- Highlights (형광펜 자유곡선 · 캔버스 오버레이) ----------------
-  // 저장 모델: highlights(Y.Map) [songId|page] → Y.Array<stroke>
+  // 저장 모델: highlightsData[songId|page] = [stroke…] (메모리)
   //   stroke = { points:[{x,y}…] (0~1 정규화), color, width(짧은 변 비율), at }
   // 좌표를 비율로 저장 → 화면 크기/스크롤이 달라도 같은 위치에 보임.
+  // 리더가 그릴/지울 때 highlight 이벤트로 현재 페이지 stroke 전체를 broadcast.
   function highlightKey() {
     return `${activeSongId}|${activePage}`;
   }
@@ -3791,7 +4095,7 @@
     const ctx = overlay.getContext('2d');
     const W = overlay.width, H = overlay.height;
     ctx.clearRect(0, 0, W, H);
-    const arr = highlights.get(highlightKey());
+    const arr = highlightsData[highlightKey()];
     if (arr) arr.forEach((stroke) => drawStroke(ctx, stroke, W, H));
     if (drawing && drawing.points.length) drawStroke(ctx, drawing, W, H);
   }
@@ -3834,24 +4138,29 @@
     renderHighlights();
     if (!stroke.points.length || !activeSongId) return;
     const key = highlightKey();
-    let arr = highlights.get(key);
-    if (!arr) {
-      arr = new Y.Array();
-      highlights.set(key, arr);
-    }
-    // stroke 한 개를 한 번에 push → 한 동기화 op로 팀원에게 전달
-    arr.push([{ points: stroke.points, color: stroke.color, width: stroke.width, at: stroke.at }]);
+    if (!highlightsData[key]) highlightsData[key] = [];
+    highlightsData[key].push({ points: stroke.points, color: stroke.color, width: stroke.width, at: stroke.at });
+    // 현재 페이지의 stroke 전체를 broadcast (멤버가 동일하게 렌더)
+    broadcastHighlight(activeSongId, activePage);
   }
 
   function clearHighlights() {
     const key = highlightKey();
-    const arr = highlights.get(key);
-    if (arr && arr.length > 0) {
-      ydoc.transact(() => arr.delete(0, arr.length));
-    }
+    if (highlightsData[key]) highlightsData[key] = [];
     // 그리는 중이던 로컬 stroke도 취소
     drawing = null;
     renderHighlights();
+    if (activeSongId != null) broadcastHighlight(activeSongId, activePage);
+  }
+
+  // 현재 페이지 펜 stroke를 멤버에게 송신 (리더만)
+  function broadcastHighlight(songId, page) {
+    if (!isLeader || !channel) return;
+    const key = `${songId}|${page}`;
+    channel.send({
+      type: 'broadcast', event: 'highlight',
+      payload: { songId, page, strokes: highlightsData[key] || [] },
+    });
   }
 
   // ---------------- 큐 아이콘 주입 / 버튼 피드백 ----------------
@@ -3878,10 +4187,12 @@
   // ---------------- Broadcast / 라이브챗 큐 ----------------
   // cue = { text, kind, intensity } / target 은 currentTarget 사용
   // 페이로드 형태 보존: { id, text, kind, intensity, target, ts }
+  // self:true 채널이므로 리더도 자기 큐를 onCue로 다시 받음.
+  // 특정 역할 타겟이면 리더 화면엔 "→역할 에게" 미리보기로 보이도록 __selfPreview 표시.
   function broadcastCue(cue) {
-    if (!isLeader) return;
+    if (!isLeader || !channel) return;
     const target = currentTarget || '전체';
-    const id = `${provider.awareness.clientID}-${Date.now()}`;
+    const id = `${deviceId}-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
     const payload = {
       id,
       text: cue.text,
@@ -3889,17 +4200,9 @@
       intensity: cue.intensity || 2,
       target,
       ts: Date.now(),
+      __selfPreview: target !== '전체',   // 리더 자기 화면 미리보기 플래그
     };
-    shownMessageIds.add(id);
-    // 리더 본인 화면: 전체면 그대로, 특정 역할이면 "→역할" 미리보기로 표시
-    dispatchCue(payload, /*selfPreview=*/ target !== '전체');
-    provider.awareness.setLocalStateField('broadcast', payload);
-    setTimeout(() => {
-      const cur = provider.awareness.getLocalState();
-      if (cur?.broadcast?.id === id) {
-        provider.awareness.setLocalStateField('broadcast', null);
-      }
-    }, 6000);
+    channel.send({ type: 'broadcast', event: 'cue', payload });
   }
 
   // 자유 메시지 → neutral 큐로 전송
@@ -4017,7 +4320,7 @@
     clearTimeout(presentUiTimer);
     presentUiTimer = setTimeout(() => presentLayer.classList.remove('show-ui'), 1800);
   }
-  // 활성 곡/페이지를 프레젠테이션 무대에 렌더 (이미지/PDF). renderCanvas와 동기.
+  // 활성 곡/페이지를 프레젠테이션 무대에 렌더 (악보 이미지). renderCanvas와 동기.
   async function renderPresentStage() {
     if (!presentMode) return;
     if (!activeSongId) {
@@ -4032,25 +4335,21 @@
       return;
     }
     const song = entry.song;
-    const file = song.get('file');
-    const fileType = song.get('fileType');
-    const total = await getTotalPages(song);
+    const total = getTotalPages(song);
     if (activePage >= total) activePage = Math.max(0, total - 1);
+    const src = sheetSrcFor(song, activePage);
 
-    if (!file) {
-      presentStage.innerHTML = `<div class="present-empty">${escapeHtml(song.get('title') || '(제목 없음)')}<br/><span style="font-size:0.85em;opacity:0.8;">등록된 악보 파일이 없어요.</span></div>`;
+    if (!src) {
+      const waiting = !isLeader && (song.sheetCount > 0);
+      presentStage.innerHTML = `<div class="present-empty">${escapeHtml(song.title || '(제목 없음)')}<br/><span style="font-size:0.85em;opacity:0.8;">${waiting ? '리더가 보낸 악보를 받는 중이에요…' : '등록된 악보가 없어요.'}</span></div>`;
       updatePresentNav(activePage + 1, total);
       return;
     }
     presentStage.innerHTML = '';
-    if (fileType === 'image') {
-      const img = document.createElement('img');
-      img.src = file;
-      img.alt = song.get('title') || '';
-      presentStage.appendChild(img);
-    } else if (fileType === 'pdf') {
-      await renderPdfToEl(song, presentStage);
-    }
+    const img = document.createElement('img');
+    img.src = src;
+    img.alt = song.title || '';
+    presentStage.appendChild(img);
     updatePresentNav(activePage + 1, total);
   }
   function updatePresentNav(cur, total) {
@@ -4113,93 +4412,44 @@
     else if (presentMode) { _suppressFsExit = true; exitPresentMode(); _suppressFsExit = false; }
   }
 
-  // 공용 PDF 렌더 (대상 엘리먼트로). 컨테이너 크기에 맞춰 contain.
-  async function renderPdfToEl(song, targetEl) {
-    const sid = song.get('id');
-    let doc = pdfDocCache.get(sid);
-    if (!doc) {
-      try {
-        doc = await pdfjsLib.getDocument({ data: dataURLToUint8(song.get('file')) }).promise;
-        pdfDocCache.set(sid, doc);
-      } catch (e) {
-        console.error(e);
-        targetEl.innerHTML = `<div class="present-empty">PDF를 불러올 수 없어요.</div>`;
-        return;
-      }
-    }
-    const pageNum = Math.min(activePage + 1, doc.numPages);
-    const page = await doc.getPage(pageNum);
-    const base = page.getViewport({ scale: 1 });
-    // 무대(스테이지) 크기에 맞춰 contain. 선명도 위해 devicePixelRatio 반영(최대 2.5).
-    const availW = (targetEl.clientWidth || window.innerWidth) - 24;
-    const availH = (targetEl.clientHeight || window.innerHeight) - 24;
-    const fit = Math.min(availW / base.width, availH / base.height);
-    const dpr = Math.min(window.devicePixelRatio || 1, 2.5);
-    const scale = Math.max(0.2, fit) * dpr;
-    const vp = page.getViewport({ scale });
-    const c = document.createElement('canvas');
-    c.width = vp.width;
-    c.height = vp.height;
-    c.style.width = (vp.width / dpr) + 'px';
-    c.style.height = (vp.height / dpr) + 'px';
-    const ctx = c.getContext('2d');
-    await page.render({ canvasContext: ctx, viewport: vp }).promise;
-    targetEl.appendChild(c);
-  }
-
   // ---------------- 접속자 · 역할 배정 ----------------
-  // 지금 접속 중인 사람들 (awareness) → deviceId로 중복 제거. 리더 본인 포함.
+  // 지금 접속 중인 사람들 (presence) → deviceId로 중복 제거. 리더 본인 포함.
   function connectedPeople() {
-    const byDevice = new Map();
-    if (!provider) return [];
-    provider.awareness.getStates().forEach((state, clientId) => {
-      const u = state?.user;
-      if (!u) return;
-      const did = u.deviceId;
-      if (!did) return;
-      const isMe = did === deviceId;
-      const prev = byDevice.get(did);
-      // 같은 deviceId면 가장 최근(joinedAt 큰) 세션을 대표로
-      if (!prev || (u.joinedAt || 0) >= (prev.joinedAt || 0)) {
-        byDevice.set(did, {
-          deviceId: did,
-          name: (u.name || '').trim(),
-          role: u.role || 'member',     // leader/member
-          isMe,
-          joinedAt: u.joinedAt || 0,
-        });
-      }
-    });
-    const arr = [...byDevice.values()];
+    const arr = Object.values(presenceData).map((p) => ({
+      deviceId: p.deviceId,
+      name: (p.name || '').trim(),
+      role: p.role || 'member',     // leader/member
+      isMe: p.deviceId === deviceId,
+      joinedAt: p.ts || 0,
+    }));
     // 리더 먼저, 그다음 입장 순
     arr.sort((a, b) => (a.role === 'leader' ? -1 : b.role === 'leader' ? 1 : 0) || (a.joinedAt - b.joinedAt));
     return arr;
   }
 
-  // assignments에 배정된, 지금 접속 중인 역할들의 집합 (타겟 칩 소스)
+  // 배정된, 지금 접속 중인 역할들의 집합 (타겟 칩 소스)
   function assignedRolesOnline() {
     const set = new Set();
     connectedPeople().forEach((p) => {
-      const a = assignments.get(p.deviceId);
+      const a = assignmentsData[p.deviceId];
       if (a && a.role) set.add(a.role);
     });
     return [...set];
   }
 
-  // 내(deviceId) 배정을 읽어 myRole/헤더/awareness에 반영
+  // 내(deviceId) 배정을 읽어 myRole/헤더/presence에 반영
   function applyMyAssignment() {
-    if (!assignments) return;
-    const a = assignments.get(deviceId);
+    const a = assignmentsData[deviceId];
     const role = (a && a.role) || '';
     if (role !== myRole) {
       myRole = role;
-      publishAwarenessUser();   // assignedRole 갱신 → 타겟 게이팅에 사용
+      trackPresence();   // assignedRole 갱신 → presence에 반영
     }
     syncMyRoleBadge();
     if (monitorMode) updateMonitorRole();
   }
 
-  // 멤버 본인 이름 설정 → 저장 + awareness 송출 (+ 리더가 이미 적어둔 이름과 동기화)
+  // 멤버 본인 이름 설정 → 저장 + presence 갱신
   function setMyName(name) {
     const v = (name || '').trim();
     if (v === myName) return;
@@ -4209,7 +4459,7 @@
       else localStorage.removeItem(LS_NAME(roomId));
     }
     if (myNameInput && myNameInput.value !== myName) myNameInput.value = myName;
-    publishAwarenessUser();
+    trackPresence();
   }
 
   // 헤더: 내 역할 배지
@@ -4262,12 +4512,12 @@
     // 같은 역할이 이미 다른 사람에게 배정됐는지 (작은 표시용)
     const roleAssignedCount = {};
     people.forEach((p) => {
-      const a = assignments.get(p.deviceId);
+      const a = assignmentsData[p.deviceId];
       if (a && a.role) roleAssignedCount[a.role] = (roleAssignedCount[a.role] || 0) + 1;
     });
 
     rosterList.innerHTML = people.map((p) => {
-      const a = assignments.get(p.deviceId);
+      const a = assignmentsData[p.deviceId];
       const role = (a && a.role) || NO_ROLE;
       const nameLabel = p.name
         ? escapeHtml(p.name)
@@ -4297,15 +4547,19 @@
     });
   }
 
-  // 리더가 특정 기기(deviceId)에 역할 배정 → assignments Y.Map 기록 (영속+동기화)
+  // 리더가 특정 기기(deviceId)에 역할 배정 → assignmentsData 기록(영속) + broadcast
   function assignRole(did, role, name) {
-    if (!assignments || !did) return;
+    if (!isLeader || !did) return;
     if (role) {
-      assignments.set(did, { role, name: name || '' });
+      assignmentsData[did] = { role, name: name || '' };
     } else {
-      // 지정 안 함 → 배정 제거
-      if (assignments.has(did)) assignments.delete(did);
+      delete assignmentsData[did]; // 지정 안 함 → 배정 제거
     }
+    persistLeaderAssignments();
+    broadcastAssignments();
+    applyMyAssignment();   // 내 자신에게 배정했을 수도 있어 즉시 반영
+    renderRoster();
+    renderTargetChips();
   }
 
   // ---------------- Boot ----------------
@@ -4313,12 +4567,14 @@
 
   // expose for console debug (read-only)
   window.__worship = {
-    ydoc: () => ydoc,
-    songs: () => songs,
-    viewerState: () => viewerState,
-    assignments: () => assignments,
+    channel: () => channel,
+    songs: () => songsData,
+    viewer: () => viewerData,
+    assignments: () => assignmentsData,
+    presence: () => presenceData,
     deviceId: () => deviceId,
     myRole: () => myRole,
+    isLeader: () => isLeader,
     connectedPeople: () => connectedPeople(),
   };
 </script>
