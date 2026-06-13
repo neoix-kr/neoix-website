@@ -401,6 +401,202 @@
       color: var(--text-secondary);
     }
 
+    /* ---------- AUTH (로그인/회원가입) ---------- */
+    #authScreen {
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 96px 20px 60px;
+    }
+    #authScreen.hidden { display: none; }
+    .auth-card {
+      width: 100%;
+      max-width: 420px;
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 40px 32px;
+      box-shadow: var(--shadow-card);
+      text-align: center;
+    }
+    .auth-card h1 {
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: -0.025em;
+      line-height: 1.3;
+      margin-bottom: 8px;
+      color: var(--text);
+    }
+    .auth-sub {
+      color: var(--text-secondary);
+      font-size: 15px;
+      margin-bottom: 28px;
+      line-height: 1.55;
+      font-weight: 500;
+      letter-spacing: -0.01em;
+    }
+    .auth-form { display: flex; flex-direction: column; gap: 12px; text-align: left; }
+    .auth-field-label {
+      font-size: 13px;
+      color: var(--text-secondary);
+      font-weight: 700;
+      letter-spacing: -0.005em;
+      margin: 4px 2px -4px;
+    }
+    .auth-error {
+      font-size: 13px;
+      color: var(--danger);
+      font-weight: 600;
+      letter-spacing: -0.005em;
+      background: rgba(240, 68, 82, 0.08);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      text-align: left;
+      line-height: 1.5;
+    }
+    .auth-error.hidden { display: none; }
+    .auth-toggle {
+      margin-top: 18px;
+      font-size: 13px;
+      color: var(--text-caption);
+      font-weight: 500;
+    }
+    .auth-toggle button {
+      background: none;
+      border: none;
+      color: var(--blue-strong);
+      font-weight: 700;
+      font-size: 13px;
+      font-family: inherit;
+      cursor: pointer;
+      padding: 2px 4px;
+      letter-spacing: -0.005em;
+    }
+    .auth-toggle button:hover { text-decoration: underline; }
+
+    /* ---------- HOME (홈: 새 방 / 내 방 목록) ---------- */
+    #homeScreen {
+      min-height: 100vh;
+      min-height: 100dvh;
+      padding: 92px 20px 60px;
+      display: flex;
+      justify-content: center;
+    }
+    #homeScreen.hidden { display: none; }
+    .home-wrap {
+      width: 100%;
+      max-width: 560px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+    .home-hero { text-align: center; margin-bottom: 4px; }
+    .home-hero h1 {
+      font-size: 27px;
+      font-weight: 700;
+      letter-spacing: -0.025em;
+      line-height: 1.3;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+    .home-hero p {
+      color: var(--text-secondary);
+      font-size: 15px;
+      font-weight: 500;
+      letter-spacing: -0.01em;
+    }
+    .home-card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 24px;
+      box-shadow: var(--shadow-card);
+    }
+    .home-card-title {
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      color: var(--text);
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .home-card-title .section-title-count { font-size: 12px; }
+    .home-create-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+    }
+    .room-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+    .room-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      transition: box-shadow 0.15s ease, border-color 0.15s ease;
+    }
+    .room-row:hover { box-shadow: var(--shadow-segment); border-color: var(--border-strong); }
+    .room-row-info { flex: 1; min-width: 0; cursor: pointer; }
+    .room-row-name {
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .room-row-code {
+      font-size: 12px;
+      color: var(--text-caption);
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      letter-spacing: 0.06em;
+      margin-top: 3px;
+      font-weight: 600;
+    }
+    .room-row-actions { display: flex; gap: 6px; flex-shrink: 0; }
+    .home-empty {
+      font-size: 13px;
+      color: var(--text-caption);
+      padding: 18px 14px;
+      text-align: center;
+      background: var(--surface-2);
+      border: 1px dashed var(--border-strong);
+      border-radius: var(--radius-sm);
+      font-weight: 500;
+      letter-spacing: -0.005em;
+    }
+    .home-loading {
+      font-size: 13px;
+      color: var(--text-caption);
+      padding: 14px;
+      text-align: center;
+      font-weight: 500;
+    }
+    .user-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--text-secondary);
+      font-weight: 600;
+      padding: 6px 12px;
+      background: var(--surface-3);
+      border-radius: var(--radius-pill);
+      letter-spacing: -0.005em;
+      max-width: 180px;
+    }
+    .user-chip b { color: var(--text); font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    @media (max-width: 720px) {
+      #homeScreen { padding: 84px 14px 48px; }
+      .home-card { padding: 20px 16px; }
+      .user-chip { max-width: 120px; }
+    }
+
     /* ---------- APP LAYOUT ---------- */
     #app {
       display: none;
@@ -765,6 +961,113 @@
     }
     .pen-swatch:active { transform: scale(0.9); }
     .pen-swatch.active { border-color: var(--text); }
+
+    /* 하이라이트 도구 토글 (펜 / 솔로) */
+    .hl-tools {
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+      padding: 3px;
+      background: var(--surface-3);
+      border-radius: var(--radius-pill);
+    }
+    .hl-tools.hidden { display: none; }
+    .hl-tool {
+      background: transparent;
+      border: none;
+      color: var(--text-secondary);
+      padding: 6px 12px;
+      border-radius: var(--radius-pill);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: -0.005em;
+      font-family: inherit;
+      transition: background 0.15s ease, color 0.15s ease;
+    }
+    .hl-tool:hover:not(.active) { color: var(--text); }
+    .hl-tool.active { background: var(--surface); color: var(--blue-strong); box-shadow: var(--shadow-segment); }
+
+    /* 솔로 싱어 선택 버튼 (현재 선택 이름 표시) */
+    .solo-singer {
+      background: var(--surface-3);
+      color: var(--text-secondary);
+      border: none;
+      padding: 8px 13px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: -0.005em;
+      font-family: inherit;
+      transition: background 0.15s ease, color 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      max-width: 160px;
+      white-space: nowrap;
+    }
+    .solo-singer.hidden { display: none; }
+    .solo-singer:hover { background: var(--blue-soft); color: var(--blue-strong); }
+    .solo-singer.is-set { color: var(--blue-strong); }
+    .solo-singer .ss-name { overflow: hidden; text-overflow: ellipsis; }
+
+    /* 솔로 싱어 선택 팝오버 */
+    .solo-pop-scrim {
+      position: fixed; inset: 0;
+      z-index: 1100;
+      background: transparent;
+    }
+    .solo-pop-scrim.hidden { display: none; }
+    .solo-pop {
+      position: fixed;
+      z-index: 1101;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      box-shadow: var(--shadow-card-hover);
+      padding: 10px;
+      width: 260px;
+      max-width: calc(100vw - 24px);
+      max-height: 60vh;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .solo-pop.hidden { display: none; }
+    .solo-pop-label {
+      font-size: 12px;
+      color: var(--text-caption);
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      margin: 2px 2px 2px;
+    }
+    .solo-singer-list { display: flex; flex-direction: column; gap: 4px; }
+    .solo-singer-opt {
+      text-align: left;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 9px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      font-family: inherit;
+      letter-spacing: -0.005em;
+      transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .solo-singer-opt:hover { background: var(--blue-soft); border-color: var(--blue); color: var(--blue-strong); }
+    .solo-singer-opt.active { background: var(--blue); border-color: var(--blue); color: #fff; }
+    .solo-singer-opt .sso-role { font-size: 11px; font-weight: 600; opacity: 0.7; }
+    .solo-pop-free { display: grid; grid-template-columns: 1fr auto; gap: 6px; margin-top: 2px; }
+    .solo-pop-free .input { padding: 9px 12px; font-size: 13px; }
+    .solo-pop-empty {
+      font-size: 12px; color: var(--text-caption); font-weight: 500;
+      padding: 8px 6px; line-height: 1.5;
+    }
 
     .youtube-wrap {
       width: min(100%, 720px);
@@ -1448,6 +1751,117 @@
       to { opacity: 0; transform: scale(0.97); }
     }
 
+    /* 프레젠테이션 하이라이트 오버레이 — 이미지 위에 정확히 겹쳐 그림 */
+    .present-hl {
+      position: absolute;
+      left: 0; top: 0;
+      width: 0; height: 0;            /* JS가 이미지 렌더 사각형에 맞춰 위치/크기 지정 */
+      z-index: 3;
+      pointer-events: none;
+      touch-action: none;
+      mix-blend-mode: multiply;
+    }
+    .present-hl.enabled { pointer-events: auto; cursor: crosshair; }
+
+    /* 리더 전용 떠있는 컨트롤 (작고 반투명, 좌하단) */
+    .present-ctrl {
+      position: absolute;
+      left: 14px;
+      bottom: 14px;
+      z-index: 6;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 6px;
+      border-radius: var(--radius-pill);
+      background: rgba(25, 31, 40, 0.55);
+      -webkit-backdrop-filter: blur(8px);
+      backdrop-filter: blur(8px);
+      box-shadow: 0 6px 24px rgba(0,0,0,0.28);
+      opacity: 0;
+      transform: translateY(6px);
+      pointer-events: none;
+      transition: opacity 0.25s ease, transform 0.25s ease;
+      flex-wrap: wrap;
+      max-width: calc(100vw - 28px);
+    }
+    /* show-ui (탭/마우스 움직임)일 때만 표시 + 조작 가능 */
+    .present-layer.show-ui .present-ctrl { opacity: 1; transform: translateY(0); pointer-events: auto; }
+    /* 하이라이트 모드 중엔 항상 보이게 (그리다 사라지면 곤란) */
+    .present-ctrl.sticky { opacity: 1 !important; transform: translateY(0) !important; pointer-events: auto !important; }
+    .pc-btn {
+      background: rgba(255,255,255,0.12);
+      border: none;
+      color: #fff;
+      width: 38px; height: 38px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s ease, color 0.15s ease, transform 0.08s ease;
+      flex-shrink: 0;
+    }
+    .pc-btn svg { width: 19px; height: 19px; }
+    .pc-btn:hover:not(:disabled) { background: rgba(255,255,255,0.24); }
+    .pc-btn:active:not(:disabled) { transform: scale(0.93); }
+    .pc-btn:disabled { opacity: 0.32; cursor: default; }
+    .pc-btn.pc-chat { background: var(--blue); }
+    .pc-btn.pc-chat:hover { background: var(--blue-strong); }
+    .pc-btn.pc-hl.active { background: #ffd54a; color: #191f28; }
+    .pc-sep { width: 1px; height: 22px; background: rgba(255,255,255,0.2); margin: 0 2px; flex-shrink: 0; }
+    .pc-hltools { display: inline-flex; align-items: center; gap: 5px; }
+    .pc-hltools.hidden { display: none; }
+    .pc-tool {
+      background: rgba(255,255,255,0.12);
+      border: none;
+      color: #fff;
+      padding: 8px 12px;
+      border-radius: var(--radius-pill);
+      font-size: 13px;
+      font-weight: 700;
+      font-family: inherit;
+      letter-spacing: -0.005em;
+      transition: background 0.15s ease, color 0.15s ease;
+      flex-shrink: 0;
+    }
+    .pc-tool:hover:not(.active) { background: rgba(255,255,255,0.22); }
+    .pc-tool.active { background: #fff; color: var(--blue-strong); }
+    .pc-singer {
+      width: auto;
+      padding: 0 13px;
+      border-radius: var(--radius-pill);
+      font-size: 13px;
+      font-weight: 700;
+      max-width: 130px;
+      gap: 4px;
+    }
+    .pc-singer.hidden { display: none; }
+    .pc-singer span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .pc-singer.is-set { background: rgba(255,255,255,0.92); color: var(--blue-strong); }
+    .pc-swatches { display: inline-flex; align-items: center; gap: 5px; padding: 0 2px; }
+    .pc-swatch {
+      width: 24px; height: 24px;
+      border-radius: 50%;
+      border: 2px solid transparent;
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,0.12);
+      padding: 0;
+      transition: transform 0.1s ease, border-color 0.12s ease;
+      flex-shrink: 0;
+    }
+    .pc-swatch:active { transform: scale(0.9); }
+    .pc-swatch.active { border-color: #fff; }
+
+    /* 라이브챗 시트를 프레젠테이션 위로 (z-index 끌어올림) */
+    .sheet-scrim.over-present { z-index: 1200; }
+    .livechat-sheet.over-present { z-index: 1201; }
+
+    @media (max-width: 720px) {
+      .present-ctrl { gap: 4px; padding: 5px; left: 8px; bottom: 8px; }
+      .pc-btn { width: 34px; height: 34px; }
+      .pc-btn svg { width: 17px; height: 17px; }
+      .pc-tool { padding: 7px 10px; font-size: 12px; }
+    }
+
     /* ---------- CUE MONITOR (라이브챗만 보기) ---------- */
     .monitor-layer {
       position: fixed;
@@ -1793,6 +2207,66 @@
       white-space: nowrap;
     }
 
+    /* 여러 장 썸네일 스트립 */
+    .sheet-thumbs {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+    .sheet-thumb {
+      position: relative;
+      width: 52px;
+      height: 66px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--surface-3);
+      flex-shrink: 0;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-caption);
+    }
+    .sheet-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .sheet-thumb .st-num {
+      position: absolute;
+      left: 3px; bottom: 3px;
+      background: rgba(25,31,40,0.72);
+      color: #fff;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 1px 5px;
+      border-radius: 6px;
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+    }
+    .sheet-thumb .st-del {
+      position: absolute;
+      top: 2px; right: 2px;
+      width: 18px; height: 18px;
+      border: none;
+      border-radius: 50%;
+      background: rgba(25,31,40,0.6);
+      color: #fff;
+      font-size: 11px;
+      line-height: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+    .sheet-thumb .st-del:hover { background: var(--danger); }
+    .sheet-thumb svg { width: 20px; height: 20px; }
+    .sheet-thumbs-more {
+      flex-shrink: 0;
+      align-self: center;
+      font-size: 12px;
+      color: var(--text-caption);
+      font-weight: 700;
+      padding: 0 6px;
+    }
+
     .modal-actions {
       display: flex;
       justify-content: flex-end;
@@ -2038,6 +2512,10 @@
       justify-content: center;
       letter-spacing: 0.02em;
     }
+    /* 곡 단위 이동 버튼 (page-nav 양 끝) */
+    .page-nav .pn-song svg { width: 18px; height: 18px; }
+    .page-nav .pn-song { color: var(--text-caption); }
+    .page-nav .pn-song:hover:not([disabled]) { color: var(--blue-strong); background: var(--blue-soft); }
 
     /* ---------- RESPONSIVE ---------- */
     @media (max-width: 820px) {
@@ -2131,26 +2609,73 @@
   <div class="topnav-right" id="topnavRight"></div>
 </nav>
 
-<!-- ============ LANDING ============ -->
-<div id="landing">
-  <div class="landing-card">
-    <h1>찬양팀 실시간 악보</h1>
-    <p class="landing-sub">
-      리더가 방을 만들고, 팀원은 방 코드로 들어와요.<br />
-      페이지·하이라이트·메시지가 실시간으로 동기화돼요.
-    </p>
+<!-- ============ AUTH (로그인 / 회원가입) ============ -->
+<div id="authScreen" class="hidden">
+  <div class="auth-card">
+    <h1 id="authTitle">로그인</h1>
+    <p class="auth-sub" id="authSub">아이디와 비밀번호로 찬양팀 방에 접속해요.</p>
 
-    <div class="landing-actions">
-      <button class="btn btn-primary btn-block" id="btnCreateRoom">새 방 만들기</button>
-      <div class="divider-or">또는</div>
-      <div class="join-row">
-        <input class="input input-code" id="joinCode" placeholder="방 코드" maxlength="8" autocomplete="off" autocapitalize="characters" />
-        <button class="btn btn-ghost" id="btnJoinRoom">입장</button>
+    <form class="auth-form" id="authForm" autocomplete="on">
+      <span class="auth-field-label">아이디</span>
+      <input class="input" id="authId" placeholder="영문·숫자 아이디" autocomplete="username" autocapitalize="none" spellcheck="false" />
+      <span class="auth-field-label">비밀번호</span>
+      <input class="input" id="authPw" type="password" placeholder="비밀번호 (6자 이상)" autocomplete="current-password" />
+      <div class="auth-error hidden" id="authError"></div>
+      <button class="btn btn-primary btn-block" id="authSubmit" type="submit" style="margin-top:6px;">로그인</button>
+    </form>
+
+    <div class="auth-toggle" id="authToggle">
+      계정이 없으신가요? <button type="button" id="authToggleBtn">회원가입</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ HOME (새 방 / 내 방 목록) ============ -->
+<div id="homeScreen" class="hidden">
+  <div class="home-wrap">
+    <div class="home-hero">
+      <h1>찬양팀 실시간 악보</h1>
+      <p>방을 만들거나, 방 코드로 들어가요.</p>
+    </div>
+
+    <!-- 새 방 만들기 -->
+    <div class="home-card">
+      <div class="home-card-title">새 방 만들기</div>
+      <div class="home-create-row">
+        <input class="input" id="homeRoomName" placeholder="방 이름 (예: 주일 1부 찬양팀)" maxlength="40" autocomplete="off" />
+        <button class="btn btn-primary" id="btnHomeCreate">만들기</button>
       </div>
-      <p class="landing-hint">
-        초대 링크(<code>?room=코드</code>)를 받으면 코드 없이 바로 입장돼요.<br />
-        방을 만든 뒤 <b>방 코드</b>를 눌러 링크를 복사해 팀에게 공유하세요.
-      </p>
+    </div>
+
+    <!-- 방 코드로 입장 -->
+    <div class="home-card">
+      <div class="home-card-title">방 코드로 입장</div>
+      <div class="home-create-row">
+        <input class="input input-code" id="homeJoinCode" placeholder="방 코드" maxlength="8" autocomplete="off" autocapitalize="characters" />
+        <button class="btn btn-ghost" id="btnHomeJoin">입장</button>
+      </div>
+    </div>
+
+    <!-- 내가 만든 방 -->
+    <div class="home-card">
+      <div class="home-card-title">
+        <span>내가 만든 방</span>
+        <span class="section-title-count" id="ownedCount"></span>
+      </div>
+      <ul class="room-list" id="ownedList"></ul>
+      <div class="home-loading" id="ownedLoading">불러오는 중…</div>
+      <div class="home-empty" id="ownedEmpty" style="display:none;">아직 만든 방이 없어요. 위에서 새 방을 만들어보세요.</div>
+    </div>
+
+    <!-- 들어간 방 -->
+    <div class="home-card">
+      <div class="home-card-title">
+        <span>들어간 방</span>
+        <span class="section-title-count" id="joinedCount"></span>
+      </div>
+      <ul class="room-list" id="joinedList"></ul>
+      <div class="home-loading" id="joinedLoading">불러오는 중…</div>
+      <div class="home-empty" id="joinedEmpty" style="display:none;">들어간 방이 없어요. 방 코드로 입장해보세요.</div>
     </div>
   </div>
 </div>
@@ -2178,7 +2703,8 @@
         <span id="peersCount">1</span>
       </span>
       <button class="room-code" id="roomCode" title="방 코드를 누르면 초대 링크를 복사해요">----</button>
-      <button class="btn btn-danger btn-sm" id="btnLeave">나가기</button>
+      <span class="user-chip" id="appUserChip" title="로그인된 아이디" style="display:none;"><b id="appUserName"></b></span>
+      <button class="btn btn-ghost btn-sm" id="btnLeave" title="내 방 목록으로 돌아가기">내 방 목록</button>
     </div>
   </header>
 
@@ -2239,6 +2765,11 @@
           라이브챗
         </button>
         <button class="hl-toggle leader-only" id="btnHighlight" title="형광펜 — 악보 위에 자유 곡선으로 그려요">하이라이트</button>
+        <span class="hl-tools leader-only hidden" id="hlTools">
+          <button class="hl-tool active" data-tool="pen" id="hlToolPen" title="펜 — 자유 곡선">펜</button>
+          <button class="hl-tool" data-tool="solo" id="hlToolSolo" title="솔로 — 싱어 지정 직선 형광">솔로</button>
+        </span>
+        <button class="solo-singer leader-only hidden" id="soloSinger" title="솔로 싱어 선택">싱어 선택</button>
         <span class="pen-colors leader-only hidden" id="penColors">
           <button class="pen-swatch active" data-color="#ffd54a" style="background:#ffd54a;" title="노랑" aria-label="노랑"></button>
           <button class="pen-swatch" data-color="#ff7eb6" style="background:#ff7eb6;" title="핑크" aria-label="핑크"></button>
@@ -2256,9 +2787,15 @@
         </div>
       </div>
       <div class="page-nav" id="pageNav" style="display:none;">
+        <button class="pn-song" id="btnPrevSong" title="이전 곡">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L9 12l9 6V6z"/><path d="M6 6v12"/></svg>
+        </button>
         <button id="btnPrev" title="이전 (←)">◀</button>
         <span class="page-indicator" id="pageIndicator">1 / 1</span>
         <button id="btnNext" title="다음 (→)">▶</button>
+        <button class="pn-song" id="btnNextSong" title="다음 곡">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l9 6-9 6V6z"/><path d="M18 6v12"/></svg>
+        </button>
       </div>
     </div>
 
@@ -2367,15 +2904,61 @@
 <!-- Toast container -->
 <div class="toast-overlay" id="toastOverlay"></div>
 
+<!-- ============ 솔로 싱어 선택 팝오버 (리더) ============ -->
+<div class="solo-pop-scrim hidden" id="soloPopScrim"></div>
+<div class="solo-pop hidden leader-only" id="soloPop" role="dialog" aria-label="솔로 싱어 선택">
+  <div class="solo-pop-label">솔로 싱어를 골라요</div>
+  <div class="solo-singer-list" id="soloSingerList"></div>
+  <div class="solo-pop-free">
+    <input class="input" id="soloFreeName" placeholder="이름 직접 입력" maxlength="16" autocomplete="off" />
+    <button class="btn btn-primary btn-sm" id="soloFreeAdd">선택</button>
+  </div>
+</div>
+
 <!-- ============ 프레젠테이션 모드 (악보 전체화면) ============ -->
 <div class="present-layer hidden" id="presentLayer" role="dialog" aria-label="프레젠테이션">
   <div class="present-stage" id="presentStage"></div>
+  <!-- 펜/솔로 하이라이트 오버레이 (이미지 위에 정확히 겹침 — 리더 그리기) -->
+  <canvas class="present-hl" id="presentHl"></canvas>
   <button class="present-tap left" id="presentPrev" aria-label="이전 페이지"><span class="tap-glyph">‹</span></button>
   <button class="present-tap right" id="presentNext" aria-label="다음 페이지"><span class="tap-glyph">›</span></button>
   <div class="present-page" id="presentPage">1 / 1</div>
   <button class="present-exit" id="presentExit" aria-label="나가기 (Esc)">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
   </button>
+
+  <!-- 리더 전용 떠있는 컨트롤 (작고 반투명, 좌하단, 잠깐 안 움직이면 페이드아웃) -->
+  <div class="present-ctrl leader-only" id="presentCtrl">
+    <button class="pc-btn" id="pcSong-prev" title="이전 곡">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L9 12l9 6V6z"/><path d="M6 6v12"/></svg>
+    </button>
+    <button class="pc-btn" id="pcSong-next" title="다음 곡">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l9 6-9 6V6z"/><path d="M18 6v12"/></svg>
+    </button>
+    <span class="pc-sep"></span>
+    <button class="pc-btn pc-chat" id="pcChat" title="라이브챗 — 큐 보내기">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1.5" fill="currentColor" stroke="none"/></svg>
+    </button>
+    <span class="pc-sep"></span>
+    <button class="pc-btn pc-hl" id="pcHl" title="하이라이트 on/off">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l-4 4v4h4l4-4"/><path d="M13 7l4 4"/><path d="M16 4l4 4-7 7-4-4z"/></svg>
+    </button>
+    <!-- 하이라이트 켜졌을 때만 보이는 도구들 -->
+    <span class="pc-hltools hidden" id="pcHlTools">
+      <button class="pc-tool active" data-tool="pen" id="pcToolPen" title="펜">펜</button>
+      <button class="pc-tool" data-tool="solo" id="pcToolSolo" title="솔로">솔로</button>
+      <button class="pc-btn pc-singer hidden" id="pcSinger" title="솔로 싱어 선택"><span id="pcSoloName">싱어</span></button>
+      <span class="pc-swatches" id="pcSwatches">
+        <button class="pc-swatch active" data-color="#ffd54a" style="background:#ffd54a;" aria-label="노랑"></button>
+        <button class="pc-swatch" data-color="#ff7eb6" style="background:#ff7eb6;" aria-label="핑크"></button>
+        <button class="pc-swatch" data-color="#5ec5ff" style="background:#5ec5ff;" aria-label="파랑"></button>
+      </span>
+      <button class="pc-btn pc-clear" id="pcClear" title="지우기">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/></svg>
+      </button>
+    </span>
+  </div>
+
   <div class="present-cue-wrap hidden" id="presentCueWrap"></div>
 </div>
 
@@ -2431,8 +3014,8 @@
       <div class="sheet-dropzone" id="sheetDrop" tabindex="0">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4"/><path d="M7 9l5-5 5 5"/><path d="M5 21h14a2 2 0 0 0 2-2v-3"/><path d="M3 16v3a2 2 0 0 0 2 2"/></svg>
         <div class="dz-main">여기로 악보를 끌어다 놓으세요</div>
-        <div class="dz-sub">이미지·PDF 드래그 · <b>Cmd/Ctrl+V</b>로 붙여넣기 · 또는 파일 선택</div>
-        <input type="file" id="songFile" accept="image/*,application/pdf" hidden />
+        <div class="dz-sub">이미지·PDF 여러 장 드래그 · <b>Cmd/Ctrl+V</b>로 붙여넣기 · 또는 파일 선택</div>
+        <input type="file" id="songFile" accept="image/*,application/pdf" multiple hidden />
       </div>
 
       <!-- 이미지 주소로 추가 -->
@@ -2455,8 +3038,10 @@
           <div class="sp-name" id="spName"></div>
           <div class="sp-meta" id="spMeta"></div>
         </div>
-        <button type="button" class="icon-btn is-danger" id="spRemove" title="악보 제거">✕</button>
+        <button type="button" class="icon-btn is-danger" id="spRemove" title="악보 전체 제거">✕</button>
       </div>
+      <!-- 여러 장일 때 썸네일 스트립 -->
+      <div class="sheet-thumbs" id="sheetThumbs" style="display:none;"></div>
       <div class="file-name" id="songFileName"></div>
     </div>
 
@@ -2508,19 +3093,41 @@
     realtime: { params: { eventsPerSecond: 40 } },
   });
 
+  // ---------------- Auth (아이디 = email 트릭) ----------------
+  // 아이디를 그대로 email 로컬파트로 써서 "아이디/비번"처럼 보이게 함 (도메인은 항상 숨김)
+  const AUTH_DOMAIN = 'users.neoix.kr';
+  const idToEmail = (id) => `${String(id).trim().toLowerCase()}@${AUTH_DOMAIN}`;
+  // 세션의 email/메타에서 화면용 아이디만 복원
+  const userToUsername = (u) => {
+    if (!u) return '';
+    const meta = u.user_metadata || {};
+    if (meta.username) return meta.username;
+    const email = u.email || '';
+    const at = email.indexOf('@');
+    return at > 0 ? email.slice(0, at) : email;
+  };
+  // 아이디 유효성: 영문/숫자/._- , 공백 금지, 3~20자
+  const ID_RE = /^[a-zA-Z0-9._-]{3,20}$/;
+
+  let currentUser = null;     // supabase auth user
+  let myUserId = null;        // currentUser.id
+  let myUsername = '';        // 화면 표시용 아이디
+  let pendingRoomCode = null; // ?room= 으로 들어왔는데 비로그인이면 로그인 후 입장할 코드
+
   // ---------------- Storage keys ----------------
   const LS_ROLE = (room) => `worship:role:${room}`;
   const LS_NAME = (room) => `worship:name:${room}`;
   const LS_DEVICE = 'worship:deviceId';
   const LS_LAST_ROOM = 'worship:lastRoom';
-  const LS_SONGS = (room) => `worship:songs:${room}`;          // 리더: 곡 목록(악보 포함) 영속
-  const LS_ASSIGN = (room) => `worship:assign:${room}`;        // 리더: 역할 배정 영속
+  const LS_SONGS = (room) => `worship:songs:${room}`;          // 리더: 곡 목록(악보 포함) 영속(로컬 캐시)
+  const LS_ASSIGN = (room) => `worship:assign:${room}`;        // 리더: 역할 배정 영속(로컬 캐시)
 
   // 역할 프리셋 — 리더 팀 관리 드롭다운 옵션으로만 존재 (목록을 미리 만들지 않음)
   const ROLE_PRESETS = ['메인 건반', '서브 건반', '싱어 1', '싱어 2', '싱어 3', '싱어 4', '싱어 5', '드럼', '방송실'];
   const NO_ROLE = '';  // 지정 안 함
 
-  // 이 기기의 영속 식별자 (세션마다 바뀌는 clientID와 달리 재접속해도 유지)
+  // 식별자(presence key / 역할 배정 키 / 큐 발신자). 로그인하면 auth user id 로 교체됨.
+  // (기기 단위가 아니라 사람 단위 — 같은 사람이 다른 기기로 들어와도 동일 식별자)
   function getDeviceId() {
     let id = localStorage.getItem(LS_DEVICE);
     if (!id) {
@@ -2530,11 +3137,13 @@
     }
     return id;
   }
-  const deviceId = getDeviceId();
+  // 로그인 전엔 기기 식별자, 로그인 후엔 user.id 로 재할당 (presence key 등 동일인 식별)
+  let deviceId = getDeviceId();
 
   // ---------------- DOM ----------------
   const $ = (id) => document.getElementById(id);
-  const landing = $('landing');
+  const authScreen = $('authScreen');
+  const homeScreen = $('homeScreen');
   const app = $('app');
   const baseTopnav = document.querySelector('nav.topnav');
   const appTopnav = $('appTopnav');
@@ -2563,6 +3172,10 @@
   const btnHighlight = $('btnHighlight');
   const btnClearHl = $('btnClearHl');
   const penColors = $('penColors');
+  const hlTools = $('hlTools');
+  const soloSinger = $('soloSinger');
+  const soloPop = $('soloPop');
+  const soloPopScrim = $('soloPopScrim');
   const sidebar = $('sidebar');
   const sidebarScrim = $('sidebarScrim');
   // 라이브챗 / 팀 관리
@@ -2587,6 +3200,8 @@
   const presentPageEl = $('presentPage');
   const presentExit = $('presentExit');
   const presentCueWrap = $('presentCueWrap');
+  const presentHl = $('presentHl');
+  const presentCtrl = $('presentCtrl');
   const btnPresent = $('btnPresent');
   const btnMonitorMember = $('btnMonitorMember');
   // 큐 모니터 모드
@@ -2599,7 +3214,9 @@
 
   // ---------------- State ----------------
   let channel = null;         // supabase Realtime 채널 (방마다 1개)
-  let roomId = null;
+  let roomId = null;          // 방 코드 (realtime 채널명/표시용)
+  let roomRecordId = null;    // rooms.id (DB 업데이트용)
+  let roomName = '';          // 방 이름
   let isLeader = false;
   let subscribed = false;     // 채널 SUBSCRIBED 여부
 
@@ -2625,9 +3242,19 @@
   let pdfDocCache = new Map();
   let isFollowing = true;
   let highlightMode = false;
-  let drawing = null;          // 현재 그리는 중인 stroke { points:[{x,y}], color, width }
+  // drawing = 현재 그리는 중인 stroke.
+  //   pen : { id, type:'pen', points:[{x,y}…](0~1), color, width, at }
+  //   solo: { id, type:'solo', y, x1, x2, name, color, width, at }
+  let drawing = null;
   let penColor = '#ffd54a';    // 형광펜 색 (노랑 기본)
   const PEN_WIDTH = 0.018;     // 선 두께 (캔버스 짧은 변 대비 비율) — 형광펜 굵기
+  const SOLO_WIDTH = 0.026;    // 솔로 직선 형광 막대 두께 (조금 더 굵게)
+  let hlTool = 'pen';          // 하이라이트 도구: 'pen' | 'solo'
+  let soloName = '';           // 솔로로 지정한 싱어 이름 (라벨에 표시)
+  // 증분 전송: 그리는 중인 stroke의 "아직 멤버에게 안 보낸" 시작 인덱스 + throttle 타이머
+  let _hlSentCount = 0;        // 이 stroke에서 멤버에게 보낸 점 개수 (pen)
+  let _hlDeltaTimer = null;    // throttle 타이머
+  const HL_DELTA_MS = 50;      // 증분 전송 간격 (~50ms)
   let currentTab = 'conti';
 
   // 프레젠테이션 / 큐 모니터 모드
@@ -2815,61 +3442,504 @@
     return (...args) => { clearTimeout(h); h = setTimeout(() => fn(...args), ms); };
   }
 
+  // ---------------- Screen helpers ----------------
+  function showScreen(which) {
+    // which: 'auth' | 'home' | 'app'
+    authScreen.classList.toggle('hidden', which !== 'auth');
+    homeScreen.classList.toggle('hidden', which !== 'home');
+    if (which === 'app') {
+      baseTopnav.style.display = 'none';
+      appTopnav.style.display = 'flex';
+      app.classList.add('visible');
+    } else {
+      app.classList.remove('visible');
+      appTopnav.style.display = 'none';
+      baseTopnav.style.display = 'flex';
+      renderBaseTopnav(which);
+    }
+  }
+
+  // 공통 topnav 우측: 로그인 상태면 아이디 + 로그아웃, 아니면 비움
+  function renderBaseTopnav(which) {
+    const right = $('topnavRight');
+    if (!right) return;
+    if (currentUser && which === 'home') {
+      right.innerHTML = `
+        <span class="user-chip" title="로그인된 아이디"><b id="navUserName"></b></span>
+        <button class="btn btn-ghost btn-sm" id="navLogout">로그아웃</button>`;
+      $('navUserName').textContent = myUsername || '나';
+      $('navLogout').onclick = doLogout;
+    } else {
+      right.innerHTML = '';
+    }
+  }
+
   // ---------------- Init flow ----------------
-  function bootstrap() {
+  async function bootstrap() {
+    // ?room= 기억 (로그인 후 자동 입장용)
     const params = new URLSearchParams(location.search);
     const urlRoom = (params.get('room') || '').toUpperCase().trim();
-    if (urlRoom && /^[A-Z0-9]{4,12}$/.test(urlRoom)) {
-      joinRoom(urlRoom);
+    if (urlRoom && /^[A-Z0-9]{4,12}$/.test(urlRoom)) pendingRoomCode = urlRoom;
+
+    setupAuthScreen();
+    setupHomeScreen();
+
+    // 세션 확인 (DB/네트워크 문제가 있어도 로그인 화면은 떠야 함)
+    let session = null;
+    try {
+      const { data } = await supabase.auth.getSession();
+      session = data?.session || null;
+    } catch (e) {
+      console.warn('세션 확인 실패 — 로그인 화면으로', e);
+    }
+
+    // auth 상태 변화 구독 (로그인/로그아웃 반영)
+    // 첫 이벤트(INITIAL_SESSION)는 아래 명시 호출과 중복이라 건너뜀
+    let sawInitial = false;
+    supabase.auth.onAuthStateChange((event, sess) => {
+      if (!sawInitial) { sawInitial = true; if (event === 'INITIAL_SESSION') return; }
+      applySession(sess);
+    });
+
+    applySession(session, true);
+  }
+
+  let enteringRoom = false;  // 자동입장 중복 방지
+
+  // 세션을 받아 화면 분기. firstLoad면 자동입장(pendingRoom)까지 처리.
+  function applySession(session, firstLoad = false) {
+    const user = session?.user || null;
+    currentUser = user;
+    if (user) {
+      myUserId = user.id;
+      deviceId = user.id;            // 식별자(presence key/배정)를 사람 단위로 고정
+      myUsername = userToUsername(user);
+    } else {
+      myUserId = null;
+      myUsername = '';
+    }
+
+    // 이미 방 안(app 표시 중)이거나 입장 중이면 화면 전환하지 않음
+    const inRoom = app.classList.contains('visible');
+
+    if (!user) {
+      if (inRoom) return;            // 방 떠나는 흐름에서 별도 처리
+      enteringRoom = false;
+      showScreen('auth');
       return;
     }
-    landing.classList.remove('hidden');
-    app.classList.remove('visible');
-    $('btnCreateRoom').onclick = createRoom;
-    $('btnJoinRoom').onclick = () => {
-      const code = $('joinCode').value.toUpperCase().trim();
-      if (!/^[A-Z0-9]{4,12}$/.test(code)) {
-        miniToast('방 코드를 정확히 입력해주세요');
-        return;
+
+    // 로그인됨 → 홈 (또는 대기 중인 방으로 자동 입장)
+    if (inRoom || enteringRoom) return;
+    if (pendingRoomCode) {
+      const code = pendingRoomCode;
+      pendingRoomCode = null;
+      enteringRoom = true;
+      enterRoomByCode(code);
+      return;
+    }
+    showScreen('home');
+    loadMyRooms();
+  }
+
+  // ---------------- Auth 화면 ----------------
+  let authMode = 'login'; // 'login' | 'signup'
+
+  function setupAuthScreen() {
+    const form = $('authForm');
+    const toggleBtn = $('authToggleBtn');
+    if (form && !form.dataset.wired) {
+      form.dataset.wired = '1';
+      form.addEventListener('submit', (e) => { e.preventDefault(); submitAuth(); });
+      $('authId').addEventListener('input', () => hideAuthError());
+      $('authPw').addEventListener('input', () => hideAuthError());
+    }
+    if (toggleBtn && !toggleBtn.dataset.wired) {
+      toggleBtn.dataset.wired = '1';
+      toggleBtn.onclick = () => setAuthMode(authMode === 'login' ? 'signup' : 'login');
+    }
+    setAuthMode('login');
+  }
+
+  function setAuthMode(mode) {
+    authMode = mode;
+    const isLogin = mode === 'login';
+    $('authTitle').textContent = isLogin ? '로그인' : '회원가입';
+    $('authSub').textContent = isLogin
+      ? '아이디와 비밀번호로 찬양팀 방에 접속해요.'
+      : '아이디와 비밀번호로 새 계정을 만들어요.';
+    $('authSubmit').textContent = isLogin ? '로그인' : '회원가입';
+    $('authToggle').innerHTML = isLogin
+      ? '계정이 없으신가요? <button type="button" id="authToggleBtn">회원가입</button>'
+      : '이미 계정이 있으신가요? <button type="button" id="authToggleBtn">로그인</button>';
+    $('authPw').setAttribute('autocomplete', isLogin ? 'current-password' : 'new-password');
+    // 토글 버튼 다시 연결 (innerHTML 교체됨)
+    const tb = $('authToggleBtn');
+    if (tb) tb.onclick = () => setAuthMode(authMode === 'login' ? 'signup' : 'login');
+    hideAuthError();
+  }
+
+  function showAuthError(msg) {
+    const el = $('authError');
+    if (!el) return;
+    el.textContent = msg;
+    el.classList.remove('hidden');
+  }
+  function hideAuthError() { $('authError')?.classList.add('hidden'); }
+
+  async function submitAuth() {
+    const id = ($('authId').value || '').trim();
+    const pw = $('authPw').value || '';
+    if (!ID_RE.test(id)) {
+      showAuthError('아이디는 영문/숫자/._- 3~20자로, 공백 없이 입력해요.');
+      $('authId').focus();
+      return;
+    }
+    if (pw.length < 6) {
+      showAuthError('비밀번호는 6자 이상으로 입력해요.');
+      $('authPw').focus();
+      return;
+    }
+    const email = idToEmail(id);
+    const btn = $('authSubmit');
+    btn.disabled = true;
+    const restore = (t) => { btn.disabled = false; btn.textContent = t; };
+    try {
+      if (authMode === 'signup') {
+        btn.textContent = '가입 중…';
+        const { data, error } = await supabase.auth.signUp({
+          email, password: pw,
+          options: { data: { username: id } },
+        });
+        if (error) { showAuthError(prettyAuthError(error, 'signup')); restore('회원가입'); return; }
+        if (!data?.session) {
+          // 이메일 확인이 켜져 있는 경우 (가정상 off지만 방어적으로)
+          showAuthError('가입은 됐지만 자동 로그인이 안 됐어요. 로그인 탭에서 로그인해주세요.');
+          restore('회원가입');
+          setAuthMode('login');
+          return;
+        }
+        // 세션 생기면 onAuthStateChange 가 홈으로 보냄
+      } else {
+        btn.textContent = '로그인 중…';
+        const { error } = await supabase.auth.signInWithPassword({ email, password: pw });
+        if (error) { showAuthError(prettyAuthError(error, 'login')); restore('로그인'); return; }
       }
-      joinRoom(code);
-    };
-    $('joinCode').addEventListener('input', (e) => {
-      e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
-    });
-    $('joinCode').addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') $('btnJoinRoom').click();
+    } catch (e) {
+      console.error('auth 실패', e);
+      showAuthError('네트워크 문제로 처리하지 못했어요. 잠시 후 다시 시도해주세요.');
+      restore(authMode === 'signup' ? '회원가입' : '로그인');
+    }
+  }
+
+  function prettyAuthError(error, mode) {
+    const m = (error?.message || '').toLowerCase();
+    if (m.includes('already registered') || m.includes('already exists') || m.includes('user already'))
+      return '이미 있는 아이디예요. 로그인하거나 다른 아이디를 써주세요.';
+    if (m.includes('invalid login') || m.includes('invalid credentials'))
+      return '아이디 또는 비밀번호가 올바르지 않아요.';
+    if (m.includes('password')) return '비밀번호를 다시 확인해주세요. (6자 이상)';
+    if (m.includes('rate') || m.includes('too many')) return '잠시 후 다시 시도해주세요.';
+    return mode === 'signup' ? '회원가입에 실패했어요. 잠시 후 다시 시도해주세요.'
+                             : '로그인에 실패했어요. 잠시 후 다시 시도해주세요.';
+  }
+
+  async function doLogout() {
+    try { await supabase.auth.signOut(); } catch (e) { console.warn('로그아웃 실패', e); }
+    currentUser = null; myUserId = null; myUsername = '';
+    // 방 안이면 채널 정리하고 home 대신 auth 로
+    try { channel?.untrack(); } catch (_) {}
+    try { if (channel) supabase.removeChannel(channel); } catch (_) {}
+    channel = null; roomId = null; subscribed = false;
+    const url = new URL(location.href);
+    url.searchParams.delete('room');
+    history.replaceState({}, '', url.toString());
+    showScreen('auth');
+    setAuthMode('login');
+  }
+
+  // ---------------- Home 화면 ----------------
+  function setupHomeScreen() {
+    const codeInput = $('homeJoinCode');
+    if (codeInput && !codeInput.dataset.wired) {
+      codeInput.dataset.wired = '1';
+      codeInput.addEventListener('input', (e) => {
+        e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+      });
+      codeInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') $('btnHomeJoin').click(); });
+    }
+    const nameInput = $('homeRoomName');
+    if (nameInput && !nameInput.dataset.wired) {
+      nameInput.dataset.wired = '1';
+      nameInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') $('btnHomeCreate').click(); });
+    }
+    if (!$('btnHomeCreate').dataset.wired) {
+      $('btnHomeCreate').dataset.wired = '1';
+      $('btnHomeCreate').onclick = createRoom;
+    }
+    if (!$('btnHomeJoin').dataset.wired) {
+      $('btnHomeJoin').dataset.wired = '1';
+      $('btnHomeJoin').onclick = () => {
+        const code = ($('homeJoinCode').value || '').toUpperCase().trim();
+        if (!/^[A-Z0-9]{4,12}$/.test(code)) { miniToast('방 코드를 정확히 입력해주세요'); return; }
+        enterRoomByCode(code);
+      };
+    }
+  }
+
+  // 내 방 목록 로드 (소유 + 멤버십). 테이블 없거나 RLS면 빈 목록 + 콘솔 경고.
+  async function loadMyRooms() {
+    if (!myUserId) return;
+    renderRoomList('owned', null);   // 로딩 표시
+    renderRoomList('joined', null);
+    // 내가 만든 방
+    let owned = [];
+    try {
+      const { data, error } = await supabase
+        .from('rooms').select('id, code, name, owner_id')
+        .eq('owner_id', myUserId)
+        .order('created_at', { ascending: false });
+      if (error) throw error;
+      owned = data || [];
+    } catch (e) {
+      console.warn('내가 만든 방 로드 실패 (테이블/RLS 확인)', e);
+    }
+    renderRoomList('owned', owned);
+
+    // 들어간 방 (멤버십 → rooms, 내가 owner 아닌 것)
+    let joined = [];
+    try {
+      const { data, error } = await supabase
+        .from('room_members')
+        .select('room_id, rooms(id, code, name, owner_id)')
+        .eq('user_id', myUserId);
+      if (error) throw error;
+      joined = (data || [])
+        .map((r) => r.rooms)
+        .filter((rm) => rm && rm.owner_id !== myUserId);
+      // 중복 제거 (room_id 기준)
+      const seen = new Set();
+      joined = joined.filter((rm) => { if (seen.has(rm.id)) return false; seen.add(rm.id); return true; });
+    } catch (e) {
+      console.warn('들어간 방 로드 실패 (테이블/RLS 확인)', e);
+    }
+    renderRoomList('joined', joined);
+  }
+
+  // kind: 'owned' | 'joined' ; rooms: null=로딩, []=빈, [..]=목록
+  function renderRoomList(kind, rooms) {
+    const listEl = $(kind + 'List');
+    const loadEl = $(kind + 'Loading');
+    const emptyEl = $(kind + 'Empty');
+    const countEl = $(kind + 'Count');
+    if (!listEl) return;
+    if (rooms === null) {
+      listEl.innerHTML = '';
+      loadEl.style.display = '';
+      emptyEl.style.display = 'none';
+      if (countEl) countEl.textContent = '';
+      return;
+    }
+    loadEl.style.display = 'none';
+    if (countEl) countEl.textContent = rooms.length ? `${rooms.length}개` : '';
+    if (!rooms.length) {
+      listEl.innerHTML = '';
+      emptyEl.style.display = '';
+      return;
+    }
+    emptyEl.style.display = 'none';
+    const isOwned = kind === 'owned';
+    listEl.innerHTML = rooms.map((r) => `
+      <li class="room-row" data-code="${escapeHtml(r.code)}" data-id="${escapeHtml(r.id)}">
+        <div class="room-row-info" data-act="enter">
+          <div class="room-row-name">${escapeHtml(r.name || '(이름 없는 방)')}</div>
+          <div class="room-row-code">#${escapeHtml(r.code)}</div>
+        </div>
+        <div class="room-row-actions">
+          <button class="btn btn-ghost btn-sm" data-act="enter">입장</button>
+          ${isOwned
+            ? `<button class="btn btn-danger btn-sm" data-act="del">삭제</button>`
+            : `<button class="btn btn-danger btn-sm" data-act="leave">나가기</button>`}
+        </div>
+      </li>`).join('');
+
+    listEl.querySelectorAll('.room-row').forEach((row) => {
+      const code = row.dataset.code;
+      const id = row.dataset.id;
+      row.querySelectorAll('[data-act="enter"]').forEach((el) =>
+        el.addEventListener('click', () => enterRoomByCode(code)));
+      const del = row.querySelector('[data-act="del"]');
+      if (del) del.addEventListener('click', (e) => { e.stopPropagation(); deleteRoom(id, code); });
+      const leave = row.querySelector('[data-act="leave"]');
+      if (leave) leave.addEventListener('click', (e) => { e.stopPropagation(); leaveRoomMembership(id, code); });
     });
   }
 
-  function createRoom() {
-    const code = genCode();
-    localStorage.setItem(LS_ROLE(code), 'leader');
-    joinRoom(code);
+  async function deleteRoom(id, code) {
+    if (!confirm('이 방을 삭제할까요? 콘티와 멤버 정보가 사라져요.')) return;
+    try {
+      const { error } = await supabase.from('rooms').delete().eq('id', id);
+      if (error) throw error;
+      miniToast('방을 삭제했어요');
+    } catch (e) {
+      console.warn('방 삭제 실패', e);
+      miniToast('방을 삭제하지 못했어요');
+    }
+    loadMyRooms();
   }
 
-  function joinRoom(code) {
-    roomId = code;
-    localStorage.setItem(LS_LAST_ROOM, code);
-    const savedRole = localStorage.getItem(LS_ROLE(code));
-    isLeader = savedRole === 'leader';
+  async function leaveRoomMembership(id, code) {
+    if (!confirm('이 방에서 나갈까요? 다시 코드로 들어올 수 있어요.')) return;
+    try {
+      const { error } = await supabase.from('room_members')
+        .delete().eq('room_id', id).eq('user_id', myUserId);
+      if (error) throw error;
+      miniToast('방에서 나왔어요');
+    } catch (e) {
+      console.warn('멤버십 삭제 실패', e);
+      miniToast('나가기에 실패했어요');
+    }
+    loadMyRooms();
+  }
+
+  // ---------------- 방 만들기 / 코드 입장 (DB) ----------------
+  async function createRoom() {
+    if (!myUserId) { showScreen('auth'); return; }
+    const name = ($('homeRoomName').value || '').trim() || '새 찬양팀 방';
+    const btn = $('btnHomeCreate');
+    btn.disabled = true; btn.textContent = '만드는 중…';
+    let created = null;
+    // code 충돌 대비 몇 번 재시도
+    for (let attempt = 0; attempt < 4 && !created; attempt++) {
+      const code = genCode();
+      try {
+        const { data, error } = await supabase.from('rooms')
+          .insert({ code, name, owner_id: myUserId, conti: [] })
+          .select('id, code, name, owner_id')
+          .single();
+        if (error) {
+          // 유니크 충돌이면 코드 바꿔 재시도
+          if ((error.code === '23505') || /duplicate|unique/i.test(error.message || '')) continue;
+          throw error;
+        }
+        created = data;
+      } catch (e) {
+        console.warn('방 생성 실패', e);
+        break;
+      }
+    }
+    btn.disabled = false; btn.textContent = '만들기';
+    if (!created) {
+      miniToast('방을 만들지 못했어요 (DB 설정을 확인해주세요)');
+      return;
+    }
+    $('homeRoomName').value = '';
+    enterRoom(created);
+  }
+
+  // 자동입장이 실패하면 홈으로 폴백 (사용자가 갇히지 않게)
+  function bailToHomeIfAuto() {
+    if (enteringRoom) { enteringRoom = false; showScreen('home'); loadMyRooms(); }
+  }
+
+  // 코드로 방을 찾아 입장 (없으면 에러). owner 면 리더, 아니면 멤버십 upsert.
+  async function enterRoomByCode(code) {
+    if (!myUserId) { pendingRoomCode = code; enteringRoom = false; showScreen('auth'); return; }
+    const norm = (code || '').toUpperCase().trim();
+    let room = null;
+    try {
+      const { data, error } = await supabase.from('rooms')
+        .select('id, code, name, owner_id, conti')
+        .eq('code', norm).maybeSingle();
+      if (error) throw error;
+      room = data;
+    } catch (e) {
+      console.warn('방 조회 실패', e);
+      miniToast('방을 찾지 못했어요 (DB 설정을 확인해주세요)');
+      bailToHomeIfAuto();
+      return;
+    }
+    if (!room) { miniToast('그 코드의 방이 없어요'); bailToHomeIfAuto(); return; }
+    enterRoom(room);
+  }
+
+  // 실제 방 입장 — role/콘티/멤버십 세팅 후 realtime 시작
+  async function enterRoom(room) {
+    roomId = room.code;
+    roomRecordId = room.id;
+    roomName = room.name || '';
+    isLeader = room.owner_id === myUserId;
+    localStorage.setItem(LS_LAST_ROOM, room.code);
 
     const url = new URL(location.href);
-    url.searchParams.set('room', code);
+    url.searchParams.set('room', room.code);
     history.replaceState({}, '', url.toString());
 
-    // 멤버가 이전에 입력한 이름 복원
-    myName = localStorage.getItem(LS_NAME(code)) || '';
+    // 표시 이름 = 아이디
+    myName = myUsername || '';
+    myRole = '';
 
-    // 리더면 영속해둔 곡 목록/역할 배정 복원 (멤버는 입장 후 리더에게서 받음)
-    if (isLeader) {
-      songsData = loadLeaderSongs(code);
-      assignmentsData = loadLeaderAssignments(code);
-      myRole = (assignmentsData[deviceId] && assignmentsData[deviceId].role) || '';
+    // 멤버면 멤버십 기록 (owner 는 굳이 안 넣어도 됨 — 소유로 잡힘)
+    if (!isLeader) {
+      try {
+        const { error } = await supabase.from('room_members').upsert({
+          room_id: room.id, user_id: myUserId,
+          display_name: myName, role: '', last_seen: new Date().toISOString(),
+        }, { onConflict: 'room_id,user_id' });
+        if (error) throw error;
+      } catch (e) {
+        console.warn('멤버십 기록 실패 (RLS/테이블 확인)', e);
+      }
     }
 
-    setupRealtime(code);
+    // 콘티 로드: rooms.conti(jsonb) → songsData (리더 미접속이어도 멤버가 콘티를 봄)
+    songsData = sanitizeConti(room.conti);
+
+    // 내 역할 로드 (room_members.role) — 입장 시 1회
+    try {
+      const { data, error } = await supabase.from('room_members')
+        .select('role').eq('room_id', room.id).eq('user_id', myUserId).maybeSingle();
+      if (!error && data && data.role) {
+        myRole = data.role;
+        assignmentsData[myUserId] = { role: data.role, name: myName };
+      }
+    } catch (e) { /* 무시 */ }
+
+    // 로컬 캐시(이전 세션 배정) 복원 — 리더면 자기 배정/곡 백업도 병합
+    if (isLeader) {
+      const cachedAssign = loadLeaderAssignments(room.code);
+      assignmentsData = Object.assign({}, cachedAssign, assignmentsData);
+      myRole = (assignmentsData[myUserId] && assignmentsData[myUserId].role) || myRole;
+      // 콘티가 DB에 비어있고 로컬 캐시가 있으면 캐시로 복원 (마이그레이션/오프라인 보호)
+      if ((!songsData || !songsData.length)) {
+        const cached = loadLeaderSongs(room.code);
+        if (cached && cached.length) { songsData = cached; persistContiToDB(); }
+      }
+    }
+
+    setupRealtime(room.code);
     renderApp();
+  }
+
+  // rooms.conti(jsonb) 를 안전한 곡 배열로 정규화
+  function sanitizeConti(conti) {
+    let arr = conti;
+    if (typeof arr === 'string') { try { arr = JSON.parse(arr); } catch (_) { arr = []; } }
+    if (!Array.isArray(arr)) return [];
+    return arr.filter((s) => s && s.id).map((s) => ({
+      id: s.id,
+      title: s.title || '',
+      special: !!s.special,
+      part: s.part || '',
+      partCustom: s.partCustom || '',
+      youtube: s.youtube || '',
+      note: s.note || '',
+      sheetKind: s.sheetKind || '',
+      fileName: s.fileName || '',
+      remoteUrl: s.remoteUrl || '',
+      pages: Array.isArray(s.pages) ? s.pages : [],
+      sheetCount: (Array.isArray(s.pages) ? s.pages.length : (s.sheetCount || 0)),
+    }));
   }
 
   // ---------------- Realtime 채널 ----------------
@@ -2888,6 +3958,7 @@
     channel.on('broadcast', { event: 'sheet' }, ({ payload }) => onSheet(payload));
     channel.on('broadcast', { event: 'assignments' }, ({ payload }) => onAssignments(payload));
     channel.on('broadcast', { event: 'highlight' }, ({ payload }) => onHighlight(payload));
+    channel.on('broadcast', { event: 'highlight-delta' }, ({ payload }) => onHighlightDelta(payload));
     channel.on('broadcast', { event: 'sync-request' }, ({ payload }) => onSyncRequest(payload));
 
     // ----- Presence (접속자/이름/역할) -----
@@ -2985,10 +4056,51 @@
     if (!isLeader || !roomId) return;
     try { localStorage.setItem(LS_SONGS(roomId), JSON.stringify(songsData)); }
     catch (e) { console.warn('곡 저장 실패(용량 초과 가능)', e); }
+    // DB(rooms.conti) 영속도 함께 (디바운스)
+    persistContiToDBDebounced();
   }
   function persistLeaderAssignments() {
     if (!isLeader || !roomId) return;
     try { localStorage.setItem(LS_ASSIGN(roomId), JSON.stringify(assignmentsData)); } catch (e) {}
+  }
+
+  // ---------------- 콘티 DB 영속 (rooms.conti jsonb) ----------------
+  // 악보 dataURL 까지 conti 에 포함됨 → 너무 크면 경고만. 리더만 기록.
+  const CONTI_WARN_BYTES = 3 * 1024 * 1024; // jsonb 한 행 경고 임계
+  async function persistContiToDB() {
+    if (!isLeader || !roomRecordId) return;
+    let payload = songsData;
+    try {
+      const json = JSON.stringify(songsData);
+      if (json.length > CONTI_WARN_BYTES) {
+        console.warn(`콘티(악보 포함) 용량이 큽니다(${Math.round(json.length/1024)}KB). 저장은 시도하지만 느릴 수 있어요.`);
+      }
+    } catch (_) {}
+    try {
+      const { error } = await supabase.from('rooms')
+        .update({ conti: payload, updated_at: new Date().toISOString() })
+        .eq('id', roomRecordId);
+      if (error) throw error;
+    } catch (e) {
+      console.warn('콘티 DB 저장 실패 (RLS/용량/테이블 확인)', e);
+    }
+  }
+  const persistContiToDBDebounced = debounce(() => { persistContiToDB(); }, 800);
+
+  // 리더가 멤버 역할을 DB(room_members.role)에도 기록
+  async function persistMemberRole(uid, role) {
+    if (!isLeader || !roomRecordId || !uid) return;
+    try {
+      const person = Object.values(presenceData).find((p) => p.deviceId === uid);
+      const { error } = await supabase.from('room_members').upsert({
+        room_id: roomRecordId, user_id: uid,
+        display_name: (person && person.name) || '', role: role || '',
+        last_seen: new Date().toISOString(),
+      }, { onConflict: 'room_id,user_id' });
+      if (error) throw error;
+    } catch (e) {
+      console.warn('역할 DB 저장 실패 (RLS/테이블 확인)', e);
+    }
   }
 
   // ---------------- 리더 → 멤버 상태 송신 ----------------
@@ -3150,8 +4262,57 @@
   function onHighlight(payload) {
     if (isLeader || !payload || !payload.songId) return;
     const key = `${payload.songId}|${payload.page}`;
-    highlightsData[key] = Array.isArray(payload.strokes) ? payload.strokes : [];
+    // 권위 스냅샷으로 교체. 단, 정규화해서 type 기본값 보정.
+    highlightsData[key] = (Array.isArray(payload.strokes) ? payload.strokes : []).map(normStroke);
     if (activeSongId === payload.songId && activePage === payload.page) renderHighlights();
+  }
+
+  // 증분 수신: 그리는 중인 stroke를 id로 찾아 점 append (pen) / 막대 갱신 (solo).
+  // 권위 스냅샷보다 먼저 도착해도 됨 — 없으면 새로 만들어 자라게 함.
+  function onHighlightDelta(payload) {
+    if (isLeader || !payload || !payload.songId || !payload.id) return;
+    const key = `${payload.songId}|${payload.page}`;
+    if (!highlightsData[key]) highlightsData[key] = [];
+    const arr = highlightsData[key];
+    let stroke = arr.find((s) => s && s.id === payload.id);
+    if (payload.type === 'solo') {
+      if (!stroke) {
+        stroke = { id: payload.id, type: 'solo', color: payload.color, width: payload.width, at: payload.at, name: payload.name };
+        arr.push(stroke);
+      }
+      stroke.y = payload.y; stroke.x1 = payload.x1; stroke.x2 = payload.x2;
+      if (payload.name != null) stroke.name = payload.name;
+      if (payload.color) stroke.color = payload.color;
+    } else {
+      const incoming = Array.isArray(payload.points) ? payload.points : [];
+      if (!stroke) {
+        stroke = { id: payload.id, type: 'pen', points: [], color: payload.color, width: payload.width, at: payload.at };
+        arr.push(stroke);
+      }
+      if (!stroke.points) stroke.points = [];
+      // start 인덱스 기준으로 이어붙임 (중복/유실 보정)
+      const start = typeof payload.start === 'number' ? payload.start : stroke.points.length;
+      if (start <= stroke.points.length) {
+        stroke.points.length = start;             // 재전송분이면 잘라내고
+        for (const p of incoming) stroke.points.push(p);
+      } else {
+        // 앞부분이 빠졌으면 일단 뒤에 붙임 (최종 스냅샷이 곧 바로잡음)
+        for (const p of incoming) stroke.points.push(p);
+      }
+    }
+    if (activeSongId === payload.songId && activePage === payload.page) {
+      if (!_hlDeltaRaf) _hlDeltaRaf = requestAnimationFrame(() => { _hlDeltaRaf = 0; renderHighlights(); });
+    }
+  }
+  let _hlDeltaRaf = 0;
+
+  // stroke 정규화 — 옛 데이터(타입 없음)는 pen 취급, id 보강
+  function normStroke(s) {
+    if (!s || typeof s !== 'object') return s;
+    if (s.type === 'solo') {
+      return { id: s.id || genStrokeId(), type: 'solo', y: s.y, x1: s.x1, x2: s.x2, name: s.name || '', color: s.color, width: s.width, at: s.at };
+    }
+    return { id: s.id || genStrokeId(), type: 'pen', points: Array.isArray(s.points) ? s.points : [], color: s.color, width: s.width, at: s.at };
   }
 
   // 리더: 새 멤버가 들어오면 현재 상태 전체 재송신
@@ -3165,15 +4326,19 @@
 
   // ---------------- Render: app shell ----------------
   function renderApp() {
-    landing.classList.add('hidden');
-    app.classList.add('visible');
-    // base topnav 숨기고 app topnav 보이기
-    baseTopnav.style.display = 'none';
-    appTopnav.style.display = 'flex';
+    enteringRoom = false;
+    showScreen('app');
 
-    roomCodeEl.textContent = `방 #${roomId}`;
+    roomCodeEl.textContent = roomName ? `${roomName} · #${roomId}` : `방 #${roomId}`;
     roleBadge.textContent = isLeader ? '리더' : '팀원';
     roleBadge.className = 'role-badge' + (isLeader ? ' is-leader' : '');
+
+    // 헤더에 로그인된 아이디 표시
+    const chip = $('appUserChip');
+    if (chip) {
+      $('appUserName').textContent = myUsername || '나';
+      chip.style.display = myUsername ? '' : 'none';
+    }
 
     document.querySelectorAll('.leader-only').forEach((el) => {
       el.style.display = isLeader ? '' : 'none';
@@ -3185,15 +4350,53 @@
     // copy invite link
     roomCodeEl.onclick = copyInviteLink;
 
-    $('btnLeave').onclick = () => {
-      if (!confirm('방에서 나갈까요? 내용은 그대로 유지돼요.')) return;
-      try { channel?.untrack(); } catch (_) {}
-      try { if (channel) supabase.removeChannel(channel); } catch (_) {}
-      channel = null;
-      const url = new URL(location.href);
-      url.searchParams.delete('room');
-      location.href = url.toString();
-    };
+    // "내 방 목록" — 방을 떠나 홈으로 (세션 유지, 풀 리로드 없음)
+    $('btnLeave').onclick = () => leaveToHome();
+
+    // 전역/일회성 리스너는 한 번만 연결 (방 재입장 시 중복 방지)
+    wireAppOnce();
+
+    renderSongList();
+    updatePeers();
+
+    // 라이브챗 / 역할 초기 렌더
+    renderTargetChips();
+    renderRoster();
+    applyMyAssignment();   // 저장된 배정이 있으면 헤더에 반영
+    syncMyRoleBadge();
+    updateSoloSingerLabel();   // 솔로 싱어 버튼 라벨 초기화
+
+    // 멤버 이름 입력 값 동기화
+    if (myNameInput) myNameInput.value = myName;
+
+    // restore viewerState (리더: 영속 곡이 있으면 첫 곡 자동 표시 안 함 — 기존처럼 선택 대기)
+    const sid0 = viewerData.songId;
+    const pg0 = viewerData.page || 0;
+    if (sid0 && findSong(sid0)) {
+      activeSongId = sid0;
+      activePage = pg0;
+      renderCanvas();
+    } else {
+      activeSongId = null;
+      activePage = 0;
+      renderCanvas();
+    }
+
+    // 페이지 넘김 안내 (팀원)
+    if (!isLeader) {
+      setTimeout(() => miniToast('리더만 페이지를 넘길 수 있어요'), 600);
+    }
+  }
+
+  let appWired = false;
+  let appSortablesInited = false;
+  function wireAppOnce() {
+    if (appWired) {
+      // 재입장 시: 리더면 Sortable 보장
+      if (isLeader && !appSortablesInited) initSortables();
+      return;
+    }
+    appWired = true;
 
     // tabs
     document.querySelectorAll('.sidebar-tab').forEach((tab) => {
@@ -3223,6 +4426,11 @@
     // page nav
     btnPrev.onclick = () => goPage(-1);
     btnNext.onclick = () => goPage(+1);
+    // 곡 단위 이동 (이전 곡 / 다음 곡)
+    $('btnPrevSong').onclick = () => goSong(-1);
+    $('btnNextSong').onclick = () => goSong(+1);
+    // 악보 영역 좌우 스와이프 → 페이지/곡 넘김 (하이라이트 OFF일 때만)
+    attachSwipe(canvasWrap, canSwipeViewer);
 
     // keyboard
     window.addEventListener('keydown', (e) => {
@@ -3281,6 +4489,9 @@
       setTimeout(() => {
         sheetScrim.classList.add('hidden');
         livechatSheet.classList.add('hidden');
+        // 프레젠 위로 띄웠던 z-index 승격 해제 (없으면 무해)
+        sheetScrim.classList.remove('over-present');
+        livechatSheet.classList.remove('over-present');
       }, 280);
     };
     btnLivechat.onclick = openSheet;
@@ -3292,7 +4503,11 @@
     presentExit.onclick = exitPresentMode;
     presentPrev.onclick = () => { goPage(-1); bumpPresentUi(); };
     presentNext.onclick = () => { goPage(+1); bumpPresentUi(); };
-    // 마우스 움직이거나 탭하면 UI 잠깐 표시
+    // 리더 전용 떠있는 컨트롤 연결
+    wirePresentControls();
+    // 프레젠 무대 스와이프 (하이라이트 OFF일 때만 — 그리기 우선). 경계서 곡 이동.
+    attachSwipe(presentLayer, () => presentMode && !highlightMode && !!activeSongId);
+    // 마우스 움직이거나 탭하면 UI 잠깐 표시 (+ 오버레이 위치 보정)
     presentLayer.addEventListener('mousemove', bumpPresentUi);
     presentLayer.addEventListener('touchstart', bumpPresentUi, { passive: true });
     // 화면 크기 변경 시 무대 재렌더 (PDF는 캔버스라 리사이즈 필요)
@@ -3300,6 +4515,7 @@
       if (presentMode) renderPresentStage();
       // 악보 표시 크기가 바뀌면 형광펜 오버레이도 다시 그림 (비율 좌표라 위치 유지)
       if (canvas.querySelector('#hlOverlay')) renderHighlights();
+      positionSoloPop();
     }, 200));
 
     // ---- 큐 모니터 모드 ("라이브챗만 보기") ----
@@ -3354,14 +4570,8 @@
       }
     };
 
-    // highlight (형광펜 모드 on/off + 색 선택기 표시)
-    btnHighlight.onclick = () => {
-      highlightMode = !highlightMode;
-      btnHighlight.classList.toggle('active', highlightMode);
-      if (penColors) penColors.classList.toggle('hidden', !highlightMode);
-      const overlay = canvas.querySelector('#hlOverlay');
-      if (overlay) overlay.classList.toggle('enabled', highlightMode);
-    };
+    // highlight (형광펜 모드 on/off + 도구/색/싱어 선택기 표시)
+    btnHighlight.onclick = () => setHighlightMode(!highlightMode);
     // 펜 색 선택
     if (penColors) {
       penColors.querySelectorAll('.pen-swatch').forEach((sw) => {
@@ -3372,53 +4582,71 @@
         };
       });
     }
+    // 도구 토글 (펜 / 솔로)
+    if (hlTools) {
+      hlTools.querySelectorAll('.hl-tool').forEach((b) => {
+        b.onclick = () => setHlTool(b.dataset.tool);
+      });
+    }
+    // 솔로 싱어 선택 팝오버
+    if (soloSinger) soloSinger.onclick = () => openSoloPicker(soloSinger);
+    if (soloPopScrim) soloPopScrim.onclick = closeSoloPicker;
+    const soloFreeAdd = $('soloFreeAdd');
+    const soloFreeName = $('soloFreeName');
+    if (soloFreeAdd) soloFreeAdd.onclick = () => { pickSolo(($('soloFreeName').value || '').trim()); };
+    if (soloFreeName) soloFreeName.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') { e.preventDefault(); pickSolo(($('soloFreeName').value || '').trim()); }
+    });
     btnClearHl.onclick = () => clearHighlights();
 
     // modal
     setupModal();
 
-    // sortable
-    if (isLeader) {
-      new Sortable(songListEl, {
-        animation: 180,
-        handle: '.song-handle',
-        ghostClass: 'sortable-ghost',
-        dragClass: 'sortable-drag',
-        onEnd: (evt) => reorderSongs(evt.oldIndex, evt.newIndex, false),
-      });
-      new Sortable(specialListEl, {
-        animation: 180,
-        handle: '.song-handle',
-        ghostClass: 'sortable-ghost',
-        dragClass: 'sortable-drag',
-        onEnd: (evt) => reorderSongs(evt.oldIndex, evt.newIndex, true),
-      });
-    }
+    // sortable (리더만)
+    if (isLeader) initSortables();
+  }
 
-    renderSongList();
-    updatePeers();
+  // Sortable 초기화 (한 번만)
+  function initSortables() {
+    if (appSortablesInited) return;
+    appSortablesInited = true;
+    new Sortable(songListEl, {
+      animation: 180,
+      handle: '.song-handle',
+      ghostClass: 'sortable-ghost',
+      dragClass: 'sortable-drag',
+      onEnd: (evt) => reorderSongs(evt.oldIndex, evt.newIndex, false),
+    });
+    new Sortable(specialListEl, {
+      animation: 180,
+      handle: '.song-handle',
+      ghostClass: 'sortable-ghost',
+      dragClass: 'sortable-drag',
+      onEnd: (evt) => reorderSongs(evt.oldIndex, evt.newIndex, true),
+    });
+  }
 
-    // 라이브챗 / 역할 초기 렌더
-    renderTargetChips();
-    renderRoster();
-    applyMyAssignment();   // 저장된 배정이 있으면 헤더에 반영
-    syncMyRoleBadge();
-
-    // restore viewerState (리더: 영속 곡이 있으면 첫 곡 자동 표시 안 함 — 기존처럼 선택 대기)
-    const sid = viewerData.songId;
-    const pg = viewerData.page || 0;
-    if (sid && findSong(sid)) {
-      activeSongId = sid;
-      activePage = pg;
-      renderCanvas();
-    }
-
-    // 페이지 넘김 안내 (팀원)
-    if (!isLeader) {
-      setTimeout(() => miniToast('리더만 페이지를 넘길 수 있어요'), 600);
-      // 이름 미입력 멤버에게 안내
-      if (!myName) setTimeout(() => miniToast('우측 상단에 이름을 입력해주세요'), 2600);
-    }
+  // 방을 떠나 홈으로 돌아가기 (세션 유지). 채널 정리 + 상태 리셋.
+  function leaveToHome() {
+    if (presentMode) exitPresentMode();
+    if (monitorMode) exitMonitorMode(true);
+    try { channel?.untrack(); } catch (_) {}
+    try { if (channel) supabase.removeChannel(channel); } catch (_) {}
+    channel = null; subscribed = false;
+    // 방 상태 리셋 (다른 방 입장 대비)
+    roomId = null; roomRecordId = null; roomName = '';
+    songsData = []; assignmentsData = {}; presenceData = {};
+    viewerData = { songId: null, page: 0, scrollRatio: 0 };
+    highlightsData = {}; shownMessageIds.clear();
+    activeSongId = null; activePage = 0; isFollowing = true;
+    myRole = ''; currentTarget = '전체';
+    highlightMode = false; hlTool = 'pen'; soloName = ''; drawing = null;
+    clearTimeout(_hlDeltaTimer); _hlDeltaTimer = null;
+    const url = new URL(location.href);
+    url.searchParams.delete('room');
+    history.replaceState({}, '', url.toString());
+    showScreen('home');
+    loadMyRooms();
   }
 
   // 초대 링크 복사 (방 코드 버튼 / 빈 상태 버튼 공용)
@@ -3566,43 +4794,75 @@
 
   const MAX_FILE_BYTES = 24 * 1024 * 1024;
 
-  // 파일(이미지/PDF) 스테이징 — 캔버스로 축소해 페이지 이미지(dataURL) 배열로 변환
-  async function stageSheetFile(f) {
-    if (!f) return;
+  // 파일 1개(이미지/PDF) → 축소 페이지(dataURL) 배열. 못 하면 null.
+  async function fileToSheetPages(f, label) {
     const isPdf = f.type === 'application/pdf';
     const isImg = (f.type || '').startsWith('image/');
-    if (!isPdf && !isImg) { miniToast('이미지 또는 PDF만 등록할 수 있어요'); return; }
-    if (f.size > MAX_FILE_BYTES) {
-      if (!confirm('파일이 커요. 변환에 시간이 걸릴 수 있어요. 계속할까요?')) return;
+    if (!isPdf && !isImg) return null;
+    const dataURL = await fileToDataURL(f);
+    if (isPdf) {
+      return await pdfToSheetPages(dataURL, (p, total) => {
+        if (total > 1) miniToast(`${label || '악보'} 변환 중… ${p}/${total}장`);
+      });
     }
-    miniToast(isPdf ? '악보 PDF를 변환하고 있어요…' : '악보 이미지를 변환하고 있어요…');
-    try {
-      const dataURL = await fileToDataURL(f);
-      let pages;
-      if (isPdf) {
-        pages = await pdfToSheetPages(dataURL, (p, total) => {
-          if (total > 1) miniToast(`악보 변환 중… ${p}/${total}장`);
-        });
-      } else {
-        pages = await imageToSheetPages(dataURL);
+    return await imageToSheetPages(dataURL);
+  }
+
+  // 여러 파일(이미지/PDF)을 스테이징 — 전부 그 곡의 페이지로 "추가"(누적).
+  // 각 파일은 기존처럼 ≤1280px·JPEG로 축소. PDF는 페이지별로 펼쳐 추가.
+  async function stageSheetFiles(fileList) {
+    const files = Array.from(fileList || []).filter(Boolean);
+    if (!files.length) return;
+    const valid = files.filter((f) => f.type === 'application/pdf' || (f.type || '').startsWith('image/'));
+    if (!valid.length) { miniToast('이미지 또는 PDF만 등록할 수 있어요'); return; }
+    const huge = valid.find((f) => f.size > MAX_FILE_BYTES);
+    if (huge && !confirm('큰 파일이 있어요. 변환에 시간이 걸릴 수 있어요. 계속할까요?')) return;
+
+    miniToast(valid.length > 1 ? `악보 ${valid.length}개를 변환하고 있어요…` : '악보를 변환하고 있어요…');
+
+    // 이미 스테이징된 (이미지/PDF) 페이지가 있으면 그 뒤에 누적. 없으면 새로 시작.
+    const base = (modalContext.staged && Array.isArray(modalContext.pages)) ? modalContext.pages.slice() : [];
+    const collected = base.slice();
+    let added = 0;
+    let anyPdf = (modalContext.staged && modalContext.sheetKind === 'pdf');
+    let firstName = modalContext.fileName || '';
+    for (const f of valid) {
+      try {
+        const pages = await fileToSheetPages(f, f.name || '악보');
+        if (pages && pages.length) {
+          pages.forEach((p) => collected.push(p));
+          added += pages.length;
+          if (f.type === 'application/pdf') anyPdf = true;
+          if (!firstName) firstName = f.name || '';
+        }
+      } catch (e) {
+        console.error('악보 변환 실패', f && f.name, e);
       }
-      if (!pages || !pages.length) { miniToast('악보를 변환하지 못했어요'); return; }
-      // 한 장이라도 너무 크면 경고 (broadcast payload 보호)
-      const big = pages.find((u) => dataURLBytes(u) > SHEET_WARN_BYTES);
-      if (big) miniToast('악보 한 장이 다소 커요. 더 선명도 낮은 이미지를 권장해요.');
-      modalContext.staged = true;
-      modalContext.pages = pages;
-      modalContext.remoteUrl = '';
-      modalContext.sheetKind = isPdf ? 'pdf' : 'image';
-      modalContext.fileName = f.name || (isPdf ? '악보.pdf' : '악보 이미지');
-      modalContext.clearFile = false;
-      $('songSheetUrl').value = '';
-      renderSheetPreview();
-      miniToast(`악보 ${pages.length}장을 등록했어요`);
-    } catch (e) {
-      console.error('악보 변환 실패', e);
-      miniToast('악보를 변환하지 못했어요');
     }
+    if (!added) { miniToast('악보를 변환하지 못했어요'); return; }
+
+    // 한 장이라도 너무 크면 경고 (broadcast payload 보호)
+    if (collected.find((u) => dataURLBytes(u) > SHEET_WARN_BYTES))
+      miniToast('악보 한 장이 다소 커요. 더 선명도 낮은 이미지를 권장해요.');
+
+    modalContext.staged = true;
+    modalContext.pages = collected;
+    modalContext.remoteUrl = '';
+    // 여러 종류 섞이면 'image'로 표시(혼합), 전부 PDF면 'pdf'
+    modalContext.sheetKind = (anyPdf && base.length === 0 && valid.every((f) => f.type === 'application/pdf')) ? 'pdf' : 'image';
+    modalContext.fileName = (valid.length > 1 || base.length)
+      ? `악보 ${collected.length}장`
+      : (firstName || (anyPdf ? '악보.pdf' : '악보 이미지'));
+    modalContext.clearFile = false;
+    $('songSheetUrl').value = '';
+    renderSheetPreview();
+    miniToast(`악보 ${added}장을 추가했어요 (총 ${collected.length}장)`);
+  }
+
+  // 단일 파일 스테이징 — 다중 처리로 위임 (누적)
+  async function stageSheetFile(f) {
+    if (!f) return;
+    return stageSheetFiles([f]);
   }
 
   // 이미지 주소(URL) 스테이징 — 가능하면 캔버스로 축소 dataURL, CORS로 막히면 URL 그대로 공유
@@ -3615,14 +4875,17 @@
     miniToast('이미지를 불러오고 있어요…');
     try {
       const pages = await imageToSheetPages(url); // CORS 허용 시 축소 성공
+      // 이미 스테이징된 페이지가 있으면 누적 (여러 장 추가 일관성)
+      const base = (modalContext.staged && Array.isArray(modalContext.pages)) ? modalContext.pages.slice() : [];
+      const collected = base.concat(pages);
       modalContext.staged = true;
-      modalContext.pages = pages;
+      modalContext.pages = collected;
       modalContext.remoteUrl = '';
       modalContext.sheetKind = 'image';
-      modalContext.fileName = '이미지 주소';
+      modalContext.fileName = (base.length ? `악보 ${collected.length}장` : '이미지 주소');
       modalContext.clearFile = false;
       renderSheetPreview();
-      miniToast('이미지 주소를 악보로 등록했어요');
+      miniToast(base.length ? `악보를 추가했어요 (총 ${collected.length}장)` : '이미지 주소를 악보로 등록했어요');
     } catch (e) {
       // CORS 등으로 캔버스 축소 실패 → URL을 그대로 멤버에게 공유 (각자 직접 로드)
       modalContext.staged = true;
@@ -3670,13 +4933,56 @@
       } else { show = false; }
     }
 
-    if (!show) { box.style.display = 'none'; return; }
+    if (!show) { box.style.display = 'none'; renderSheetThumbs(null); return; }
     box.style.display = 'flex';
     thumb.innerHTML = src
       ? `<img src="${escapeHtml(src)}" alt="미리보기" onerror="this.parentNode.innerHTML='${pdfGlyph.replace(/'/g, "\\'")}'"/>`
       : pdfGlyph;
     nameEl.textContent = label;
     metaEl.textContent = metaText;
+    // 여러 장이면 썸네일 스트립 (스테이징된 새 페이지 우선, 없으면 기존)
+    const pages = (modalContext.staged && Array.isArray(modalContext.pages) && modalContext.pages.length)
+      ? modalContext.pages
+      : (!modalContext.staged && modalContext.existing && !modalContext.clearFile && modalContext.existing.pages) || null;
+    renderSheetThumbs(pages, modalContext.staged);
+  }
+
+  // 썸네일 스트립 렌더 (스테이징된 페이지는 개별 삭제 가능). 최대 12개 표시.
+  function renderSheetThumbs(pages, editable) {
+    const strip = $('sheetThumbs');
+    if (!strip) return;
+    if (!pages || pages.length <= 1) { strip.style.display = 'none'; strip.innerHTML = ''; return; }
+    strip.style.display = 'flex';
+    const MAX = 12;
+    const shown = pages.slice(0, MAX);
+    strip.innerHTML = shown.map((p, i) => `
+      <div class="sheet-thumb" data-i="${i}">
+        <img src="${escapeHtml(p)}" alt="${i + 1}페이지" />
+        <span class="st-num">${i + 1}</span>
+        ${editable ? `<button type="button" class="st-del" data-i="${i}" title="이 장 빼기">✕</button>` : ''}
+      </div>`).join('')
+      + (pages.length > MAX ? `<span class="sheet-thumbs-more">+${pages.length - MAX}</span>` : '');
+    if (editable) {
+      strip.querySelectorAll('.st-del').forEach((b) => {
+        b.onclick = (e) => {
+          e.stopPropagation();
+          const i = parseInt(b.dataset.i, 10);
+          if (!Array.isArray(modalContext.pages)) return;
+          modalContext.pages.splice(i, 1);
+          if (!modalContext.pages.length) {
+            // 다 빼면 스테이징 해제 (편집이면 clearFile로)
+            modalContext.staged = false;
+            modalContext.pages = null;
+            modalContext.sheetKind = '';
+            modalContext.fileName = '';
+            if (modalContext.existing) modalContext.clearFile = true;
+          } else {
+            modalContext.fileName = `악보 ${modalContext.pages.length}장`;
+          }
+          renderSheetPreview();
+        };
+      });
+    }
   }
 
   function setupModal() {
@@ -3694,8 +5000,7 @@
       if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fileInput.click(); }
     });
     fileInput.addEventListener('change', (e) => {
-      const f = e.target.files?.[0];
-      stageSheetFile(f);
+      stageSheetFiles(e.target.files);   // 여러 장 선택 지원
       fileInput.value = '';
     });
 
@@ -3708,23 +5013,25 @@
       e.preventDefault(); e.stopPropagation();
       drop.classList.remove('dragover');
       const dt = e.dataTransfer;
-      const f = dt?.files?.[0];
-      if (f) { stageSheetFile(f); return; }
+      const files = dt?.files;
+      if (files && files.length) { stageSheetFiles(files); return; }  // 여러 파일 한 번에
       // 파일이 아니면 이미지 URL이 끌려온 경우 처리
       const uri = dt?.getData('text/uri-list') || dt?.getData('text/plain');
       if (uri && /^https?:/i.test(uri.trim())) stageSheetUrl(uri.trim());
     });
 
-    // 클립보드 붙여넣기 (모달 열려 있을 때 이미지 blob)
+    // 클립보드 붙여넣기 (모달 열려 있을 때 이미지 blob — 여러 장 지원)
     $('songModal').addEventListener('paste', (e) => {
       const items = e.clipboardData?.items;
       if (!items) return;
+      const blobs = [];
       for (const it of items) {
         if (it.type && it.type.startsWith('image/')) {
           const blob = it.getAsFile();
-          if (blob) { e.preventDefault(); stageSheetFile(blob); return; }
+          if (blob) blobs.push(blob);
         }
       }
+      if (blobs.length) { e.preventDefault(); stageSheetFiles(blobs); return; }
       // 이미지 주소 텍스트 붙여넣기 — URL 입력칸 밖일 때만 자동 등록
       const text = (e.clipboardData.getData('text') || '').trim();
       if (text && /^https?:\/\/\S+\.(png|jpe?g|gif|webp|bmp|svg)(\?\S*)?$/i.test(text)
@@ -3926,6 +5233,97 @@
     await renderCanvas();
   }
 
+  // 현재 활성 곡이 속한 목록(콘티 또는 특송) 안에서의 위치 + 이웃 곡 찾기
+  function songNavContext() {
+    const entry = findSong(activeSongId);
+    if (!entry) return null;
+    const special = !!entry.song.special;
+    const list = getSongsByKind(special);          // [{song,index}…] 같은 종류만, 표시 순서
+    const pos = list.findIndex((x) => x.song.id === activeSongId);
+    return { special, list, pos };
+  }
+  function hasAdjacentSong(delta) {
+    const ctx = songNavContext();
+    if (!ctx || ctx.pos < 0) return false;
+    const t = ctx.pos + delta;
+    return t >= 0 && t < ctx.list.length;
+  }
+  // 곡 단위 이동 — 같은 목록의 이전/다음 곡 첫 페이지로 점프. 리더면 viewer 동기화.
+  async function goSong(delta) {
+    const ctx = songNavContext();
+    if (!ctx || ctx.pos < 0) return false;
+    const target = ctx.list[ctx.pos + delta];
+    if (!target) return false;
+    if (!isLeader) { isFollowing = false; followIndicator.classList.remove('hidden'); }
+    activeSongId = target.song.id;
+    activePage = 0;
+    if (isLeader) {
+      isFollowing = true;
+      viewerData.songId = activeSongId;
+      viewerData.page = 0;
+      broadcastViewer();
+    }
+    await renderCanvas();
+    return true;
+  }
+
+  // ---------------- 스와이프 (좌우로 넘기기) ----------------
+  // 악보 영역에서 좌우 스와이프 → 페이지 넘김 (경계에서 곡 이동).
+  // 하이라이트 모드일 땐 그리기가 우선이므로 스와이프 비활성(canDraw가 막음).
+  const SWIPE_MIN_PX = 55;       // 가로 이동 임계 (이만큼 넘겨야 인식)
+  const SWIPE_MAX_OFF_RATIO = 0.8; // |dy| < |dx|*ratio 여야 수평 스와이프로 인정
+  function attachSwipe(el, isEnabled) {
+    if (!el || el.dataset.swipeWired) return;
+    el.dataset.swipeWired = '1';
+    let sx = 0, sy = 0, tracking = false, pid = null;
+    el.addEventListener('pointerdown', (e) => {
+      if (!isEnabled()) return;
+      // 마우스는 주 버튼만, 펜/터치는 그대로
+      if (e.pointerType === 'mouse' && e.button !== 0) return;
+      // 버튼/입력/팝오버 등 인터랙션 요소 위에서 시작한 제스처는 스와이프로 보지 않음
+      if (e.target.closest && e.target.closest('button, input, a, select, .present-ctrl, .solo-pop, .page-nav')) return;
+      tracking = true; pid = e.pointerId; sx = e.clientX; sy = e.clientY;
+    });
+    const finish = (e) => {
+      if (!tracking || (pid != null && e.pointerId !== pid)) return;
+      tracking = false; pid = null;
+      if (!isEnabled()) return;
+      const dx = e.clientX - sx, dy = e.clientY - sy;
+      if (Math.abs(dx) < SWIPE_MIN_PX) return;
+      if (Math.abs(dy) > Math.abs(dx) * SWIPE_MAX_OFF_RATIO) return; // 세로 스크롤로 간주
+      flipForSwipe(dx < 0 ? +1 : -1);   // 왼쪽으로 밀면 다음, 오른쪽이면 이전
+    };
+    el.addEventListener('pointerup', finish);
+    el.addEventListener('pointercancel', () => { tracking = false; pid = null; });
+  }
+  // 일반 뷰어 스와이프 허용 여부: 하이라이트 OFF + 곡 선택됨
+  function canSwipeViewer() { return !highlightMode && !!activeSongId; }
+
+  // 곡 이동 버튼 상태 갱신 (뷰어 page-nav + 프레젠 오버레이). 이웃 없으면 비활성.
+  function updateSongNavButtons() {
+    const prevOk = hasAdjacentSong(-1);
+    const nextOk = hasAdjacentSong(+1);
+    const bp = $('btnPrevSong'), bn = $('btnNextSong');
+    if (bp) bp.disabled = !prevOk;
+    if (bn) bn.disabled = !nextOk;
+    const pbp = $('presentPrevSong'), pbn = $('presentNextSong');
+    if (pbp) pbp.disabled = !prevOk;
+    if (pbn) pbn.disabled = !nextOk;
+  }
+
+  // 스와이프용 페이지 넘김 — 곡 끝/처음을 넘으면 이웃 곡으로 건너뜀.
+  // delta>0: 다음 페이지(마지막이면 다음 곡 1페이지), delta<0: 이전(첫이면 이전 곡 1페이지)
+  async function flipForSwipe(delta) {
+    if (!activeSongId) return;
+    const s = findSong(activeSongId)?.song;
+    if (!s) return;
+    const total = getTotalPages(s);
+    const next = activePage + delta;
+    if (next >= 0 && next < total) { await goPage(delta); return; }
+    // 경계를 넘음 → 이웃 곡 첫 페이지 (없으면 아무것도 안 함)
+    await goSong(delta > 0 ? +1 : -1);
+  }
+
   // 페이지 수 = 받은/만든 악보 이미지 장수 (원격 URL은 1장)
   function getTotalPages(song) {
     if (song.pages && song.pages.length) return song.pages.length;
@@ -3979,6 +5377,7 @@
     pageIndicator.textContent = `${activePage + 1} / ${total}`;
     btnPrev.disabled = activePage <= 0;
     btnNext.disabled = activePage >= total - 1;
+    updateSongNavButtons();
 
     if (!hasSheet && !youtube) {
       const ph = document.createElement('div');
@@ -3992,7 +5391,8 @@
     }
 
     if (hasSheet && src) {
-      pageNav.style.display = total > 1 ? '' : 'none';
+      // 페이지가 여러 장이거나, 이웃 곡이 있으면 내비 표시 (곡 이동 버튼용)
+      pageNav.style.display = (total > 1 || hasAdjacentSong(-1) || hasAdjacentSong(+1)) ? '' : 'none';
       const img = document.createElement('img');
       img.alt = song.title || '';
       img.style.maxHeight = 'calc(100vh - 280px)';
@@ -4063,10 +5463,10 @@
     return `${activeSongId}|${activePage}`;
   }
 
-  // 오버레이 캔버스 비트맵을 현재 악보 표시 크기에 맞춤 (DPR 반영, 최대 2.5x)
+  // 오버레이 캔버스 비트맵을 표시 크기(clientW/H)에 맞춤 (DPR 반영, 최대 2.5x)
   function sizeHlCanvas(overlay) {
-    const w = canvas.clientWidth || overlay.clientWidth || 1;
-    const h = canvas.clientHeight || overlay.clientHeight || 1;
+    const w = overlay.clientWidth || 1;
+    const h = overlay.clientHeight || 1;
     const dpr = Math.min(window.devicePixelRatio || 1, 2.5);
     const bw = Math.max(1, Math.round(w * dpr));
     const bh = Math.max(1, Math.round(h * dpr));
@@ -4074,6 +5474,17 @@
       overlay.width = bw;
       overlay.height = bh;
     }
+  }
+
+  // 형광펜 그리기 핸들러를 한 오버레이에 연결 (뷰어/프레젠 공용)
+  function bindHlPointer(overlay) {
+    if (!overlay || overlay.dataset.hlBound) return;
+    overlay.dataset.hlBound = '1';
+    overlay.addEventListener('pointerdown', onHlStart);
+    overlay.addEventListener('pointermove', onHlMove);
+    overlay.addEventListener('pointerup', onHlEnd);
+    overlay.addEventListener('pointercancel', onHlEnd);
+    overlay.addEventListener('pointerleave', onHlEnd);
   }
 
   function setupHighlightLayer() {
@@ -4084,19 +5495,13 @@
     if (isLeader && highlightMode) overlay.classList.add('enabled');
     canvas.appendChild(overlay);
     sizeHlCanvas(overlay);
-
-    if (isLeader) {
-      overlay.addEventListener('pointerdown', onHlStart);
-      overlay.addEventListener('pointermove', onHlMove);
-      overlay.addEventListener('pointerup', onHlEnd);
-      overlay.addEventListener('pointercancel', onHlEnd);
-      overlay.addEventListener('pointerleave', onHlEnd);
-    }
+    if (isLeader) bindHlPointer(overlay);
     renderHighlights();
   }
 
-  // 단일 stroke를 캔버스에 그림 (형광펜: 둥근 끝/이음, 반투명, 부드러운 곡선)
+  // 단일 stroke를 캔버스에 그림. type 별 분기 (pen=자유곡선, solo=수평 형광막대).
   function drawStroke(ctx, stroke, W, H) {
+    if (stroke && stroke.type === 'solo') { drawSoloStroke(ctx, stroke, W, H); return; }
     const pts = stroke.points || [];
     if (!pts.length) return;
     const minSide = Math.min(W, H);
@@ -4129,9 +5534,79 @@
     ctx.restore();
   }
 
-  // 동기화된 stroke + 그리는 중인 로컬 stroke를 모두 다시 그림
-  function renderHighlights() {
-    const overlay = canvas.querySelector('#hlOverlay');
+  // 솔로 stroke: 수평으로 쭉 그어진 형광 막대 + 시작(왼쪽)에 싱어 이름 라벨.
+  // 좌표는 0~1 정규화 (y 고정, x1~x2). "아무렇게나 그어도 일자" → 항상 수평.
+  function drawSoloStroke(ctx, stroke, W, H) {
+    const minSide = Math.min(W, H);
+    const lw = Math.max(3, (stroke.width || SOLO_WIDTH) * minSide);
+    const y = (stroke.y || 0) * H;
+    let xa = (Math.min(stroke.x1, stroke.x2) || 0) * W;
+    let xb = (Math.max(stroke.x1, stroke.x2) || 0) * W;
+    if (xb - xa < lw * 0.5) xb = xa + lw * 0.5;   // 너무 짧으면 최소 길이 보장
+    const color = stroke.color || '#ffe14a';
+    ctx.save();
+    // 형광펜 느낌: 밝고 반투명 (multiply 블렌드는 오버레이 캔버스 CSS에서)
+    ctx.strokeStyle = color;
+    ctx.globalAlpha = 0.55;
+    ctx.lineWidth = lw;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.moveTo(xa, y);
+    ctx.lineTo(xb, y);
+    ctx.stroke();
+    ctx.restore();
+
+    // 이름 라벨 (막대 시작 위, 작은 칩) — 그리는 중/완료 모두 표시
+    const name = (stroke.name || '').trim();
+    if (name) drawSoloLabel(ctx, name, xa, y, lw, color);
+  }
+
+  // 솔로 막대 시작점에 이름 칩 그리기 (다른 화면크기에서도 읽히게 px 기준 고정)
+  function drawSoloLabel(ctx, name, xStart, y, lw, color) {
+    const dpr = Math.min(window.devicePixelRatio || 1, 2.5);
+    const fs = Math.max(11, 13 * dpr);
+    ctx.save();
+    ctx.globalAlpha = 1;
+    ctx.font = `700 ${fs}px "Pretendard Variable", Pretendard, system-ui, sans-serif`;
+    ctx.textBaseline = 'middle';
+    const padX = fs * 0.55, padY = fs * 0.34;
+    const tw = ctx.measureText(name).width;
+    const chipH = fs + padY * 2;
+    const chipW = tw + padX * 2;
+    // 막대 바로 위에 칩을 둠 (막대를 가리지 않게)
+    let cx = xStart;
+    let cy = y - lw / 2 - chipH / 2 - 2 * dpr;
+    if (cy - chipH / 2 < 0) cy = y + lw / 2 + chipH / 2 + 2 * dpr; // 위 공간 없으면 아래로
+    const left = cx;
+    const top = cy - chipH / 2;
+    const r = Math.min(chipH / 2, 8 * dpr);
+    // 칩 배경 (불투명 — multiply 영향 줄이려 살짝 흰 보더)
+    ctx.beginPath();
+    roundRectPath(ctx, left, top, chipW, chipH, r);
+    ctx.fillStyle = color;
+    ctx.globalAlpha = 0.95;
+    ctx.fill();
+    ctx.lineWidth = Math.max(1, 1.2 * dpr);
+    ctx.strokeStyle = 'rgba(255,255,255,0.9)';
+    ctx.globalAlpha = 0.9;
+    ctx.stroke();
+    // 텍스트 (대비 위해 진한 글자)
+    ctx.globalAlpha = 1;
+    ctx.fillStyle = '#191f28';
+    ctx.fillText(name, left + padX, cy + 0.5 * dpr);
+    ctx.restore();
+  }
+  function roundRectPath(ctx, x, y, w, h, r) {
+    ctx.moveTo(x + r, y);
+    ctx.arcTo(x + w, y, x + w, y + h, r);
+    ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r);
+    ctx.arcTo(x, y, x + w, y, r);
+    ctx.closePath();
+  }
+
+  // 한 오버레이 캔버스에 현재 페이지 stroke 전부를 그림
+  function paintHlOverlay(overlay) {
     if (!overlay) return;
     sizeHlCanvas(overlay);
     const ctx = overlay.getContext('2d');
@@ -4139,7 +5614,19 @@
     ctx.clearRect(0, 0, W, H);
     const arr = highlightsData[highlightKey()];
     if (arr) arr.forEach((stroke) => drawStroke(ctx, stroke, W, H));
-    if (drawing && drawing.points.length) drawStroke(ctx, drawing, W, H);
+    if (drawing && !sameStrokeInArr(drawing, arr)) drawStroke(ctx, drawing, W, H);
+  }
+
+  // 동기화된 stroke + 그리는 중인 로컬 stroke를 활성 오버레이들에 다시 그림
+  // (뷰어 #hlOverlay + 프레젠테이션 #presentHl — 둘 다 같은 highlightsData 사용)
+  function renderHighlights() {
+    paintHlOverlay(canvas.querySelector('#hlOverlay'));
+    if (presentMode && presentHl && presentHl.dataset.active === '1') paintHlOverlay(presentHl);
+  }
+  // 그리는 중 stroke가 이미 배열에 (증분으로) 들어가 있으면 중복 렌더 방지
+  function sameStrokeInArr(stroke, arr) {
+    if (!arr || !stroke || !stroke.id) return false;
+    return arr.some((s) => s && s.id === stroke.id);
   }
 
   function hlPoint(e, overlay) {
@@ -4150,13 +5637,36 @@
     };
   }
 
+  function genStrokeId() { return 'hl_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+
   function onHlStart(e) {
     if (!isLeader || !highlightMode) return;
     e.preventDefault();
     const overlay = e.currentTarget;
-    drawing = { points: [hlPoint(e, overlay)], color: penColor, width: PEN_WIDTH, at: Date.now() };
-    try { overlay.setPointerCapture(e.pointerId); } catch (_) {}
+    const p = hlPoint(e, overlay);
+    const key = highlightKey();
+    if (!highlightsData[key]) highlightsData[key] = [];
+    if (hlTool === 'solo') {
+      // 솔로: 시작점에서 수평 막대 시작. 싱어 미선택이면 안내 후 취소.
+      if (!soloName) { miniToast('먼저 솔로 싱어를 선택해주세요'); drawing = null; return; }
+      drawing = {
+        id: genStrokeId(), type: 'solo',
+        y: p.y, x1: p.x, x2: p.x,
+        name: soloName, color: penColor, width: SOLO_WIDTH, at: Date.now(),
+      };
+    } else {
+      drawing = {
+        id: genStrokeId(), type: 'pen',
+        points: [p], color: penColor, width: PEN_WIDTH, at: Date.now(),
+      };
+    }
+    // 그리는 중 stroke를 곧장 배열에 넣어 로컬에서 즉시 보이게 (왕복 대기 없음)
+    highlightsData[key].push(drawing);
+    _hlSentCount = 0;
     renderHighlights();
+    // 시작 즉시 한 번 증분 송신 (멤버도 바로 선이 나타남)
+    flushHlDelta(true);
+    try { overlay.setPointerCapture(e.pointerId); } catch (_) {}
   }
 
   let _hlRaf = 0;
@@ -4164,12 +5674,20 @@
     if (!drawing) return;
     const overlay = e.currentTarget;
     const p = hlPoint(e, overlay);
+    if (drawing.type === 'solo') {
+      // 수평 스냅: y는 시작값 고정, x만 확장 (세로 흔들림 무시)
+      drawing.x2 = p.x;
+      if (!_hlRaf) _hlRaf = requestAnimationFrame(() => { _hlRaf = 0; renderHighlights(); });
+      scheduleHlDelta();
+      return;
+    }
     const last = drawing.points[drawing.points.length - 1];
     // 너무 촘촘한 점은 솎아냄 (데이터/렌더 절약)
     if (!last || Math.hypot(p.x - last.x, p.y - last.y) > 0.004) {
       drawing.points.push(p);
-      // rAF로 한 프레임에 한 번만 다시 그림 (부드럽게)
+      // 로컬은 즉시(rAF) 렌더 — 브로드캐스트 왕복을 기다리지 않음
       if (!_hlRaf) _hlRaf = requestAnimationFrame(() => { _hlRaf = 0; renderHighlights(); });
+      scheduleHlDelta();
     }
   }
 
@@ -4177,13 +5695,53 @@
     if (!drawing) return;
     const stroke = drawing;
     drawing = null;
-    renderHighlights();
-    if (!stroke.points.length || !activeSongId) return;
+    clearTimeout(_hlDeltaTimer); _hlDeltaTimer = null;
     const key = highlightKey();
-    if (!highlightsData[key]) highlightsData[key] = [];
-    highlightsData[key].push({ points: stroke.points, color: stroke.color, width: stroke.width, at: stroke.at });
-    // 현재 페이지의 stroke 전체를 broadcast (멤버가 동일하게 렌더)
-    broadcastHighlight(activeSongId, activePage);
+    // pen: 점 0개면 의미 없으므로 배열에서 제거
+    if (stroke.type === 'pen' && (!stroke.points || !stroke.points.length)) {
+      const arr = highlightsData[key];
+      if (arr) { const i = arr.indexOf(stroke); if (i >= 0) arr.splice(i, 1); }
+      renderHighlights();
+      return;
+    }
+    renderHighlights();
+    // 최종 1회는 권위 있는 전체 배열을 보내 정합성 보장 (증분 누락/순서 보정)
+    if (activeSongId != null) broadcastHighlight(activeSongId, activePage);
+  }
+
+  // 그리는 중 증분(새 점/막대 확장)을 멤버에게 보냄 — throttle (~50ms)
+  function scheduleHlDelta() {
+    if (_hlDeltaTimer) return;
+    _hlDeltaTimer = setTimeout(() => { _hlDeltaTimer = null; flushHlDelta(false); }, HL_DELTA_MS);
+  }
+  function flushHlDelta(forceStart) {
+    if (!isLeader || !channel || !drawing || activeSongId == null) return;
+    if (drawing.type === 'solo') {
+      // 솔로는 막대 양끝만 — 매번 전체 좌표 (작아서 부담 없음)
+      channel.send({
+        type: 'broadcast', event: 'highlight-delta',
+        payload: {
+          songId: activeSongId, page: activePage, id: drawing.id, type: 'solo',
+          y: drawing.y, x1: drawing.x1, x2: drawing.x2,
+          name: drawing.name, color: drawing.color, width: drawing.width, at: drawing.at,
+        },
+      });
+      return;
+    }
+    // pen: 아직 안 보낸 새 점들만 증분 전송
+    const pts = drawing.points || [];
+    const from = forceStart ? 0 : _hlSentCount;
+    if (from >= pts.length) return;
+    const newPts = pts.slice(from);
+    _hlSentCount = pts.length;
+    channel.send({
+      type: 'broadcast', event: 'highlight-delta',
+      payload: {
+        songId: activeSongId, page: activePage, id: drawing.id, type: 'pen',
+        start: from, points: newPts,
+        color: drawing.color, width: drawing.width, at: drawing.at,
+      },
+    });
   }
 
   function clearHighlights() {
@@ -4191,11 +5749,13 @@
     if (highlightsData[key]) highlightsData[key] = [];
     // 그리는 중이던 로컬 stroke도 취소
     drawing = null;
+    clearTimeout(_hlDeltaTimer); _hlDeltaTimer = null;
     renderHighlights();
     if (activeSongId != null) broadcastHighlight(activeSongId, activePage);
   }
 
-  // 현재 페이지 펜 stroke를 멤버에게 송신 (리더만)
+  // 현재 페이지 stroke 전체를 멤버에게 송신 (리더만) — 권위 스냅샷.
+  // 그리는 중인 stroke가 배열에 있어도 포함 (멤버가 동일 id로 갱신/append)
   function broadcastHighlight(songId, page) {
     if (!isLeader || !channel) return;
     const key = `${songId}|${page}`;
@@ -4203,6 +5763,135 @@
       type: 'broadcast', event: 'highlight',
       payload: { songId, page, strokes: highlightsData[key] || [] },
     });
+  }
+
+  // 프레젠테이션 오버레이의 하이라이트 컨트롤 상태 동기화 (Feature 1에서 본체 정의).
+  // (highlightMode/hlTool/soloName 변화 시 호출 — 프레젠 모드 아니면 사실상 no-op)
+  function syncPresentHlControls() {
+    if (typeof updatePresentHlControls === 'function') updatePresentHlControls();
+  }
+
+  // ---------------- 하이라이트 모드/도구 토글 (펜·솔로) ----------------
+  // 하이라이트 모드 on/off — 도구/색/싱어 선택기 표시 + 오버레이 활성화.
+  // (프레젠테이션 오버레이의 컨트롤도 같은 상태를 공유)
+  function setHighlightMode(on) {
+    highlightMode = !!on;
+    btnHighlight.classList.toggle('active', highlightMode);
+    if (hlTools) hlTools.classList.toggle('hidden', !highlightMode);
+    if (penColors) penColors.classList.toggle('hidden', !highlightMode);
+    // 솔로 도구일 때만 싱어 선택 버튼 노출
+    if (soloSinger) soloSinger.classList.toggle('hidden', !(highlightMode && hlTool === 'solo'));
+    const overlay = canvas.querySelector('#hlOverlay');
+    if (overlay) overlay.classList.toggle('enabled', highlightMode);
+    // 프레젠테이션 오버레이도 함께 (그리기 가능 상태)
+    if (presentHl) presentHl.classList.toggle('enabled', highlightMode && presentMode);
+    if (!highlightMode) closeSoloPicker();
+    syncPresentHlControls();   // 프레젠테이션 컨트롤 상태도 갱신
+  }
+
+  function setHlTool(tool) {
+    hlTool = (tool === 'solo') ? 'solo' : 'pen';
+    if (hlTools) hlTools.querySelectorAll('.hl-tool').forEach((b) => b.classList.toggle('active', b.dataset.tool === hlTool));
+    if (soloSinger) soloSinger.classList.toggle('hidden', !(highlightMode && hlTool === 'solo'));
+    if (hlTool !== 'solo') closeSoloPicker();
+    else if (!soloName) openSoloPicker(soloSinger);   // 솔로 선택 시 싱어 미지정이면 바로 고르게
+    syncPresentHlControls();
+  }
+
+  // 솔로 싱어 후보: 배정된(assignments) 역할/이름 중 싱어류 + 전체 역할.
+  function soloSingerCandidates() {
+    const out = [];
+    const seen = new Set();
+    const add = (name, role) => {
+      const n = (name || '').trim();
+      if (!n || seen.has(n)) return;
+      seen.add(n); out.push({ name: n, role: role || '' });
+    };
+    // 배정된 사람들: 이름 우선, 없으면 역할명
+    Object.values(assignmentsData || {}).forEach((a) => {
+      if (!a) return;
+      const role = a.role || '';
+      const isSinger = /싱어|솔로|보컬|singer|vocal/i.test(role);
+      if (a.name) add(a.name, role);
+      else if (role && isSinger) add(role, role);
+    });
+    // 접속자 이름도 후보로 (배정 안 됐어도)
+    connectedPeople().forEach((p) => { if (p.name) add(p.name, (assignmentsData[p.deviceId] && assignmentsData[p.deviceId].role) || ''); });
+    // 싱어 프리셋 (역할명 그대로) — 항상 고를 수 있게
+    ROLE_PRESETS.filter((r) => /싱어/.test(r)).forEach((r) => add(r, r));
+    return out;
+  }
+
+  function renderSoloSingerList() {
+    const list = $('soloSingerList');
+    if (!list) return;
+    const cands = soloSingerCandidates();
+    if (!cands.length) {
+      list.innerHTML = `<div class="solo-pop-empty">배정된 싱어가 없어요. 아래에 이름을 직접 입력해 솔로를 지정할 수 있어요.</div>`;
+      return;
+    }
+    list.innerHTML = cands.map((c) => `
+      <button class="solo-singer-opt${c.name === soloName ? ' active' : ''}" data-name="${escapeHtml(c.name)}">
+        <span>${escapeHtml(c.name)}</span>
+        ${c.role && c.role !== c.name ? `<span class="sso-role">${escapeHtml(c.role)}</span>` : ''}
+      </button>`).join('');
+    list.querySelectorAll('.solo-singer-opt').forEach((b) => {
+      b.onclick = () => pickSolo(b.dataset.name);
+    });
+  }
+
+  let _soloPopAnchor = null;
+  function openSoloPicker(anchorEl) {
+    if (!soloPop || !soloPopScrim) return;
+    _soloPopAnchor = anchorEl || soloSinger;
+    renderSoloSingerList();
+    const free = $('soloFreeName');
+    if (free) free.value = '';
+    soloPopScrim.classList.remove('hidden');
+    soloPop.classList.remove('hidden');
+    positionSoloPop();
+  }
+  // 앵커 버튼 근처에 팝오버 배치 (화면 밖으로 안 나가게 보정)
+  function positionSoloPop() {
+    if (!soloPop || soloPop.classList.contains('hidden')) return;
+    const a = _soloPopAnchor;
+    const rect = a && a.getBoundingClientRect ? a.getBoundingClientRect() : { left: 16, bottom: 80, right: 16, top: 64 };
+    const pw = soloPop.offsetWidth || 260;
+    const ph = soloPop.offsetHeight || 200;
+    let left = rect.left;
+    if (left + pw > window.innerWidth - 12) left = window.innerWidth - pw - 12;
+    if (left < 12) left = 12;
+    let top = rect.bottom + 8;
+    if (top + ph > window.innerHeight - 12) top = Math.max(12, rect.top - ph - 8); // 위로 뒤집기
+    soloPop.style.left = left + 'px';
+    soloPop.style.top = top + 'px';
+  }
+  function closeSoloPicker() {
+    if (soloPop) soloPop.classList.add('hidden');
+    if (soloPopScrim) soloPopScrim.classList.add('hidden');
+  }
+  // 솔로 싱어 확정 — 라벨 갱신 + 솔로 도구로 전환
+  function pickSolo(name) {
+    const n = (name || '').trim();
+    if (!n) { miniToast('이름을 입력하거나 싱어를 골라주세요'); return; }
+    soloName = n;
+    hlTool = 'solo';
+    if (hlTools) hlTools.querySelectorAll('.hl-tool').forEach((b) => b.classList.toggle('active', b.dataset.tool === 'solo'));
+    updateSoloSingerLabel();
+    if (soloSinger) soloSinger.classList.toggle('hidden', !(highlightMode && hlTool === 'solo'));
+    closeSoloPicker();
+    syncPresentHlControls();
+    miniToast(`솔로: ${n} — 악보에 일자로 그으면 형광 막대가 그려져요`);
+  }
+  function updateSoloSingerLabel() {
+    const label = soloName ? soloName : '싱어 선택';
+    if (soloSinger) {
+      soloSinger.innerHTML = `<span class="ss-name">${escapeHtml(label)}</span>`;
+      soloSinger.classList.toggle('is-set', !!soloName);
+    }
+    // 프레젠테이션 오버레이의 솔로 버튼 라벨도 동기화
+    const pSolo = $('pcSoloName');
+    if (pSolo) pSolo.textContent = label;
   }
 
   // ---------------- 큐 아이콘 주입 / 버튼 피드백 ----------------
@@ -4338,25 +6027,31 @@
     presentMode = true;
     // 다른 전체화면 모드와 배타적
     if (monitorMode) exitMonitorMode(true);
-    // 라이브챗 시트가 열려 있으면 닫기
     document.body.style.overflow = 'hidden';
     presentLayer.classList.remove('hidden');
     requestFs(presentLayer);
     renderPresentStage();
+    updatePresentHlControls();   // 리더 컨트롤 초기 상태
     bumpPresentUi();
+    // 풀스크린 전환으로 레이아웃이 늦게 잡힐 수 있어 오버레이 위치 한 번 더 보정
+    setTimeout(() => { if (presentMode) positionPresentHl(); }, 260);
   }
   function exitPresentMode() {
     if (!presentMode) return;
     presentMode = false;
+    // 프레젠 위에 열려 있던 라이브챗 시트 닫기
+    closePresentSheet();
     presentLayer.classList.add('hidden');
     presentCueWrap.classList.add('hidden');
     presentCueWrap.innerHTML = '';
     clearTimeout(presentUiTimer);
     presentLayer.classList.remove('show-ui');
+    if (presentHl) { presentHl.dataset.active = '0'; presentHl.classList.remove('enabled'); }
     document.body.style.overflow = '';
     exitFs();
   }
-  // UI(탭/X/페이지)를 잠깐 보여주고 자동 숨김
+  // UI(탭/X/페이지/컨트롤)를 잠깐 보여주고 자동 숨김.
+  // 하이라이트 모드/그리는 중엔 컨트롤을 계속 보이게(sticky) 유지.
   function bumpPresentUi() {
     presentLayer.classList.add('show-ui');
     clearTimeout(presentUiTimer);
@@ -4365,15 +6060,16 @@
   // 활성 곡/페이지를 프레젠테이션 무대에 렌더 (악보 이미지). renderCanvas와 동기.
   async function renderPresentStage() {
     if (!presentMode) return;
+    const noSheet = () => { if (presentHl) { presentHl.dataset.active = '0'; presentHl.style.width = '0'; presentHl.style.height = '0'; } };
     if (!activeSongId) {
       presentStage.innerHTML = `<div class="present-empty">악보를 먼저 선택해주세요.<br/>콘티에서 곡을 고르면 여기에 전체화면으로 보여요.</div>`;
-      updatePresentNav(1, 1);
+      updatePresentNav(1, 1); noSheet();
       return;
     }
     const entry = findSong(activeSongId);
     if (!entry) {
       presentStage.innerHTML = `<div class="present-empty">악보를 불러올 수 없어요.</div>`;
-      updatePresentNav(1, 1);
+      updatePresentNav(1, 1); noSheet();
       return;
     }
     const song = entry.song;
@@ -4384,20 +6080,137 @@
     if (!src) {
       const waiting = !isLeader && (song.sheetCount > 0);
       presentStage.innerHTML = `<div class="present-empty">${escapeHtml(song.title || '(제목 없음)')}<br/><span style="font-size:0.85em;opacity:0.8;">${waiting ? '리더가 보낸 악보를 받는 중이에요…' : '등록된 악보가 없어요.'}</span></div>`;
-      updatePresentNav(activePage + 1, total);
+      updatePresentNav(activePage + 1, total); noSheet();
       return;
     }
     presentStage.innerHTML = '';
     const img = document.createElement('img');
-    img.src = src;
+    img.id = 'presentImg';
     img.alt = song.title || '';
+    img.addEventListener('load', () => positionPresentHl());
+    img.src = src;
     presentStage.appendChild(img);
     updatePresentNav(activePage + 1, total);
+    // 이미지가 이미 캐시됐으면 load 안 뜰 수 있어 한 번 더
+    positionPresentHl();
+  }
+  // 프레젠테이션 하이라이트 오버레이를 렌더된 이미지 사각형에 정확히 맞춤 (object-fit:contain 레터박스 보정)
+  function positionPresentHl() {
+    if (!presentHl) return;
+    const img = presentStage.querySelector('#presentImg');
+    if (!presentMode || !img || !img.naturalWidth) {
+      presentHl.dataset.active = '0';
+      presentHl.style.width = '0'; presentHl.style.height = '0';
+      return;
+    }
+    const stageRect = presentStage.getBoundingClientRect();
+    const layerRect = presentLayer.getBoundingClientRect();
+    const availW = stageRect.width, availH = stageRect.height;
+    const ar = img.naturalWidth / img.naturalHeight;
+    let w = availW, h = availW / ar;
+    if (h > availH) { h = availH; w = availH * ar; }
+    // 무대 내 중앙 정렬 → 레이어 좌표계로 변환
+    const left = (stageRect.left - layerRect.left) + (availW - w) / 2;
+    const top = (stageRect.top - layerRect.top) + (availH - h) / 2;
+    presentHl.style.left = Math.round(left) + 'px';
+    presentHl.style.top = Math.round(top) + 'px';
+    presentHl.style.width = Math.round(w) + 'px';
+    presentHl.style.height = Math.round(h) + 'px';
+    presentHl.dataset.active = '1';
+    presentHl.classList.toggle('enabled', isLeader && highlightMode);
+    if (isLeader) bindHlPointer(presentHl);
+    renderHighlights();
   }
   function updatePresentNav(cur, total) {
     presentPageEl.textContent = `${cur} / ${total}`;
     presentPrev.disabled = activePage <= 0;
     presentNext.disabled = activePage >= total - 1;
+    updateSongNavButtons();
+  }
+
+  // ---------------- 프레젠테이션 리더 컨트롤 (Feature 1) ----------------
+  // 프레젠 오버레이 컨트롤의 표시/상태를 현재 highlightMode·hlTool·soloName에 맞춤.
+  function updatePresentHlControls() {
+    if (!presentCtrl) return;
+    const pcHl = $('pcHl');
+    if (pcHl) pcHl.classList.toggle('active', highlightMode);
+    const pcTools = $('pcHlTools');
+    if (pcTools) pcTools.classList.toggle('hidden', !highlightMode);
+    // 도구 active 표시
+    presentCtrl.querySelectorAll('.pc-tool').forEach((b) => b.classList.toggle('active', b.dataset.tool === hlTool));
+    // 솔로 도구일 때만 싱어 버튼
+    const pcSinger = $('pcSinger');
+    if (pcSinger) pcSinger.classList.toggle('hidden', !(highlightMode && hlTool === 'solo'));
+    // 색 스와치 active
+    presentCtrl.querySelectorAll('.pc-swatch').forEach((s) => s.classList.toggle('active', s.dataset.color === penColor));
+    // 솔로 이름 라벨
+    const pcSoloName = $('pcSoloName');
+    if (pcSoloName) pcSoloName.textContent = soloName || '싱어';
+    if (pcSinger) pcSinger.classList.toggle('is-set', !!soloName);
+    // 하이라이트 모드 중엔 컨트롤이 사라지지 않게 sticky
+    presentCtrl.classList.toggle('sticky', highlightMode);
+    // present overlay enabled 상태도 보정
+    if (presentHl && presentHl.dataset.active === '1') presentHl.classList.toggle('enabled', isLeader && highlightMode);
+  }
+
+  // 프레젠 위에 라이브챗 시트 열기 (z-index 위로) — 큐 전송 경로는 동일
+  function openPresentSheet() {
+    if (!isLeader) return;
+    sheetScrim.classList.add('over-present');
+    livechatSheet.classList.add('over-present');
+    sheetScrim.classList.remove('hidden');
+    livechatSheet.classList.remove('hidden');
+    requestAnimationFrame(() => {
+      sheetScrim.classList.add('open');
+      livechatSheet.classList.add('open');
+    });
+  }
+  function closePresentSheet() {
+    if (!livechatSheet.classList.contains('over-present')) return;
+    sheetScrim.classList.remove('open');
+    livechatSheet.classList.remove('open');
+    setTimeout(() => {
+      sheetScrim.classList.add('hidden');
+      livechatSheet.classList.add('hidden');
+      sheetScrim.classList.remove('over-present');
+      livechatSheet.classList.remove('over-present');
+    }, 280);
+  }
+
+  // 프레젠 컨트롤 버튼 연결 (한 번만)
+  function wirePresentControls() {
+    if (!presentCtrl || presentCtrl.dataset.wired) return;
+    presentCtrl.dataset.wired = '1';
+    // 곡 이동
+    $('pcSong-prev').onclick = () => { goSong(-1); bumpPresentUi(); };
+    $('pcSong-next').onclick = () => { goSong(+1); bumpPresentUi(); };
+    // 라이브챗 오버레이
+    const pcChat = $('pcChat');
+    if (pcChat) pcChat.onclick = () => { openPresentSheet(); };
+    // 하이라이트 토글
+    const pcHl = $('pcHl');
+    if (pcHl) pcHl.onclick = () => { setHighlightMode(!highlightMode); bumpPresentUi(); };
+    // 도구 (펜/솔로)
+    presentCtrl.querySelectorAll('.pc-tool').forEach((b) => {
+      b.onclick = () => { setHlTool(b.dataset.tool); bumpPresentUi(); };
+    });
+    // 솔로 싱어 선택 (팝오버를 프레젠 위로 — z-index 충분히 높음)
+    const pcSinger = $('pcSinger');
+    if (pcSinger) pcSinger.onclick = () => openSoloPicker(pcSinger);
+    // 색 선택
+    presentCtrl.querySelectorAll('.pc-swatch').forEach((s) => {
+      s.onclick = () => {
+        penColor = s.dataset.color;
+        presentCtrl.querySelectorAll('.pc-swatch').forEach((x) => x.classList.remove('active'));
+        s.classList.add('active');
+        // 뷰어 쪽 스와치도 동기화
+        if (penColors) penColors.querySelectorAll('.pen-swatch').forEach((x) => x.classList.toggle('active', x.dataset.color === penColor));
+        bumpPresentUi();
+      };
+    });
+    // 지우기
+    const pcClear = $('pcClear');
+    if (pcClear) pcClear.onclick = () => { clearHighlights(); bumpPresentUi(); };
   }
 
   // ---------------- 큐 모니터 모드 ----------------
@@ -4589,7 +6402,7 @@
     });
   }
 
-  // 리더가 특정 기기(deviceId)에 역할 배정 → assignmentsData 기록(영속) + broadcast
+  // 리더가 특정 사용자(user id)에 역할 배정 → assignmentsData 기록(영속) + broadcast + DB
   function assignRole(did, role, name) {
     if (!isLeader || !did) return;
     if (role) {
@@ -4598,6 +6411,7 @@
       delete assignmentsData[did]; // 지정 안 함 → 배정 제거
     }
     persistLeaderAssignments();
+    persistMemberRole(did, role);   // room_members.role 영속 (입장 시 로드됨)
     broadcastAssignments();
     applyMyAssignment();   // 내 자신에게 배정했을 수도 있어 즉시 반영
     renderRoster();
@@ -4618,6 +6432,9 @@
     myRole: () => myRole,
     isLeader: () => isLeader,
     connectedPeople: () => connectedPeople(),
+    // 디버그용 읽기 핸들 (동작 비변경, 순수 함수만 노출)
+    highlights: () => highlightsData,
+    soloSingerCandidates: () => soloSingerCandidates(),
   };
 </script>
 
