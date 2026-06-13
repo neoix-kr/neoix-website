@@ -2332,6 +2332,19 @@
     updateLinesStepper();
     renderAll();
 
+    // 악보 찾기·추천에서 ?title=&lyrics= 로 넘어온 값 받아 채우기
+    (function prefillFromQuery() {
+      const sp = new URLSearchParams(location.search);
+      const qTitle = (sp.get("title") || "").trim();
+      const qLyrics = sp.get("lyrics") || "";
+      if (!qTitle && !qLyrics) return;
+      if (qTitle) titleInput.value = qTitle;
+      if (qLyrics) lyricsInput.value = normalizeLyrics(qLyrics);
+      try { history.replaceState(null, "", location.pathname); } catch (e) {}
+      showToast(qLyrics ? "받은 제목·가사를 채웠어요" : "받은 제목을 채웠어요");
+      (qLyrics ? lyricsInput : titleInput).focus();
+    })();
+
     // 첫 페인트 직후(레이아웃 확정) 미리보기를 다시 그려 슬라이드 높이 기반 글자 크기 정확히 반영
     requestAnimationFrame(() => renderPreview());
 
