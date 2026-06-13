@@ -1116,6 +1116,10 @@
     .cue-btn.cue-softer.cue-flash,
     .cue-btn.cue-cresc.cue-flash,
     .cue-btn.cue-decresc.cue-flash { background: var(--text-secondary); color: #fff; border-color: var(--text-secondary); }
+    /* 방송실: 자막 오타만 절제된 앰버 힌트 (나머지는 cue-neutral 그대로) */
+    .cue-btn.cue-av-warn { color: #b88600; }
+    .cue-btn.cue-av-warn:hover { background: rgba(255, 193, 0, 0.08); border-color: var(--warning); }
+    .cue-btn.cue-av-warn.cue-flash { background: var(--warning); color: var(--text); border-color: var(--warning); }
 
     /* ----- 템포: 방향 + 강도 세그먼트 ----- */
     .tempo-row {
@@ -1245,6 +1249,12 @@
     .toast.k-softer { background: var(--text-secondary); color: #fff; box-shadow: 0 12px 48px rgba(78, 89, 104, 0.36), 0 4px 16px rgba(0, 0, 0, 0.12); }
     .toast.k-end { background: var(--text); color: #fff; box-shadow: 0 12px 48px rgba(25, 31, 40, 0.4), 0 4px 16px rgba(0, 0, 0, 0.12); }
     .toast.k-neutral { background: var(--surface); color: var(--text); box-shadow: var(--shadow-card-hover), 0 0 0 1px var(--border); }
+    /* 방송실(AV) 큐 — 절제된 톤 (자막 오타만 앰버) */
+    .toast.k-mrup,
+    .toast.k-lighton { background: var(--text); color: #fff; box-shadow: 0 12px 48px rgba(25, 31, 40, 0.4), 0 4px 16px rgba(0, 0, 0, 0.12); }
+    .toast.k-mrdown,
+    .toast.k-lightoff { background: var(--text-secondary); color: #fff; box-shadow: 0 12px 48px rgba(78, 89, 104, 0.36), 0 4px 16px rgba(0, 0, 0, 0.12); }
+    .toast.k-subtitle { background: var(--warning); color: var(--text); box-shadow: 0 12px 48px rgba(255, 193, 0, 0.4), 0 4px 16px rgba(0, 0, 0, 0.12); }
     /* 강도별 크기 */
     .toast.i-1 { font-size: clamp(26px, 5.5vw, 50px); padding: 28px 48px; gap: 10px; }
     .toast.i-2 { font-size: clamp(30px, 6.8vw, 62px); padding: 36px 56px; gap: 14px; }
@@ -1417,6 +1427,11 @@
     .present-cue.k-end { background: rgba(25,31,40,0.9); }
     .present-cue.k-decresc,
     .present-cue.k-softer { background: rgba(78,89,104,0.92); }
+    .present-cue.k-mrup,
+    .present-cue.k-lighton { background: rgba(25,31,40,0.9); }
+    .present-cue.k-mrdown,
+    .present-cue.k-lightoff { background: rgba(78,89,104,0.92); }
+    .present-cue.k-subtitle { background: rgba(255,193,0,0.95); color: var(--text); }
     .present-cue.i-1 { font-size: clamp(24px, 5vw, 46px); padding: 22px 34px; }
     .present-cue.i-3 { font-size: clamp(34px, 7.5vw, 70px); padding: 30px 46px; }
     .present-cue .toast-ico svg { width: 1.05em; height: 1.05em; stroke-width: 2; }
@@ -1534,6 +1549,11 @@
     .monitor-cue.k-decresc,
     .monitor-cue.k-softer { color: #aeb4bd; }
     .monitor-cue.k-end { color: #e8eaed; }
+    .monitor-cue.k-mrup,
+    .monitor-cue.k-lighton { color: #e8eaed; }
+    .monitor-cue.k-mrdown,
+    .monitor-cue.k-lightoff { color: #aeb4bd; }
+    .monitor-cue.k-subtitle { color: #ffd24a; }
     .monitor-cue.i-3 { font-size: clamp(64px, 20vw, 240px); }
     .monitor-cue.i-1 { font-size: clamp(48px, 14vw, 168px); }
     .monitor-cue-target {
@@ -2307,6 +2327,18 @@
       </div>
     </div>
 
+    <!-- 방송실 (AV) — 기존 큐 파이프라인 그대로, 현재 타겟 선택을 따름 -->
+    <div class="cue-group">
+      <div class="sheet-label">방송실</div>
+      <div class="cue-grid cols-2">
+        <button class="cue-btn cue-neutral" data-kind="mrup" data-intensity="1" data-icon="volup" data-text="MR 크게">MR 크게</button>
+        <button class="cue-btn cue-neutral" data-kind="mrdown" data-intensity="1" data-icon="voldown" data-text="MR 작게">MR 작게</button>
+        <button class="cue-btn cue-av-warn" data-kind="subtitle" data-intensity="1" data-icon="warn" data-text="자막 오타">자막 오타</button>
+        <button class="cue-btn cue-neutral" data-kind="lighton" data-intensity="1" data-icon="lighton" data-text="조명 ON">조명 ON</button>
+        <button class="cue-btn cue-neutral" data-kind="lightoff" data-intensity="1" data-icon="lightoff" data-text="조명 OFF">조명 OFF</button>
+      </div>
+    </div>
+
     <!-- 개인 큐 (특정 역할 타겟일 때만 활성) -->
     <div class="cue-group personal-group" id="personalGroup">
       <div class="sheet-label">개인 큐</div>
@@ -2739,6 +2771,11 @@
     mute:   '<path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M22 9l-6 6"/><path d="M16 9l6 6"/>', // volume-x
     pause:  '<rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/>', // pause
     end:    '<rect x="6" y="6" width="12" height="12" rx="1.5"/>',           // alias → square
+    // ----- 방송실(AV) -----
+    volup:  '<path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M19 9v6"/><path d="M16 12h6"/>',     // speaker + plus (MR 크게)
+    warn:   '<path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/>', // alert-triangle (자막 오타)
+    lighton:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="M4.9 4.9l1.4 1.4"/><path d="M17.7 17.7l1.4 1.4"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="M4.9 19.1l1.4-1.4"/><path d="M17.7 6.3l1.4-1.4"/>', // sun (조명 ON)
+    lightoff:'<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>',     // moon (조명 OFF)
   };
   function cueIconSvg(name, sw = 1.9) {
     const inner = CUE_ICON_PATHS[name] || CUE_ICON_PATHS.repeat;
@@ -2754,6 +2791,11 @@
       case 'cresc': return 'cresc';
       case 'decresc': return 'decresc';
       case 'end': return 'square';
+      case 'mrup': return 'volup';
+      case 'mrdown': return 'voldown';
+      case 'subtitle': return 'warn';
+      case 'lighton': return 'lighton';
+      case 'lightoff': return 'lightoff';
       case 'neutral':
       default: return 'repeat';
     }
