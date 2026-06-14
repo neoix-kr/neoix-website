@@ -1630,17 +1630,15 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 12px;
+      padding: 0;
     }
+    /* 악보를 기기 화면에 꽉 차게 (작아도 확대, 커도 맞춤 — 비율 유지) */
     .present-stage img,
     .present-stage canvas {
-      max-width: 100%;
-      max-height: 100%;
-      width: auto;
-      height: auto;
+      width: 100%;
+      height: 100%;
       object-fit: contain;
       display: block;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
     }
     .present-empty {
       color: var(--text-caption);
