@@ -1558,6 +1558,21 @@
     }
     .toast .toast-ico svg { width: 1.05em; height: 1.05em; stroke-width: 2; }
     .toast .toast-text { display: inline-block; }
+    /* 방송실 뱃지 (큐 위, 파란 바탕·흰 글씨) — 토스트/프레젠/모니터 공통 */
+    .cue-booth {
+      display: inline-block;
+      background: var(--blue);
+      color: #fff;
+      font-size: 0.4em;
+      font-weight: 800;
+      letter-spacing: 0.01em;
+      padding: 0.3em 0.85em;
+      border-radius: 999px;
+      line-height: 1.2;
+      margin-bottom: 0.15em;
+    }
+    /* "엄청"은 윗줄로 (글자 겹침 방지) */
+    .cue-intens { display: block; line-height: 1.05; }
     .toast.is-danger { background: var(--danger); color: #fff; box-shadow: 0 12px 48px rgba(240, 68, 82, 0.4), 0 4px 16px rgba(0, 0, 0, 0.12); }
     .toast.is-end { background: var(--text); color: #fff; box-shadow: 0 12px 48px rgba(25, 31, 40, 0.4), 0 4px 16px rgba(0, 0, 0, 0.12); }
     .toast.is-info { background: var(--surface); color: var(--text); box-shadow: var(--shadow-card-hover), 0 0 0 1px var(--border); }
@@ -6015,13 +6030,22 @@
     showCueToast(payload, selfPreview);
   }
 
+  const AV_CUE_KINDS = ['mrup', 'mrdown', 'subtitle', 'lighton', 'lightoff'];
   function cueInnerHtml(payload, selfPreview, targetClass = 'toast-target') {
-    const icon = `<span class="toast-ico">${cueIconSvg(kindToIcon(payload.kind || 'neutral'), 2)}</span>`;
+    const kind = payload.kind || 'neutral';
+    const boothLabel = AV_CUE_KINDS.includes(kind) ? `<span class="cue-booth">방송실</span>` : '';
+    const icon = `<span class="toast-ico">${cueIconSvg(kindToIcon(kind), 2)}</span>`;
     const targetLabel =
       (payload.target && payload.target !== '전체')
         ? `<span class="${targetClass}">${escapeHtml(payload.target)}${selfPreview ? '에게' : ''}</span>`
         : '';
-    return `${targetLabel}${icon}<span class="toast-text">${escapeHtml(payload.text)}</span>`;
+    // "엄청 빠르게/느리게" → "엄청"을 윗줄로 분리
+    const text = String(payload.text || '');
+    const m = text.match(/^(엄청)\s+(.+)$/);
+    const textHtml = m
+      ? `<span class="toast-text"><span class="cue-intens">${escapeHtml(m[1])}</span>${escapeHtml(m[2])}</span>`
+      : `<span class="toast-text">${escapeHtml(text)}</span>`;
+    return `${boothLabel}${targetLabel}${icon}${textHtml}`;
   }
 
   function showCueToast(payload, selfPreview = false) {
