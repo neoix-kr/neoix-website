@@ -3894,7 +3894,9 @@
   async function enterRoomByCode(code) {
     if (!myUserId) { pendingRoomCode = code; enteringRoom = false; showScreen('auth'); return; }
     const norm = (code || '').toUpperCase().trim();
+    if (!norm) { miniToast('방 코드를 입력해주세요'); return; }
     let room = null;
+    // 1) 내가 owner거나 이미 멤버면 RLS로 직접 조회됨
     try {
       const { data, error } = await supabase.from('rooms')
         .select('id, code, name, owner_id, conti')
@@ -3902,10 +3904,25 @@
       if (error) throw error;
       room = data;
     } catch (e) {
-      console.warn('방 조회 실패', e);
-      miniToast('방을 찾지 못했어요 (DB 설정을 확인해주세요)');
-      bailToHomeIfAuto();
-      return;
+      console.warn('방 직접 조회 실패(멤버 아닐 수 있음)', e);
+    }
+    // 2) 아직 멤버가 아니면 RLS로 방이 안 보임 → RPC로 입장(멤버십 기록 + 방 반환, RLS 우회)
+    if (!room) {
+      try {
+        const pname = (($('myNameInput') && $('myNameInput').value) || '').trim();
+        const { data, error } = await supabase.rpc('join_room_by_code', { p_code: norm, p_name: pname });
+        if (error) {
+          if (/room_not_found/i.test(error.message || '') || error.code === 'P0001') {
+            miniToast('그 코드의 방이 없어요'); bailToHomeIfAuto(); return;
+          }
+          console.warn('입장 RPC 실패', error);
+          miniToast('입장에 실패했어요 (DB 설정을 확인해주세요)'); bailToHomeIfAuto(); return;
+        }
+        room = Array.isArray(data) ? data[0] : data;
+      } catch (e) {
+        console.warn('입장 실패', e);
+        miniToast('입장에 실패했어요'); bailToHomeIfAuto(); return;
+      }
     }
     if (!room) { miniToast('그 코드의 방이 없어요'); bailToHomeIfAuto(); return; }
     enterRoom(room);
