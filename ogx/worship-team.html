@@ -4574,6 +4574,8 @@
         // 프레젠 위로 띄웠던 z-index 승격 해제 (없으면 무해)
         sheetScrim.classList.remove('over-present');
         livechatSheet.classList.remove('over-present');
+        fsRestore(sheetScrim);   // 전체화면 안으로 옮겼던 시트를 원위치로
+        fsRestore(livechatSheet);
       }, 280);
     };
     btnLivechat.onclick = openSheet;
@@ -5930,6 +5932,8 @@
     renderSoloSingerList();
     const free = $('soloFreeName');
     if (free) free.value = '';
+    fsAppend(soloPopScrim);   // 전체화면(프레젠)에서도 보이게 안으로 이동
+    fsAppend(soloPop);
     soloPopScrim.classList.remove('hidden');
     soloPop.classList.remove('hidden');
     positionSoloPop();
@@ -5952,6 +5956,8 @@
   function closeSoloPicker() {
     if (soloPop) soloPop.classList.add('hidden');
     if (soloPopScrim) soloPopScrim.classList.add('hidden');
+    fsRestore(soloPop);
+    fsRestore(soloPopScrim);
   }
   // 솔로 싱어 확정 — 라벨 갱신 + 솔로 도구로 전환
   function pickSolo(name) {
@@ -6252,9 +6258,24 @@
     if (presentHl && presentHl.dataset.active === '1') presentHl.classList.toggle('enabled', isLeader && highlightMode);
   }
 
-  // 프레젠 위에 라이브챗 시트 열기 (z-index 위로) — 큐 전송 경로는 동일
+  // 네이티브 전체화면에선 "전체화면 요소의 자식"만 렌더됨.
+  // → 오버레이(라이브챗 시트·솔로 팝업 등)를 전체화면 요소 안으로 옮겨야 보인다.
+  function fsAppend(el) {
+    const fsEl = document.fullscreenElement || document.webkitFullscreenElement;
+    if (fsEl && el && el.parentNode !== fsEl) {
+      if (!el._home) el._home = el.parentNode;
+      fsEl.appendChild(el);
+    }
+  }
+  function fsRestore(el) {
+    if (el && el._home && el.parentNode !== el._home) el._home.appendChild(el);
+  }
+
+  // 프레젠 위에 라이브챗 시트 열기 (전체화면 안으로 이동 + z-index 위로) — 큐 전송 경로는 동일
   function openPresentSheet() {
     if (!isLeader) return;
+    fsAppend(sheetScrim);
+    fsAppend(livechatSheet);
     sheetScrim.classList.add('over-present');
     livechatSheet.classList.add('over-present');
     sheetScrim.classList.remove('hidden');
@@ -6273,6 +6294,8 @@
       livechatSheet.classList.add('hidden');
       sheetScrim.classList.remove('over-present');
       livechatSheet.classList.remove('over-present');
+      fsRestore(sheetScrim);
+      fsRestore(livechatSheet);
     }, 280);
   }
 
