@@ -4269,6 +4269,8 @@
   function onViewer(payload) {
     if (isLeader || !payload) return;       // 리더는 자기 viewer 따름 (자기 송신 메아리 무시)
     viewerData = { songId: payload.songId || null, page: payload.page || 0, scrollRatio: payload.scrollRatio || 0 };
+    // 프레젠테이션(전체화면)은 "리더 화면 보기" 모드 → 멤버는 오프라인이어도 항상 리더를 따라감
+    if (presentMode && !isFollowing) { isFollowing = true; if (followIndicator) followIndicator.classList.add('hidden'); }
     if (isFollowing) {
       const sid = viewerData.songId;
       const pg = viewerData.page || 0;
@@ -4581,12 +4583,13 @@
     // ---- 프레젠테이션 모드 ----
     if (btnPresent) btnPresent.onclick = enterPresentMode;
     presentExit.onclick = exitPresentMode;
-    presentPrev.onclick = () => { goPage(-1); bumpPresentUi(); };
-    presentNext.onclick = () => { goPage(+1); bumpPresentUi(); };
+    // 프레젠테이션 네비는 리더만 (멤버는 리더 화면을 따라가는 모드 — 독립 네비 잠금)
+    presentPrev.onclick = () => { if (isLeader) goPage(-1); bumpPresentUi(); };
+    presentNext.onclick = () => { if (isLeader) goPage(+1); bumpPresentUi(); };
     // 리더 전용 떠있는 컨트롤 연결
     wirePresentControls();
-    // 프레젠 무대 스와이프 (하이라이트 OFF일 때만 — 그리기 우선). 경계서 곡 이동.
-    attachSwipe(presentLayer, () => presentMode && !highlightMode && !!activeSongId);
+    // 프레젠 무대 스와이프 (리더만, 하이라이트 OFF일 때 — 그리기 우선). 경계서 곡 이동.
+    attachSwipe(presentLayer, () => presentMode && !highlightMode && !!activeSongId && isLeader);
     // 마우스 움직이거나 탭하면 UI 잠깐 표시 (+ 오버레이 위치 보정)
     presentLayer.addEventListener('mousemove', bumpPresentUi);
     presentLayer.addEventListener('touchstart', bumpPresentUi, { passive: true });
@@ -6114,6 +6117,13 @@
   function enterPresentMode() {
     if (presentMode) return;
     presentMode = true;
+    // 멤버: 프레젠테이션 진입 시 리더 현재 위치로 스냅 + 항상 따라가기
+    if (!isLeader && viewerData.songId) {
+      isFollowing = true;
+      if (followIndicator) followIndicator.classList.add('hidden');
+      activeSongId = viewerData.songId;
+      activePage = viewerData.page || 0;
+    }
     // 다른 전체화면 모드와 배타적
     if (monitorMode) exitMonitorMode(true);
     document.body.style.overflow = 'hidden';
