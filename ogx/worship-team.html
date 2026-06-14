@@ -456,6 +456,24 @@
       line-height: 1.5;
     }
     .auth-error.hidden { display: none; }
+
+    /* 비밀번호 조건 체크리스트 (회원가입 모드) */
+    .pw-reqs { display: none; flex-direction: column; gap: 7px; margin: 2px 2px 0; }
+    .pw-reqs.show { display: flex; }
+    .pw-req {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 12.5px; font-weight: 500; color: var(--text-caption);
+      letter-spacing: -0.005em; transition: color 0.15s ease;
+    }
+    .pw-req-ico {
+      width: 17px; height: 17px; border-radius: 50%; flex-shrink: 0;
+      display: inline-flex; align-items: center; justify-content: center;
+      background: var(--surface-3); color: transparent;
+      transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease;
+    }
+    .pw-req-ico svg { width: 11px; height: 11px; }
+    .pw-req.met { color: var(--text-secondary); }
+    .pw-req.met .pw-req-ico { background: var(--success); color: #fff; transform: scale(1.05); }
     .auth-toggle {
       margin-top: 18px;
       font-size: 13px;
@@ -2620,6 +2638,11 @@
       <input class="input" id="authId" placeholder="영문·숫자 아이디" autocomplete="username" autocapitalize="none" spellcheck="false" />
       <span class="auth-field-label">비밀번호</span>
       <input class="input" id="authPw" type="password" placeholder="비밀번호 (6자 이상)" autocomplete="current-password" />
+      <div class="pw-reqs" id="authPwReqs">
+        <div class="pw-req" data-req="len"><span class="pw-req-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>6자 이상</div>
+        <div class="pw-req" data-req="alpha"><span class="pw-req-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>영문 포함</div>
+        <div class="pw-req" data-req="num"><span class="pw-req-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>숫자 포함</div>
+      </div>
       <div class="auth-error hidden" id="authError"></div>
       <button class="btn btn-primary btn-block" id="authSubmit" type="submit" style="margin-top:6px;">로그인</button>
     </form>
@@ -3552,7 +3575,7 @@
       form.dataset.wired = '1';
       form.addEventListener('submit', (e) => { e.preventDefault(); submitAuth(); });
       $('authId').addEventListener('input', () => hideAuthError());
-      $('authPw').addEventListener('input', () => hideAuthError());
+      $('authPw').addEventListener('input', () => { hideAuthError(); updatePwReqs(); });
     }
     if (toggleBtn && !toggleBtn.dataset.wired) {
       toggleBtn.dataset.wired = '1';
@@ -3573,10 +3596,30 @@
       ? '계정이 없으신가요? <button type="button" id="authToggleBtn">회원가입</button>'
       : '이미 계정이 있으신가요? <button type="button" id="authToggleBtn">로그인</button>';
     $('authPw').setAttribute('autocomplete', isLogin ? 'current-password' : 'new-password');
+    // 회원가입 모드에서만 비밀번호 조건 체크리스트 표시
+    $('authPwReqs')?.classList.toggle('show', !isLogin);
+    updatePwReqs();
     // 토글 버튼 다시 연결 (innerHTML 교체됨)
     const tb = $('authToggleBtn');
     if (tb) tb.onclick = () => setAuthMode(authMode === 'login' ? 'signup' : 'login');
     hideAuthError();
+  }
+
+  // 비밀번호 조건 검사 + 체크리스트 갱신
+  function pwChecks(pw) {
+    return { len: pw.length >= 6, alpha: /[A-Za-z]/.test(pw), num: /[0-9]/.test(pw) };
+  }
+  function pwAllMet(pw) {
+    const c = pwChecks(pw);
+    return c.len && c.alpha && c.num;
+  }
+  function updatePwReqs() {
+    const box = $('authPwReqs');
+    if (!box) return;
+    const c = pwChecks($('authPw')?.value || '');
+    box.querySelectorAll('.pw-req').forEach((el) => {
+      el.classList.toggle('met', !!c[el.getAttribute('data-req')]);
+    });
   }
 
   function showAuthError(msg) {
@@ -3597,6 +3640,11 @@
     }
     if (pw.length < 6) {
       showAuthError('비밀번호는 6자 이상으로 입력해요.');
+      $('authPw').focus();
+      return;
+    }
+    if (authMode === 'signup' && !pwAllMet(pw)) {
+      showAuthError('비밀번호 조건을 모두 충족해주세요. (6자 이상 · 영문 · 숫자)');
       $('authPw').focus();
       return;
     }
