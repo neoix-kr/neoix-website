@@ -946,11 +946,12 @@
     }
 
     /* 펜 하이라이트 — 캔버스 오버레이 (형광펜 자유곡선) */
+    /* 좌표 기준 = 실제 렌더된 악보 이미지 사각형. JS(positionHlOverlay)가 left/top/width/height를
+       이미지 박스에 픽셀 단위로 맞춤 → 정규화 0~1 좌표가 기기/모드 무관 같은 악보 지점을 가리킴. */
     .highlight-overlay {
       position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
+      left: 0; top: 0;
+      width: 0; height: 0;       /* JS가 이미지 렌더 사각형에 맞춰 지정 */
       pointer-events: none;
       touch-action: none;       /* 그릴 때 스크롤/줌 방지 */
       mix-blend-mode: multiply; /* 형광펜처럼 악보가 비쳐 보이게 */
@@ -4596,8 +4597,8 @@
     // 화면 크기 변경 시 무대 재렌더 (PDF는 캔버스라 리사이즈 필요)
     window.addEventListener('resize', debounce(() => {
       if (presentMode) renderPresentStage();
-      // 악보 표시 크기가 바뀌면 형광펜 오버레이도 다시 그림 (비율 좌표라 위치 유지)
-      if (canvas.querySelector('#hlOverlay')) renderHighlights();
+      // 악보 표시 크기가 바뀌면 오버레이를 새 이미지 사각형에 다시 맞추고(좌표 기준 유지) 재드로우
+      if (canvas.querySelector('#hlOverlay')) { positionHlOverlay(); renderHighlights(); }
       positionSoloPop();
     }, 200));
 
@@ -5546,17 +5547,44 @@
     return `${activeSongId}|${activePage}`;
   }
 
-  // 오버레이 캔버스 비트맵을 표시 크기(clientW/H)에 맞춤 (DPR 반영, 최대 2.5x)
+  // DPR 상한 — 화질 유지선에서 성능 우선 (대형 비트맵 재드로우 비용↓)
+  const HL_DPR_CAP = 2.0;
+  // 오버레이 캔버스 비트맵을 표시 크기(clientW/H)에 맞춤 (DPR 반영, 최대 2.0x).
+  // 반환: 비트맵 크기가 바뀌었으면 true (→ 전체 재드로우 필요).
   function sizeHlCanvas(overlay) {
     const w = overlay.clientWidth || 1;
     const h = overlay.clientHeight || 1;
-    const dpr = Math.min(window.devicePixelRatio || 1, 2.5);
+    const dpr = Math.min(window.devicePixelRatio || 1, HL_DPR_CAP);
     const bw = Math.max(1, Math.round(w * dpr));
     const bh = Math.max(1, Math.round(h * dpr));
     if (overlay.width !== bw || overlay.height !== bh) {
       overlay.width = bw;
       overlay.height = bh;
+      return true;
     }
+    return false;
+  }
+
+  // 뷰어 오버레이(#hlOverlay)를 실제 렌더된 악보 <img> 사각형에 픽셀 단위로 맞춤.
+  // → 정규화 0~1 좌표의 기준이 "보이는 악보 이미지 박스"가 되어, 프레젠테이션
+  //    (positionPresentHl)·다른 기기와 동일 기준을 공유한다. 이미지 없으면 0 크기로 접음.
+  function positionHlOverlay() {
+    const overlay = canvas.querySelector('#hlOverlay');
+    if (!overlay) return;
+    const img = canvas.querySelector('img');
+    if (!img || !img.naturalWidth) {
+      overlay.style.width = '0'; overlay.style.height = '0';
+      overlay.dataset.fit = '0';
+      return;
+    }
+    const cr = canvas.getBoundingClientRect();
+    const ir = img.getBoundingClientRect();
+    // #canvas 기준 좌표 (스크롤/패딩 영향 없이 두 rect 차이로)
+    overlay.style.left = Math.round(ir.left - cr.left) + 'px';
+    overlay.style.top = Math.round(ir.top - cr.top) + 'px';
+    overlay.style.width = Math.round(ir.width) + 'px';
+    overlay.style.height = Math.round(ir.height) + 'px';
+    overlay.dataset.fit = '1';
   }
 
   // 형광펜 그리기 핸들러를 한 오버레이에 연결 (뷰어/프레젠 공용)
@@ -5567,7 +5595,8 @@
     overlay.addEventListener('pointermove', onHlMove);
     overlay.addEventListener('pointerup', onHlEnd);
     overlay.addEventListener('pointercancel', onHlEnd);
-    overlay.addEventListener('pointerleave', onHlEnd);
+    // pointerleave는 그리는 중(setPointerCapture) 중단을 일으켜 좌표가 튈 수 있어 제외.
+    // 캡처 덕분에 포인터가 오버레이를 벗어나도 move/up은 계속 들어온다.
   }
 
   function setupHighlightLayer() {
@@ -5577,6 +5606,7 @@
     overlay.id = 'hlOverlay';
     if (isLeader && highlightMode) overlay.classList.add('enabled');
     canvas.appendChild(overlay);
+    positionHlOverlay();   // 먼저 이미지 사각형에 맞춤 → clientW/H 확정
     sizeHlCanvas(overlay);
     if (isLeader) bindHlPointer(overlay);
     renderHighlights();
@@ -5688,28 +5718,90 @@
     ctx.closePath();
   }
 
-  // 한 오버레이 캔버스에 현재 페이지 stroke 전부를 그림
+  // ── 렌더 파이프라인 (성능: 전체 재드로우 vs. 증분) ──────────────────────────
+  // 전체 재드로우(paintHlOverlay)는 무겁다(현재 페이지 stroke 전부 × 큰 비트맵).
+  // 그리는 중에는 "확정 stroke 비트맵"을 한 번만 만들어두고(snapshot), 매 move마다
+  //   ① 그 비트맵을 통째로 blit 복원(O(1)) ② 그리는 중인 stroke 하나만 위에 그림(O(k))
+  // 으로 처리해 O(n²)을 피한다. (확정 레이어 + 그리는 중 레이어 분리 효과를 1캔버스로)
+
+  // 확정 stroke들만(=그리는 중인 drawing 제외) 캔버스에 채워 그림.
+  function drawCommitted(ctx, W, H) {
+    const arr = highlightsData[highlightKey()];
+    if (!arr) return;
+    for (const stroke of arr) {
+      if (drawing && stroke && stroke.id === drawing.id) continue; // 그리는 중인 건 활성 레이어에서
+      drawStroke(ctx, stroke, W, H);
+    }
+  }
+
+  // 한 오버레이를 전체 재드로우. 그리는 중이면 확정 비트맵을 snapshot 해두고 활성 stroke를 얹는다.
   function paintHlOverlay(overlay) {
     if (!overlay) return;
     sizeHlCanvas(overlay);
     const ctx = overlay.getContext('2d');
     const W = overlay.width, H = overlay.height;
     ctx.clearRect(0, 0, W, H);
-    const arr = highlightsData[highlightKey()];
-    if (arr) arr.forEach((stroke) => drawStroke(ctx, stroke, W, H));
-    if (drawing && !sameStrokeInArr(drawing, arr)) drawStroke(ctx, drawing, W, H);
+    drawCommitted(ctx, W, H);
+    if (drawing && isActiveOverlay(overlay)) {
+      // 확정 상태를 오프스크린에 저장 → 이후 move는 blit+활성stroke만
+      snapshotCommitted(overlay, W, H);
+      drawStroke(ctx, drawing, W, H);
+    } else {
+      overlay._hlCommit = null; // 그리는 중 아님 → snapshot 불필요
+    }
   }
 
-  // 동기화된 stroke + 그리는 중인 로컬 stroke를 활성 오버레이들에 다시 그림
-  // (뷰어 #hlOverlay + 프레젠테이션 #presentHl — 둘 다 같은 highlightsData 사용)
-  function renderHighlights() {
-    paintHlOverlay(canvas.querySelector('#hlOverlay'));
-    if (presentMode && presentHl && presentHl.dataset.active === '1') paintHlOverlay(presentHl);
+  // 확정 비트맵을 오프스크린 캔버스에 보관 (overlay별)
+  function snapshotCommitted(overlay, W, H) {
+    let snap = overlay._hlCommit;
+    if (!snap) { snap = document.createElement('canvas'); overlay._hlCommit = snap; }
+    if (snap.width !== W || snap.height !== H) { snap.width = W; snap.height = H; }
+    const sctx = snap.getContext('2d');
+    sctx.clearRect(0, 0, W, H);
+    sctx.drawImage(overlay, 0, 0);
   }
-  // 그리는 중 stroke가 이미 배열에 (증분으로) 들어가 있으면 중복 렌더 방지
-  function sameStrokeInArr(stroke, arr) {
-    if (!arr || !stroke || !stroke.id) return false;
-    return arr.some((s) => s && s.id === stroke.id);
+
+  // 그리는 중 한 프레임: 확정 비트맵 복원(blit) + 활성 stroke 하나만 다시 그림 (가벼움)
+  function repaintActive(overlay) {
+    if (!overlay || !drawing) return;
+    const snap = overlay._hlCommit;
+    const ctx = overlay.getContext('2d');
+    const W = overlay.width, H = overlay.height;
+    if (!snap || snap.width !== W || snap.height !== H) {
+      // 비트맵 크기가 바뀌었으면(회전·리사이즈) 전체 재드로우로 복구
+      paintHlOverlay(overlay);
+      return;
+    }
+    ctx.clearRect(0, 0, W, H);
+    ctx.drawImage(snap, 0, 0);
+    drawStroke(ctx, drawing, W, H);
+  }
+
+  function isActiveOverlay(overlay) {
+    // 뷰어/프레젠 중 현재 화면에 떠 있는 오버레이만 활성 취급
+    if (overlay && overlay.id === 'hlOverlay') return true;
+    if (overlay === presentHl && presentMode && presentHl.dataset.active === '1') return true;
+    return false;
+  }
+
+  // 활성 오버레이 목록 (현재 화면에 보이는 것만)
+  function activeOverlays() {
+    const out = [];
+    const ov = canvas.querySelector('#hlOverlay');
+    if (ov) out.push(ov);
+    if (presentMode && presentHl && presentHl.dataset.active === '1') out.push(presentHl);
+    return out;
+  }
+
+  // 동기화된 stroke + 그리는 중인 로컬 stroke를 활성 오버레이들에 그림.
+  // opts.active === true 면 "그리는 중 가벼운 경로"(blit+활성stroke). 아니면 전체 재드로우.
+  // (뷰어 #hlOverlay + 프레젠테이션 #presentHl — 둘 다 같은 highlightsData 사용)
+  function renderHighlights(opts) {
+    const active = opts && opts.active && drawing;
+    for (const ov of activeOverlays()) {
+      if (active && ov._hlCommit) repaintActive(ov);
+      else paintHlOverlay(ov);
+    }
   }
 
   function hlPoint(e, overlay) {
@@ -5760,7 +5852,8 @@
     if (drawing.type === 'solo') {
       // 수평 스냅: y는 시작값 고정, x만 확장 (세로 흔들림 무시)
       drawing.x2 = p.x;
-      if (!_hlRaf) _hlRaf = requestAnimationFrame(() => { _hlRaf = 0; renderHighlights(); });
+      // 그리는 중 가벼운 경로(blit+활성stroke) — 전체 재드로우 X
+      if (!_hlRaf) _hlRaf = requestAnimationFrame(() => { _hlRaf = 0; renderHighlights({ active: true }); });
       scheduleHlDelta();
       return;
     }
@@ -5768,8 +5861,8 @@
     // 너무 촘촘한 점은 솎아냄 (데이터/렌더 절약)
     if (!last || Math.hypot(p.x - last.x, p.y - last.y) > 0.004) {
       drawing.points.push(p);
-      // 로컬은 즉시(rAF) 렌더 — 브로드캐스트 왕복을 기다리지 않음
-      if (!_hlRaf) _hlRaf = requestAnimationFrame(() => { _hlRaf = 0; renderHighlights(); });
+      // 로컬은 즉시(rAF) 렌더 — 브로드캐스트 왕복 대기 X, 전체 재드로우도 X(증분)
+      if (!_hlRaf) _hlRaf = requestAnimationFrame(() => { _hlRaf = 0; renderHighlights({ active: true }); });
       scheduleHlDelta();
     }
   }
