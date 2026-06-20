@@ -546,6 +546,23 @@
       grid-template-columns: 1fr auto;
       gap: 8px;
     }
+    .home-create-date {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .home-create-date .hcd-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-caption);
+      white-space: nowrap;
+    }
+    .home-create-date input[type="date"] {
+      flex: 1;
+      max-width: 220px;
+      cursor: pointer;
+    }
     .room-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
     .room-row {
       display: flex;
@@ -2340,7 +2357,8 @@
       letter-spacing: -0.005em;
     }
     .field { margin-bottom: 18px; }
-    .field label {
+    /* 토글 라벨(.toggle)은 제외 — 안 그러면 inline-flex가 block으로 깨져 스위치/텍스트가 겹침 */
+    .field label:not(.toggle) {
       display: block;
       font-size: 13px;
       color: var(--text-secondary);
@@ -2486,7 +2504,11 @@
       align-items: center;
       justify-content: center;
       color: var(--text-caption);
+      cursor: grab;                /* 드래그로 순서 변경 */
+      touch-action: none;
     }
+    .sheet-thumb:active { cursor: grabbing; }
+    .sheet-thumb.sheet-thumb-ghost { opacity: 0.4; }
     .sheet-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
     .sheet-thumb .st-num {
       position: absolute;
@@ -2905,8 +2927,12 @@
     <div class="home-card">
       <div class="home-card-title">새 방 만들기</div>
       <div class="home-create-row">
-        <input class="input" id="homeRoomName" placeholder="방 이름 (예: 주일 1부 찬양팀)" maxlength="40" autocomplete="off" />
+        <input class="input" id="homeRoomName" placeholder="제목 (예: 주일 1부 찬양팀)" maxlength="40" autocomplete="off" />
         <button class="btn btn-primary" id="btnHomeCreate">만들기</button>
+      </div>
+      <div class="home-create-date">
+        <span class="hcd-label">또는 날짜로</span>
+        <input class="input" type="date" id="homeRoomDate" aria-label="방 날짜 선택" />
       </div>
     </div>
 
@@ -4015,6 +4041,18 @@
     if (nameInput && !nameInput.dataset.wired) {
       nameInput.dataset.wired = '1';
       nameInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') $('btnHomeCreate').click(); });
+    }
+    // 날짜 선택 → 제목칸을 날짜로 채움 (캘린더로 방 이름 정하기)
+    const dateInput = $('homeRoomDate');
+    if (dateInput && !dateInput.dataset.wired) {
+      dateInput.dataset.wired = '1';
+      dateInput.addEventListener('change', () => {
+        const v = dateInput.value;            // 'YYYY-MM-DD'
+        if (!v) return;
+        const [y, m, d] = v.split('-').map(Number);
+        const wd = ['일','월','화','수','목','금','토'][new Date(y, m - 1, d).getDay()];
+        $('homeRoomName').value = `${y}.${String(m).padStart(2,'0')}.${String(d).padStart(2,'0')} (${wd})`;
+      });
     }
     if (!$('btnHomeCreate').dataset.wired) {
       $('btnHomeCreate').dataset.wired = '1';
@@ -5366,6 +5404,26 @@
           renderSheetPreview();
         };
       });
+      // 드래그로 악보 순서 변경 (SortableJS). 삭제 버튼(✕)에서는 드래그 시작 안 함.
+      if (strip._sortable) { try { strip._sortable.destroy(); } catch (_) {} strip._sortable = null; }
+      if (window.Sortable && Array.isArray(modalContext.pages) && modalContext.pages.length > 1) {
+        strip._sortable = window.Sortable.create(strip, {
+          animation: 150,
+          draggable: '.sheet-thumb',
+          filter: '.st-del',
+          ghostClass: 'sheet-thumb-ghost',
+          onEnd: () => {
+            const order = [...strip.querySelectorAll('.sheet-thumb')].map((el) => parseInt(el.dataset.i, 10));
+            const pages = modalContext.pages || [];
+            const next = order.map((i) => pages[i]).filter((p) => p != null);
+            // 화면에 안 보인(12장 초과) 페이지는 원래 순서로 뒤에 유지
+            for (let i = 0; i < pages.length; i++) if (!order.includes(i)) next.push(pages[i]);
+            modalContext.pages = next;
+            modalContext.fileName = `악보 ${next.length}장`;
+            renderSheetPreview();
+          },
+        });
+      }
     }
   }
 
