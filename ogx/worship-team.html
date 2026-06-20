@@ -1894,6 +1894,232 @@
       .pc-tool { padding: 7px 10px; font-size: 12px; }
     }
 
+    /* ---------- ACCOMPANIST MODE (반주자 — 두 페이지 좌우 스프레드) ---------- */
+    .accompanist-layer {
+      position: fixed;
+      inset: 0;
+      background: var(--surface-2);   /* 아주 옅은 회색 — 차분 */
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .accompanist-layer.hidden { display: none; }
+    /* 좌우 2분할 스프레드 */
+    .acc-spread {
+      flex: 1;
+      min-height: 0;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      padding: 10px;
+      position: relative;
+    }
+    /* 두 페이지 사이 얇은 구분선 */
+    .acc-spread::after {
+      content: "";
+      position: absolute;
+      top: 14px; bottom: 14px;
+      left: 50%;
+      width: 1px;
+      background: var(--border);
+      transform: translateX(-0.5px);
+      pointer-events: none;
+    }
+    .acc-panel {
+      min-width: 0;
+      min-height: 0;
+      background: #fff;
+      border-radius: var(--radius-sm);
+      box-shadow: var(--shadow-card);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    /* 악보 이미지가 패널을 꽉 채움 (작아도 확대, 커도 맞춤 — 비율 유지) */
+    .acc-panel img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+    .acc-panel.is-empty {
+      background: var(--surface-3);
+      box-shadow: none;
+    }
+    .acc-empty {
+      color: var(--text-disabled);
+      font-size: 14px;
+      font-weight: 600;
+      text-align: center;
+      padding: 24px;
+      line-height: 1.6;
+      letter-spacing: -0.01em;
+    }
+    /* 좌우 탭 영역 (이전/다음 스프레드) — 화면 좌/우 1/3 */
+    .acc-tap {
+      position: absolute;
+      top: 0; bottom: 0;
+      width: 33.333%;
+      z-index: 4;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      display: flex;
+      align-items: center;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+    .acc-tap.left { left: 0; justify-content: flex-start; padding-left: 18px; }
+    .acc-tap.right { right: 0; justify-content: flex-end; padding-right: 18px; }
+    .acc-tap:disabled { cursor: default; }
+    .accompanist-layer.show-ui .acc-tap:not(:disabled) { opacity: 1; }
+    .acc-tap .tap-glyph {
+      width: 46px; height: 46px;
+      border-radius: 50%;
+      background: rgba(25,31,40,0.06);
+      color: var(--text-secondary);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      box-shadow: var(--shadow-segment);
+    }
+    /* 상단 얇은 컨트롤 바 (자동 숨김) */
+    .acc-topbar {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      z-index: 6;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      background: linear-gradient(to bottom, rgba(255,255,255,0.96), rgba(255,255,255,0));
+      opacity: 0;
+      transform: translateY(-6px);
+      pointer-events: none;
+      transition: opacity 0.25s ease, transform 0.25s ease;
+    }
+    .accompanist-layer.show-ui .acc-topbar { opacity: 1; transform: translateY(0); pointer-events: auto; }
+    .acc-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.01em;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      min-width: 0;
+    }
+    .acc-title .acc-title-sub {
+      color: var(--text-caption);
+      font-weight: 600;
+      margin-left: 6px;
+    }
+    .acc-spacer { flex: 1; }
+    /* 리더 따라가기 토글 (칩) */
+    .acc-follow {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 13px;
+      border-radius: var(--radius-pill);
+      border: none;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      background: var(--surface-3);
+      color: var(--text-secondary);
+      transition: background 0.15s ease, color 0.15s ease;
+      flex-shrink: 0;
+      white-space: nowrap;
+    }
+    .acc-follow .acc-follow-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--text-disabled);
+    }
+    .acc-follow.is-on {
+      background: var(--blue-soft);
+      color: var(--blue-strong);
+    }
+    .acc-follow.is-on .acc-follow-dot {
+      background: var(--success);
+      box-shadow: 0 0 0 0 rgba(22,192,152,0.45);
+      animation: peerPulse 2s ease-out infinite;
+    }
+    .acc-follow:hover { background: var(--border); }
+    .acc-follow.is-on:hover { background: #d8e9fe; }
+    /* 나가기 X */
+    .acc-exit {
+      width: 38px; height: 38px;
+      border-radius: 50%;
+      border: none;
+      background: var(--surface-3);
+      color: var(--text-secondary);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s ease, color 0.15s ease;
+      flex-shrink: 0;
+    }
+    .acc-exit:hover { background: var(--border); color: var(--text); }
+    .acc-exit svg { width: 20px; height: 20px; }
+    /* 하단 얇은 위치 바 (스프레드 인디케이터 + ◀ ▶) */
+    .acc-botbar {
+      position: absolute;
+      bottom: 14px;
+      left: 50%;
+      transform: translate(-50%, 6px);
+      z-index: 6;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 5px;
+      border-radius: var(--radius-pill);
+      background: rgba(25,31,40,0.72);
+      box-shadow: 0 6px 24px rgba(0,0,0,0.2);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease, transform 0.25s ease;
+    }
+    .accompanist-layer.show-ui .acc-botbar { opacity: 1; transform: translate(-50%, 0); pointer-events: auto; }
+    .acc-nav-btn {
+      width: 34px; height: 34px;
+      border-radius: 50%;
+      border: none;
+      background: rgba(255,255,255,0.12);
+      color: #fff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      transition: background 0.15s ease, transform 0.08s ease;
+    }
+    .acc-nav-btn:hover:not(:disabled) { background: rgba(255,255,255,0.24); }
+    .acc-nav-btn:active:not(:disabled) { transform: scale(0.92); }
+    .acc-nav-btn:disabled { opacity: 0.32; cursor: default; }
+    .acc-pos {
+      color: #fff;
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      padding: 0 10px;
+      min-width: 64px;
+      text-align: center;
+    }
+
+    @media (max-width: 720px) {
+      .acc-spread { gap: 6px; padding: 6px; }
+      .acc-topbar { padding: 8px 10px; gap: 8px; }
+      .acc-title { font-size: 13px; }
+      .acc-follow { padding: 6px 10px; font-size: 12px; }
+    }
+
     /* ---------- CUE MONITOR (라이브챗만 보기) ---------- */
     .monitor-layer {
       position: fixed;
@@ -2793,6 +3019,10 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h18v12H3z"/><path d="M12 16v4"/><path d="M8 20h8"/></svg>
           프레젠테이션
         </button>
+        <button class="tool-btn" id="btnAccompanist" title="반주자 모드 — 두 페이지 좌우 펼침">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v15"/><path d="M12 6c-1.6-1.1-4-1.8-7-1.8v13C8 17.2 10.4 17.9 12 19c1.6-1.1 4-1.8 7-1.8v-13C16 4.2 13.6 4.9 12 6z"/></svg>
+          반주자 모드
+        </button>
         <button class="tool-btn member-only" id="btnMonitorMember" title="라이브챗만 보기 — 큐만 크게 받기">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8a10 10 0 0 1 10-2"/><path d="M5 12a6 6 0 0 1 7-1.5"/><circle cx="12" cy="16" r="1.6" fill="currentColor" stroke="none"/></svg>
           라이브챗만 보기
@@ -2997,6 +3227,38 @@
   </div>
 
   <div class="present-cue-wrap hidden" id="presentCueWrap"></div>
+</div>
+
+<!-- ============ 반주자 모드 (두 페이지 좌우 스프레드) ============ -->
+<div class="accompanist-layer hidden" id="accompanistLayer" role="dialog" aria-label="반주자 모드">
+  <!-- 상단 컨트롤 바 (자동 숨김) -->
+  <div class="acc-topbar" id="accTopbar">
+    <div class="acc-title" id="accTitle">반주자 모드</div>
+    <div class="acc-spacer"></div>
+    <button class="acc-follow is-on" id="accFollow" title="리더 따라가기 켜기/끄기">
+      <span class="acc-follow-dot"></span><span id="accFollowText">리더 따라가기</span>
+    </button>
+    <button class="acc-exit" id="accExit" aria-label="나가기 (Esc)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+  </div>
+
+  <!-- 좌우 2분할 스프레드 -->
+  <div class="acc-spread" id="accSpread">
+    <div class="acc-panel" id="accPanelL"></div>
+    <div class="acc-panel" id="accPanelR"></div>
+  </div>
+
+  <!-- 좌우 탭 (이전/다음 스프레드) -->
+  <button class="acc-tap left" id="accTapPrev" aria-label="이전 스프레드"><span class="tap-glyph">‹</span></button>
+  <button class="acc-tap right" id="accTapNext" aria-label="다음 스프레드"><span class="tap-glyph">›</span></button>
+
+  <!-- 하단 위치 바 (스프레드 인디케이터 + ◀ ▶) -->
+  <div class="acc-botbar" id="accBotbar">
+    <button class="acc-nav-btn" id="accPrev" aria-label="이전 스프레드">◀</button>
+    <span class="acc-pos" id="accPos">– / –</span>
+    <button class="acc-nav-btn" id="accNext" aria-label="다음 스프레드">▶</button>
+  </div>
 </div>
 
 <!-- ============ 큐 모니터 모드 (라이브챗만 보기) ============ -->
@@ -3241,6 +3503,18 @@
   const presentCtrl = $('presentCtrl');
   const btnPresent = $('btnPresent');
   const btnMonitorMember = $('btnMonitorMember');
+  // 반주자 모드 (두 페이지 좌우 스프레드)
+  const accompanistLayer = $('accompanistLayer');
+  const accSpread = $('accSpread');
+  const accPanelL = $('accPanelL');
+  const accPanelR = $('accPanelR');
+  const accTitle = $('accTitle');
+  const accPos = $('accPos');
+  const accFollow = $('accFollow');
+  const accFollowText = $('accFollowText');
+  const accTopbar = $('accTopbar');
+  const accBotbar = $('accBotbar');
+  const btnAccompanist = $('btnAccompanist');
   // 큐 모니터 모드
   const monitorLayer = $('monitorLayer');
   const monitorIdle = $('monitorIdle');
@@ -3300,6 +3574,13 @@
   let presentUiTimer = null;
   let monitorIdleTimer = null;
   const monitorLogItems = [];   // 최근 큐 로그 (최신이 앞)
+
+  // 반주자 모드 (두 페이지 좌우 스프레드)
+  let accompanistMode = false;
+  let accBase = 0;              // 현재 스프레드의 왼쪽 페이지 전역 인덱스 (항상 짝수)
+  let accFollowLeader = true;   // 리더 따라가기 (기본 ON) — OFF면 반주자가 직접 넘김 (로컬 전용)
+  let accUiTimer = null;
+  let accFlat = [];             // 마지막으로 평탄화한 페이지 시퀀스 (렌더 캐시)
 
   // ---------------- Helpers ----------------
   function genCode(len = 8) {
@@ -4279,6 +4560,8 @@
         renderCanvas();
       }
     }
+    // 반주자 모드(따라가기 ON)면 리더의 새 페이지가 포함된 스프레드로 책장 넘김 (로컬 전용)
+    accSyncToLeader();
   }
 
   function onConti(payload) {
@@ -4330,6 +4613,8 @@
     // 지금 이 곡/페이지를 보고 있으면 즉시 반영
     if (activeSongId === payload.songId) renderCanvas();
     if (presentMode && activeSongId === payload.songId) renderPresentStage();
+    // 반주자 모드: 새로 받은 악보가 현재 스프레드에 보이면 다시 그림
+    if (accompanistMode) renderAccompanist();
   }
 
   function onAssignments(payload) {
@@ -4516,6 +4801,12 @@
     // keyboard
     window.addEventListener('keydown', (e) => {
       if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+      // 반주자 모드: ←/→/PageUp/Down은 스프레드(책장) 단위로 넘김 (로컬 전용)
+      if (accompanistMode) {
+        if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); accGoSpread(-1); }
+        else if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') { e.preventDefault(); accGoSpread(+1); }
+        return;
+      }
       if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); goPage(-1); }
       else if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') { e.preventDefault(); goPage(+1); }
     });
@@ -4589,6 +4880,8 @@
     presentNext.onclick = () => { if (isLeader) goPage(+1); bumpPresentUi(); };
     // 리더 전용 떠있는 컨트롤 연결
     wirePresentControls();
+    // 반주자 모드 컨트롤 연결 (버튼·탭·따라가기 토글)
+    wireAccompanistControls();
     // 프레젠 무대 스와이프 (리더만, 하이라이트 OFF일 때 — 그리기 우선). 경계서 곡 이동.
     attachSwipe(presentLayer, () => presentMode && !highlightMode && !!activeSongId && isLeader);
     // 마우스 움직이거나 탭하면 UI 잠깐 표시 (+ 오버레이 위치 보정)
@@ -4597,6 +4890,8 @@
     // 화면 크기 변경 시 무대 재렌더 (PDF는 캔버스라 리사이즈 필요)
     window.addEventListener('resize', debounce(() => {
       if (presentMode) renderPresentStage();
+      // 반주자 모드: 화면 크기/회전 바뀌면 다시 그림 (object-fit이 비율 처리)
+      if (accompanistMode) renderAccompanist();
       // 악보 표시 크기가 바뀌면 오버레이를 새 이미지 사각형에 다시 맞추고(좌표 기준 유지) 재드로우
       if (canvas.querySelector('#hlOverlay')) { positionHlOverlay(); renderHighlights(); }
       positionSoloPop();
@@ -4611,7 +4906,8 @@
     // ---- Esc: 전체화면 모드 나가기 ----
     window.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
-        if (monitorMode) { e.preventDefault(); exitMonitorMode(); }
+        if (accompanistMode) { e.preventDefault(); exitAccompanistMode(); }
+        else if (monitorMode) { e.preventDefault(); exitMonitorMode(); }
         else if (presentMode) { e.preventDefault(); exitPresentMode(); }
       }
     });
@@ -4714,6 +5010,7 @@
   function leaveToHome() {
     if (presentMode) exitPresentMode();
     if (monitorMode) exitMonitorMode(true);
+    if (accompanistMode) exitAccompanistMode();
     try { channel?.untrack(); } catch (_) {}
     try { if (channel) supabase.removeChannel(channel); } catch (_) {}
     channel = null; subscribed = false;
@@ -4769,6 +5066,9 @@
     specialCountEl.textContent = `${special.length}곡`;
     specialEmpty.style.display = special.length ? 'none' : '';
     special.forEach(({ song }) => specialListEl.appendChild(buildSongRow(song)));
+
+    // 콘티/특송 목록이 바뀌면 반주자 모드의 평탄화 시퀀스도 바뀜 → 재렌더 (열려 있을 때만)
+    if (accompanistMode) renderAccompanist();
   }
 
   // 곡이 표시할 악보를 가졌는지 (받은/만든 페이지 또는 원격 URL)
@@ -5288,6 +5588,7 @@
       viewerData.songId = id;
       viewerData.page = 0;
       broadcastViewer();
+      accSyncToLeader();   // 리더 본인이 반주자 모드+따라가기면 선택한 곡으로 스프레드 동기화
     } else {
       isFollowing = false;
       followIndicator.classList.remove('hidden');
@@ -5313,6 +5614,7 @@
     if (isLeader) {
       viewerData.page = activePage;
       broadcastViewer();
+      accSyncToLeader();   // 리더 본인이 반주자 모드+따라가기면 자기 페이지로 스프레드 동기화
     }
     await renderCanvas();
   }
@@ -5346,6 +5648,7 @@
       viewerData.songId = activeSongId;
       viewerData.page = 0;
       broadcastViewer();
+      accSyncToLeader();   // 리더 본인이 반주자 모드+따라가기면 자기 곡으로 스프레드 동기화
     }
     await renderCanvas();
     return true;
@@ -6223,6 +6526,7 @@
     }
     // 다른 전체화면 모드와 배타적
     if (monitorMode) exitMonitorMode(true);
+    if (accompanistMode) exitAccompanistMode(true);
     document.body.style.overflow = 'hidden';
     presentLayer.classList.remove('hidden');
     requestFs(presentLayer);
@@ -6426,11 +6730,210 @@
     if (pcClear) pcClear.onclick = () => { clearHighlights(); bumpPresentUi(); };
   }
 
+  // ---------------- 반주자 모드 (두 페이지 좌우 스프레드) ----------------
+  // 콘티+특송의 모든 곡 페이지를 표시 순서대로 평탄화 → [{songId, page, src, title}…].
+  // 곡 경계를 넘어 "연속된 책"처럼 이어짐. (콘티 먼저, 그다음 특송 — 사이드바 순서와 동일)
+  function flattenPages() {
+    const flat = [];
+    const pushKind = (special) => {
+      getSongsByKind(special).forEach(({ song }) => {
+        const total = getTotalPages(song);
+        for (let p = 0; p < total; p++) {
+          flat.push({ songId: song.id, page: p, src: sheetSrcFor(song, p), title: song.title || '' });
+        }
+      });
+    };
+    pushKind(false);   // 콘티
+    pushKind(true);    // 특송
+    return flat;
+  }
+  // 곡/페이지 → 전역 인덱스 (없으면 -1)
+  function globalIndexFor(flat, songId, page) {
+    if (!songId) return -1;
+    return flat.findIndex((it) => it.songId === songId && it.page === (page || 0));
+  }
+  // 스프레드 개수 (2쪽 단위, 올림)
+  function accSpreadCount(flat) { return Math.max(1, Math.ceil(flat.length / 2)); }
+  // base를 [0, 마지막 짝수] 범위로 클램프 + 짝수 보정
+  function clampAccBase(base, flat) {
+    let b = Math.floor((base || 0) / 2) * 2;
+    const lastBase = Math.max(0, (accSpreadCount(flat) - 1) * 2);
+    if (b < 0) b = 0;
+    if (b > lastBase) b = lastBase;
+    return b;
+  }
+
+  function enterAccompanistMode() {
+    if (accompanistMode) return;
+    accompanistMode = true;
+    // 다른 전체화면 모드와 배타적
+    if (presentMode) exitPresentMode();
+    if (monitorMode) exitMonitorMode(true);
+    accFollowLeader = true;   // 진입 시 기본 따라가기 ON
+    // 리더의 현재 위치(viewer)가 포함된 스프레드로 스냅. 없으면 처음.
+    const flat = flattenPages();
+    const idx = globalIndexFor(flat, viewerData.songId, viewerData.page);
+    accBase = clampAccBase(idx >= 0 ? Math.floor(idx / 2) * 2 : 0, flat);
+    document.body.style.overflow = 'hidden';
+    accompanistLayer.classList.remove('hidden');
+    requestFs(accompanistLayer);
+    updateAccFollowUi();
+    renderAccompanist();
+    bumpAccUi();
+    // 풀스크린 전환으로 레이아웃이 늦게 잡혀도 한 번 더 (이미지 비율 재계산 불필요 — object-fit이 처리)
+    setTimeout(() => { if (accompanistMode) renderAccompanist(); }, 260);
+  }
+  function exitAccompanistMode(skipFs = false) {
+    if (!accompanistMode) return;
+    accompanistMode = false;
+    accompanistLayer.classList.add('hidden');
+    accompanistLayer.classList.remove('show-ui');
+    clearTimeout(accUiTimer);
+    accPanelL.innerHTML = '';
+    accPanelR.innerHTML = '';
+    document.body.style.overflow = '';
+    if (!skipFs) exitFs();
+  }
+  // UI(상단·하단 바, 좌우 탭)를 잠깐 보여주고 자동 숨김.
+  function bumpAccUi() {
+    accompanistLayer.classList.add('show-ui');
+    clearTimeout(accUiTimer);
+    accUiTimer = setTimeout(() => accompanistLayer.classList.remove('show-ui'), 2000);
+  }
+
+  // 한 패널 채우기 — 악보 있으면 이미지, 없으면 빈 상태(은은한 안내)
+  function fillAccPanel(panel, item) {
+    panel.innerHTML = '';
+    if (!item) {
+      // 스프레드의 오른쪽이 책의 끝을 넘는 경우 — 그냥 비움
+      panel.classList.add('is-empty');
+      return;
+    }
+    if (!item.src) {
+      // 멤버가 아직 악보를 못 받았거나 등록 안 됨
+      panel.classList.add('is-empty');
+      const waiting = !isLeader;
+      const div = document.createElement('div');
+      div.className = 'acc-empty';
+      div.innerHTML = `${escapeHtml(item.title || '(제목 없음)')}<br/><span style="font-size:0.9em;opacity:0.85;">${waiting ? '악보를 받는 중이에요…' : '등록된 악보가 없어요.'}</span>`;
+      panel.appendChild(div);
+      return;
+    }
+    panel.classList.remove('is-empty');
+    const img = document.createElement('img');
+    img.alt = item.title || '';
+    img.src = item.src;
+    panel.appendChild(img);
+  }
+
+  // 현재 accBase 스프레드를 좌/우 패널에 렌더 + 위치 표시 갱신
+  function renderAccompanist() {
+    if (!accompanistMode) return;
+    const flat = flattenPages();
+    accFlat = flat;
+    if (!flat.length) {
+      accPanelL.classList.add('is-empty');
+      accPanelR.classList.add('is-empty');
+      accPanelL.innerHTML = `<div class="acc-empty">악보가 아직 없어요.<br/><span style="font-size:0.9em;opacity:0.85;">콘티에 악보를 추가하면 여기에 펼쳐서 보여요.</span></div>`;
+      accPanelR.innerHTML = '';
+      accPos.textContent = '– / –';
+      accTitle.textContent = '반주자 모드';
+      updateAccNavButtons(flat);
+      return;
+    }
+    accBase = clampAccBase(accBase, flat);
+    fillAccPanel(accPanelL, flat[accBase] || null);
+    fillAccPanel(accPanelR, flat[accBase + 1] || null);
+    // 위치 표시: "3–4 / 12" (1-base, 페이지 단위) — 오른쪽 없으면 단일
+    const leftNo = accBase + 1;
+    const rightItem = flat[accBase + 1];
+    const rangeTxt = rightItem ? `${leftNo}–${leftNo + 1}` : `${leftNo}`;
+    accPos.textContent = `${rangeTxt} / ${flat.length}`;
+    // 제목: 왼쪽 페이지가 속한 곡 (오른쪽이 다른 곡이면 함께 표기)
+    const leftItem = flat[accBase];
+    let title = leftItem ? (leftItem.title || '(제목 없음)') : '';
+    if (rightItem && rightItem.title && rightItem.title !== leftItem.title) {
+      title = `${title} · ${rightItem.title}`;
+    }
+    accTitle.textContent = title || '반주자 모드';
+    updateAccNavButtons(flat);
+  }
+  function updateAccNavButtons(flat) {
+    const lastBase = Math.max(0, (accSpreadCount(flat) - 1) * 2);
+    const atStart = accBase <= 0;
+    const atEnd = accBase >= lastBase;
+    ['accPrev', 'accTapPrev'].forEach((id) => { const el = $(id); if (el) el.disabled = atStart; });
+    ['accNext', 'accTapNext'].forEach((id) => { const el = $(id); if (el) el.disabled = atEnd; });
+  }
+
+  // 반주자가 직접 스프레드 이동 (로컬 전용 — 다른 사람에게 broadcast 안 함).
+  // 직접 넘기면 리더 따라가기 자동 해제(오프라인).
+  function accGoSpread(deltaSpreads) {
+    const flat = flattenPages();
+    const lastBase = Math.max(0, (accSpreadCount(flat) - 1) * 2);
+    const next = clampAccBase(accBase + deltaSpreads * 2, flat);
+    if (next === accBase) { bumpAccUi(); return; }
+    // 직접 넘김 → 따라가기 해제
+    if (accFollowLeader) { accFollowLeader = false; updateAccFollowUi(); }
+    accBase = next;
+    renderAccompanist();
+    bumpAccUi();
+  }
+
+  // 리더 viewer 수신 → 따라가기 ON이면 리더의 현재 페이지가 포함된 스프레드로 이동.
+  // (onViewer 안에서 호출. 반주자 모드 + 따라가기 ON일 때만.)
+  function accSyncToLeader() {
+    if (!accompanistMode || !accFollowLeader) return;
+    const flat = flattenPages();
+    const idx = globalIndexFor(flat, viewerData.songId, viewerData.page);
+    if (idx < 0) return;
+    const targetBase = clampAccBase(Math.floor(idx / 2) * 2, flat);
+    if (targetBase !== accBase) {
+      accBase = targetBase;
+      renderAccompanist();
+      bumpAccUi();
+    }
+  }
+
+  // "리더 따라가기" 토글 UI 갱신
+  function updateAccFollowUi() {
+    if (!accFollow) return;
+    accFollow.classList.toggle('is-on', accFollowLeader);
+    if (accFollowText) accFollowText.textContent = accFollowLeader ? '리더 따라가기' : '직접 넘기는 중';
+    accFollow.title = accFollowLeader ? '리더 따라가기 켜짐 — 눌러서 직접 넘기기' : '직접 넘기는 중 — 눌러서 리더 따라가기';
+  }
+  // 따라가기 켜기 → 즉시 리더 현재 스프레드로 스냅
+  function accFollowOn() {
+    accFollowLeader = true;
+    updateAccFollowUi();
+    accSyncToLeader();
+    bumpAccUi();
+  }
+
+  // 반주자 모드 컨트롤 연결 (한 번만)
+  function wireAccompanistControls() {
+    if (!accompanistLayer || accompanistLayer.dataset.wired) return;
+    accompanistLayer.dataset.wired = '1';
+    if (btnAccompanist) btnAccompanist.onclick = enterAccompanistMode;
+    $('accExit').onclick = () => exitAccompanistMode();
+    // 좌우 탭 + 하단 ◀▶ — 직접 스프레드 이동 (로컬 전용)
+    $('accTapPrev').onclick = () => accGoSpread(-1);
+    $('accTapNext').onclick = () => accGoSpread(+1);
+    $('accPrev').onclick = () => accGoSpread(-1);
+    $('accNext').onclick = () => accGoSpread(+1);
+    // 리더 따라가기 토글
+    if (accFollow) accFollow.onclick = () => { if (accFollowLeader) { accFollowLeader = false; updateAccFollowUi(); bumpAccUi(); } else { accFollowOn(); } };
+    // 마우스 움직이거나 탭하면 UI 잠깐 표시
+    accompanistLayer.addEventListener('mousemove', bumpAccUi);
+    accompanistLayer.addEventListener('touchstart', bumpAccUi, { passive: true });
+  }
+
   // ---------------- 큐 모니터 모드 ----------------
   function enterMonitorMode() {
     if (monitorMode) return;
     monitorMode = true;
     if (presentMode) exitPresentMode();
+    if (accompanistMode) exitAccompanistMode(true);
     document.body.style.overflow = 'hidden';
     monitorLayer.classList.remove('hidden');
     monitorCueWrap.classList.add('hidden');
@@ -6476,7 +6979,8 @@
     const inFs = !!(document.fullscreenElement || document.webkitFullscreenElement);
     if (inFs || _suppressFsExit) return;
     // 풀스크린이 막 해제됨 — 활성 모드가 있으면 함께 종료 (Esc 한 번에 전부 나가기)
-    if (monitorMode) { _suppressFsExit = true; exitMonitorMode(true); _suppressFsExit = false; }
+    if (accompanistMode) { _suppressFsExit = true; exitAccompanistMode(true); _suppressFsExit = false; }
+    else if (monitorMode) { _suppressFsExit = true; exitMonitorMode(true); _suppressFsExit = false; }
     else if (presentMode) { _suppressFsExit = true; exitPresentMode(); _suppressFsExit = false; }
   }
 
