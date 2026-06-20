@@ -329,6 +329,125 @@
       font-weight: 500;
     }
 
+    /* 마디 클릭(반복 구간 지정) */
+    .measure.is-clickable { cursor: pointer; }
+    .measure.is-clickable:hover { border-color: var(--border-strong); }
+    /* 반복 구간 내부 */
+    .measure.in-loop {
+      background: rgba(22,192,152,0.10);
+      border-color: rgba(22,192,152,0.45);
+    }
+    .measure.in-loop .chord-name { color: #0e8f74; }
+    /* 구간 시작/끝(굵은 테두리 + 마커) */
+    .measure.loop-edge {
+      border-color: var(--success);
+      box-shadow: inset 0 0 0 1px var(--success);
+    }
+    .measure.loop-edge::after {
+      content: "";
+      position: absolute;
+      top: 4px; right: 6px;
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--success);
+    }
+    /* 반복 중이면서 현재 재생 마디 → 재생 강조 우선 */
+    .measure.in-loop.is-playing,
+    .measure.loop-edge.is-playing {
+      background: var(--blue-soft);
+      border-color: var(--blue);
+    }
+    /* 구간 지정 대기(첫 클릭) */
+    .measure.loop-pending {
+      border-color: var(--success);
+      border-style: dashed;
+    }
+
+    /* 섹션 라벨 줄 */
+    .section-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 6px 2px 0;
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--text-secondary);
+      letter-spacing: -0.01em;
+    }
+    .section-label .sec-tag {
+      display: inline-flex; align-items: center;
+      padding: 3px 9px;
+      border-radius: var(--radius-pill);
+      background: var(--surface-3);
+      color: var(--text-secondary);
+    }
+    .section-label .sec-line { flex: 1; height: 1px; background: var(--border); }
+
+    /* 반복 상태 바 (구간/섹션 반복 표시 + 해제) */
+    .loopbar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+      padding: 10px 12px;
+      border-radius: var(--radius-sm);
+      background: rgba(22,192,152,0.08);
+      border: 1px solid rgba(22,192,152,0.3);
+    }
+    .loopbar.hidden { display: none; }
+    .loopbar .lb-icon {
+      width: 20px; height: 20px; flex-shrink: 0;
+      color: var(--success);
+    }
+    .loopbar .lb-text {
+      font-size: 13px; font-weight: 700; color: #0e8f74;
+      letter-spacing: -0.01em;
+    }
+    .loopbar .lb-text b { font-weight: 800; }
+    .loopbar .lb-clear {
+      margin-left: auto;
+      border: 1px solid rgba(22,192,152,0.4);
+      background: var(--surface);
+      color: #0e8f74;
+      border-radius: var(--radius-pill);
+      padding: 6px 13px;
+      font-size: 12px; font-weight: 700; font-family: inherit;
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+    .loopbar .lb-clear:hover { background: rgba(22,192,152,0.12); }
+
+    /* 섹션 반복 버튼 행 */
+    .section-repeat-row {
+      display: flex; flex-wrap: wrap; gap: 8px;
+      margin-top: 12px;
+    }
+    .section-repeat-row:empty { display: none; }
+    .sec-rep-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text-secondary);
+      border-radius: var(--radius-pill);
+      padding: 8px 14px;
+      font-size: 13px; font-weight: 700; font-family: inherit;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      letter-spacing: -0.005em;
+    }
+    .sec-rep-btn:hover { border-color: var(--success); color: #0e8f74; background: rgba(22,192,152,0.08); }
+    .sec-rep-btn:active { transform: scale(0.96); }
+    .sec-rep-btn.active {
+      border-color: var(--success);
+      background: rgba(22,192,152,0.14);
+      color: #0e8f74;
+    }
+    .sec-rep-btn .src-no {
+      font-size: 11px; color: var(--text-caption); font-weight: 600;
+      font-variant-numeric: tabular-nums;
+    }
+    .sec-rep-btn.active .src-no { color: #0e8f74; }
+
     /* ---------- 트랜스포트 바 ---------- */
     .transport {
       display: flex;
@@ -677,18 +796,33 @@
       <section class="card">
         <div class="card-head">
           <h2 class="card-title">코드 차트</h2>
-          <span class="card-hint"><b style="color:var(--text-secondary)">|</b> 로 마디 구분 · 줄바꿈 = 프레이즈</span>
+          <span class="card-hint"><b style="color:var(--text-secondary)">|</b> 마디 · 줄바꿈=프레이즈 · <b style="color:var(--text-secondary)">#라벨</b>=섹션</span>
         </div>
         <div class="field">
           <label class="field-label" for="chartInput">마디별 코드 입력</label>
           <textarea id="chartInput" class="textarea" spellcheck="false"
-            placeholder="| C | G | Am | F |&#10;| F | G | C | C |"></textarea>
+            placeholder="#1절&#10;| C | G | Am | F |&#10;#후렴&#10;| F | G | C | C |"></textarea>
         </div>
         <div class="preset-row" id="presetRow"></div>
 
         <div class="chart" id="chartGrid">
           <div class="chart-empty">코드를 입력하면 마디 그리드가 여기에 나타나요.</div>
         </div>
+
+        <!-- 섹션 반복 버튼(있는 섹션만 생성) -->
+        <div class="section-repeat-row" id="sectionRepeatRow"></div>
+
+        <!-- 반복 구간/섹션 상태 바 -->
+        <div class="loopbar hidden" id="loopBar">
+          <svg class="lb-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M17 2l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/>
+            <path d="M7 22l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/>
+          </svg>
+          <span class="lb-text" id="loopBarText">반복 구간</span>
+          <button type="button" class="lb-clear" id="loopClearBtn">해제</button>
+        </div>
+
+        <div class="card-hint" style="margin-top:10px;">마디를 누르면 반복 구간을 정해요. 처음 누른 마디 = 시작, 다음 = 끝. 같은 마디를 다시 누르면 해제.</div>
       </section>
 
       <!-- 연주 / 컨트롤 -->
@@ -917,14 +1051,27 @@
     var PC_NAMES = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];
     function pcName(pc) { return PC_NAMES[((pc % 12) + 12) % 12]; }
 
-    // 텍스트 차트 -> [{ measures:[chord|null,...] }, ...]  (줄 = 라인)
+    // 텍스트 차트 -> [{ measures:[chord|null,...], sectionLabel, sectionStart }, ...]
+    //   섹션 문법(단순): "#라벨" 줄 = 다음 줄들의 섹션 시작(라벨 지정),
+    //                    빈 줄 = 섹션 경계(라벨 없으면 "구간 N" 자동).
     function parseChart(text) {
       var lines = (text || "").replace(/\r/g, "").split("\n");
       var out = [];
       var lastChord = null;
+      var pendingLabel = null;    // 다음 content 줄에 붙일 섹션 라벨(#라벨)
+      var pendingBreak = false;   // 빈 줄/라벨로 섹션 경계 표시
+      var autoSecNo = 0;          // 라벨 없는 섹션 자동 번호
+      var startedAnySection = false;
       for (var li = 0; li < lines.length; li++) {
         var line = lines[li];
-        if (line.trim() === "") continue;
+        var trimmed = line.trim();
+        if (trimmed === "") { pendingBreak = true; continue; } // 빈 줄 → 경계
+        // 섹션 라벨 줄: '#' 로 시작 → 라벨만 기록(마디 X)
+        if (trimmed.charAt(0) === "#") {
+          pendingLabel = trimmed.slice(1).trim() || ("구간 " + (autoSecNo + 1));
+          pendingBreak = true;
+          continue;
+        }
         // | 로 split → 양끝 빈 토큰 제거
         var cells = line.split("|");
         var measures = [];
@@ -949,9 +1096,50 @@
             measures.push({ kind: "bad", chord: null, raw: first });
           }
         }
-        if (measures.length) out.push({ measures: measures });
+        if (measures.length) {
+          // 섹션 시작 여부: 첫 줄이거나, 직전에 경계(빈 줄/라벨)가 있었으면 시작
+          var isStart = (!startedAnySection) || pendingBreak;
+          var label = null;
+          if (isStart) {
+            if (pendingLabel != null) { label = pendingLabel; }
+            else { autoSecNo++; label = null; } // 라벨 없는 자동 섹션(이름 없음)
+          }
+          out.push({ measures: measures, sectionStart: isStart, sectionLabel: label });
+          startedAnySection = true;
+          pendingLabel = null;
+          pendingBreak = false;
+        }
       }
       return out;
+    }
+
+    // currentLines(평탄화 전) → 섹션 배열 [{label, lo, hi}] (마디 인덱스 범위, 포함)
+    function computeSections(chartLines, seq) {
+      var sections = [];
+      var seqIdx = 0;
+      var cur = null;
+      var autoNo = 0;
+      for (var i = 0; i < chartLines.length; i++) {
+        var ms = chartLines[i].measures;
+        if (chartLines[i].sectionStart) {
+          if (cur) { cur.hi = seqIdx - 1; sections.push(cur); }
+          autoNo++;
+          cur = {
+            label: chartLines[i].sectionLabel || ("구간 " + autoNo),
+            named: chartLines[i].sectionLabel != null,
+            lo: seqIdx, hi: seqIdx
+          };
+        }
+        seqIdx += ms.length;
+      }
+      if (cur) { cur.hi = seqIdx - 1; sections.push(cur); }
+      // 마디가 1개라도 있는 섹션만(그리고 seq 길이 안에 들어오게 보정)
+      var valid = [];
+      sections.forEach(function (s) {
+        if (s.lo <= s.hi && s.lo >= 0 && s.hi < seq.length) valid.push(s);
+      });
+      // 섹션이 1개뿐이면(=전체) 굳이 섹션반복 버튼 의미 적음 → 그래도 라벨 있으면 표시
+      return valid;
     }
 
     // 라인구조 -> 평탄화된 마디 시퀀스(스케줄용). hold는 직전 코드 유지.
@@ -1031,6 +1219,10 @@
     var mixerEl    = $("mixer");
     var audioStatus = $("audioStatus");
     var audioStatusText = $("audioStatusText");
+    var loopBar    = $("loopBar");
+    var loopBarText = $("loopBarText");
+    var loopClearBtn = $("loopClearBtn");
+    var sectionRepeatRow = $("sectionRepeatRow");
 
     var ICON_PLAY = '<path d="M8 5v14l11-7z"/>';
     var ICON_STOP = '<rect x="6" y="6" width="12" height="12" rx="2"/>';
@@ -1048,6 +1240,16 @@
     var currentLines = [];   // parseChart 결과
     var currentSeq = [];     // flatten 결과 (스케줄/하이라이트)
     var measureEls = [];     // seq index -> DOM (재생 하이라이트용)
+    var currentSections = []; // [{label, lo, hi}] (섹션 → 마디범위)
+
+    /* 반복 구간 상태:
+     *   loopRegion = { lo, hi } (포함 인덱스) | null  → 그 구간만 루프(전체루프 토글과 별개·우선)
+     *   loopPending = idx | null                      → 첫 클릭(시작 마디 대기)
+     *   loopSourceSection = label | null              → 섹션 버튼으로 설정됐는지(버튼 활성표시용)
+     */
+    var loopRegion = null;
+    var loopPending = null;
+    var loopSourceSection = null;
 
     function renderChart() {
       var text = chartInput.value;
@@ -1062,20 +1264,35 @@
         empty.className = "chart-empty";
         empty.textContent = "코드를 입력하면 마디 그리드가 여기에 나타나요.";
         chartGrid.appendChild(empty);
-        playBtn.disabled = !engineRunning;
         updatePlayBtnDisabled();
         return;
       }
 
       var seqIdx = 0;
       for (var li = 0; li < currentLines.length; li++) {
+        var lineMeta = currentLines[li];
+        // 섹션 시작이면 라벨 줄 표시(라벨이 있을 때만; 자동 무명 섹션은 생략)
+        if (lineMeta.sectionStart && lineMeta.sectionLabel) {
+          var secDiv = document.createElement("div");
+          secDiv.className = "section-label";
+          var tag = document.createElement("span");
+          tag.className = "sec-tag";
+          tag.textContent = lineMeta.sectionLabel;
+          var ln = document.createElement("span");
+          ln.className = "sec-line";
+          secDiv.appendChild(tag);
+          secDiv.appendChild(ln);
+          chartGrid.appendChild(secDiv);
+        }
+
         var lineDiv = document.createElement("div");
         lineDiv.className = "chart-line";
-        var ms = currentLines[li].measures;
+        var ms = lineMeta.measures;
         for (var j = 0; j < ms.length; j++) {
           var cell = ms[j];
           var mdiv = document.createElement("div");
-          mdiv.className = "measure";
+          mdiv.className = "measure is-clickable";
+          mdiv.dataset.idx = seqIdx;
           var barNo = document.createElement("span");
           barNo.className = "bar-no";
           barNo.textContent = (seqIdx + 1);
@@ -1101,13 +1318,150 @@
           }
           mdiv.appendChild(nameEl);
           mdiv.appendChild(subEl);
+          // 마디 클릭 → 반복 구간 지정
+          mdiv.addEventListener("click", onMeasureClick);
           lineDiv.appendChild(mdiv);
           measureEls[seqIdx] = mdiv;
           seqIdx++;
         }
         chartGrid.appendChild(lineDiv);
       }
+
+      // 섹션 계산 + 반복 구간 정합성 보정(차트 바뀌면 범위 밖 구간 해제)
+      currentSections = computeSections(currentLines, currentSeq);
+      if (loopRegion && (loopRegion.lo < 0 || loopRegion.hi >= currentSeq.length || loopRegion.lo > loopRegion.hi)) {
+        loopRegion = null; loopSourceSection = null;
+      }
+      if (loopPending != null && loopPending >= currentSeq.length) loopPending = null;
+      renderSectionRepeat();
+      refreshLoopUI();
       updatePlayBtnDisabled();
+    }
+
+    /* ---------------- 반복 구간(마디 클릭) ---------------- */
+    function onMeasureClick(e) {
+      var el = e.currentTarget;
+      var idx = parseInt(el.dataset.idx, 10);
+      if (isNaN(idx)) return;
+      // 이미 구간이 있으면: 우선 해제하고 새로 시작(직관적). 단, 구간의 edge를 다시
+      // 누르면 그냥 해제만.
+      if (loopRegion) {
+        var wasEdge = (idx === loopRegion.lo || idx === loopRegion.hi);
+        loopRegion = null; loopSourceSection = null;
+        if (wasEdge) { loopPending = null; refreshLoopUI(); return; }
+        // edge가 아니면 이 마디를 새 시작점으로
+        loopPending = idx;
+        refreshLoopUI();
+        return;
+      }
+      if (loopPending == null) {
+        // 첫 클릭 = 시작점 대기
+        loopPending = idx;
+      } else if (loopPending === idx) {
+        // 같은 마디 다시 = 취소
+        loopPending = null;
+      } else {
+        // 두 번째 클릭 = 끝점 → 구간 확정([min,max])
+        var lo = Math.min(loopPending, idx);
+        var hi = Math.max(loopPending, idx);
+        loopRegion = { lo: lo, hi: hi };
+        loopPending = null;
+        loopSourceSection = null;
+        // 재생 중이면 다음 마디부터 구간 안으로 들어오게 보정
+        snapPlayStepIntoRegion();
+      }
+      refreshLoopUI();
+    }
+
+    // 섹션 범위로 반복 구간 지정(섹션 버튼)
+    function setLoopToSection(sec) {
+      if (!sec) return;
+      if (loopRegion && loopSourceSection === sec.label && loopRegion.lo === sec.lo && loopRegion.hi === sec.hi) {
+        // 같은 섹션 버튼 다시 = 해제
+        loopRegion = null; loopSourceSection = null;
+      } else {
+        loopRegion = { lo: sec.lo, hi: sec.hi };
+        loopSourceSection = sec.label;
+        snapPlayStepIntoRegion();
+      }
+      loopPending = null;
+      refreshLoopUI();
+    }
+
+    function clearLoopRegion() {
+      loopRegion = null; loopPending = null; loopSourceSection = null;
+      refreshLoopUI();
+    }
+
+    // 재생 중 구간 설정 시: 현재 재생 위치가 구간 밖이면 다음 스텝을 구간 시작으로
+    function snapPlayStepIntoRegion() {
+      if (!isPlaying || !loopRegion) return;
+      if (playStep < loopRegion.lo || playStep > loopRegion.hi) {
+        playStep = loopRegion.lo;
+      }
+    }
+
+    // 구간/섹션 반복 시각 갱신(그리드 강조 + 상태바 + 섹션버튼 active)
+    function refreshLoopUI() {
+      for (var i = 0; i < measureEls.length; i++) {
+        var el = measureEls[i];
+        if (!el) continue;
+        el.classList.remove("in-loop", "loop-edge", "loop-pending");
+        if (loopRegion && i >= loopRegion.lo && i <= loopRegion.hi) {
+          el.classList.add("in-loop");
+          if (i === loopRegion.lo || i === loopRegion.hi) el.classList.add("loop-edge");
+        }
+        if (loopPending != null && i === loopPending) el.classList.add("loop-pending");
+      }
+      // 상태 바
+      if (loopRegion) {
+        loopBar.classList.remove("hidden");
+        var label;
+        if (loopSourceSection) {
+          label = '<b>' + escapeHtml(loopSourceSection) + '</b> 반복 중 · ' + (loopRegion.lo + 1) + '–' + (loopRegion.hi + 1) + '마디 ∞';
+        } else {
+          label = '반복: <b>' + (loopRegion.lo + 1) + '–' + (loopRegion.hi + 1) + '마디</b> ∞';
+        }
+        loopBarText.innerHTML = label;
+      } else if (loopPending != null) {
+        loopBar.classList.remove("hidden");
+        loopBarText.innerHTML = '시작 마디 <b>' + (loopPending + 1) + '</b> 선택됨 · 끝 마디를 누르세요';
+      } else {
+        loopBar.classList.add("hidden");
+      }
+      // 섹션 버튼 active 표시
+      if (sectionRepeatRow) {
+        sectionRepeatRow.querySelectorAll(".sec-rep-btn").forEach(function (b) {
+          var lo = parseInt(b.dataset.lo, 10), hi = parseInt(b.dataset.hi, 10);
+          var active = loopRegion && loopRegion.lo === lo && loopRegion.hi === hi;
+          b.classList.toggle("active", !!active);
+        });
+      }
+    }
+
+    function escapeHtml(s) {
+      return String(s).replace(/[&<>"']/g, function (c) {
+        return { "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;" }[c];
+      });
+    }
+
+    // 섹션 반복 버튼 렌더(섹션이 2개 이상이거나 라벨 있는 섹션이 있을 때)
+    function renderSectionRepeat() {
+      if (!sectionRepeatRow) return;
+      sectionRepeatRow.innerHTML = "";
+      // 라벨 있는 섹션, 또는 섹션이 여러 개면 버튼 노출
+      var show = currentSections.filter(function (s) { return s.named || currentSections.length > 1; });
+      if (!show.length) return;
+      show.forEach(function (sec) {
+        var b = document.createElement("button");
+        b.type = "button";
+        b.className = "sec-rep-btn";
+        b.dataset.lo = sec.lo;
+        b.dataset.hi = sec.hi;
+        b.innerHTML = escapeHtml(sec.label) + ' 반복 <span class="src-no">' + (sec.lo + 1) + '–' + (sec.hi + 1) + '</span>';
+        b.addEventListener("click", function () { setLoopToSection(sec); });
+        sectionRepeatRow.appendChild(b);
+      });
     }
 
     function highlightMeasure(idx) {
@@ -1199,6 +1553,12 @@
     var lastDrawnStep = -1;
     var soundingStep = -1;       // 현재 울리고 있는 마디(스케줄 시점에 동기 기록)
 
+    // 사운드폰트 로딩 상태
+    var samplesReady = false;    // 모든 멜로딕 악기 로드(또는 폴백 확정) 완료
+    var loadPollTimer = null;    // 로딩 폴링 인터벌
+    var loadTimeoutTimer = null; // 로드 타임아웃(미응답 악기 → 폴백 확정)
+    var SAMPLE_LOAD_TIMEOUT_MS = 9000;
+
     function dbFromVol(v) {
       // 0..100 -> dB. 0 = -Infinity, 100 = +3dB 정도
       if (v <= 0) return -Infinity;
@@ -1221,6 +1581,67 @@
       audioStatusText.textContent = text;
     }
 
+    /* 엔진을 1회 생성하고 샘플 로딩을 시작한다. 오디오 컨텍스트는 suspended
+     * 상태여도 Tone.Sampler의 fetch+decode는 진행되므로, 페이지 로드 시 미리
+     * 받아 두면 첫 재생이 매끄럽다. Tone.start()는 첫 재생에서 resume. */
+    function ensureEngine() {
+      if (engineRunning) return;
+      try { buildEngine(); } catch (e) { console.error("엔진 생성 오류:", e); return; }
+      monitorSampleLoading();
+    }
+
+    // 멜로딕 악기(샘플러) 로딩 상태를 폴링 → 상태칩 + 재생버튼 게이팅
+    function monitorSampleLoading() {
+      if (!nodes || !nodes.melodic) return;
+      samplesReady = false;
+      setStatus("load", "악기 불러오는 중…");
+      updatePlayBtnDisabled();
+
+      function check() {
+        var total = nodes.melodic.length;
+        var resolved = 0, okCount = 0, failCount = 0;
+        nodes.melodic.forEach(function (w) {
+          if (w.loaded()) { resolved++; if (w.ok()) okCount++; else failCount++; }
+        });
+        if (resolved >= total) {
+          finishLoading(okCount, failCount);
+          return true;
+        }
+        return false;
+      }
+
+      function finishLoading(okCount, failCount) {
+        if (samplesReady) return;
+        samplesReady = true;
+        if (loadPollTimer !== null) { clearInterval(loadPollTimer); loadPollTimer = null; }
+        if (loadTimeoutTimer !== null) { clearTimeout(loadTimeoutTimer); loadTimeoutTimer = null; }
+        applyAllGains();
+        if (failCount === 0) {
+          setStatus("ok", "악기 준비됨 · 실제 샘플");
+        } else if (okCount === 0) {
+          setStatus("warn", "샘플 로드 실패 — 신스로 연주");
+        } else {
+          setStatus("warn", "일부 악기 신스 폴백 · 재생 가능");
+        }
+        updatePlayBtnDisabled();
+      }
+
+      if (check()) return;
+      if (loadPollTimer !== null) clearInterval(loadPollTimer);
+      loadPollTimer = setInterval(check, 150);
+
+      // 타임아웃: 응답 없는 악기는 폴백으로 확정해 무한 대기 방지
+      if (loadTimeoutTimer !== null) clearTimeout(loadTimeoutTimer);
+      loadTimeoutTimer = setTimeout(function () {
+        var okCount = 0, failCount = 0;
+        nodes.melodic.forEach(function (w) {
+          if (!w.loaded()) w.forceFallback();
+          if (w.ok()) okCount++; else failCount++;
+        });
+        finishLoading(okCount, failCount);
+      }, SAMPLE_LOAD_TIMEOUT_MS);
+    }
+
     // 엔진 구성: 악기 + 게인 + 마스터 리버브/리미터
     function buildEngine() {
       var limiter = new Tone.Limiter(-1).toDestination();
@@ -1241,84 +1662,159 @@
       gains.drums.connect(masterGain);
       gains.drums.connect(drumVerb);
 
-      // --- 패드: 부드럽고 느린 어택 PolySynth ---
-      var pad = new Tone.PolySynth(Tone.Synth, {
-        maxPolyphony: 8,
-        oscillator: { type: "fatsine", count: 3, spread: 22 },
-        envelope: { attack: 1.1, decay: 0.4, sustain: 0.9, release: 2.4 }
-      });
-      pad.volume.value = -10;
-      pad.connect(gains.pad);
+      /* -----------------------------------------------------------------
+       * 멜로딕 악기 = General MIDI 사운드폰트 샘플러 (gleitz MusyngKite)
+       *   per-note mp3:  …/MusyngKite/<instrument>-mp3/<Note>.mp3
+       *   샘플 파일은 임시표가 "플랫"(Db4.mp3) 표기 → 자연음 옥타브 앵커만
+       *   사용(C1..C6 등 전부 200 확인). Sampler가 사이를 피치시프트 보간.
+       * 각 악기는 Tone.Sampler + 동일 출력에 연결된 신스 폴백을 함께 만든다.
+       *   - 샘플 로드 성공: 폴백 음소거(-Inf), 샘플러로 연주.
+       *   - 로드 실패/타임아웃: 그 악기만 폴백 신스로 자동 교체(전체 안 깨짐).
+       * 호출부(스타일 함수들)는 wrapper.triggerAttackRelease(freqs,…) 그대로
+       *   호출 → 내부에서 로드 상태에 따라 샘플러/폴백으로 라우팅.
+       * --------------------------------------------------------------- */
+      var SF_BASE = "https://gleitz.github.io/midi-js-soundfonts/MusyngKite/";
+      var samplerWrappers = [];   // 로딩 상태 폴링/집계용
 
-      // --- 메인 건반: Salamander 샘플러(실패 시 폴백) ---
-      var piano, pianoIsSampler = false;
-      try {
-        piano = new Tone.Sampler({
-          urls: {
-            "A0":"A0.mp3","C1":"C1.mp3","D#1":"Ds1.mp3","F#1":"Fs1.mp3",
-            "A1":"A1.mp3","C2":"C2.mp3","D#2":"Ds2.mp3","F#2":"Fs2.mp3",
-            "A2":"A2.mp3","C3":"C3.mp3","D#3":"Ds3.mp3","F#3":"Fs3.mp3",
-            "A3":"A3.mp3","C4":"C4.mp3","D#4":"Ds4.mp3","F#4":"Fs4.mp3",
-            "A4":"A4.mp3","C5":"C5.mp3","D#5":"Ds5.mp3","F#5":"Fs5.mp3",
-            "A5":"A5.mp3","C6":"C6.mp3","D#6":"Ds6.mp3","F#6":"Fs6.mp3",
-            "A6":"A6.mp3","C7":"C7.mp3"
+      // 옥타브 앵커 → { "C3":"C3.mp3", ... }
+      function urlMap(notes) {
+        var u = {};
+        notes.forEach(function (n) { u[n] = n + ".mp3"; });
+        return u;
+      }
+
+      /* 샘플러+폴백 래퍼. 호출 API는 기존 신스와 동일하게 유지:
+       *   .triggerAttackRelease(freqsOrFreq, dur, time, vel)
+       *   .triggerAttack(freq, time, vel)
+       *   .releaseAll()
+       * 둘 다 같은 gain 노드에 물려 두고, 활성 쪽만 들리게 볼륨으로 게이팅. */
+      function makeInstrument(opt) {
+        var gainNode = opt.gain;
+        var fallback = opt.makeFallback();
+        if (opt.fallbackVol != null) fallback.volume.value = opt.fallbackVol;
+        fallback.connect(gainNode);
+
+        var sampler = null, ready = false, failed = false;
+        try {
+          sampler = new Tone.Sampler({
+            urls: urlMap(opt.notes),
+            baseUrl: SF_BASE + opt.gm + "-mp3/",
+            release: opt.release != null ? opt.release : 1.0,
+            onload: function () {
+              ready = true;
+              // 샘플 로드됨 → 폴백 음소거, 샘플러 볼륨 적용
+              try { fallback.volume.value = -Infinity; } catch (e) {}
+              try { sampler.volume.value = (opt.samplerVol != null ? opt.samplerVol : 0); } catch (e) {}
+            },
+            onerror: function () { failed = true; }
+          });
+          if (opt.samplerVol != null) sampler.volume.value = opt.samplerVol;
+          // 로드 전엔 들리지 않게: 폴백이 임시로 담당
+          try { sampler.volume.value = -Infinity; } catch (e) {}
+          sampler.connect(gainNode);
+        } catch (e) {
+          sampler = null; failed = true;
+        }
+        // 샘플러 없으면 폴백이 바로 담당
+        var useFallbackNow = !sampler;
+        if (useFallbackNow && opt.fallbackVol != null) fallback.volume.value = opt.fallbackVol;
+
+        function activeIsSampler() {
+          return !!(sampler && sampler.loaded && !failed);
+        }
+        var wrapper = {
+          id: opt.id,
+          isSampler: true,
+          _sampler: sampler,
+          _fallback: fallback,
+          loaded: function () { return activeIsSampler() || failed; }, // 로드 완료/실패 둘 다 "결정됨"
+          ok: function () { return activeIsSampler(); },
+          failed: function () { return failed; },
+          // 로드 타임아웃 시 폴백으로 확정 전환
+          forceFallback: function () {
+            if (activeIsSampler()) return;
+            failed = true;
+            try { if (sampler) sampler.volume.value = -Infinity; } catch (e) {}
+            try { fallback.volume.value = (opt.fallbackVol != null ? opt.fallbackVol : 0); } catch (e) {}
           },
-          baseUrl: "https://tonejs.github.io/audio/salamander/",
-          release: 1.2,
-          onload: function () { setStatus("ok", "피아노 샘플 로드됨"); },
-          onerror: function () { /* 폴백은 아래에서 처리 */ }
-        });
-        pianoIsSampler = true;
-      } catch (e) {
-        piano = null;
-      }
-      // 샘플러 로드 실패 대비 폴백 신스(병행 생성 X — 샘플러 실패 시 교체)
-      var pianoFallback = new Tone.PolySynth(Tone.Synth, {
-        maxPolyphony: 8,
-        oscillator: { type: "triangle" },
-        envelope: { attack: 0.005, decay: 1.1, sustain: 0.25, release: 1.0 }
-      });
-      pianoFallback.volume.value = -6;
-
-      if (piano) { piano.connect(gains.piano); }
-      pianoFallback.connect(gains.piano);
-      // 폴백은 기본 음소거 상태로 두고, 샘플 로드 실패 시 활성화
-      var usingFallback = !piano;
-      if (piano) { pianoFallback.volume.value = -Infinity; }
-
-      // Salamander 로드 타임아웃 → 폴백 (3.5s)
-      if (piano && pianoIsSampler) {
-        setStatus("load", "피아노 샘플 로딩…");
-        setTimeout(function () {
-          if (!piano.loaded) {
-            usingFallback = true;
-            pianoFallback.volume.value = -6;
-            piano.volume.value = -Infinity;
-            setStatus("warn", "피아노: 신스 폴백 사용");
+          triggerAttackRelease: function (notes, dur, time, vel) {
+            var tgt = activeIsSampler() ? sampler : fallback;
+            try { tgt.triggerAttackRelease(notes, dur, time, vel); } catch (e) {}
+          },
+          triggerAttack: function (note, time, vel) {
+            var tgt = activeIsSampler() ? sampler : fallback;
+            try { tgt.triggerAttack(note, time, vel); } catch (e) {}
+          },
+          releaseAll: function () {
+            try { if (sampler && sampler.releaseAll) sampler.releaseAll(); } catch (e) {}
+            try { if (fallback.releaseAll) fallback.releaseAll(); else if (fallback.triggerRelease) fallback.triggerRelease(); } catch (e) {}
           }
-        }, 3500);
+        };
+        samplerWrappers.push(wrapper);
+        return wrapper;
       }
 
-      // --- 세컨 건반: 오르간풍 (여러 배음 FatOsc) ---
-      var organ = new Tone.PolySynth(Tone.Synth, {
-        maxPolyphony: 8,
-        oscillator: { type: "fatsquare", count: 2, spread: 14 },
-        envelope: { attack: 0.04, decay: 0.1, sustain: 0.85, release: 0.6 }
+      // --- 패드: 스트링 앙상블 (string_ensemble_1) / 폴백 = 느린 FatSine 패드 ---
+      var pad = makeInstrument({
+        id: "pad", gm: "string_ensemble_1",
+        notes: ["C3", "C4", "C5"], release: 2.0,
+        gain: gains.pad, samplerVol: -8, fallbackVol: -10,
+        makeFallback: function () {
+          return new Tone.PolySynth(Tone.Synth, {
+            maxPolyphony: 10,
+            oscillator: { type: "fatsine", count: 3, spread: 22 },
+            envelope: { attack: 1.1, decay: 0.4, sustain: 0.9, release: 2.4 }
+          });
+        }
       });
-      organ.volume.value = -16;
-      organ.connect(gains.organ);
 
-      // --- 베이스: 둥근 MonoSynth ---
-      var bass = new Tone.MonoSynth({
-        oscillator: { type: "sine" },
-        filter: { Q: 1, type: "lowpass", rolloff: -24 },
-        filterEnvelope: { attack: 0.02, decay: 0.2, sustain: 0.4, baseFrequency: 80, octaves: 2.4 },
-        envelope: { attack: 0.015, decay: 0.25, sustain: 0.7, release: 0.5 }
+      // --- 메인 건반: 어쿠스틱 그랜드 피아노 (acoustic_grand_piano) ---
+      var piano = makeInstrument({
+        id: "piano", gm: "acoustic_grand_piano",
+        notes: ["C2", "C3", "C4", "C5", "C6"], release: 1.2,
+        gain: gains.piano, samplerVol: -3, fallbackVol: -6,
+        makeFallback: function () {
+          return new Tone.PolySynth(Tone.Synth, {
+            maxPolyphony: 8,
+            oscillator: { type: "triangle" },
+            envelope: { attack: 0.005, decay: 1.1, sustain: 0.25, release: 1.0 }
+          });
+        }
       });
-      bass.volume.value = -6;
-      bass.connect(gains.bass);
 
-      // --- 드럼 ---
+      // --- 세컨 건반: 드로바 오르간 (drawbar_organ) ---
+      var organ = makeInstrument({
+        id: "organ", gm: "drawbar_organ",
+        notes: ["C3", "C4", "C5"], release: 0.5,
+        gain: gains.organ, samplerVol: -10, fallbackVol: -16,
+        makeFallback: function () {
+          return new Tone.PolySynth(Tone.Synth, {
+            maxPolyphony: 8,
+            oscillator: { type: "fatsquare", count: 2, spread: 14 },
+            envelope: { attack: 0.04, decay: 0.1, sustain: 0.85, release: 0.6 }
+          });
+        }
+      });
+
+      // --- 베이스: 핑거 일렉베이스 (electric_bass_finger) · 모노포닉처럼 사용 ---
+      var bass = makeInstrument({
+        id: "bass", gm: "electric_bass_finger",
+        notes: ["C1", "C2", "E2", "G2", "A2"], release: 0.4,
+        gain: gains.bass, samplerVol: -4, fallbackVol: -6,
+        makeFallback: function () {
+          return new Tone.MonoSynth({
+            oscillator: { type: "sine" },
+            filter: { Q: 1, type: "lowpass", rolloff: -24 },
+            filterEnvelope: { attack: 0.02, decay: 0.2, sustain: 0.4, baseFrequency: 80, octaves: 2.4 },
+            envelope: { attack: 0.015, decay: 0.25, sustain: 0.7, release: 0.5 }
+          });
+        }
+      });
+
+      // --- 드럼 (사운드폰트 GM 퍼커션은 매핑이 까다로워 신스 키트 유지) ---
+      // NOTE: gleitz MusyngKite percussion은 노트→타악 매핑이 불안정해서
+      //       킥/스네어/하이햇은 합성 원샷으로 둔다(피치 엔벨로프·노이즈+밴드패스
+      //       ·짧은 하이햇으로 최대한 자연스럽게 튜닝). 음질 한계는 UI에도 명시.
       var kick = new Tone.MembraneSynth({
         pitchDecay: 0.03, octaves: 6,
         envelope: { attack: 0.001, decay: 0.34, sustain: 0.0 }
@@ -1342,34 +1838,37 @@
       hat.volume.value = -22;
       hat.connect(hatFilter); hatFilter.connect(gains.drums);
 
-      // --- 일렉: Pluck 아르페지오 ---
-      var guitar = new Tone.PluckSynth({
-        attackNoise: 1, dampening: 3800, resonance: 0.92
+      // --- 일렉: 클린 일렉기타 (electric_guitar_clean) · 아르페지오/스웰 ---
+      // 폴백 = 기존 PluckSynth(어택노이즈+감쇠)로 비슷한 발현음 유지.
+      var guitar = makeInstrument({
+        id: "guitar", gm: "electric_guitar_clean",
+        notes: ["C3", "E3", "G4", "C4", "C5"], release: 0.8,
+        gain: gains.guitar, samplerVol: -6, fallbackVol: -8,
+        makeFallback: function () {
+          return new Tone.PluckSynth({ attackNoise: 1, dampening: 3800, resonance: 0.92 });
+        }
       });
-      guitar.volume.value = -8;
-      guitar.connect(gains.guitar);
 
       nodes = {
         limiter: limiter, masterGain: masterGain, reverb: reverb, drumVerb: drumVerb,
         gains: gains,
-        pad: pad, piano: piano, pianoFallback: pianoFallback,
+        pad: pad, piano: piano,
         organ: organ, bass: bass,
         kick: kick, snare: snare, snareFilter: snareFilter,
         hat: hat, hatFilter: hatFilter,
         guitar: guitar,
-        _pianoState: function () { return { usingFallback: usingFallback, sampler: piano, fallback: pianoFallback }; }
+        melodic: [pad, piano, organ, bass, guitar],   // 샘플러 래퍼 모음(로딩 집계용)
+        samplers: samplerWrappers
       };
       engineRunning = true;
       applyAllGains();
     }
 
-    // 메인 건반 연주 헬퍼 (샘플러/폴백 자동)
+    // 메인 건반 연주 헬퍼 (샘플러/폴백 자동 — 래퍼가 라우팅)
     function playPiano(midis, dur, time, vel) {
-      if (!nodes) return;
+      if (!nodes || !nodes.piano) return;
       var freqs = midis.map(midiToFreq);
-      var st = nodes._pianoState();
-      var target = (st.usingFallback || !nodes.piano || !nodes.piano.loaded) ? nodes.pianoFallback : nodes.piano;
-      try { target.triggerAttackRelease(freqs, dur, time, vel == null ? 0.8 : vel); } catch (e) {}
+      nodes.piano.triggerAttackRelease(freqs, dur, time, vel == null ? 0.8 : vel);
     }
 
     /* ---------------- 휴머나이즈 ---------------- */
@@ -1577,7 +2076,13 @@
     async function startPlayback() {
       if (!currentSeq.length) return;
       await Tone.start();
-      if (!engineRunning) buildEngine();
+      ensureEngine();
+      // 아직 샘플 로딩 중이면 대기 안내 후 중단(버튼은 곧 활성화됨)
+      if (!samplesReady) {
+        setStatus("load", "악기 불러오는 중… 잠시만요");
+        updatePlayBtnDisabled();
+        return;
+      }
 
       Tone.Transport.stop();
       Tone.Transport.cancel();
@@ -1594,7 +2099,8 @@
         return beats * quarterSec;                                 // 4분음표 N개
       }
 
-      playStep = 0;
+      // 시작 위치: 반복 구간이 지정돼 있으면 그 시작 마디부터
+      playStep = (loopRegion ? loopRegion.lo : 0);
       isPlaying = true;
       updatePlayBtnUI();
 
@@ -1619,7 +2125,14 @@
       if (loopId !== null) { Tone.Transport.clear(loopId); loopId = null; }
 
       // Tone.Loop interval은 시간/노테이션. 초 단위로 직접.
+      // 반복 구간(loopRegion)이 있으면 [lo,hi]만 무한 루프(전체 루프 토글보다 우선).
+      // loopRegion은 클로저 밖 변수라 콜백마다 최신 상태를 읽음 → 재생 중 켜고 끄기 가능.
       var loop = new Tone.Loop(function (time) {
+        var region = loopRegion;   // 이번 마디의 유효 범위 스냅샷
+        // 구간 밖이면(재생 중 구간이 새로 설정/변경된 경우) 시작점으로 보정
+        if (region && (playStep < region.lo || playStep > region.hi)) {
+          playStep = region.lo;
+        }
         var idx = playStep;
         var item = currentSeq[idx];
         // 섹션/줄 끝이면 필
@@ -1627,6 +2140,8 @@
         if (item) {
           var next = currentSeq[idx + 1];
           isLineEnd = !next || (next && next.lineIndex !== item.lineIndex);
+          // 구간 반복의 끝 마디도 "줄 끝"처럼 필 처리
+          if (region && idx === region.hi) isLineEnd = true;
         }
         if (item) {
           scheduleMeasure(item, time, measureSec, beats, isLineEnd);
@@ -1637,7 +2152,12 @@
         soundingStep = idx;
 
         playStep++;
-        if (playStep >= currentSeq.length) {
+        if (region) {
+          // 구간 반복: hi를 넘으면 lo로(무한). 차트가 줄어 hi가 범위 밖이면 0으로.
+          if (playStep > region.hi || playStep >= currentSeq.length) {
+            playStep = region.lo;
+          }
+        } else if (playStep >= currentSeq.length) {
           if (state.loop) {
             playStep = 0;
           } else {
@@ -1680,13 +2200,13 @@
       Tone.Transport.cancel();
       Tone.Transport.position = 0;
 
-      // 모든 보이스 release
+      // 모든 보이스 release (래퍼가 샘플러+폴백 둘 다 처리)
       if (nodes) {
         try { nodes.pad.releaseAll(); } catch (e) {}
         try { nodes.organ.releaseAll(); } catch (e) {}
-        try { if (nodes.piano && nodes.piano.releaseAll) nodes.piano.releaseAll(); } catch (e) {}
-        try { nodes.pianoFallback.releaseAll(); } catch (e) {}
-        try { nodes.bass.triggerRelease(); } catch (e) {}
+        try { nodes.piano.releaseAll(); } catch (e) {}
+        try { nodes.guitar.releaseAll(); } catch (e) {}
+        try { nodes.bass.releaseAll(); } catch (e) {}
       }
       playStep = 0;
       clearHighlight();
@@ -1714,7 +2234,13 @@
       }
     }
     function updatePlayBtnDisabled() {
-      playBtn.disabled = currentSeq.length === 0;
+      // 마디가 없거나(차트 비었음), 엔진이 떠 있는데 아직 샘플 로딩 중이면 비활성
+      var loading = engineRunning && !samplesReady;
+      playBtn.disabled = (currentSeq.length === 0) || loading;
+      // 로딩 중엔 라벨로 안내(재생 중이 아닐 때만)
+      if (!isPlaying) {
+        playLabel.textContent = loading ? "불러오는 중…" : "재생";
+      }
     }
 
     /* ---------------- 컨트롤 바인딩 ---------------- */
@@ -1774,12 +2300,16 @@
 
       playBtn.addEventListener("click", togglePlay);
 
+      // 반복 구간 해제 버튼
+      if (loopClearBtn) loopClearBtn.addEventListener("click", clearLoopRegion);
+
       chartInput.addEventListener("input", debounce(function () { renderChart(); persist(); }, 200));
 
       $("saveBtn").addEventListener("click", function () { persist(true); flashHint("저장했어요"); });
       $("loadBtn").addEventListener("click", function () { if (restore()) { applyStateToUI(); renderChart(); flashHint("불러왔어요"); } else { flashHint("저장본이 없어요"); } });
       $("clearBtn").addEventListener("click", function () {
         if (isPlaying) stopPlayback();
+        clearLoopRegion();
         chartInput.value = ""; renderChart(); persist();
       });
     }
@@ -1886,16 +2416,6 @@
       }
       return { allOk: allOk, results: results };
     }
-    // 외부(테스트)에서 호출 가능하게 노출
-    window.__ogxAccompaniment = {
-      parseChord: parseChord,
-      chordToMidi: chordToMidi,
-      rootMidiOf: rootMidiOf,
-      pcName: pcName,
-      parseChart: parseChart,
-      flattenChart: flattenChart,
-      selfTest: selfTest
-    };
 
     /* ---------------- 초기화 ---------------- */
     function init() {
@@ -1915,10 +2435,14 @@
       }
       renderChart();
       clearHighlight();
-      setStatus("", "대기 중 · 재생 시 오디오 시작");
+      setStatus("", "대기 중 · 악기 준비 중…");
 
       // 콘솔 자가검증 1회
       try { selfTest(); } catch (e) {}
+
+      // 사운드폰트 미리 받기(컨텍스트는 suspended로 생성 → 첫 재생에서 resume).
+      // 첫 페인트를 막지 않도록 살짝 지연.
+      setTimeout(function () { try { ensureEngine(); } catch (e) {} }, 120);
     }
 
     if (document.readyState === "loading") {
