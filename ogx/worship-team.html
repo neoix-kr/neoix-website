@@ -1595,8 +1595,10 @@
     .toast.is-end { background: var(--text); color: #fff; box-shadow: 0 12px 48px rgba(25, 31, 40, 0.4), 0 4px 16px rgba(0, 0, 0, 0.12); }
     .toast.is-info { background: var(--surface); color: var(--text); box-shadow: var(--shadow-card-hover), 0 0 0 1px var(--border); }
     /* 큐 종류별 토스트 색 (라이브챗) — 단색, 절제 */
-    .toast.k-fast { background: var(--danger); color: #fff; box-shadow: 0 12px 48px rgba(240, 68, 82, 0.4), 0 4px 16px rgba(0, 0, 0, 0.12); }
-    .toast.k-slow { background: var(--blue); color: #fff; box-shadow: 0 12px 48px rgba(49, 130, 246, 0.4), 0 4px 16px rgba(0, 0, 0, 0.12); }
+    .toast.k-fast,
+    .toast.k-accel { background: var(--danger); color: #fff; box-shadow: 0 12px 48px rgba(240, 68, 82, 0.4), 0 4px 16px rgba(0, 0, 0, 0.12); }
+    .toast.k-slow,
+    .toast.k-rit { background: var(--blue); color: #fff; box-shadow: 0 12px 48px rgba(49, 130, 246, 0.4), 0 4px 16px rgba(0, 0, 0, 0.12); }
     .toast.k-louder { background: var(--text); color: #fff; box-shadow: 0 12px 48px rgba(25, 31, 40, 0.4), 0 4px 16px rgba(0, 0, 0, 0.12); }
     .toast.k-cresc { background: var(--text); color: #fff; box-shadow: 0 12px 48px rgba(25, 31, 40, 0.4), 0 4px 16px rgba(0, 0, 0, 0.12); }
     .toast.k-decresc,
@@ -1772,8 +1774,10 @@
       animation: pcue-in 0.3s cubic-bezier(0.16,1,0.3,1), pcue-out 0.5s ease 4.5s forwards;
       font-size: clamp(28px, 6vw, 56px);
     }
-    .present-cue.k-fast { background: rgba(240,68,82,0.92); box-shadow: 0 16px 48px rgba(240,68,82,0.4); }
+    .present-cue.k-fast,
+    .present-cue.k-accel { background: rgba(240,68,82,0.92); box-shadow: 0 16px 48px rgba(240,68,82,0.4); }
     .present-cue.k-slow,
+    .present-cue.k-rit,
     .present-cue.k-neutral { background: rgba(49,130,246,0.92); box-shadow: 0 16px 48px rgba(49,130,246,0.4); }
     .present-cue.k-louder,
     .present-cue.k-cresc,
@@ -2232,8 +2236,10 @@
       color: #fff;
     }
     .monitor-cue .toast-ico svg { width: 1em; height: 1em; stroke-width: 1.9; }
-    .monitor-cue.k-fast { color: #ff6b78; }
+    .monitor-cue.k-fast,
+    .monitor-cue.k-accel { color: #ff6b78; }
     .monitor-cue.k-slow,
+    .monitor-cue.k-rit,
     .monitor-cue.k-neutral { color: #6aa6ff; }
     .monitor-cue.k-louder,
     .monitor-cue.k-cresc { color: #ffd24a; }
