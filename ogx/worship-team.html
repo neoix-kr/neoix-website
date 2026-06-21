@@ -2645,7 +2645,9 @@
       padding: 12px;
       display: flex;
       align-items: center;
+      flex-wrap: wrap;
       gap: 10px;
+      row-gap: 8px;
     }
     .roster-presence {
       width: 9px; height: 9px;
@@ -2745,6 +2747,55 @@
     }
     .roster-select:focus { outline: none; border-color: var(--blue); }
     .roster-select.is-set { border-color: var(--blue); color: var(--blue-strong); }
+    /* 팀원 이름 직접 입력 */
+    .roster-name-input {
+      flex: 1;
+      min-width: 0;
+      background: var(--surface);
+      border: 2px solid transparent;
+      border-radius: 10px;
+      color: var(--text);
+      padding: 8px 10px;
+      font-size: 14px;
+      font-family: inherit;
+      font-weight: 700;
+      letter-spacing: -0.005em;
+      transition: border-color 0.15s ease, background 0.15s ease;
+    }
+    .roster-name-input::placeholder { color: var(--text-disabled); font-weight: 500; }
+    .roster-name-input:focus { outline: none; border-color: var(--blue); background: var(--surface); }
+    .roster-card > .rn-me {
+      flex-shrink: 0;
+      font-size: 11px; font-weight: 700;
+      color: var(--blue-strong);
+      padding: 2px 6px; border-radius: 6px;
+      background: var(--blue-soft);
+    }
+    .roster-card.is-offline { opacity: 0.72; }
+    .roster-card.is-offline .roster-name-input { background: var(--surface-2); }
+    .roster-remove {
+      flex-shrink: 0;
+      width: 30px; height: 30px;
+      border: none; background: transparent;
+      color: var(--text-disabled);
+      font-size: 20px; line-height: 1;
+      border-radius: 8px; cursor: pointer;
+      transition: background 0.15s ease, color 0.15s ease;
+    }
+    .roster-remove:hover { background: var(--surface-3); color: var(--danger); }
+    .roster-add {
+      width: 100%;
+      margin-top: 2px;
+      padding: 11px;
+      border: 1.5px dashed var(--border-strong);
+      background: var(--surface);
+      border-radius: var(--radius-sm);
+      color: var(--text-secondary);
+      font-size: 13px; font-weight: 700;
+      font-family: inherit; cursor: pointer;
+      transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+    }
+    .roster-add:hover { border-color: var(--blue); color: var(--blue-strong); background: var(--blue-soft); }
 
     /* ---------- PAGE NAV ---------- */
     .page-nav {
@@ -2844,7 +2895,11 @@
       .page-nav { bottom: 16px; }
       .sheet-body { padding: 4px 16px 18px; }
       .sheet-head { padding: 8px 14px 12px; }
-      .roster-select { width: 116px; }
+      /* 좁은 폭: 이름은 윗줄(접속점·나·삭제와 함께), 역할 select는 아랫줄 전체 — 넘침 방지 */
+      .roster-name-input { order: 1; flex: 1 1 90px; }
+      .roster-card > .rn-me { order: 2; }
+      .roster-remove { order: 3; margin-left: auto; }
+      .roster-select { order: 4; flex: 1 1 100%; width: 100%; }
       .tool-btn { font-size: 12px; padding: 8px 11px; }
       .tool-btn span:empty { display: none; }
       .livechat-toggle { font-size: 12px; padding: 8px 13px; }
@@ -3400,10 +3455,11 @@
 <div class="modal-backdrop hidden" id="teamModal">
   <div class="modal">
     <h3>팀 관리</h3>
-    <p class="modal-sub">지금 접속한 사람에게 역할을 정해줘요. ● 표시는 접속 중이에요.</p>
+    <p class="modal-sub">팀원을 추가하고 역할·이름을 정해요. <b style="color:var(--success)">●</b> 접속 중 · <b style="color:var(--text-disabled)">●</b> 오프라인. 이름은 직접 입력할 수 있어요.</p>
     <div class="roster-list" id="rosterList"></div>
+    <button class="roster-add" id="rosterAdd">+ 팀원 추가</button>
     <div class="roster-empty" id="rosterEmpty" style="display:none;">
-      아직 들어온 사람이 없어요. 초대 링크를 공유해보세요.
+      아직 팀원이 없어요. 위 버튼으로 추가하거나 초대 링크를 공유해보세요.
       <button class="btn btn-ghost btn-sm" id="rosterCopyCode" style="margin-top:12px;">초대 링크 복사</button>
     </div>
     <div class="modal-actions">
@@ -4986,10 +5042,12 @@
       renderRoster();
       teamModal.classList.remove('hidden');
     };
-    $('teamDone').onclick = () => teamModal.classList.add('hidden');
+    const closeTeam = () => { pruneEmptyRoster(); teamModal.classList.add('hidden'); };
+    $('teamDone').onclick = closeTeam;
+    $('rosterAdd').onclick = addRosterMember;
     $('rosterCopyCode').onclick = copyInviteLink;
     teamModal.addEventListener('click', (e) => {
-      if (e.target.id === 'teamModal') teamModal.classList.add('hidden');
+      if (e.target.id === 'teamModal') closeTeam();
     });
 
     // ---- 멤버 이름 입력 ----
@@ -7173,63 +7231,145 @@
     if (personalGroup) personalGroup.classList.toggle('is-locked', !targeted);
   }
 
-  // 팀 관리 모달 — 접속자 카드 리스트 (리더가 각자에게 역할 지정)
+  // 팀 명단 = 리더가 만든 영구 명단(assignmentsData) ∪ 지금 접속자.
+  // 접속 안 한 팀원도 항상 표시(오프라인), 이름은 리더가 직접 입력 가능.
+  function rosterMembers() {
+    const online = {};
+    connectedPeople().forEach((p) => { online[p.deviceId] = p; });
+    const ids = new Set([...Object.keys(assignmentsData), ...Object.keys(online)]);
+    const list = [];
+    ids.forEach((id) => {
+      const a = assignmentsData[id] || {};
+      const on = online[id];
+      list.push({
+        id,
+        online: !!on,
+        isMe: id === deviceId,
+        isLeaderPerson: on ? on.role === 'leader' : false,
+        name: (a.name && a.name.trim()) || (on ? on.name : '') || '',   // 리더 지정 이름 우선
+        role: a.role || '',
+        manual: !!a.manual,
+        joinedAt: on ? on.joinedAt : Infinity,                          // 오프라인은 뒤로
+      });
+    });
+    // 리더 → 접속 중 → 오프라인 순, 각 그룹 내 입장순/이름순
+    list.sort((x, y) =>
+      (Number(y.isLeaderPerson) - Number(x.isLeaderPerson)) ||
+      (Number(y.online) - Number(x.online)) ||
+      ((x.joinedAt - y.joinedAt) || x.name.localeCompare(y.name))
+    );
+    return list;
+  }
+
+  // 팀 관리 모달 — 영구 명단 카드 (이름 입력 + 역할 지정 + 온/오프라인 + 추가/삭제)
   function renderRoster() {
     if (!rosterList) return;
-    const people = connectedPeople();
-    rosterEmpty.style.display = people.length ? 'none' : '';
-    // 같은 역할이 이미 다른 사람에게 배정됐는지 (작은 표시용)
+    const people = rosterMembers();
+    if (rosterEmpty) rosterEmpty.style.display = people.length ? 'none' : '';
     const roleAssignedCount = {};
-    people.forEach((p) => {
-      const a = assignmentsData[p.deviceId];
-      if (a && a.role) roleAssignedCount[a.role] = (roleAssignedCount[a.role] || 0) + 1;
-    });
+    people.forEach((p) => { if (p.role) roleAssignedCount[p.role] = (roleAssignedCount[p.role] || 0) + 1; });
 
     rosterList.innerHTML = people.map((p) => {
-      const a = assignmentsData[p.deviceId];
-      const role = (a && a.role) || NO_ROLE;
-      const nameLabel = p.name
-        ? escapeHtml(p.name)
-        : '<span class="rn-empty">이름 없음</span>';
-      const meTag = p.isMe ? '<span class="rn-me">(나)</span>' : '';
+      const role = p.role || NO_ROLE;
+      const meTag = p.isMe ? '<span class="rn-me">나</span>' : '';
       const opts = [`<option value=""${role === NO_ROLE ? ' selected' : ''}>지정 안 함</option>`]
         .concat(ROLE_PRESETS.map((r) => {
-          const dupe = role !== r && (roleAssignedCount[r] || 0) > 0;  // 이미 다른 사람에게 배정됨
-          return `<option value="${escapeHtml(r)}"${role === r ? ' selected' : ''}>${escapeHtml(r)}${dupe ? ' ·배정됨' : ''}</option>`;
+          const dupe = role !== r && (roleAssignedCount[r] || 0) > 0;   // 이미 다른 사람에게 배정됨
+          return `<option value="${escapeHtml(r)}"${role === r ? ' selected' : ''}>${escapeHtml(r)}${dupe ? ' ·중복' : ''}</option>`;
         }))
         .join('');
+      const dotCls = p.online ? 'roster-presence online' : 'roster-presence';
+      const removeBtn = p.online ? '' :
+        `<button class="roster-remove" data-id="${escapeHtml(p.id)}" title="명단에서 빼기" aria-label="명단에서 빼기">×</button>`;
       return `
-      <div class="roster-card" data-did="${escapeHtml(p.deviceId)}">
-        <span class="roster-presence online" title="접속 중"></span>
-        <span class="roster-name">${nameLabel}${meTag}</span>
-        <select class="roster-select${role ? ' is-set' : ''}" data-did="${escapeHtml(p.deviceId)}">${opts}</select>
+      <div class="roster-card${p.online ? '' : ' is-offline'}" data-id="${escapeHtml(p.id)}">
+        <span class="${dotCls}" title="${p.online ? '접속 중' : '오프라인'}"></span>
+        <input class="roster-name-input" data-id="${escapeHtml(p.id)}" value="${escapeHtml(p.name)}" placeholder="이름 입력" autocomplete="off" maxlength="20" />
+        ${meTag}
+        <select class="roster-select${role ? ' is-set' : ''}" data-id="${escapeHtml(p.id)}">${opts}</select>
+        ${removeBtn}
       </div>`;
     }).join('');
 
     rosterList.querySelectorAll('.roster-select').forEach((sel) => {
-      sel.addEventListener('change', (e) => {
-        const did = e.target.dataset.did;
-        const role = e.target.value;
-        const person = connectedPeople().find((x) => x.deviceId === did);
-        assignRole(did, role, person?.name || '');
-      });
+      sel.addEventListener('change', (e) => assignRole(e.target.dataset.id, e.target.value));
+    });
+    rosterList.querySelectorAll('.roster-name-input').forEach((inp) => {
+      inp.addEventListener('input', (e) => setRosterName(e.target.dataset.id, e.target.value, false));
+      inp.addEventListener('change', (e) => setRosterName(e.target.dataset.id, e.target.value, true));  // blur/엔터 → 동기화
+      inp.addEventListener('keydown', (e) => { if (e.key === 'Enter') e.target.blur(); });
+    });
+    rosterList.querySelectorAll('.roster-remove').forEach((btn) => {
+      btn.addEventListener('click', (e) => removeRosterMember(e.currentTarget.dataset.id));
     });
   }
 
-  // 리더가 특정 사용자(user id)에 역할 배정 → assignmentsData 기록(영속) + broadcast + DB
-  function assignRole(did, role, name) {
-    if (!isLeader || !did) return;
-    if (role) {
-      assignmentsData[did] = { role, name: name || '' };
+  // 리더가 명단 항목에 역할 배정 → assignmentsData(영속) + broadcast + (실제 유저만) DB
+  function assignRole(id, role, name) {
+    if (!isLeader || !id) return;
+    const cur = assignmentsData[id] || {};
+    const nm = (name != null ? name : (cur.name || '')) || '';
+    if (role || nm.trim() || cur.manual) {
+      assignmentsData[id] = { role: role || '', name: nm };
+      if (cur.manual) assignmentsData[id].manual = true;
     } else {
-      delete assignmentsData[did]; // 지정 안 함 → 배정 제거
+      delete assignmentsData[id];   // 이름·역할·수동 다 없으면 제거
     }
     persistLeaderAssignments();
-    persistMemberRole(did, role);   // room_members.role 영속 (입장 시 로드됨)
+    if (!String(id).startsWith('m_')) persistMemberRole(id, role || '');   // 수동 항목은 DB 건너뜀
     broadcastAssignments();
     applyMyAssignment();   // 내 자신에게 배정했을 수도 있어 즉시 반영
     renderRoster();
     renderTargetChips();
+  }
+
+  // 리더가 팀원 이름 직접 입력. doBroadcast=false(타이핑 중, 로컬 저장만) / true(blur·엔터, 동기화)
+  function setRosterName(id, name, doBroadcast) {
+    if (!isLeader || !id) return;
+    const cur = assignmentsData[id] || {};
+    const nm = (name || '').trim();
+    if (nm || cur.role || cur.manual) {
+      assignmentsData[id] = { role: cur.role || '', name: nm };
+      if (cur.manual) assignmentsData[id].manual = true;
+    } else {
+      delete assignmentsData[id];
+    }
+    persistLeaderAssignments();
+    if (doBroadcast) { broadcastAssignments(); renderTargetChips(); }
+  }
+
+  // 접속 안 한 팀원을 미리 추가 (이름·역할 지정용 빈 항목)
+  function addRosterMember() {
+    if (!isLeader) return;
+    const id = 'm_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+    assignmentsData[id] = { role: '', name: '', manual: true };
+    persistLeaderAssignments();
+    broadcastAssignments();
+    renderRoster();
+    const inp = rosterList.querySelector(`.roster-name-input[data-id="${id}"]`);
+    if (inp) inp.focus();
+  }
+
+  // 명단에서 제거 (오프라인/수동 항목). 접속 중이면 현재 접속자라 다시 표시됨.
+  function removeRosterMember(id) {
+    if (!isLeader || !id) return;
+    delete assignmentsData[id];
+    persistLeaderAssignments();
+    if (!String(id).startsWith('m_')) persistMemberRole(id, '');
+    broadcastAssignments();
+    applyMyAssignment();
+    renderRoster();
+    renderTargetChips();
+  }
+
+  // 이름·역할 없이 추가만 된 빈 수동 항목 정리 — 모달 닫을 때 호출
+  function pruneEmptyRoster() {
+    let changed = false;
+    Object.keys(assignmentsData).forEach((id) => {
+      const a = assignmentsData[id] || {};
+      if (a.manual && !(a.name && a.name.trim()) && !a.role) { delete assignmentsData[id]; changed = true; }
+    });
+    if (changed) { persistLeaderAssignments(); broadcastAssignments(); }
   }
 
   // ---------------- Boot ----------------
