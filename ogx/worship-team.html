@@ -13,6 +13,8 @@
     href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css"
   />
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
+  <!-- 공용 메뉴 표시/숨김 스크립트 (별도 담당자가 제공) -->
+  <script src="ogx-menu.js" defer></script>
   <script type="importmap">
   {
     "imports": {
@@ -2933,6 +2935,106 @@
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 4px; }
     ::-webkit-scrollbar-thumb:hover { background: var(--text-disabled); }
+
+    /* ---------- 관리자 모드 ---------- */
+    #adminCard { display: none; }            /* isAdmin 일 때만 JS가 노출 */
+    .admin-card-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .admin-card-row .admin-card-desc {
+      font-size: 13px;
+      color: var(--text-caption);
+      font-weight: 500;
+      letter-spacing: -0.005em;
+      line-height: 1.4;
+    }
+    .admin-section { margin-bottom: 26px; }
+    .admin-section:last-of-type { margin-bottom: 0; }
+    .admin-section-title {
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      color: var(--text);
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .admin-section-hint {
+      font-size: 12px;
+      color: var(--text-caption);
+      font-weight: 500;
+      margin-bottom: 12px;
+      letter-spacing: -0.005em;
+    }
+    .admin-menu-list { display: flex; flex-direction: column; gap: 8px; }
+    .admin-menu-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 14px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+    }
+    .admin-menu-label {
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: -0.005em;
+      color: var(--text);
+    }
+    .admin-menu-state {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-caption);
+      margin-right: 2px;
+    }
+    .admin-users-list { display: flex; flex-direction: column; gap: 8px; }
+    .admin-user-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 11px 14px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+    }
+    .admin-user-name {
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: -0.005em;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .admin-user-meta {
+      font-size: 12px;
+      color: var(--text-caption);
+      font-weight: 500;
+      text-align: right;
+      flex-shrink: 0;
+      line-height: 1.45;
+    }
+    .admin-msg {
+      font-size: 13px;
+      color: var(--text-caption);
+      padding: 16px 14px;
+      text-align: center;
+      background: var(--surface-2);
+      border: 1px dashed var(--border-strong);
+      border-radius: var(--radius-sm);
+      font-weight: 500;
+      letter-spacing: -0.005em;
+      line-height: 1.5;
+    }
+    .admin-msg.is-error { color: var(--danger); border-color: rgba(240, 68, 82, 0.35); }
   </style>
 </head>
 <body>
@@ -3029,6 +3131,17 @@
       <ul class="room-list" id="joinedList"></ul>
       <div class="home-loading" id="joinedLoading">불러오는 중…</div>
       <div class="home-empty" id="joinedEmpty" style="display:none;">들어간 방이 없어요. 방 코드로 입장해보세요.</div>
+    </div>
+
+    <!-- 관리자 전용 (isAdmin 일 때만 노출) -->
+    <div class="home-card" id="adminCard">
+      <div class="admin-card-row">
+        <div>
+          <div class="home-card-title" style="margin-bottom:4px;">⚙ 관리자 모드</div>
+          <div class="admin-card-desc">메뉴 표시/숨김과 가입현황을 관리해요.</div>
+        </div>
+        <button class="btn btn-primary btn-sm" id="btnAdminOpen">열기</button>
+      </div>
     </div>
   </div>
 </div>
@@ -3474,6 +3587,36 @@
   </div>
 </div>
 
+<!-- Modal: 관리자 모드 (메뉴 표시 관리 + 가입현황) -->
+<div class="modal-backdrop hidden" id="adminModal">
+  <div class="modal">
+    <h3>⚙ 관리자 모드</h3>
+    <p class="modal-sub">사이트 메뉴를 켜고 끄거나, 가입현황을 확인해요.</p>
+
+    <!-- 1) 메뉴 표시 관리 -->
+    <div class="admin-section">
+      <div class="admin-section-title">메뉴 표시 관리</div>
+      <div class="admin-section-hint">켜짐 = 모두에게 표시 · 꺼짐 = 숨김</div>
+      <div class="admin-menu-list" id="adminMenuList"><!-- JS가 채움 --></div>
+      <div class="admin-msg" id="adminMenuMsg" style="display:none;"></div>
+    </div>
+
+    <!-- 2) 가입현황 -->
+    <div class="admin-section">
+      <div class="admin-section-title">
+        <span>가입현황 <span class="admin-menu-state" id="adminUsersCount"></span></span>
+        <button class="btn btn-ghost btn-sm" id="btnAdminReload">불러오기</button>
+      </div>
+      <div class="admin-users-list" id="adminUsersList"><!-- JS가 채움 --></div>
+      <div class="admin-msg" id="adminUsersMsg" style="display:none;"></div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn btn-primary" id="adminDone">완료</button>
+    </div>
+  </div>
+</div>
+
 <!-- ============ SCRIPT ============ -->
 <script type="module">
   import { createClient } from '@supabase/supabase-js';
@@ -3504,6 +3647,20 @@
   };
   // 아이디 유효성: 영문/숫자/._- , 공백 금지, 3~20자
   const ID_RE = /^[a-zA-Z0-9._-]{3,20}$/;
+
+  // ---------------- 관리자 ----------------
+  // 표시용 판별일 뿐 — 실제 쓰기 권한은 DB RLS(관리자 이메일만 허용)가 막는다.
+  const ADMIN_USERNAME = 'wjdrua7315';
+  // 메뉴 키 6개 (라벨). app_settings.hidden_menus 배열에 없으면 표시, 있으면 숨김.
+  const ADMIN_MENUS = [
+    { key: 'recommend',    label: '추천' },
+    { key: 'sheet-finder', label: '악보 찾기' },
+    { key: 'praise-ppt',   label: '찬양 PPT' },
+    { key: 'worship-team', label: '실시간 악보' },
+    { key: 'accompaniment',label: '반주' },
+    { key: 'pads',         label: '패드' },
+  ];
+  let isAdmin = false;        // currentUser 바뀔 때마다 재평가
 
   let currentUser = null;     // supabase auth user
   let myUserId = null;        // currentUser.id
@@ -3904,6 +4061,7 @@
 
     setupAuthScreen();
     setupHomeScreen();
+    setupAdminUi();
 
     // 세션 확인 (DB/네트워크 문제가 있어도 로그인 화면은 떠야 함)
     let session = null;
@@ -3939,6 +4097,9 @@
       myUserId = null;
       myUsername = '';
     }
+    // 관리자 판별 재평가 + 관리자 버튼 노출 갱신
+    isAdmin = !!currentUser && userToUsername(currentUser) === ADMIN_USERNAME;
+    updateAdminUi();
 
     // 이미 방 안(app 표시 중)이거나 입장 중이면 화면 전환하지 않음
     const inRoom = app.classList.contains('visible');
@@ -4143,6 +4304,198 @@
         enterRoomByCode(code);
       };
     }
+  }
+
+  // ---------------- 관리자 모드 ----------------
+  // 홈 진입/세션 변경 시 호출 — 관리자 카드 노출 토글
+  function updateAdminUi() {
+    const card = $('adminCard');
+    if (card) card.style.display = isAdmin ? '' : 'none';
+    if (!isAdmin) closeAdminModal();   // 권한 사라지면 모달도 닫기
+  }
+
+  // 관리자 모달 wiring (idempotent — bootstrap 1회)
+  function setupAdminUi() {
+    const openBtn = $('btnAdminOpen');
+    if (openBtn && !openBtn.dataset.wired) {
+      openBtn.dataset.wired = '1';
+      openBtn.onclick = openAdminModal;
+    }
+    const doneBtn = $('adminDone');
+    if (doneBtn && !doneBtn.dataset.wired) {
+      doneBtn.dataset.wired = '1';
+      doneBtn.onclick = closeAdminModal;
+    }
+    const reloadBtn = $('btnAdminReload');
+    if (reloadBtn && !reloadBtn.dataset.wired) {
+      reloadBtn.dataset.wired = '1';
+      reloadBtn.onclick = loadAdminUsers;
+    }
+    const backdrop = $('adminModal');
+    if (backdrop && !backdrop.dataset.wired) {
+      backdrop.dataset.wired = '1';
+      backdrop.addEventListener('click', (e) => {
+        if (e.target.id === 'adminModal') closeAdminModal();
+      });
+    }
+  }
+
+  function closeAdminModal() {
+    const m = $('adminModal');
+    if (m) m.classList.add('hidden');
+  }
+
+  async function openAdminModal() {
+    if (!isAdmin) return;             // 표시용 가드 (실제 권한은 RLS)
+    const m = $('adminModal');
+    if (!m) return;
+    m.classList.remove('hidden');
+    // 두 섹션 모두 새로 불러오기
+    await loadAdminMenus();
+    loadAdminUsers();
+  }
+
+  // 작은 메시지 영역 헬퍼 (display 토글 포함)
+  function adminMsg(id, text, isError) {
+    const el = $(id);
+    if (!el) return;
+    if (!text) { el.style.display = 'none'; el.textContent = ''; el.classList.remove('is-error'); return; }
+    el.textContent = text;
+    el.classList.toggle('is-error', !!isError);
+    el.style.display = '';
+  }
+
+  // ---- 1) 메뉴 표시 관리 ----
+  // app_settings(전역 1행 id=1).hidden_menus = 숨긴 메뉴 키 배열
+  let adminHiddenMenus = [];          // 현재 숨김 상태(낙관적 UI의 진실원)
+
+  async function loadAdminMenus() {
+    const list = $('adminMenuList');
+    if (list) list.innerHTML = '';
+    adminMsg('adminMenuMsg', '', false);
+    let hidden = null;
+    try {
+      const { data, error } = await supabase
+        .from('app_settings').select('hidden_menus').eq('id', 1).maybeSingle();
+      if (error) throw error;
+      hidden = Array.isArray(data?.hidden_menus) ? data.hidden_menus : [];
+    } catch (e) {
+      console.warn('app_settings 읽기 실패', e);
+      adminMsg('adminMenuMsg', '관리자 기능 DB 설정(SQL)이 아직 안 됐어요.', true);
+      return;
+    }
+    adminHiddenMenus = hidden.slice();
+    renderAdminMenus();
+  }
+
+  function renderAdminMenus() {
+    const list = $('adminMenuList');
+    if (!list) return;
+    list.innerHTML = '';
+    ADMIN_MENUS.forEach(({ key, label }) => {
+      const shown = !adminHiddenMenus.includes(key);   // 배열에 없으면 표시
+      const row = document.createElement('div');
+      row.className = 'admin-menu-row';
+      const lab = document.createElement('span');
+      lab.className = 'admin-menu-label';
+      lab.textContent = label;
+      const right = document.createElement('div');
+      right.style.cssText = 'display:flex;align-items:center;gap:10px;';
+      const state = document.createElement('span');
+      state.className = 'admin-menu-state';
+      state.textContent = shown ? '표시' : '숨김';
+      const toggle = document.createElement('label');
+      toggle.className = 'toggle';
+      const input = document.createElement('input');
+      input.type = 'checkbox';
+      input.checked = shown;
+      const track = document.createElement('span');
+      track.className = 'toggle-track';
+      input.addEventListener('change', () => setMenuShown(key, input.checked, input, state));
+      toggle.appendChild(input);
+      toggle.appendChild(track);
+      right.appendChild(state);
+      right.appendChild(toggle);
+      row.appendChild(lab);
+      row.appendChild(right);
+      list.appendChild(row);
+    });
+  }
+
+  // 토글 변경 → 낙관적으로 배열 갱신 후 즉시 저장. 실패하면 되돌림.
+  async function setMenuShown(key, shown, inputEl, stateEl) {
+    const prev = adminHiddenMenus.slice();
+    const next = shown
+      ? adminHiddenMenus.filter((k) => k !== key)         // 표시 → 숨김목록에서 제거
+      : (adminHiddenMenus.includes(key) ? adminHiddenMenus.slice() : adminHiddenMenus.concat(key)); // 숨김 → 추가
+    adminHiddenMenus = next;
+    if (stateEl) stateEl.textContent = shown ? '표시' : '숨김';
+    adminMsg('adminMenuMsg', '', false);
+    try {
+      const { error } = await supabase
+        .from('app_settings')
+        .update({ hidden_menus: next, updated_at: new Date().toISOString() })
+        .eq('id', 1);
+      if (error) throw error;
+      adminMsg('adminMenuMsg', '저장됐어요.', false);
+      setTimeout(() => adminMsg('adminMenuMsg', '', false), 1500);
+    } catch (e) {
+      console.warn('app_settings 저장 실패 — 되돌림', e);
+      adminHiddenMenus = prev;                            // 롤백
+      if (inputEl) inputEl.checked = !shown;
+      if (stateEl) stateEl.textContent = !shown ? '표시' : '숨김';
+      adminMsg('adminMenuMsg', '저장에 실패했어요. (권한 또는 DB 설정 확인)', true);
+    }
+  }
+
+  // ---- 2) 가입현황 ----
+  async function loadAdminUsers() {
+    const list = $('adminUsersList');
+    const countEl = $('adminUsersCount');
+    if (list) list.innerHTML = '';
+    if (countEl) countEl.textContent = '';
+    adminMsg('adminUsersMsg', '불러오는 중…', false);
+    let rows = null;
+    try {
+      const { data, error } = await supabase.rpc('admin_list_users');
+      if (error) throw error;
+      rows = Array.isArray(data) ? data : [];
+    } catch (e) {
+      console.warn('admin_list_users 실패', e);
+      adminMsg('adminUsersMsg', '관리자 기능 DB 설정(SQL)이 아직 안 됐어요.', true);
+      return;
+    }
+    adminMsg('adminUsersMsg', '', false);
+    if (countEl) countEl.textContent = `(${rows.length}명)`;
+    if (!rows.length) { adminMsg('adminUsersMsg', '가입한 사용자가 없어요.', false); return; }
+    if (!list) return;
+    list.innerHTML = '';
+    rows.forEach((u) => {
+      const row = document.createElement('div');
+      row.className = 'admin-user-row';
+      const name = document.createElement('div');
+      name.className = 'admin-user-name';
+      name.textContent = u.username || '(이름 없음)';
+      const meta = document.createElement('div');
+      meta.className = 'admin-user-meta';
+      const joined = fmtAdminDate(u.created_at);
+      const last = u.last_sign_in ? fmtAdminDate(u.last_sign_in) : '';
+      meta.innerHTML = `가입 ${joined}` + (last ? `<br>최근 ${last}` : '');
+      row.appendChild(name);
+      row.appendChild(meta);
+      list.appendChild(row);
+    });
+  }
+
+  // YYYY.MM.DD
+  function fmtAdminDate(v) {
+    if (!v) return '-';
+    const d = new Date(v);
+    if (isNaN(d.getTime())) return '-';
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${y}.${m}.${day}`;
   }
 
   // 내 방 목록 로드 (소유 + 멤버십). 테이블 없거나 RLS면 빈 목록 + 콘솔 경고.
