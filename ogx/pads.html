@@ -1,0 +1,1568 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>패드 — OGX 찬양팀</title>
+  <meta name="description" content="키를 누르면 예배 내내 깔리는 앰비언트 워십 패드. 무한·진화·풍성한 사운드." />
+  <meta name="theme-color" content="#ffffff" />
+
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css"
+  />
+
+  <!-- Tone.js (Web Audio 합성/스케줄) -->
+  <script src="https://cdn.jsdelivr.net/npm/tone@14.8.49/build/Tone.js"></script>
+
+  <style>
+    :root {
+      /* ----- 토스 컬러 토큰 ----- */
+      --bg: #ffffff;
+      --surface: #ffffff;
+      --surface-2: #f9fafb;
+      --surface-3: #f2f4f6;
+      --border: #e5e8eb;
+      --border-strong: #d1d6db;
+      --text: #191f28;
+      --text-secondary: #4e5968;
+      --text-caption: #8b95a1;
+      --text-disabled: #b0b8c1;
+      --blue: #3182f6;
+      --blue-strong: #0064ff;
+      --blue-soft: #e8f2fe;
+      --success: #16c098;
+      --warning: #ffc100;
+      --danger: #f04452;
+      --danger-soft: #fde8ea;
+
+      --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.04), 0 8px 24px rgba(0, 0, 0, 0.04);
+      --shadow-card-hover: 0 1px 3px rgba(0, 0, 0, 0.06), 0 12px 32px rgba(0, 0, 0, 0.08);
+      --shadow-button: 0 2px 6px rgba(49, 130, 246, 0.18);
+      --shadow-button-hover: 0 6px 16px rgba(49, 130, 246, 0.28);
+      --shadow-segment: 0 1px 2px rgba(0, 0, 0, 0.04), 0 2px 6px rgba(0, 0, 0, 0.04);
+
+      --radius: 20px;
+      --radius-sm: 12px;
+      --radius-pill: 999px;
+
+      /* 텍스처/키 색(앰비언트 비주얼이 읽음) — JS가 갱신 */
+      --amb-1: #3182f6;
+      --amb-2: #7aa7ff;
+      --amb-3: #b9d4ff;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont,
+        system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo",
+        "Noto Sans KR", "Malgun Gothic", sans-serif;
+      font-feature-settings: "ss03", "ss04", "tnum";
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      line-height: 1.6;
+      font-size: 15px;
+      letter-spacing: -0.003em;
+    }
+
+    body {
+      min-height: 100vh;
+      padding: 96px 24px 120px;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* ---------- 앰비언트 비주얼 (숨쉬는 오브) ---------- */
+    .ambient {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      overflow: hidden;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 1.4s ease;
+    }
+    .ambient.live { opacity: 1; }
+    .ambient .orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(60px);
+      opacity: 0.5;
+      mix-blend-mode: multiply;
+      will-change: transform, opacity;
+    }
+    .ambient .orb.o1 {
+      width: 52vw; height: 52vw; min-width: 360px; min-height: 360px;
+      left: -8vw; top: -6vh;
+      background: radial-gradient(circle at 50% 50%, var(--amb-1), transparent 68%);
+      animation: breathe1 13s ease-in-out infinite;
+    }
+    .ambient .orb.o2 {
+      width: 46vw; height: 46vw; min-width: 320px; min-height: 320px;
+      right: -10vw; top: 18vh;
+      background: radial-gradient(circle at 50% 50%, var(--amb-2), transparent 70%);
+      animation: breathe2 17s ease-in-out infinite;
+    }
+    .ambient .orb.o3 {
+      width: 40vw; height: 40vw; min-width: 280px; min-height: 280px;
+      left: 28vw; bottom: -14vh;
+      background: radial-gradient(circle at 50% 50%, var(--amb-3), transparent 72%);
+      animation: breathe3 21s ease-in-out infinite;
+    }
+    @keyframes breathe1 {
+      0%,100% { transform: translate(0,0) scale(1); opacity: 0.42; }
+      50%     { transform: translate(4vw,3vh) scale(1.14); opacity: 0.6; }
+    }
+    @keyframes breathe2 {
+      0%,100% { transform: translate(0,0) scale(1.05); opacity: 0.5; }
+      50%     { transform: translate(-3vw,4vh) scale(0.92); opacity: 0.34; }
+    }
+    @keyframes breathe3 {
+      0%,100% { transform: translate(0,0) scale(0.95); opacity: 0.36; }
+      50%     { transform: translate(3vw,-3vh) scale(1.1); opacity: 0.52; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .ambient .orb { animation: none !important; }
+    }
+
+    /* ---------- 상단 네비 (토스 스타일) ---------- */
+    .topnav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 64px;
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: saturate(180%) blur(14px);
+      -webkit-backdrop-filter: saturate(180%) blur(14px);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0 28px;
+      gap: 36px;
+      z-index: 100;
+    }
+    .topnav .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .brand-logo {
+      width: 28px; height: 28px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, var(--blue) 0%, var(--blue-strong) 100%);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+    }
+    .brand-name {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.02em;
+    }
+    .topnav .tabs {
+      display: flex;
+      gap: 4px;
+      align-items: center;
+      height: 100%;
+    }
+    .topnav .tabs a {
+      display: inline-flex;
+      align-items: center;
+      height: 100%;
+      font-size: 15px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      padding: 0 16px;
+      border-bottom: 3px solid transparent;
+      transition: color 0.15s ease, border-color 0.15s ease;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      white-space: nowrap;
+    }
+    .topnav .tabs a:hover { color: var(--text); }
+    .topnav .tabs a.active {
+      color: var(--blue);
+      border-bottom-color: var(--blue);
+    }
+    @media (max-width: 720px) {
+      .topnav { gap: 12px; padding: 0 16px; overflow-x: auto; }
+      .topnav .tabs { gap: 0; }
+      .topnav .tabs a { padding: 0 10px; font-size: 13px; }
+      .brand-name { font-size: 15px; }
+    }
+
+    /* ---------- 컨테이너 / 히어로 ---------- */
+    .container { max-width: 760px; margin: 0 auto; }
+
+    .hero { margin-bottom: 22px; padding: 12px 4px 0; }
+    .hero h1 {
+      font-size: 36px;
+      font-weight: 700;
+      letter-spacing: -0.025em;
+      line-height: 1.25;
+      margin-bottom: 10px;
+      color: var(--text);
+    }
+    .hero .lead {
+      font-size: 17px;
+      color: var(--text-secondary);
+      max-width: 640px;
+      font-weight: 500;
+      letter-spacing: -0.012em;
+      line-height: 1.5;
+    }
+
+    /* ---------- 카드 ---------- */
+    .card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 26px;
+      box-shadow: var(--shadow-card);
+      transition: box-shadow 0.2s ease;
+    }
+    .card + .card { margin-top: 18px; }
+    .card-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+    .card-title {
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: -0.015em;
+      color: var(--text);
+    }
+    .card-hint {
+      font-size: 13px;
+      color: var(--text-caption);
+      font-weight: 500;
+      letter-spacing: -0.005em;
+    }
+
+    @media (max-width: 960px) {
+      body { padding: 88px 16px 120px; }
+      .card { padding: 20px; }
+      .hero h1 { font-size: 28px; }
+      .hero .lead { font-size: 15px; }
+    }
+
+    /* ---------- 현재 키 / 트랜스포트 ---------- */
+    .nowkey-card { text-align: center; }
+    .nowkey-display {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      margin-bottom: 22px;
+    }
+    .nowkey-label {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-caption);
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+    }
+    .nowkey-main {
+      font-size: 72px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1;
+      color: var(--text);
+      font-variant-numeric: tabular-nums;
+    }
+    .nowkey-main .qual {
+      font-size: 30px;
+      font-weight: 700;
+      color: var(--blue-strong);
+      letter-spacing: -0.01em;
+      margin-left: 2px;
+      vertical-align: 14px;
+    }
+    .nowkey-sub {
+      font-size: 14px;
+      color: var(--text-secondary);
+      font-weight: 600;
+    }
+    .nowkey-sub b { color: var(--text); font-weight: 800; }
+
+    .play-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 11px;
+      padding: 0 30px;
+      height: 64px;
+      min-width: 200px;
+      border-radius: var(--radius-sm);
+      font-size: 19px;
+      font-weight: 800;
+      font-family: inherit;
+      cursor: pointer;
+      border: none;
+      letter-spacing: -0.01em;
+      background: linear-gradient(135deg, var(--blue) 0%, var(--blue-strong) 100%);
+      color: #fff;
+      box-shadow: var(--shadow-button);
+      transition: box-shadow 0.2s ease, transform 0.1s ease, background 0.2s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .play-btn:hover:not(:disabled) { box-shadow: var(--shadow-button-hover); }
+    .play-btn:active:not(:disabled) { transform: scale(0.98); }
+    .play-btn:disabled { background: var(--surface-3); color: var(--text-disabled); box-shadow: none; cursor: not-allowed; }
+    .play-btn.is-playing {
+      background: linear-gradient(135deg, var(--danger) 0%, #d63341 100%);
+      box-shadow: 0 2px 6px rgba(240, 68, 82, 0.2);
+    }
+    .play-btn svg { width: 22px; height: 22px; }
+
+    .transport-row {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+    }
+    .status-pill {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 12px; font-weight: 700;
+      padding: 5px 11px; border-radius: var(--radius-pill);
+      background: var(--surface-3); color: var(--text-caption);
+    }
+    .status-pill .sdot { width: 7px; height: 7px; border-radius: 50%; background: var(--text-disabled); }
+    .status-pill.ok { background: rgba(22,192,152,0.12); color: var(--success); }
+    .status-pill.ok .sdot { background: var(--success); }
+    .status-pill.warn { background: rgba(255,193,0,0.14); color: #a07800; }
+    .status-pill.warn .sdot { background: var(--warning); }
+    .status-pill.load { background: var(--blue-soft); color: var(--blue-strong); }
+    .status-pill.load .sdot { background: var(--blue); animation: pulse 1s ease-in-out infinite; }
+    .status-pill.play { background: var(--blue-soft); color: var(--blue-strong); }
+    .status-pill.play .sdot { background: var(--blue); animation: pulse 1.6s ease-in-out infinite; }
+    @keyframes pulse { 0%,100% { opacity: 0.35; } 50% { opacity: 1; } }
+
+    /* ---------- 키 그리드 ---------- */
+    .key-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+    @media (max-width: 420px) { .key-grid { gap: 8px; } }
+    .key-btn {
+      position: relative;
+      border: 2px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      border-radius: var(--radius-sm);
+      height: 64px;
+      font-size: 21px;
+      font-weight: 800;
+      font-family: inherit;
+      cursor: pointer;
+      letter-spacing: -0.01em;
+      transition: all 0.14s ease;
+      -webkit-tap-highlight-color: transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-variant-numeric: tabular-nums;
+    }
+    .key-btn:hover { border-color: var(--border-strong); }
+    .key-btn:active { transform: scale(0.96); }
+    .key-btn.accidental { color: var(--text-secondary); }
+    .key-btn.is-current {
+      border-color: var(--blue);
+      background: var(--blue-soft);
+      color: var(--blue-strong);
+      box-shadow: inset 0 0 0 1px var(--blue);
+    }
+    .key-btn.is-current.accidental { color: var(--blue-strong); }
+    /* 전환 중(크로스페이드) 표시 */
+    .key-btn.is-pending::after {
+      content: "";
+      position: absolute;
+      bottom: 7px; left: 50%;
+      transform: translateX(-50%);
+      width: 18px; height: 3px; border-radius: 999px;
+      background: var(--blue);
+      animation: pulse 0.9s ease-in-out infinite;
+    }
+
+    /* 장/단 토글 */
+    .quality-toggle {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      padding: 5px;
+      background: var(--surface-3);
+      border-radius: var(--radius-sm);
+      margin-top: 14px;
+    }
+    .quality-toggle button {
+      border: none;
+      background: transparent;
+      border-radius: 9px;
+      padding: 13px 6px;
+      font-size: 15px;
+      font-weight: 700;
+      font-family: inherit;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .quality-toggle button .q-sub { font-size: 11px; font-weight: 600; color: var(--text-caption); margin-left: 5px; }
+    .quality-toggle button.is-active {
+      background: var(--surface);
+      color: var(--text);
+      box-shadow: var(--shadow-segment);
+    }
+    .quality-toggle button.is-active .q-sub { color: var(--text-secondary); }
+
+    /* ---------- 텍스처 프리셋 ---------- */
+    .texture-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 10px;
+    }
+    .texture-btn {
+      border: 2px solid var(--border);
+      background: var(--surface);
+      border-radius: var(--radius-sm);
+      padding: 14px 12px;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.15s ease;
+      font-family: inherit;
+      -webkit-tap-highlight-color: transparent;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .texture-btn:hover { border-color: var(--border-strong); }
+    .texture-btn:active { transform: scale(0.98); }
+    .texture-btn b { font-size: 15px; font-weight: 800; color: var(--text); letter-spacing: -0.01em; }
+    .texture-btn span { font-size: 12px; color: var(--text-caption); font-weight: 500; line-height: 1.35; }
+    .texture-btn.is-active {
+      border-color: var(--blue);
+      background: var(--blue-soft);
+    }
+    .texture-btn.is-active b { color: var(--blue-strong); }
+    .texture-btn.is-active span { color: var(--blue); }
+
+    /* ---------- 슬라이더 ---------- */
+    .field { margin-bottom: 18px; }
+    .field:last-child { margin-bottom: 0; }
+    .field-label {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-secondary);
+      margin-bottom: 10px;
+      letter-spacing: -0.005em;
+    }
+    .field-label .fl-desc { font-size: 12px; font-weight: 500; color: var(--text-caption); }
+    .slider-row { display: flex; align-items: center; gap: 14px; }
+    .slider {
+      flex: 1;
+      -webkit-appearance: none; appearance: none;
+      height: 6px;
+      border-radius: 999px;
+      background: var(--surface-3);
+      outline: none;
+      cursor: pointer;
+    }
+    .slider::-webkit-slider-thumb {
+      -webkit-appearance: none; appearance: none;
+      width: 24px; height: 24px; border-radius: 50%;
+      background: var(--blue);
+      box-shadow: 0 2px 6px rgba(49, 130, 246, 0.35);
+      cursor: pointer;
+      transition: transform 0.1s ease;
+    }
+    .slider::-webkit-slider-thumb:active { transform: scale(1.12); }
+    .slider::-moz-range-thumb {
+      width: 24px; height: 24px; border: none; border-radius: 50%;
+      background: var(--blue);
+      box-shadow: 0 2px 6px rgba(49, 130, 246, 0.35);
+      cursor: pointer;
+    }
+    .slider-value {
+      min-width: 52px;
+      text-align: right;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -0.01em;
+    }
+    .slider-value .unit { color: var(--text-caption); font-weight: 600; margin-left: 1px; }
+
+    /* ---------- 고급 접이식 ---------- */
+    .advanced {
+      margin-top: 4px;
+      border-top: 1px solid var(--border);
+      padding-top: 16px;
+    }
+    .advanced summary {
+      list-style: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-secondary);
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .advanced summary::-webkit-details-marker { display: none; }
+    .advanced summary .chev {
+      width: 16px; height: 16px;
+      transition: transform 0.2s ease;
+      color: var(--text-caption);
+    }
+    .advanced[open] summary .chev { transform: rotate(90deg); }
+    .advanced .adv-body { padding-top: 18px; }
+
+    /* ---------- 노트 ---------- */
+    .note {
+      display: flex; gap: 8px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      font-size: 13px;
+      color: var(--text-secondary);
+      font-weight: 500;
+      line-height: 1.5;
+      letter-spacing: -0.005em;
+      margin-top: 16px;
+    }
+    .note b { color: var(--text); font-weight: 700; }
+
+    .footer {
+      margin-top: 56px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+      font-size: 13px;
+      color: var(--text-caption);
+      text-align: center;
+      font-weight: 500;
+    }
+  </style>
+</head>
+<body>
+  <!-- 앰비언트 숨쉬는 오브 -->
+  <div class="ambient" id="ambient" aria-hidden="true">
+    <div class="orb o1"></div>
+    <div class="orb o2"></div>
+    <div class="orb o3"></div>
+  </div>
+
+  <nav class="topnav">
+    <a class="brand" href="index.html">
+      <span class="brand-logo">O</span>
+      <span class="brand-name">OGX 찬양팀</span>
+    </a>
+    <div class="tabs">
+      <a href="recommend.html">추천</a>
+      <a href="sheet-finder.html">악보 찾기</a>
+      <a href="praise-ppt.html">찬양 PPT</a>
+      <a href="worship-team.html">실시간 악보</a>
+      <a href="accompaniment.html">반주</a>
+      <a href="pads.html" class="active">패드</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <section class="hero">
+      <h1>패드</h1>
+      <p class="lead">키를 누르면 예배 내내 깔리는 앰비언트 패드가 흘러요. 무한·진화·풍성한 사운드로.</p>
+    </section>
+
+    <!-- 현재 키 + 재생 -->
+    <section class="card nowkey-card">
+      <div class="nowkey-display">
+        <span class="nowkey-label">지금 키</span>
+        <div class="nowkey-main" id="nowKey">C<span class="qual" id="nowQual">maj</span></div>
+        <span class="nowkey-sub" id="nowSub">텍스처 <b>Warm</b> · 재생을 눌러 시작</span>
+      </div>
+      <div class="transport-row">
+        <button id="playBtn" class="play-btn">
+          <svg id="playIcon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+          <span id="playLabel">재생</span>
+        </button>
+        <span class="status-pill" id="audioStatus"><span class="sdot"></span><span id="audioStatusText">대기 중</span></span>
+      </div>
+    </section>
+
+    <!-- 키 선택 -->
+    <section class="card">
+      <div class="card-head">
+        <h2 class="card-title">키 선택</h2>
+        <span class="card-hint">누르면 부드럽게 전환돼요</span>
+      </div>
+      <div class="key-grid" id="keyGrid"></div>
+      <div class="quality-toggle" id="qualityToggle">
+        <button type="button" data-qual="major" class="is-active">메이저<span class="q-sub">major</span></button>
+        <button type="button" data-qual="minor">마이너<span class="q-sub">minor</span></button>
+      </div>
+    </section>
+
+    <!-- 텍스처 -->
+    <section class="card">
+      <div class="card-head">
+        <h2 class="card-title">텍스처</h2>
+        <span class="card-hint">패드의 "톤" · 누르면 크로스페이드</span>
+      </div>
+      <div class="texture-grid" id="textureGrid"></div>
+    </section>
+
+    <!-- 컨트롤 -->
+    <section class="card">
+      <div class="card-head">
+        <h2 class="card-title">컨트롤</h2>
+        <span class="card-hint">볼륨 · 반짝임</span>
+      </div>
+
+      <div class="field">
+        <label class="field-label" for="volume">볼륨 <span class="fl-desc">전체 음량</span></label>
+        <div class="slider-row">
+          <input type="range" class="slider" id="volume" min="0" max="100" step="1" value="72" />
+          <span class="slider-value"><span id="volumeVal">72</span></span>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="field-label" for="shimmer">Shimmer <span class="fl-desc">옥타브 위 반짝임</span></label>
+        <div class="slider-row">
+          <input type="range" class="slider" id="shimmer" min="0" max="100" step="1" value="35" />
+          <span class="slider-value"><span id="shimmerVal">35</span></span>
+        </div>
+      </div>
+
+      <details class="advanced" id="advanced">
+        <summary>
+          <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+          고급 설정
+        </summary>
+        <div class="adv-body">
+          <div class="field">
+            <label class="field-label" for="movement">Movement <span class="fl-desc">움직임/진화 양</span></label>
+            <div class="slider-row">
+              <input type="range" class="slider" id="movement" min="0" max="100" step="1" value="50" />
+              <span class="slider-value"><span id="movementVal">50</span></span>
+            </div>
+          </div>
+          <div class="field">
+            <label class="field-label" for="brightness">Brightness <span class="fl-desc">필터 밝기</span></label>
+            <div class="slider-row">
+              <input type="range" class="slider" id="brightness" min="0" max="100" step="1" value="50" />
+              <span class="slider-value"><span id="brightnessVal">50</span></span>
+            </div>
+          </div>
+        </div>
+      </details>
+
+      <div class="note">
+        <span>예배 내내 <b>끊기지 않고</b> 흘러요. 키나 텍스처를 바꾸면 약 2.5초에 걸쳐 부드럽게 넘어가요. 설교·기도 땐 <b>Simple</b> 텍스처가 좋아요.</span>
+      </div>
+    </section>
+
+    <footer class="footer">
+      OGX 찬양팀 · 패드는 키 기반 무한 앰비언트 신디시스예요. 녹음 파일이 아니라 브라우저에서 실시간으로 합성·진화해요.
+    </footer>
+  </div>
+
+  <script>
+  /* =========================================================================
+   * OGX 패드 — 키 기반 무한 앰비언트 워십 패드 엔진 (Tone.js / Web Audio)
+   *
+   * 설계 요지
+   *  - 보이스 그룹 A/B 두 벌. 키·텍스처가 바뀌면 한 벌을 새 보이싱으로 재구성
+   *    하고 ~2.5초 크로스페이드(현재 그룹 ↓ / 새 그룹 ↑). 예배 중 끊김 없음.
+   *  - 각 그룹: 저음 루트 드론 + 5도 + 옥타브 루트(개방·장단 모호) + 컬러 상성부
+   *    (스케일 2/3/6도 등)를 FatOscillator(saw/triangle, count 3~5, spread 디튠)로
+   *    두껍게. 긴 attack/release 엔벨로프로 피어오르고 사라지는 호흡.
+   *  - 느린 LFO 여러 개(0.05~0.3Hz)로 필터 컷오프·디튠·상성부 진폭을 끊임없이
+   *    변조(Movement). + 컬러음을 느리게 무작위 swell 스케줄.
+   *  - 공간계: voices → filter(LP+HP) → Chorus → FeedbackDelay(작게) → Reverb(큰)
+   *    → Limiter → master. 리버브가 풍성함의 핵심.
+   *  - Shimmer: 병렬 센드 → PitchShift(+12) → Reverb → 복귀. 시네마틱 반짝.
+   *  - 텍스처 5종(Warm/Bright/Cinematic/Dark/Simple)이 오실레이터·필터·리버브·
+   *    shimmer·delay·상성부 밝기를 다르게.
+   * =======================================================================*/
+  (function () {
+    "use strict";
+
+    /* ---------------- 음악 이론 ---------------- */
+    var PC_NAMES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+    var KEY_LABELS = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+    // 화면 라벨(플랫 병기로 읽기 쉽게)
+    var KEY_DISPLAY = ["C", "C#/Db", "D", "D#/Eb", "E", "F", "F#/Gb", "G", "G#/Ab", "A", "A#/Bb", "B"];
+
+    function midiToFreq(m) { return 440 * Math.pow(2, (m - 69) / 12); }
+    function pcName(pc) { return PC_NAMES[((pc % 12) + 12) % 12]; }
+
+    /* 보이싱 생성: 키(0..11) + 장/단 → MIDI 음 묶음.
+     * 개방·장단 모호한 핵심부(루트/5도/옥타브)와, 텍스처가 가져갈 컬러 상성부를 분리.
+     *   core:   드론 루트(저), 5도, 옥타브 루트(가운데), 옥타브 위 루트  → 항상
+     *   third:  장=장3도 / 단=단3도 (살짝)
+     *   color:  9도(2도)·6도 등 확장 컬러(텍스처가 양을 조절)
+     *   top:    상위 5도/옥타브(밝은 텍스처용 에어) */
+    function buildVoicing(keyPc, isMinor) {
+      var rootLow = 36 + keyPc;          // C2 기준 루트 드론
+      var core = [
+        rootLow,                          // 루트(저)
+        rootLow + 7,                      // 5도
+        rootLow + 12,                     // 옥타브 루트
+        rootLow + 12 + 7                  // 옥타브 위 5도(개방감)
+      ];
+      var thirdInt = isMinor ? 3 : 4;
+      var third = [rootLow + 12 + thirdInt];      // 3도(미들 옥타브에서 살짝)
+      // 컬러: 9도(=2도), 6도(장=장6/단=단6 느낌은 6도 자연음으로 부드럽게)
+      var sixthInt = isMinor ? 8 : 9;
+      var color = [
+        rootLow + 12 + 14,                // 9도
+        rootLow + 12 + sixthInt           // 6도
+      ];
+      var top = [
+        rootLow + 24,                     // 두 옥타브 위 루트(에어)
+        rootLow + 24 + 7                  // 그 위 5도
+      ];
+      return { rootLow: rootLow, core: core, third: third, color: color, top: top, keyPc: keyPc, isMinor: isMinor };
+    }
+
+    /* ---------------- 텍스처 프리셋 ----------------
+     * 각 프리셋이 오실레이터·필터·이펙트·보이싱 비중을 다르게.
+     *   osc:        FatOscillator 타입/count/spread
+     *   filterBase: 기본 lowpass 컷오프(Hz), filterQ
+     *   hp:         highpass 컷오프(머드 제거)
+     *   reverb:     { decay, wet }
+     *   chorus:     { depth, wet }
+     *   delay:      { wet }  (작게)
+     *   shimmer:    기본 shimmer 비중(노브와 곱)
+     *   colorAmt:   컬러 상성부 볼륨(0~1) — 밝기/장대함
+     *   topAmt:     상위 에어 볼륨(0~1)
+     *   thirdAmt:   3도 볼륨(0~1) — 작게(장단 모호 유지)
+     *   lfoRate:    필터 LFO 기본 속도(Hz) 가중
+     *   env:        { attack, release }
+     *   minimal:    true면 루트+5도만(컬러/3도/탑 거의 끔)
+     *   color3:     앰비언트 비주얼 색(키 색조와 섞임) [h, s, l]
+     */
+    var TEXTURES = {
+      warm: {
+        id: "warm", name: "Warm", desc: "따뜻하고 둥근 · 기본",
+        osc: { type: "fattriangle", count: 3, spread: 30 },
+        osc2: { type: "fatsawtooth", count: 3, spread: 24 },
+        filterBase: 1500, filterQ: 0.6, hp: 90,
+        reverb: { decay: 6, wet: 0.5 }, chorus: { depth: 0.5, wet: 0.5 }, delay: { wet: 0.08 },
+        shimmer: 0.7, colorAmt: 0.55, topAmt: 0.25, thirdAmt: 0.35,
+        lfoRate: 1.0, env: { attack: 3.5, release: 6 },
+        hue: 28
+      },
+      bright: {
+        id: "bright", name: "Bright (Air)", desc: "고역 반짝 · 코러스 넓게",
+        osc: { type: "fatsawtooth", count: 4, spread: 38 },
+        osc2: { type: "fattriangle", count: 3, spread: 30 },
+        filterBase: 3200, filterQ: 0.8, hp: 140,
+        reverb: { decay: 5.5, wet: 0.46 }, chorus: { depth: 0.7, wet: 0.65 }, delay: { wet: 0.12 },
+        shimmer: 0.9, colorAmt: 0.7, topAmt: 0.6, thirdAmt: 0.4,
+        lfoRate: 1.25, env: { attack: 3, release: 5.5 },
+        hue: 205
+      },
+      cinematic: {
+        id: "cinematic", name: "Cinematic", desc: "장대 · shimmer+긴 딜레이",
+        osc: { type: "fatsawtooth", count: 5, spread: 45 },
+        osc2: { type: "fatsawtooth", count: 3, spread: 26 },
+        filterBase: 2200, filterQ: 0.9, hp: 110,
+        reverb: { decay: 9, wet: 0.62 }, chorus: { depth: 0.6, wet: 0.55 }, delay: { wet: 0.2 },
+        shimmer: 1.0, colorAmt: 0.8, topAmt: 0.55, thirdAmt: 0.45,
+        lfoRate: 0.8, env: { attack: 5, release: 8 },
+        hue: 265
+      },
+      dark: {
+        id: "dark", name: "Dark", desc: "저역 위주 · 어둡고 경건",
+        osc: { type: "fattriangle", count: 3, spread: 22 },
+        osc2: { type: "fatsine", count: 3, spread: 18 },
+        filterBase: 850, filterQ: 0.5, hp: 60,
+        reverb: { decay: 8, wet: 0.55 }, chorus: { depth: 0.4, wet: 0.4 }, delay: { wet: 0.06 },
+        shimmer: 0.35, colorAmt: 0.4, topAmt: 0.08, thirdAmt: 0.3,
+        lfoRate: 0.7, env: { attack: 5, release: 8 },
+        hue: 230
+      },
+      simple: {
+        id: "simple", name: "Simple", desc: "루트+5도 · 설교/기도용 클린",
+        osc: { type: "fattriangle", count: 2, spread: 14 },
+        osc2: { type: "fatsine", count: 2, spread: 10 },
+        filterBase: 1800, filterQ: 0.4, hp: 80,
+        reverb: { decay: 4.5, wet: 0.38 }, chorus: { depth: 0.3, wet: 0.3 }, delay: { wet: 0.0 },
+        shimmer: 0.15, colorAmt: 0.0, topAmt: 0.0, thirdAmt: 0.0,
+        lfoRate: 0.5, env: { attack: 4, release: 7 },
+        minimal: true,
+        hue: 150
+      }
+    };
+    var TEXTURE_ORDER = ["warm", "bright", "cinematic", "dark", "simple"];
+
+    /* ---------------- 상태 ---------------- */
+    var state = {
+      keyPc: 0,            // 0..11 (C)
+      minor: false,        // false=major, true=minor
+      texture: "warm",
+      volume: 72,          // 0..100
+      shimmer: 35,         // 0..100
+      movement: 50,        // 0..100
+      brightness: 50       // 0..100
+    };
+
+    var CROSSFADE_SEC = 2.5;
+
+    /* ---------------- DOM ---------------- */
+    var $ = function (id) { return document.getElementById(id); };
+    var ambient        = $("ambient");
+    var nowKey         = $("nowKey");
+    var nowQual        = $("nowQual");
+    var nowSub         = $("nowSub");
+    var playBtn        = $("playBtn");
+    var playIcon       = $("playIcon");
+    var playLabel      = $("playLabel");
+    var audioStatus    = $("audioStatus");
+    var audioStatusText = $("audioStatusText");
+    var keyGrid        = $("keyGrid");
+    var qualityToggle  = $("qualityToggle");
+    var textureGrid    = $("textureGrid");
+    var volumeEl       = $("volume");
+    var volumeVal      = $("volumeVal");
+    var shimmerEl      = $("shimmer");
+    var shimmerVal     = $("shimmerVal");
+    var movementEl     = $("movement");
+    var movementVal    = $("movementVal");
+    var brightnessEl   = $("brightness");
+    var brightnessVal  = $("brightnessVal");
+
+    var ICON_PLAY = '<path d="M8 5v14l11-7z"/>';
+    var ICON_STOP = '<rect x="6" y="6" width="12" height="12" rx="2"/>';
+
+    /* =====================================================================
+     * AUDIO ENGINE
+     * ===================================================================*/
+    var engineBuilt = false;     // 마스터/이펙트 체인 생성 여부
+    var isPlaying = false;
+    var audio = null;            // 마스터/이펙트/공유 노드
+    var groups = [null, null];   // 보이스 그룹 A/B
+    var activeGroup = -1;        // 현재 들리는 그룹 인덱스(-1=무음)
+    var lfos = [];               // 전역 LFO 모음(필터/디튠 변조)
+    var swellTimer = null;       // 컬러음 무작위 swell 스케줄러
+    var wakeLock = null;         // navigator.wakeLock sentinel
+
+    function volToDb(v) {
+      // 0..100 -> dB. 0 = -Infinity, 100 ≈ -2dB(헤드룸 확보, 리버브/리미터 고려)
+      if (v <= 0) return -Infinity;
+      var n = v / 100;
+      return 20 * Math.log10(n) - 2;
+    }
+
+    function setStatus(kind, text) {
+      audioStatus.className = "status-pill" + (kind ? " " + kind : "");
+      audioStatusText.textContent = text;
+    }
+
+    /* ---- 마스터 + 이펙트 체인(1회 생성, 텍스처 따라 파라미터만 갱신) ---- */
+    function buildEngine() {
+      if (engineBuilt) return;
+
+      var tex = TEXTURES[state.texture];
+
+      // 마스터: 보이스버스 → (filter HP/LP) → Chorus → Delay → Reverb → Limiter → master
+      var limiter = new Tone.Limiter(-1).toDestination();
+      var master = new Tone.Gain(0).connect(limiter);   // 페이드인용 0에서 시작
+
+      var reverb = new Tone.Reverb({ decay: tex.reverb.decay, preDelay: 0.02, wet: tex.reverb.wet }).connect(master);
+
+      var delay = new Tone.FeedbackDelay({ delayTime: 0.42, feedback: 0.32, wet: tex.delay.wet }).connect(reverb);
+      // 딜레이는 살짝 핑퐁 느낌 위해 약간의 stereo width 부여(가벼운 chorus 뒤라 충분)
+
+      var chorus = new Tone.Chorus({ frequency: 0.4, delayTime: 4.5, depth: tex.chorus.depth, spread: 180, wet: tex.chorus.wet });
+      chorus.connect(delay);
+      chorus.connect(reverb);      // 코러스 일부는 딜레이 건너뛰고 직접 리버브로(두께)
+      try { chorus.start(); } catch (e) {}
+
+      // 필터: highpass(머드 제거) → lowpass(주 톤). lowpass 컷오프에 LFO+Brightness.
+      var hp = new Tone.Filter(tex.hp, "highpass").connect(chorus);
+      var lp = new Tone.Filter(tex.filterBase, "lowpass");
+      lp.Q.value = tex.filterQ;
+      lp.connect(hp);
+
+      // 보이스 공용 입력 버스
+      var voiceBus = new Tone.Gain(1).connect(lp);
+
+      // ---- Shimmer 병렬 센드: voiceBus → shimmerSend → PitchShift(+12) → shimmerVerb → master
+      var shimmerSend = new Tone.Gain(0);             // 노브로 양 조절
+      voiceBus.connect(shimmerSend);
+      var pitchUp = new Tone.PitchShift({ pitch: 12, windowSize: 0.1, feedback: 0.12, wet: 1 });
+      shimmerSend.connect(pitchUp);
+      var shimmerVerb = new Tone.Reverb({ decay: Math.max(5, tex.reverb.decay), preDelay: 0.03, wet: 1 });
+      pitchUp.connect(shimmerVerb);
+      var shimmerReturn = new Tone.Gain(0.9).connect(master);
+      shimmerVerb.connect(shimmerReturn);
+
+      audio = {
+        limiter: limiter, master: master, reverb: reverb, delay: delay, chorus: chorus,
+        hp: hp, lp: lp, voiceBus: voiceBus,
+        shimmerSend: shimmerSend, pitchUp: pitchUp, shimmerVerb: shimmerVerb, shimmerReturn: shimmerReturn,
+        lpBaseCutoff: tex.filterBase
+      };
+
+      buildGlobalLFOs();
+      engineBuilt = true;
+    }
+
+    /* ---- 전역 LFO: 필터 컷오프 + 보이스버스 미세 진폭(움직임) ----
+     * 서로 다른 느린 주기로 끊임없이 진화. Movement 노브가 깊이를 스케일. */
+    function buildGlobalLFOs() {
+      disposeLFOs();
+      var tex = TEXTURES[state.texture];
+      var mv = state.movement / 100;
+
+      // 1) lowpass 컷오프 LFO (느리게 열고 닫힘)
+      var base = audio.lpBaseCutoff;
+      var depth = base * 0.5 * (0.3 + 0.7 * mv);
+      var f1 = 0.06 * tex.lfoRate;
+      var lfoFilter = new Tone.LFO({ frequency: f1, min: Math.max(120, base - depth), max: base + depth * 0.6, type: "sine" });
+      lfoFilter.connect(audio.lp.frequency);
+      try { lfoFilter.start(); } catch (e) {}
+
+      // 2) 보이스버스 진폭 트레몰로(아주 느리게, 살아있는 느낌)
+      var ampDepth = 0.12 * mv;
+      var lfoAmp = new Tone.LFO({ frequency: 0.09 * tex.lfoRate, min: 1 - ampDepth, max: 1, type: "sine" });
+      lfoAmp.connect(audio.voiceBus.gain);
+      try { lfoAmp.start(); } catch (e) {}
+
+      // 3) 코러스 깊이 흔들림(스테레오 움직임)
+      var lfoChorus = new Tone.LFO({ frequency: 0.05 * tex.lfoRate, min: tex.chorus.depth * 0.6, max: Math.min(1, tex.chorus.depth * 1.3), type: "triangle" });
+      if (audio.chorus.depth !== undefined && audio.chorus.depth.value === undefined) {
+        // chorus.depth는 일반 number 속성일 수 있어 직접 변조 불가 → skip 안전
+      }
+      // Chorus.frequency는 신호 파라미터가 아님 → depth 대신 wet에 아주 미세 LFO
+      var lfoWet = new Tone.LFO({ frequency: 0.04 * tex.lfoRate, min: tex.chorus.wet * 0.85, max: Math.min(1, tex.chorus.wet * 1.1), type: "sine" });
+      try { lfoWet.connect(audio.chorus.wet); lfoWet.start(); } catch (e) {}
+
+      lfos = [lfoFilter, lfoAmp, lfoWet];
+      // lfoChorus는 사용 안 함(파라미터 보호) — 참조 정리
+      try { lfoChorus.dispose(); } catch (e) {}
+    }
+
+    function disposeLFOs() {
+      lfos.forEach(function (l) { try { l.stop(); l.dispose(); } catch (e) {} });
+      lfos = [];
+    }
+
+    /* ---- 보이스 그룹 생성 ----
+     * 한 그룹 = 키/텍스처에 대한 한 벌의 패드 보이스 묶음.
+     *   groupGain (페이드용) → audio.voiceBus
+     *   layers: core/third/color/top 각각 PolySynth(FatOscillator)
+     *   디튠 LFO 일부 부착(텍스처별). 컬러음은 별도 게인으로 swell 가능.
+     */
+    function buildGroup(voicing, tex) {
+      var groupGain = new Tone.Gain(0).connect(audio.voiceBus);  // 0에서 시작(페이드인)
+
+      // 공용 신스 팩토리
+      function mkSynth(oscSpec, vol, envOverride) {
+        var env = envOverride || tex.env;
+        var s = new Tone.PolySynth(Tone.Synth, {
+          maxPolyphony: 8,
+          oscillator: { type: oscSpec.type, count: oscSpec.count, spread: oscSpec.spread },
+          envelope: {
+            attack: env.attack, decay: 0.6, sustain: 0.85, release: env.release,
+            attackCurve: "sine", releaseCurve: "linear"
+          }
+        });
+        s.volume.value = vol;
+        return s;
+      }
+
+      // core: 두 오실레이터 레이어(메인 + 보조)로 두께
+      var coreA = mkSynth(tex.osc, -8);
+      var coreB = mkSynth(tex.osc2, -13);
+      var coreGain = new Tone.Gain(1).connect(groupGain);
+      coreA.connect(coreGain); coreB.connect(coreGain);
+
+      // third (살짝)
+      var third = mkSynth(tex.osc, -8 - (1 - tex.thirdAmt) * 24);
+      var thirdGain = new Tone.Gain(tex.thirdAmt).connect(groupGain);
+      third.connect(thirdGain);
+
+      // color (확장 컬러 — swell 대상)
+      var color = mkSynth(tex.osc2, -10, { attack: tex.env.attack + 1.5, release: tex.env.release + 1.5 });
+      var colorGain = new Tone.Gain(0).connect(groupGain);  // swell로 들락날락
+      color.connect(colorGain);
+
+      // top (에어 — 밝은 텍스처)
+      var top = mkSynth(tex.osc, -16);
+      var topGain = new Tone.Gain(tex.topAmt).connect(groupGain);
+      top.connect(topGain);
+
+      // 디튠 LFO: core 보조 레이어에 아주 느린 디튠 흔들림(움직임)
+      var mv = state.movement / 100;
+      var detuneLFO = new Tone.LFO({ frequency: 0.07 * tex.lfoRate, min: -8 - 12 * mv, max: 8 + 12 * mv, type: "sine" });
+      try { detuneLFO.connect(coreB.detune); detuneLFO.start(); } catch (e) {}
+
+      // color 진폭 LFO(트레몰로처럼 느리게 차오름) — Movement 가중
+      var colorTremDepth = tex.colorAmt * (0.4 + 0.6 * mv);
+      var colorLFO = new Tone.LFO({ frequency: 0.045 * tex.lfoRate, min: 0, max: colorTremDepth, type: "sine" });
+      try { colorLFO.connect(colorGain.gain); colorLFO.start(); } catch (e) {}
+
+      var grp = {
+        voicing: voicing, tex: tex,
+        groupGain: groupGain,
+        synths: [coreA, coreB, third, color, top],
+        gains: [coreGain, thirdGain, colorGain, topGain],
+        lfos: [detuneLFO, colorLFO],
+        layers: { coreA: coreA, coreB: coreB, third: third, color: color, top: top },
+        layerGains: { coreGain: coreGain, thirdGain: thirdGain, colorGain: colorGain, topGain: topGain },
+        sounding: false
+      };
+      return grp;
+    }
+
+    // 그룹의 음 트리거(attack). 텍스처 minimal이면 루트+5도만.
+    function soundGroup(grp) {
+      var v = grp.voicing, tex = grp.tex;
+      function freqs(midis) { return midis.map(midiToFreq); }
+
+      // core 항상
+      var coreMidis = v.core.slice();
+      if (tex.minimal) {
+        // 루트(저) + 5도 + 옥타브 루트만(개방 클린)
+        coreMidis = [v.core[0], v.core[1], v.core[2]];
+      }
+      try { grp.layers.coreA.triggerAttack(freqs(coreMidis), undefined, 0.6); } catch (e) {}
+      try { grp.layers.coreB.triggerAttack(freqs(coreMidis), undefined, 0.5); } catch (e) {}
+
+      if (!tex.minimal) {
+        if (tex.thirdAmt > 0.001) { try { grp.layers.third.triggerAttack(freqs(v.third), undefined, 0.45); } catch (e) {} }
+        if (tex.colorAmt > 0.001) { try { grp.layers.color.triggerAttack(freqs(v.color), undefined, 0.5); } catch (e) {} }
+        if (tex.topAmt > 0.001)   { try { grp.layers.top.triggerAttack(freqs(v.top), undefined, 0.4); } catch (e) {} }
+      }
+      grp.sounding = true;
+    }
+
+    function releaseGroup(grp) {
+      if (!grp) return;
+      grp.synths.forEach(function (s) { try { s.releaseAll(); } catch (e) {} });
+      grp.sounding = false;
+    }
+
+    function disposeGroup(grp) {
+      if (!grp) return;
+      grp.lfos.forEach(function (l) { try { l.stop(); l.dispose(); } catch (e) {} });
+      grp.synths.forEach(function (s) { try { s.dispose(); } catch (e) {} });
+      grp.gains.forEach(function (g) { try { g.dispose(); } catch (e) {} });
+      try { grp.groupGain.dispose(); } catch (e) {}
+    }
+
+    /* ---- 컬러음 무작위 swell 스케줄러 (Movement) ----
+     * 활성 그룹의 color 레이어를 가끔 재-attack해서 살아있는 진화감. */
+    function startSwellScheduler() {
+      stopSwellScheduler();
+      function tick() {
+        if (!isPlaying) return;
+        var mv = state.movement / 100;
+        var grp = (activeGroup >= 0) ? groups[activeGroup] : null;
+        if (grp && grp.sounding && !grp.tex.minimal && grp.tex.colorAmt > 0.001) {
+          try {
+            // color 레이어를 부드럽게 다시 피움(릴리즈 긴 엔벨로프라 겹쳐도 자연스럽다)
+            var v = grp.voicing;
+            grp.layers.color.triggerAttack(v.color.map(midiToFreq), undefined, 0.35 + Math.random() * 0.2);
+          } catch (e) {}
+        }
+        // 다음 swell까지 간격: Movement 높을수록 잦게(6~16초)
+        var next = (16 - 10 * mv) + Math.random() * 6;
+        swellTimer = setTimeout(tick, next * 1000);
+      }
+      var mv0 = state.movement / 100;
+      swellTimer = setTimeout(tick, (8 - 4 * mv0 + Math.random() * 4) * 1000);
+    }
+    function stopSwellScheduler() {
+      if (swellTimer !== null) { clearTimeout(swellTimer); swellTimer = null; }
+    }
+
+    /* =====================================================================
+     * 키/텍스처 전환 (크로스페이드)
+     * ===================================================================*/
+    var crossfading = false;
+    var pendingKeyBtn = null;
+
+    // 새 보이싱(현재 state.key/minor/texture)으로 idle 그룹을 구성해 크로스페이드.
+    function crossfadeTo(reason) {
+      if (!engineBuilt || !isPlaying) return;
+      var tex = TEXTURES[state.texture];
+      var voicing = buildVoicing(state.keyPc, state.minor);
+
+      var now = Tone.now();
+      var idleIdx = (activeGroup === 0) ? 1 : 0;
+
+      // idle 슬롯에 남은 옛 그룹이 있으면 정리(빠른 연속 전환 안전)
+      if (groups[idleIdx]) { releaseGroup(groups[idleIdx]); disposeGroup(groups[idleIdx]); groups[idleIdx] = null; }
+
+      var grp = buildGroup(voicing, tex);
+      groups[idleIdx] = grp;
+      soundGroup(grp);
+
+      // 페이드: 새 그룹 0→1, 옛 그룹 1→0 (약 2.5초)
+      try { grp.groupGain.gain.cancelScheduledValues(now); grp.groupGain.gain.setValueAtTime(0, now); grp.groupGain.gain.linearRampToValueAtTime(1, now + CROSSFADE_SEC); } catch (e) {}
+
+      var old = (activeGroup >= 0) ? groups[activeGroup] : null;
+      var oldIdx = activeGroup;
+      if (old) {
+        try { old.groupGain.gain.cancelScheduledValues(now); old.groupGain.gain.setValueAtTime(old.groupGain.gain.value, now); old.groupGain.gain.linearRampToValueAtTime(0, now + CROSSFADE_SEC); } catch (e) {}
+        // 페이드 끝나면 옛 그룹 release + dispose
+        crossfading = true;
+        setTimeout(function () {
+          if (groups[oldIdx] === old) {
+            releaseGroup(old); disposeGroup(old); groups[oldIdx] = null;
+          }
+          crossfading = false;
+        }, (CROSSFADE_SEC + 0.4) * 1000);
+      }
+
+      activeGroup = idleIdx;
+      updateNowKeyUI();
+      updateAmbientColors();
+    }
+
+    /* 텍스처 전환: 보이스 그룹은 새 텍스처로 크로스페이드 + 마스터 이펙트
+     * 파라미터(리버브/필터/코러스/딜레이)도 부드럽게 ramp. */
+    function applyTextureToEffects(tex, ramp) {
+      if (!engineBuilt) return;
+      var t = ramp == null ? 1.2 : ramp;
+      try { audio.lp.frequency.rampTo(filterCutoffFromBrightness(tex), t); } catch (e) {}
+      try { audio.lp.Q.rampTo(tex.filterQ, t); } catch (e) {}
+      try { audio.hp.frequency.rampTo(tex.hp, t); } catch (e) {}
+      try { audio.reverb.wet.rampTo(tex.reverb.wet, t); } catch (e) {}
+      try { audio.delay.wet.rampTo(tex.delay.wet, t); } catch (e) {}
+      try { audio.chorus.wet.rampTo(tex.chorus.wet, t); } catch (e) {}
+      // 리버브 decay는 실시간 변경 시 IR 재생성 비용 큼 → 큰 차이날 때만
+      audio.lpBaseCutoff = tex.filterBase;
+      // LFO를 새 텍스처 속도/깊이로 재구성
+      buildGlobalLFOs();
+      applyShimmer();   // shimmer 기본량이 텍스처마다 달라서 재적용
+    }
+
+    // Brightness 노브 + 텍스처 기본 컷오프 → 실제 lowpass 컷오프
+    function filterCutoffFromBrightness(tex) {
+      var b = state.brightness / 100;       // 0..1
+      // 0.5에서 텍스처 기본값, 양끝으로 ±1.6옥타브
+      var factor = Math.pow(2, (b - 0.5) * 3.2);
+      return Math.max(120, Math.min(16000, tex.filterBase * factor));
+    }
+
+    function applyBrightness() {
+      if (!engineBuilt) return;
+      var tex = TEXTURES[state.texture];
+      try { audio.lp.frequency.rampTo(filterCutoffFromBrightness(tex), 0.25); } catch (e) {}
+    }
+
+    function applyShimmer() {
+      if (!engineBuilt) return;
+      var tex = TEXTURES[state.texture];
+      var amt = (state.shimmer / 100) * tex.shimmer;   // 노브 × 텍스처 기본량
+      // shimmerSend 게인으로 양 조절(-Inf~약 0.6). 너무 크면 피드백 과함.
+      var g = amt * 0.6;
+      try { audio.shimmerSend.gain.rampTo(g, 0.3); } catch (e) {}
+    }
+
+    function applyVolume() {
+      if (!engineBuilt) return;
+      var db = volToDb(state.volume);
+      // master는 Gain(선형). dB→선형 변환.
+      var lin = (db === -Infinity) ? 0 : Math.pow(10, db / 20);
+      try { audio.master.gain.rampTo(isPlaying ? lin : audio.master.gain.value, 0.15); } catch (e) {}
+      audio._targetLin = lin;
+    }
+
+    function applyMovement() {
+      if (!engineBuilt) return;
+      // LFO 깊이는 재구성으로 반영(전역 + 그룹). 가벼우니 재빌드.
+      buildGlobalLFOs();
+      // 활성 그룹의 디튠/컬러 LFO도 새 movement로
+      var grp = (activeGroup >= 0) ? groups[activeGroup] : null;
+      if (grp) {
+        var tex = grp.tex, mv = state.movement / 100;
+        // 기존 그룹 LFO 정리 후 재부착
+        grp.lfos.forEach(function (l) { try { l.stop(); l.dispose(); } catch (e) {} });
+        var detuneLFO = new Tone.LFO({ frequency: 0.07 * tex.lfoRate, min: -8 - 12 * mv, max: 8 + 12 * mv, type: "sine" });
+        try { detuneLFO.connect(grp.layers.coreB.detune); detuneLFO.start(); } catch (e) {}
+        var colorTremDepth = tex.colorAmt * (0.4 + 0.6 * mv);
+        var colorLFO = new Tone.LFO({ frequency: 0.045 * tex.lfoRate, min: 0, max: colorTremDepth, type: "sine" });
+        try { colorLFO.connect(grp.layerGains.colorGain.gain); colorLFO.start(); } catch (e) {}
+        grp.lfos = [detuneLFO, colorLFO];
+      }
+    }
+
+    /* =====================================================================
+     * 재생 / 정지
+     * ===================================================================*/
+    async function startPad() {
+      try { await Tone.start(); } catch (e) {}
+      buildEngine();
+
+      // 첫 그룹 구성 + 페이드인
+      var tex = TEXTURES[state.texture];
+      applyTextureToEffects(tex, 0.01);
+      applyBrightness();
+      applyShimmer();
+
+      var voicing = buildVoicing(state.keyPc, state.minor);
+      var grp = buildGroup(voicing, tex);
+      groups[0] = grp; groups[1] = null;
+      soundGroup(grp);
+      activeGroup = 0;
+
+      var now = Tone.now();
+      try { grp.groupGain.gain.cancelScheduledValues(now); grp.groupGain.gain.setValueAtTime(0, now); grp.groupGain.gain.linearRampToValueAtTime(1, now + CROSSFADE_SEC); } catch (e) {}
+
+      isPlaying = true;
+      // 마스터 페이드인
+      var lin = (volToDb(state.volume) === -Infinity) ? 0 : Math.pow(10, volToDb(state.volume) / 20);
+      try { audio.master.gain.cancelScheduledValues(now); audio.master.gain.setValueAtTime(0, now); audio.master.gain.linearRampToValueAtTime(lin, now + CROSSFADE_SEC); } catch (e) {}
+      audio._targetLin = lin;
+
+      startSwellScheduler();
+      requestWakeLock();
+
+      ambient.classList.add("live");
+      updateAmbientColors();
+      updatePlayUI();
+      updateNowKeyUI();
+      setStatus("play", "재생 중 · 무한 패드");
+    }
+
+    function stopPad() {
+      if (!engineBuilt) { isPlaying = false; updatePlayUI(); return; }
+      var now = Tone.now();
+      // 마스터 페이드아웃 후 보이스 release/dispose
+      try { audio.master.gain.cancelScheduledValues(now); audio.master.gain.setValueAtTime(audio.master.gain.value, now); audio.master.gain.linearRampToValueAtTime(0, now + 1.2); } catch (e) {}
+
+      isPlaying = false;
+      stopSwellScheduler();
+      releaseWakeLock();
+
+      setTimeout(function () {
+        groups.forEach(function (g, i) { if (g) { releaseGroup(g); disposeGroup(g); groups[i] = null; } });
+        activeGroup = -1;
+      }, 1500);
+
+      ambient.classList.remove("live");
+      updatePlayUI();
+      setStatus("ok", "정지됨");
+    }
+
+    function togglePlay() {
+      if (isPlaying) { stopPad(); }
+      else {
+        startPad().catch(function (e) {
+          console.error("패드 시작 오류:", e);
+          setStatus("warn", "시작 오류 — 콘솔 확인");
+          isPlaying = false; updatePlayUI();
+        });
+      }
+    }
+
+    /* ---- Wake Lock (재생 중 화면 안 꺼짐; 실패해도 무시) ---- */
+    async function requestWakeLock() {
+      try {
+        if ("wakeLock" in navigator && navigator.wakeLock.request) {
+          wakeLock = await navigator.wakeLock.request("screen");
+          wakeLock.addEventListener && wakeLock.addEventListener("release", function () { wakeLock = null; });
+        }
+      } catch (e) { wakeLock = null; }
+    }
+    function releaseWakeLock() {
+      try { if (wakeLock && wakeLock.release) wakeLock.release(); } catch (e) {}
+      wakeLock = null;
+    }
+    // 탭 복귀 시 재생 중이면 wakeLock 재요청
+    document.addEventListener("visibilitychange", function () {
+      if (document.visibilityState === "visible" && isPlaying && !wakeLock) { requestWakeLock(); }
+    });
+
+    /* =====================================================================
+     * UI
+     * ===================================================================*/
+    function updatePlayUI() {
+      if (isPlaying) {
+        playBtn.classList.add("is-playing");
+        playIcon.innerHTML = ICON_STOP;
+        playLabel.textContent = "정지";
+      } else {
+        playBtn.classList.remove("is-playing");
+        playIcon.innerHTML = ICON_PLAY;
+        playLabel.textContent = "재생";
+      }
+    }
+
+    function updateNowKeyUI() {
+      nowKey.firstChild ? null : null;
+      // 키 메인 텍스트(루트) + 퀄리티
+      var label = pcName(state.keyPc);
+      // 플랫 병기가 더 읽기 쉬운 키는 표시용 그대로
+      nowKey.childNodes[0].nodeValue = label;
+      nowQual.textContent = state.minor ? "min" : "maj";
+      var texName = TEXTURES[state.texture].name;
+      nowSub.innerHTML = "텍스처 <b>" + escapeHtml(texName) + "</b> · " + (isPlaying ? "재생 중" : "재생을 눌러 시작");
+      // 키 그리드 현재 표시
+      keyGrid.querySelectorAll(".key-btn").forEach(function (b) {
+        var pc = parseInt(b.dataset.pc, 10);
+        b.classList.toggle("is-current", pc === state.keyPc);
+      });
+    }
+
+    function escapeHtml(s) {
+      return String(s).replace(/[&<>"']/g, function (c) {
+        return { "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;" }[c];
+      });
+    }
+
+    /* ---- 앰비언트 비주얼 색: 텍스처 hue + 장단 채도/명도 ---- */
+    function updateAmbientColors() {
+      var tex = TEXTURES[state.texture];
+      // 키에 따라 hue를 살짝 회전(키마다 다른 색감) — 12키를 ±30° 범위로
+      var keyShift = (state.keyPc / 12) * 50 - 25;
+      var h = (tex.hue + keyShift + 360) % 360;
+      var sat = state.minor ? 42 : 62;     // 단조는 채도 낮춰 차분
+      var lig = state.minor ? 62 : 70;
+      var root = document.documentElement.style;
+      root.setProperty("--amb-1", "hsl(" + h + "," + sat + "%," + lig + "%)");
+      root.setProperty("--amb-2", "hsl(" + ((h + 28) % 360) + "," + (sat - 8) + "%," + (lig + 6) + "%)");
+      root.setProperty("--amb-3", "hsl(" + ((h + 320) % 360) + "," + (sat - 14) + "%," + (lig + 10) + "%)");
+    }
+
+    /* ---- 키 그리드 렌더 ---- */
+    function renderKeys() {
+      keyGrid.innerHTML = "";
+      for (var pc = 0; pc < 12; pc++) {
+        (function (pc) {
+          var b = document.createElement("button");
+          b.type = "button";
+          b.className = "key-btn" + (PC_NAMES[pc].indexOf("#") >= 0 ? " accidental" : "");
+          b.dataset.pc = pc;
+          b.textContent = KEY_DISPLAY[pc];
+          b.addEventListener("click", function () { onKeyPress(pc, b); });
+          keyGrid.appendChild(b);
+        })(pc);
+      }
+    }
+
+    function onKeyPress(pc, btn) {
+      state.keyPc = pc;
+      persist();
+      updateNowKeyUI();
+      updateAmbientColors();
+      if (!isPlaying) {
+        // 재생 중이 아니면 시작(첫 탭에서 Tone.start)
+        startPad().catch(function (e) {
+          console.error("패드 시작 오류:", e);
+          setStatus("warn", "시작 오류 — 콘솔 확인");
+        });
+      } else {
+        // 전환 중 시각 표시(짧게)
+        keyGrid.querySelectorAll(".key-btn").forEach(function (b) { b.classList.remove("is-pending"); });
+        btn.classList.add("is-pending");
+        setTimeout(function () { btn.classList.remove("is-pending"); }, CROSSFADE_SEC * 1000);
+        crossfadeTo("key");
+      }
+    }
+
+    /* ---- 장/단 토글 ---- */
+    function bindQuality() {
+      qualityToggle.querySelectorAll("button").forEach(function (b) {
+        b.addEventListener("click", function () {
+          var q = b.dataset.qual;
+          state.minor = (q === "minor");
+          qualityToggle.querySelectorAll("button").forEach(function (x) { x.classList.remove("is-active"); });
+          b.classList.add("is-active");
+          persist();
+          updateNowKeyUI();
+          updateAmbientColors();
+          if (isPlaying) crossfadeTo("quality");
+        });
+      });
+    }
+
+    /* ---- 텍스처 그리드 ---- */
+    function renderTextures() {
+      textureGrid.innerHTML = "";
+      TEXTURE_ORDER.forEach(function (id) {
+        var t = TEXTURES[id];
+        var b = document.createElement("button");
+        b.type = "button";
+        b.className = "texture-btn" + (id === state.texture ? " is-active" : "");
+        b.dataset.tex = id;
+        b.innerHTML = "<b>" + escapeHtml(t.name) + "</b><span>" + escapeHtml(t.desc) + "</span>";
+        b.addEventListener("click", function () { onTexturePress(id, b); });
+        textureGrid.appendChild(b);
+      });
+    }
+
+    function onTexturePress(id, btn) {
+      if (id === state.texture && isPlaying) return;
+      state.texture = id;
+      persist();
+      textureGrid.querySelectorAll(".texture-btn").forEach(function (x) { x.classList.remove("is-active"); });
+      btn.classList.add("is-active");
+      updateNowKeyUI();
+      updateAmbientColors();
+      if (isPlaying) {
+        applyTextureToEffects(TEXTURES[id], 1.6);
+        applyBrightness();
+        crossfadeTo("texture");
+      }
+    }
+
+    /* ---- 슬라이더 바인딩 ---- */
+    function bindSliders() {
+      volumeEl.addEventListener("input", function () {
+        state.volume = parseInt(volumeEl.value, 10);
+        volumeVal.textContent = state.volume;
+        applyVolume();
+        persist();
+      });
+      shimmerEl.addEventListener("input", function () {
+        state.shimmer = parseInt(shimmerEl.value, 10);
+        shimmerVal.textContent = state.shimmer;
+        applyShimmer();
+        persist();
+      });
+      movementEl.addEventListener("input", function () {
+        state.movement = parseInt(movementEl.value, 10);
+        movementVal.textContent = state.movement;
+        persist();
+      });
+      // movement는 드래그 끝(change)에 재구성(연속 input마다 LFO 재빌드는 과함)
+      movementEl.addEventListener("change", function () {
+        if (isPlaying) applyMovement();
+      });
+      brightnessEl.addEventListener("input", function () {
+        state.brightness = parseInt(brightnessEl.value, 10);
+        brightnessVal.textContent = state.brightness;
+        applyBrightness();
+        persist();
+      });
+    }
+
+    /* =====================================================================
+     * 저장 (localStorage)
+     * ===================================================================*/
+    var LS_KEY = "ogx_pads_v1";
+    function persist() {
+      try {
+        localStorage.setItem(LS_KEY, JSON.stringify({
+          keyPc: state.keyPc, minor: state.minor, texture: state.texture,
+          volume: state.volume, shimmer: state.shimmer,
+          movement: state.movement, brightness: state.brightness
+        }));
+      } catch (e) {}
+    }
+    function restore() {
+      try {
+        var raw = localStorage.getItem(LS_KEY);
+        if (!raw) return false;
+        var d = JSON.parse(raw);
+        if (typeof d.keyPc === "number" && d.keyPc >= 0 && d.keyPc < 12) state.keyPc = d.keyPc;
+        if (typeof d.minor === "boolean") state.minor = d.minor;
+        if (d.texture && TEXTURES[d.texture]) state.texture = d.texture;
+        if (typeof d.volume === "number") state.volume = clamp(d.volume, 0, 100);
+        if (typeof d.shimmer === "number") state.shimmer = clamp(d.shimmer, 0, 100);
+        if (typeof d.movement === "number") state.movement = clamp(d.movement, 0, 100);
+        if (typeof d.brightness === "number") state.brightness = clamp(d.brightness, 0, 100);
+        return true;
+      } catch (e) { return false; }
+    }
+    function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+
+    function applyStateToUI() {
+      // 장단 토글
+      qualityToggle.querySelectorAll("button").forEach(function (b) {
+        b.classList.toggle("is-active", (b.dataset.qual === "minor") === state.minor);
+      });
+      // 텍스처
+      textureGrid.querySelectorAll(".texture-btn").forEach(function (b) {
+        b.classList.toggle("is-active", b.dataset.tex === state.texture);
+      });
+      // 슬라이더
+      volumeEl.value = state.volume; volumeVal.textContent = state.volume;
+      shimmerEl.value = state.shimmer; shimmerVal.textContent = state.shimmer;
+      movementEl.value = state.movement; movementVal.textContent = state.movement;
+      brightnessEl.value = state.brightness; brightnessVal.textContent = state.brightness;
+      updateNowKeyUI();
+      updateAmbientColors();
+    }
+
+    /* =====================================================================
+     * 자가검증 (헤드리스 콘솔 — 보이싱/이론 정합성)
+     * ===================================================================*/
+    function selfTest() {
+      var results = [];
+      function ok(label, cond) { results.push({ label: label, ok: !!cond }); }
+
+      var cMaj = buildVoicing(0, false);
+      // C major: 루트 C2(36), 5도 G2(43), 옥타브 C3(48)
+      ok("C maj core = [36,43,48,55]", JSON.stringify(cMaj.core) === JSON.stringify([36, 43, 48, 55]));
+      ok("C maj 3도 = E3(52)", cMaj.third[0] === 52);
+      var aMin = buildVoicing(9, true);
+      // A minor: 루트 A2(45)
+      ok("A min 루트 = 45", aMin.rootLow === 45);
+      ok("A min 3도 = C4(60, 단3도)", aMin.third[0] === 45 + 12 + 3);
+      ok("텍스처 5종", TEXTURE_ORDER.length === 5);
+      ok("Simple은 minimal", TEXTURES.simple.minimal === true);
+      var allOk = results.every(function (r) { return r.ok; });
+      if (window.console) {
+        console.log("%c[OGX 패드] 자가검증 " + (allOk ? "통과 ✓" : "실패 ✗"),
+          "color:" + (allOk ? "#16c098" : "#f04452") + ";font-weight:bold");
+        results.forEach(function (r) { console.log((r.ok ? "  ✓ " : "  ✗ ") + r.label); });
+      }
+      return allOk;
+    }
+
+    /* =====================================================================
+     * 초기화
+     * ===================================================================*/
+    function init() {
+      renderKeys();
+      renderTextures();
+      bindQuality();
+      bindSliders();
+      playBtn.addEventListener("click", togglePlay);
+
+      restore();
+      applyStateToUI();
+      setStatus("", "대기 중 · 재생을 누르면 시작");
+
+      try { selfTest(); } catch (e) {}
+    }
+
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", init);
+    } else { init(); }
+  })();
+  </script>
+</body>
+</html>
