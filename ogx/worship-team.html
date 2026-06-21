@@ -1921,6 +1921,7 @@
       flex-direction: column;
       overflow: hidden;
       -webkit-tap-highlight-color: transparent;
+      touch-action: none;   /* 전체화면 모달 — 좌우 스와이프를 브라우저 스크롤/뒤로가기에 뺏기지 않게 */
     }
     .accompanist-layer.hidden { display: none; }
     /* 좌우 2분할 스프레드 */
@@ -4923,6 +4924,13 @@
     wireAccompanistControls();
     // 프레젠 무대 스와이프 (리더만, 하이라이트 OFF일 때 — 그리기 우선). 경계서 곡 이동.
     attachSwipe(presentLayer, () => presentMode && !highlightMode && !!activeSongId && isLeader);
+    // 반주자 스프레드 스와이프 — 좌우로 밀어 책장(2쪽) 넘김. 탭존 위에서도 잡히게 레이어에 부착.
+    // 상/하단 바(따라가기·나가기·인디케이터)만 제외, 직접 넘김이라 accGoSpread가 따라가기 자동 해제.
+    attachSwipe(accompanistLayer, () => accompanistMode, {
+      onSwipe: (dir) => accGoSpread(dir),
+      ignoreSel: '.acc-topbar, .acc-botbar',
+      suppressClick: true,
+    });
     // 마우스 움직이거나 탭하면 UI 잠깐 표시 (+ 오버레이 위치 보정)
     presentLayer.addEventListener('mousemove', bumpPresentUi);
     presentLayer.addEventListener('touchstart', bumpPresentUi, { passive: true });
@@ -5718,16 +5726,21 @@
   // 하이라이트 모드일 땐 그리기가 우선이므로 스와이프 비활성(canDraw가 막음).
   const SWIPE_MIN_PX = 55;       // 가로 이동 임계 (이만큼 넘겨야 인식)
   const SWIPE_MAX_OFF_RATIO = 0.8; // |dy| < |dx|*ratio 여야 수평 스와이프로 인정
-  function attachSwipe(el, isEnabled) {
+  // opts: { onSwipe(dir), ignoreSel, suppressClick } — 없으면 일반 뷰어 기본값(flipForSwipe).
+  function attachSwipe(el, isEnabled, opts) {
     if (!el || el.dataset.swipeWired) return;
     el.dataset.swipeWired = '1';
+    opts = opts || {};
+    const onSwipe = opts.onSwipe || flipForSwipe;             // dir: +1 다음 / -1 이전
+    const ignoreSel = opts.ignoreSel || 'button, input, a, select, .present-ctrl, .solo-pop, .page-nav';
+    const suppressClick = !!opts.suppressClick;               // 스와이프 직후 따라오는 click 1회 무시
     let sx = 0, sy = 0, tracking = false, pid = null;
     el.addEventListener('pointerdown', (e) => {
       if (!isEnabled()) return;
       // 마우스는 주 버튼만, 펜/터치는 그대로
       if (e.pointerType === 'mouse' && e.button !== 0) return;
-      // 버튼/입력/팝오버 등 인터랙션 요소 위에서 시작한 제스처는 스와이프로 보지 않음
-      if (e.target.closest && e.target.closest('button, input, a, select, .present-ctrl, .solo-pop, .page-nav')) return;
+      // 지정한 인터랙션 요소 위에서 시작한 제스처는 스와이프로 보지 않음
+      if (e.target.closest && ignoreSel && e.target.closest(ignoreSel)) return;
       tracking = true; pid = e.pointerId; sx = e.clientX; sy = e.clientY;
     });
     const finish = (e) => {
@@ -5737,7 +5750,13 @@
       const dx = e.clientX - sx, dy = e.clientY - sy;
       if (Math.abs(dx) < SWIPE_MIN_PX) return;
       if (Math.abs(dy) > Math.abs(dx) * SWIPE_MAX_OFF_RATIO) return; // 세로 스크롤로 간주
-      flipForSwipe(dx < 0 ? +1 : -1);   // 왼쪽으로 밀면 다음, 오른쪽이면 이전
+      // 스와이프가 탭존(버튼) 위에서 끝나면 click이 또 터져 중복 넘김 → 다음 click 1회 차단
+      if (suppressClick) {
+        const swallow = (ev) => { ev.stopPropagation(); ev.preventDefault(); };
+        el.addEventListener('click', swallow, { capture: true, once: true });
+        setTimeout(() => el.removeEventListener('click', swallow, true), 350);
+      }
+      onSwipe(dx < 0 ? +1 : -1);   // 왼쪽으로 밀면 다음, 오른쪽이면 이전
     };
     el.addEventListener('pointerup', finish);
     el.addEventListener('pointercancel', () => { tracking = false; pid = null; });
