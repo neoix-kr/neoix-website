@@ -1640,6 +1640,7 @@
       align-items: center;
       justify-content: center;
       overflow: hidden;
+      touch-action: none;   /* 전체화면 — 좌우 스와이프를 브라우저 스크롤/뒤로가기에 안 뺏기게 */
     }
     .present-layer.hidden { display: none; }
     .present-stage {
@@ -3144,12 +3145,18 @@
           </div>
         </div>
       </div>
+      <!-- 점점(점진) 템포 — 한 번에 천천히 변하는 신호 -->
+      <div class="cue-grid cols-2" style="margin-top:8px;">
+        <button class="cue-btn cue-slow" data-kind="rit" data-intensity="2" data-icon="rit" data-text="점점 느리게">점점 느리게</button>
+        <button class="cue-btn cue-fast" data-kind="accel" data-intensity="2" data-icon="accel" data-text="점점 빠르게">점점 빠르게</button>
+      </div>
     </div>
 
     <!-- 진행 · 볼륨 (중립) -->
     <div class="cue-group">
       <div class="sheet-label">진행 · 볼륨</div>
       <div class="cue-grid cols-2">
+        <button class="cue-btn cue-neutral" data-kind="nextsong" data-intensity="2" data-icon="nextsong" data-text="다음 곡">다음 곡</button>
         <button class="cue-btn cue-neutral" data-kind="neutral" data-intensity="2" data-icon="repeat" data-text="후렴 반복">후렴 반복</button>
         <button class="cue-btn cue-end" data-kind="end" data-intensity="2" data-icon="square" data-text="마무리">마무리</button>
         <button class="cue-btn cue-louder" data-kind="louder" data-intensity="3" data-icon="volume" data-text="더 크게">더 크게</button>
@@ -3744,6 +3751,9 @@
     mute:   '<path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M22 9l-6 6"/><path d="M16 9l6 6"/>', // volume-x
     pause:  '<rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/>', // pause
     end:    '<rect x="6" y="6" width="12" height="12" rx="1.5"/>',           // alias → square
+    nextsong: '<path d="M6 5l11 7-11 7z"/><path d="M19 5v14"/>',             // skip-forward ▶| (다음 곡)
+    accel:  '<path d="M5 6l6 6-6 6"/><path d="M12 6l6 6-6 6"/>',             // » chevrons-right (점점 빠르게)
+    rit:    '<path d="M19 6l-6 6 6 6"/><path d="M12 6l-6 6 6 6"/>',          // « chevrons-left (점점 느리게)
     // ----- 방송실(AV) -----
     volup:  '<path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M19 9v6"/><path d="M16 12h6"/>',     // speaker + plus (MR 크게)
     warn:   '<path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/>', // alert-triangle (자막 오타)
@@ -3763,6 +3773,9 @@
       case 'softer': return 'voldown';
       case 'cresc': return 'cresc';
       case 'decresc': return 'decresc';
+      case 'accel': return 'accel';
+      case 'rit': return 'rit';
+      case 'nextsong': return 'nextsong';
       case 'end': return 'square';
       case 'mrup': return 'volup';
       case 'mrdown': return 'voldown';
@@ -4923,7 +4936,13 @@
     // 반주자 모드 컨트롤 연결 (버튼·탭·따라가기 토글)
     wireAccompanistControls();
     // 프레젠 무대 스와이프 (리더만, 하이라이트 OFF일 때 — 그리기 우선). 경계서 곡 이동.
-    attachSwipe(presentLayer, () => presentMode && !highlightMode && !!activeSongId && isLeader);
+    // 좌우 탭존(.present-tap)이 화면 2/3을 덮어 그 위에서 시작한 스와이프가 무시되던 문제 →
+    // 공통 부모(presentLayer)에 부착하고 컨트롤/나가기/큐만 제외, 탭존 위에서도 스와이프 인식.
+    // suppressClick으로 스와이프 직후 탭존 click 중복 넘김 차단.
+    attachSwipe(presentLayer, () => presentMode && !highlightMode && !!activeSongId && isLeader, {
+      ignoreSel: '.present-ctrl, .present-exit, .present-cue-wrap, .solo-pop',
+      suppressClick: true,
+    });
     // 반주자 스프레드 스와이프 — 좌우로 밀어 책장(2쪽) 넘김. 탭존 위에서도 잡히게 레이어에 부착.
     // 상/하단 바(따라가기·나가기·인디케이터)만 제외, 직접 넘김이라 accGoSpread가 따라가기 자동 해제.
     attachSwipe(accompanistLayer, () => accompanistMode, {
