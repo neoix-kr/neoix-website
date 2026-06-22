@@ -500,7 +500,7 @@ tbody tr:hover { background:#fafbfc; }
             <input type="text" class="table-search" placeholder="아이디 검색..." id="userSearch">
           </div>
           <div style="overflow-x:auto">
-            <table><thead><tr><th>아이디</th><th>이메일</th><th>가입일</th><th>최근 로그인</th></tr></thead><tbody id="usersBody"></tbody></table>
+            <table><thead><tr><th>이름/아이디</th><th>이메일</th><th>가입경로</th><th>사용 서비스</th><th>가입일</th><th>최근 로그인</th></tr></thead><tbody id="usersBody"></tbody></table>
           </div>
         </div>
       </section>
@@ -730,6 +730,11 @@ function renderMembers(filter = '') {
 
 // ── Users ──
 async function loadUsers() {
+  // 통합 디렉토리(프로필+가입서비스) 우선, 없으면 기존 함수로 폴백
+  try {
+    const { data, error } = await supabase.rpc('get_user_directory');
+    if (!error && data) cachedUsers = data;
+  } catch(e) {}
   if (!cachedUsers.length) { try { const { data } = await supabase.rpc('get_all_users'); cachedUsers = data || []; } catch(e) {} }
   const today = new Date().toDateString();
   const todayCount = cachedUsers.filter(u => new Date(u.created_at).toDateString() === today).length;
@@ -744,10 +749,23 @@ async function loadUsers() {
   renderUsers();
 }
 
+const providerBadge = { email:['이메일','badge-gray'], apple:['Apple','badge-info'], google:['Google','badge-danger'] };
 function renderUsers(filter = '') {
-  const filtered = filter ? cachedUsers.filter(u => (u.username||'').toLowerCase().includes(filter) || (u.email||'').toLowerCase().includes(filter)) : cachedUsers;
-  if (!filtered.length) { $('usersBody').innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--light);padding:40px">가입자가 없습니다</td></tr>'; return; }
-  $('usersBody').innerHTML = filtered.map(u => `<tr><td class="td-bold">${u.username||'-'}</td><td class="td-mono">${u.email||'-'}</td><td style="color:var(--light)">${fmt(u.created_at)}</td><td style="color:var(--light)">${fmtFull(u.last_sign_in_at)}</td></tr>`).join('');
+  const nameOf = u => u.display_name || u.username || '-';
+  const filtered = filter ? cachedUsers.filter(u => nameOf(u).toLowerCase().includes(filter) || (u.email||'').toLowerCase().includes(filter) || (u.services||'').toLowerCase().includes(filter)) : cachedUsers;
+  if (!filtered.length) { $('usersBody').innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--light);padding:40px">가입자가 없습니다</td></tr>'; return; }
+  $('usersBody').innerHTML = filtered.map(u => {
+    const [pLabel, pClass] = providerBadge[u.signup_provider] || ['이메일','badge-gray'];
+    const services = u.services ? u.services : '<span style="color:var(--light)">-</span>';
+    return `<tr>
+      <td class="td-bold">${nameOf(u)}</td>
+      <td class="td-mono">${u.email||'-'}</td>
+      <td><span class="badge ${pClass}">${pLabel}</span></td>
+      <td style="font-size:12px">${services}</td>
+      <td style="color:var(--light)">${fmt(u.created_at)}</td>
+      <td style="color:var(--light)">${fmtFull(u.last_sign_in_at)}</td>
+    </tr>`;
+  }).join('');
 }
 
 // ── Projects CRUD ──
