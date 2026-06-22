@@ -33,6 +33,22 @@
     });
   }
 
+  // 하단 "네오익스로 이동" 링크 — 메인 사이트(neoix.kr 루트)로. 푸터 있는 페이지에만.
+  function injectHomeLink() {
+    var footer = document.querySelector('.footer');
+    if (!footer || footer.querySelector('.ogx-neoix-link')) return;
+    footer.appendChild(document.createElement('br'));
+    var a = document.createElement('a');
+    a.href = '/';
+    a.className = 'ogx-neoix-link';
+    a.textContent = '← 네오익스로 이동';
+    a.style.cssText = 'display:inline-block;margin-top:10px;color:#3182f6;font-weight:600;text-decoration:none;';
+    a.addEventListener('mouseover', function () { a.style.color = '#0064ff'; });
+    a.addEventListener('mouseout', function () { a.style.color = '#3182f6'; });
+    footer.appendChild(a);
+  }
+  injectHomeLink();
+
   // 1) 캐시 즉시 적용(깜빡임 최소화)
   try {
     var cached = JSON.parse(localStorage.getItem(LS) || '[]');
