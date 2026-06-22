@@ -3089,6 +3089,17 @@
       <p>방을 만들거나, 방 코드로 들어가요.</p>
     </div>
 
+    <!-- 관리자 전용 (isAdmin 일 때만 노출) — 홈 맨 위 -->
+    <div class="home-card" id="adminCard">
+      <div class="admin-card-row">
+        <div>
+          <div class="home-card-title" style="margin-bottom:4px;">⚙ 관리자 모드</div>
+          <div class="admin-card-desc">메뉴 표시/숨김과 가입현황을 관리해요.</div>
+        </div>
+        <button class="btn btn-primary btn-sm" id="btnAdminOpen">열기</button>
+      </div>
+    </div>
+
     <!-- 새 방 만들기 -->
     <div class="home-card">
       <div class="home-card-title">새 방 만들기</div>
@@ -3131,17 +3142,6 @@
       <ul class="room-list" id="joinedList"></ul>
       <div class="home-loading" id="joinedLoading">불러오는 중…</div>
       <div class="home-empty" id="joinedEmpty" style="display:none;">들어간 방이 없어요. 방 코드로 입장해보세요.</div>
-    </div>
-
-    <!-- 관리자 전용 (isAdmin 일 때만 노출) -->
-    <div class="home-card" id="adminCard">
-      <div class="admin-card-row">
-        <div>
-          <div class="home-card-title" style="margin-bottom:4px;">⚙ 관리자 모드</div>
-          <div class="admin-card-desc">메뉴 표시/숨김과 가입현황을 관리해요.</div>
-        </div>
-        <button class="btn btn-primary btn-sm" id="btnAdminOpen">열기</button>
-      </div>
     </div>
   </div>
 </div>
@@ -4310,7 +4310,7 @@
   // 홈 진입/세션 변경 시 호출 — 관리자 카드 노출 토글
   function updateAdminUi() {
     const card = $('adminCard');
-    if (card) card.style.display = isAdmin ? '' : 'none';
+    if (card) card.style.display = isAdmin ? 'block' : 'none';   // 'block'으로 명시 — CSS 기본 #adminCard{display:none}를 인라인으로 덮어써야 보임
     if (!isAdmin) closeAdminModal();   // 권한 사라지면 모달도 닫기
   }
 
