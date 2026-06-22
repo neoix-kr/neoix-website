@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEOIX Admin</title>
+<link rel="icon" href="../logo_168x168.png">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" rel="stylesheet">
+<style>
+:root {
+  --primary: #3182f6; --primary-light: #e8f3ff; --primary-dark: #1b64da;
+  --text: #1e293b; --muted: #64748b; --light: #94a3b8;
+  --bg: #f8fafc; --surface: #ffffff; --border: #e2e8f0; --border-strong: #cbd5e1;
+  --success: #10b981; --success-bg: #ecfdf5;
+  --warning: #f59e0b; --warning-bg: #fffbeb;
+  --danger: #ef4444; --danger-bg: #fef2f2;
+  --info: #3b82f6; --info-bg: #eff6ff;
+  --purple: #7c3aed; --purple-bg: #f5f3ff;
+  --cyan: #0891b2; --cyan-bg: #ecfeff;
+  --sidebar-w: 260px; --sidebar-collapsed: 72px; --header-h: 64px;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { height:100%; }
+body { background:var(--bg); color:var(--text); font-family:'Pretendard Variable',-apple-system,system-ui,sans-serif; overflow:hidden; }
+a { color:var(--primary); text-decoration:none; }
+button { font-family:inherit; cursor:pointer; border:none; background:none; }
+input, select, textarea { font-family:inherit; }
+::-webkit-scrollbar { width:6px; }
+::-webkit-scrollbar-track { background:transparent; }
+::-webkit-scrollbar-thumb { background:#cbd5e1; border-radius:3px; }
+
+/* ── Login ── */
+#loginView {
+  display:flex; align-items:center; justify-content:center; height:100vh;
+  background:linear-gradient(135deg, #e8f3ff 0%, #f5f3ff 50%, #ecfeff 100%);
+}
+.login-box {
+  width:400px; padding:48px 40px; background:#fff; border-radius:20px;
+  box-shadow:0 4px 24px rgba(0,0,0,.06); text-align:center;
+}
+.login-logo-wrap { display:flex; align-items:center; justify-content:center; gap:12px; margin-bottom:8px; }
+.login-logo-icon {
+  width:44px; height:44px; border-radius:12px; background:linear-gradient(135deg,#3182f6,#7c3aed);
+  display:flex; align-items:center; justify-content:center; color:#fff; font-size:20px; font-weight:800;
+}
+.login-logo-text { font-size:24px; font-weight:800; color:var(--text); letter-spacing:.04em; }
+.login-sub { font-size:13px; color:var(--muted); margin-bottom:36px; }
+.login-box .field { margin-bottom:16px; text-align:left; }
+.login-box label { display:block; font-size:12px; color:var(--muted); margin-bottom:6px; font-weight:600; }
+.login-box input {
+  width:100%; padding:11px 14px; background:#fff; border:1px solid var(--border);
+  border-radius:12px; color:var(--text); font-size:14px; outline:none; transition:all .2s;
+}
+.login-box input:focus { border-color:var(--primary); box-shadow:0 0 0 3px rgba(49,130,246,.12); }
+.login-box .btn-login {
+  width:100%; padding:12px; margin-top:8px; background:var(--primary); color:#fff;
+  font-size:14px; font-weight:700; border-radius:12px; transition:all .2s;
+}
+.login-box .btn-login:hover { background:var(--primary-dark); }
+.login-box .btn-login:disabled { opacity:.5; cursor:not-allowed; }
+.login-toggle { margin-top:20px; font-size:13px; color:var(--muted); }
+.login-toggle a { cursor:pointer; font-weight:600; }
+.login-error { margin-top:14px; font-size:13px; color:var(--danger); display:none; background:var(--danger-bg); padding:10px 14px; border-radius:10px; }
+.login-info { margin-top:14px; font-size:12px; color:var(--muted); line-height:1.6; display:none; padding:14px; background:var(--info-bg); border-radius:10px; }
+
+/* ── App Shell ── */
+#appShell { display:none; height:100vh; }
+
+/* ── Sidebar ── */
+.sidebar {
+  position:fixed; left:0; top:0; bottom:0; width:var(--sidebar-w); background:#fff;
+  border-right:1px solid var(--border); display:flex; flex-direction:column;
+  transition:width .25s ease; z-index:30; overflow:hidden;
+}
+.sidebar.collapsed { width:var(--sidebar-collapsed); }
+.sidebar-top { padding:18px 20px; display:flex; align-items:center; gap:12px; border-bottom:1px solid var(--border); min-height:var(--header-h); }
+.sidebar-logo {
+  width:36px; height:36px; border-radius:10px; background:linear-gradient(135deg,#3182f6,#7c3aed);
+  display:flex; align-items:center; justify-content:center; color:#fff; font-size:16px; font-weight:800; flex-shrink:0;
+}
+.sidebar-brand-text { font-size:16px; font-weight:800; color:var(--text); white-space:nowrap; }
+.sidebar-brand-text small { display:block; font-size:10px; font-weight:500; color:var(--light); margin-top:1px; }
+.sidebar.collapsed .sidebar-brand-text { display:none; }
+.sidebar-nav { flex:1; overflow-y:auto; padding:12px 8px; }
+.nav-group-title {
+  font-size:10px; font-weight:700; color:var(--light); letter-spacing:.1em; text-transform:uppercase;
+  padding:8px 12px 6px; white-space:nowrap;
+}
+.sidebar.collapsed .nav-group-title { text-align:center; font-size:0; }
+.sidebar.collapsed .nav-group-title::after { content:'···'; font-size:10px; color:var(--light); }
+.nav-item {
+  display:flex; align-items:center; gap:10px; padding:9px 12px; border-radius:10px;
+  font-size:13px; font-weight:500; color:var(--muted); cursor:pointer; transition:all .15s;
+  white-space:nowrap; margin-bottom:2px;
+}
+.nav-item:hover { background:var(--bg); color:var(--text); }
+.nav-item.active { background:var(--primary-light); color:var(--primary); font-weight:600; }
+.nav-item svg { width:18px; height:18px; flex-shrink:0; stroke:currentColor; fill:none; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+.nav-item .nav-label { overflow:hidden; }
+.sidebar.collapsed .nav-label { display:none; }
+.nav-item .badge {
+  margin-left:auto; font-size:10px; font-weight:700; padding:2px 7px; border-radius:8px;
+  background:var(--danger-bg); color:var(--danger); line-height:1.4;
+}
+.sidebar.collapsed .badge { display:none; }
+.sidebar-bottom { padding:12px; border-top:1px solid var(--border); }
+.sidebar-user { display:flex; align-items:center; gap:10px; padding:8px; border-radius:10px; }
+.sidebar-avatar {
+  width:34px; height:34px; border-radius:10px; background:linear-gradient(135deg,#3182f6,#7c3aed);
+  display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:700; color:#fff; flex-shrink:0;
+}
+.sidebar-user-info { overflow:hidden; }
+.sidebar.collapsed .sidebar-user-info { display:none; }
+.sidebar-username { font-size:13px; font-weight:600; color:var(--text); }
+.sidebar-role { font-size:11px; color:var(--light); }
+.btn-collapse {
+  width:100%; padding:8px; margin-top:4px; border-radius:10px; display:flex; align-items:center;
+  justify-content:center; color:var(--light); transition:all .15s;
+}
+.btn-collapse:hover { background:var(--bg); color:var(--text); }
+.btn-collapse svg { width:18px; height:18px; transition:transform .25s; }
+.sidebar.collapsed .btn-collapse svg { transform:rotate(180deg); }
+
+/* ── Header ── */
+.top-header {
+  position:fixed; top:0; left:var(--sidebar-w); right:0; height:var(--header-h); background:#fff;
+  border-bottom:1px solid var(--border); display:flex; align-items:center; padding:0 28px;
+  transition:left .25s ease; z-index:20;
+}
+.sidebar.collapsed ~ .content-wrap .top-header,
+body.sidebar-collapsed .top-header { left:var(--sidebar-collapsed); }
+.header-left { display:flex; align-items:center; gap:12px; }
+.burger { display:none; padding:6px; border-radius:8px; color:var(--muted); }
+.burger:hover { background:var(--bg); }
+.burger svg { width:20px; height:20px; }
+.header-title { font-size:14px; font-weight:600; color:var(--text); }
+.header-spacer { flex:1; }
+.header-right { display:flex; align-items:center; gap:16px; }
+.header-site-link {
+  font-size:12px; color:var(--muted); padding:6px 12px; border:1px solid var(--border);
+  border-radius:8px; display:flex; align-items:center; gap:4px; transition:all .15s;
+}
+.header-site-link:hover { color:var(--primary); border-color:var(--primary); }
+.header-site-link svg { width:14px; height:14px; }
+.header-user-badge {
+  display:flex; align-items:center; gap:8px; padding:6px 12px; border-radius:10px;
+  background:var(--bg); font-size:13px; font-weight:500; color:var(--text); cursor:default;
+}
+.header-user-avatar {
+  width:26px; height:26px; border-radius:8px; background:linear-gradient(135deg,#3182f6,#7c3aed);
+  display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; color:#fff;
+}
+.btn-logout {
+  padding:6px 14px; font-size:12px; color:var(--muted); border:1px solid var(--border);
+  border-radius:8px; font-weight:500; transition:all .15s;
+}
+.btn-logout:hover { color:var(--danger); border-color:var(--danger); background:var(--danger-bg); }
+
+/* ── Main Content ── */
+.content-wrap {
+  margin-left:var(--sidebar-w); transition:margin-left .25s ease;
+}
+body.sidebar-collapsed .content-wrap { margin-left:var(--sidebar-collapsed); }
+.main {
+  margin-top:var(--header-h); padding:28px; overflow-y:auto;
+  height:calc(100vh - var(--header-h)); background:var(--bg);
+}
+.page-title { font-size:22px; font-weight:700; margin-bottom:4px; }
+.page-desc { font-size:13px; color:var(--muted); margin-bottom:24px; }
+
+/* ── Stat Cards (바른문자 style) ── */
+.stats-row { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:28px; }
+.stat-card {
+  background:#fff; border:1px solid var(--border); border-radius:16px; padding:22px;
+  transition:box-shadow .2s;
+}
+.stat-card:hover { box-shadow:0 2px 12px rgba(0,0,0,.04); }
+.stat-card-top { display:flex; align-items:center; gap:12px; margin-bottom:14px; }
+.stat-icon {
+  width:40px; height:40px; border-radius:12px; display:flex; align-items:center; justify-content:center;
+}
+.stat-icon svg { width:20px; height:20px; stroke-width:1.8; }
+.stat-icon.blue { background:var(--primary-light); color:var(--primary); }
+.stat-icon.green { background:var(--success-bg); color:var(--success); }
+.stat-icon.purple { background:var(--purple-bg); color:var(--purple); }
+.stat-icon.cyan { background:var(--cyan-bg); color:var(--cyan); }
+.stat-icon.warning { background:var(--warning-bg); color:var(--warning); }
+.stat-icon svg { stroke:currentColor; fill:none; stroke-linecap:round; stroke-linejoin:round; }
+.stat-label { font-size:12px; color:var(--muted); font-weight:500; }
+.stat-value { font-size:28px; font-weight:700; color:var(--text); line-height:1.2; }
+.stat-sub { font-size:11px; color:var(--light); margin-top:2px; }
+
+/* ── Section Header ── */
+.section-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
+.section-title { font-size:16px; font-weight:700; }
+
+/* ── Project Cards ── */
+.project-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(320px,1fr)); gap:16px; }
+.project-card {
+  background:#fff; border:1px solid var(--border); border-radius:16px; padding:24px;
+  transition:all .2s; cursor:default;
+}
+.project-card:hover { box-shadow:0 4px 16px rgba(0,0,0,.05); transform:translateY(-1px); }
+.project-header { display:flex; align-items:center; gap:12px; margin-bottom:12px; }
+.project-icon { font-size:32px; }
+.project-name { font-size:15px; font-weight:700; color:var(--text); }
+.project-status { margin-left:auto; }
+.badge {
+  display:inline-flex; align-items:center; font-size:11px; font-weight:600;
+  padding:3px 10px; border-radius:20px;
+}
+.badge-success { background:var(--success-bg); color:var(--success); }
+.badge-info { background:var(--info-bg); color:var(--info); }
+.badge-warning { background:var(--warning-bg); color:var(--warning); }
+.badge-gray { background:#f1f5f9; color:var(--muted); }
+.badge-danger { background:var(--danger-bg); color:var(--danger); }
+.badge-purple { background:var(--purple-bg); color:var(--purple); }
+.project-desc { font-size:13px; color:var(--muted); margin-bottom:14px; line-height:1.5; }
+.project-meta { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; }
+.meta-tag { font-size:11px; color:var(--muted); padding:3px 8px; background:var(--bg); border-radius:6px; }
+.project-actions { display:flex; gap:8px; }
+.btn-sm { padding:7px 14px; font-size:12px; font-weight:600; border-radius:10px; transition:all .15s; }
+.btn-primary-sm { background:var(--primary); color:#fff; }
+.btn-primary-sm:hover { background:var(--primary-dark); }
+.btn-outline { color:var(--muted); border:1px solid var(--border); }
+.btn-outline:hover { color:var(--text); border-color:var(--border-strong); background:var(--bg); }
+.btn-danger-outline { color:var(--danger); border:1px solid rgba(239,68,68,.2); }
+.btn-danger-outline:hover { background:var(--danger-bg); }
+
+/* ── Data Table (바른문자 style) ── */
+.table-wrap { background:#fff; border:1px solid var(--border); border-radius:16px; overflow:hidden; }
+.table-toolbar {
+  display:flex; align-items:center; justify-content:space-between; padding:16px 20px;
+  border-bottom:1px solid var(--border); flex-wrap:wrap; gap:12px;
+}
+.table-title { font-size:15px; font-weight:700; }
+.table-search {
+  padding:8px 14px; background:var(--bg); border:1px solid var(--border); border-radius:10px;
+  color:var(--text); font-size:13px; outline:none; width:240px; transition:all .2s;
+}
+.table-search:focus { border-color:var(--primary); box-shadow:0 0 0 3px rgba(49,130,246,.08); }
+table { width:100%; border-collapse:collapse; }
+thead th {
+  text-align:left; padding:12px 20px; font-size:11px; font-weight:700; color:var(--light);
+  letter-spacing:.06em; text-transform:uppercase; background:var(--bg);
+  border-bottom:1px solid var(--border); white-space:nowrap;
+}
+tbody td { padding:14px 20px; font-size:13px; color:var(--text); border-bottom:1px solid #f1f5f9; }
+tbody tr:last-child td { border-bottom:none; }
+tbody tr:hover { background:#fafbfc; }
+.td-mono { font-family:'SF Mono',Menlo,Consolas,monospace; font-size:12px; color:var(--muted); }
+.td-bold { font-weight:600; }
+
+/* ── Tabs ── */
+.tabs { display:flex; gap:2px; margin-bottom:20px; background:var(--bg); border-radius:12px; padding:4px; width:fit-content; border:1px solid var(--border); }
+.tab-btn { padding:8px 20px; font-size:13px; font-weight:500; border-radius:10px; color:var(--muted); background:transparent; transition:all .15s; }
+.tab-btn.active { background:#fff; color:var(--primary); font-weight:600; box-shadow:0 1px 3px rgba(0,0,0,.06); }
+.tab-btn:hover:not(.active) { color:var(--text); }
+
+/* ── Modal ── */
+.modal-overlay {
+  position:fixed; inset:0; background:rgba(0,0,0,.35); backdrop-filter:blur(2px);
+  display:none; align-items:center; justify-content:center; z-index:100;
+}
+.modal-overlay.open { display:flex; }
+.modal {
+  background:#fff; border-radius:20px; width:480px; max-width:92vw; max-height:85vh;
+  overflow-y:auto; padding:32px; box-shadow:0 20px 60px rgba(0,0,0,.12);
+}
+.modal h3 { font-size:18px; font-weight:700; margin-bottom:24px; }
+.modal .field { margin-bottom:16px; }
+.modal label { display:block; font-size:12px; color:var(--muted); margin-bottom:6px; font-weight:600; }
+.modal input, .modal select, .modal textarea {
+  width:100%; padding:10px 14px; background:#fff; border:1px solid var(--border);
+  border-radius:12px; color:var(--text); font-size:14px; outline:none; resize:vertical; transition:all .2s;
+}
+.modal input:focus, .modal select:focus, .modal textarea:focus { border-color:var(--primary); box-shadow:0 0 0 3px rgba(49,130,246,.1); }
+.modal select { appearance:none; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 12px center; padding-right:32px; }
+.modal-actions { display:flex; gap:8px; justify-content:flex-end; margin-top:28px; }
+.btn-cancel { padding:10px 20px; border:1px solid var(--border); color:var(--muted); border-radius:12px; font-size:13px; font-weight:600; }
+.btn-cancel:hover { background:var(--bg); }
+.btn-save { padding:10px 24px; background:var(--primary); color:#fff; border-radius:12px; font-size:13px; font-weight:700; }
+.btn-save:hover { background:var(--primary-dark); }
+
+/* ── Toast ── */
+.toast {
+  position:fixed; bottom:24px; right:24px; padding:14px 20px; background:#fff;
+  border:1px solid var(--border); border-radius:12px; font-size:13px; font-weight:500;
+  box-shadow:0 8px 32px rgba(0,0,0,.1); transform:translateY(100px); opacity:0;
+  transition:all .3s ease; z-index:200; max-width:360px; display:flex; align-items:center; gap:8px;
+}
+.toast.show { transform:translateY(0); opacity:1; }
+.toast.error { border-left:3px solid var(--danger); }
+.toast.success { border-left:3px solid var(--success); }
+
+/* ── Settings Card ── */
+.settings-card {
+  background:#fff; border:1px solid var(--border); border-radius:16px; padding:24px;
+  max-width:520px; margin-bottom:16px;
+}
+.settings-card h3 { font-size:15px; font-weight:700; margin-bottom:20px; padding-bottom:12px; border-bottom:1px solid var(--border); }
+.settings-row { display:flex; justify-content:space-between; padding:10px 0; }
+.settings-label { font-size:12px; color:var(--muted); font-weight:500; }
+.settings-value { font-size:14px; font-weight:500; }
+
+/* ── Empty ── */
+.empty { text-align:center; padding:60px 20px; color:var(--light); }
+.empty-text { font-size:14px; margin-top:8px; }
+
+/* ── Responsive ── */
+@media (max-width:1024px) { .stats-row { grid-template-columns:repeat(2,1fr); } }
+@media (max-width:768px) {
+  .sidebar { transform:translateX(-100%); width:280px; }
+  .sidebar.open { transform:translateX(0); box-shadow:4px 0 24px rgba(0,0,0,.08); }
+  .content-wrap, body.sidebar-collapsed .content-wrap { margin-left:0 !important; }
+  .top-header, body.sidebar-collapsed .top-header { left:0 !important; }
+  .burger { display:flex; }
+  .main { padding:20px 16px; }
+  .stats-row { grid-template-columns:1fr 1fr; }
+  .project-grid { grid-template-columns:1fr; }
+  .sidebar-backdrop { display:none; position:fixed; inset:0; background:rgba(0,0,0,.3); z-index:25; }
+  .sidebar-backdrop.open { display:block; }
+}
+</style>
+</head>
+<body>
+
+<!-- ════════ Login ════════ -->
+<div id="loginView">
+  <div class="login-box">
+    <div class="login-logo-wrap">
+      <div class="login-logo-icon">N</div>
+      <div class="login-logo-text">NEOIX</div>
+    </div>
+    <div class="login-sub">Admin Console</div>
+
+    <div id="loginForm">
+      <div class="field">
+        <label>아이디</label>
+        <input type="text" id="loginId" placeholder="관리자 아이디" autocomplete="username">
+      </div>
+      <div class="field">
+        <label>비밀번호</label>
+        <input type="password" id="loginPw" placeholder="비밀번호" autocomplete="current-password">
+      </div>
+      <button class="btn-login" id="btnLogin">로그인</button>
+      <div class="login-toggle">계정이 없나요? <a id="toRegister">회원가입</a></div>
+    </div>
+
+    <div id="registerForm" style="display:none">
+      <div class="field">
+        <label>아이디 (영문/숫자, 3~20자)</label>
+        <input type="text" id="regId" placeholder="admin" autocomplete="username">
+      </div>
+      <div class="field">
+        <label>비밀번호 (6자 이상)</label>
+        <input type="password" id="regPw" placeholder="비밀번호" autocomplete="new-password">
+      </div>
+      <button class="btn-login" id="btnRegister">회원가입</button>
+      <div class="login-toggle">이미 계정이 있나요? <a id="toLogin">로그인</a></div>
+    </div>
+
+    <div class="login-error" id="loginError"></div>
+    <div class="login-info" id="loginInfo"></div>
+  </div>
+</div>
+
+<!-- ════════ App Shell ════════ -->
+<div id="appShell">
+  <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-top">
+      <div class="sidebar-logo">N</div>
+      <div class="sidebar-brand-text">NEOIX<small>Admin Console</small></div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-group-title">Overview</div>
+      <div class="nav-item active" data-view="dashboard">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        <span class="nav-label">대시보드</span>
+      </div>
+
+      <div class="nav-group-title">Services</div>
+      <div class="nav-item" data-view="ogx">
+        <svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+        <span class="nav-label">OGX 찬양팀</span>
+        <span class="badge" id="ogxBadge" style="display:none"></span>
+      </div>
+
+      <div class="nav-group-title">Management</div>
+      <div class="nav-item" data-view="users">
+        <svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4-4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+        <span class="nav-label">사용자</span>
+        <span class="badge" id="usersBadge" style="display:none"></span>
+      </div>
+      <div class="nav-item" data-view="projects">
+        <svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
+        <span class="nav-label">프로젝트</span>
+      </div>
+      <div class="nav-item" data-view="settings">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+        <span class="nav-label">설정</span>
+      </div>
+    </nav>
+
+    <div class="sidebar-bottom">
+      <div class="sidebar-user">
+        <div class="sidebar-avatar" id="userAvatar">A</div>
+        <div class="sidebar-user-info">
+          <div class="sidebar-username" id="sidebarUsername">admin</div>
+          <div class="sidebar-role">관리자</div>
+        </div>
+      </div>
+      <button class="btn-collapse" id="btnCollapse" title="사이드바 접기">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 17l-5-5 5-5"/><path d="M18 17l-5-5 5-5"/></svg>
+      </button>
+    </div>
+  </aside>
+
+  <!-- Content -->
+  <div class="content-wrap" id="contentWrap">
+    <header class="top-header">
+      <div class="header-left">
+        <button class="burger" id="burgerBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <span class="header-title" id="headerTitle">대시보드</span>
+      </div>
+      <div class="header-spacer"></div>
+      <div class="header-right">
+        <a href="https://neoix.kr" target="_blank" class="header-site-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          사이트 보기
+        </a>
+        <div class="header-user-badge">
+          <div class="header-user-avatar" id="headerAvatar">A</div>
+          <span id="headerUsername">admin</span>
+        </div>
+        <button class="btn-logout" id="btnLogout">로그아웃</button>
+      </div>
+    </header>
+
+    <div class="main" id="mainContent">
+
+      <!-- ── Dashboard ── -->
+      <section id="dashboardView">
+        <h1 class="page-title" id="welcomeTitle">대시보드</h1>
+        <p class="page-desc" id="welcomeDate"></p>
+        <div class="stats-row" id="dashStats"></div>
+        <div class="section-header">
+          <h2 class="section-title">프로젝트 현황</h2>
+        </div>
+        <div class="project-grid" id="projectCards"></div>
+      </section>
+
+      <!-- ── OGX ── -->
+      <section id="ogxView" style="display:none">
+        <h1 class="page-title">OGX 찬양팀</h1>
+        <p class="page-desc">실시간 악보 동기화 서비스 관리</p>
+        <div class="stats-row" id="ogxStats"></div>
+        <div class="tabs">
+          <button class="tab-btn active" data-tab="ogx-rooms">방 관리</button>
+          <button class="tab-btn" data-tab="ogx-members">멤버 현황</button>
+        </div>
+        <div id="ogx-rooms">
+          <div class="table-wrap">
+            <div class="table-toolbar">
+              <span class="table-title">전체 방 목록</span>
+              <input type="text" class="table-search" placeholder="방 이름 또는 코드 검색..." id="roomSearch">
+            </div>
+            <div style="overflow-x:auto">
+              <table><thead><tr><th>방 코드</th><th>이름</th><th>소유자</th><th>멤버</th><th>생성일</th></tr></thead><tbody id="roomsBody"></tbody></table>
+            </div>
+          </div>
+        </div>
+        <div id="ogx-members" style="display:none">
+          <div class="table-wrap">
+            <div class="table-toolbar">
+              <span class="table-title">전체 멤버 목록</span>
+              <input type="text" class="table-search" placeholder="이름 검색..." id="memberSearch">
+            </div>
+            <div style="overflow-x:auto">
+              <table><thead><tr><th>이름</th><th>역할</th><th>소속 방</th><th>참여일</th></tr></thead><tbody id="membersBody"></tbody></table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Users ── -->
+      <section id="usersView" style="display:none">
+        <h1 class="page-title">사용자 관리</h1>
+        <p class="page-desc">전체 서비스 가입자 현황</p>
+        <div class="stats-row" id="usersStats"></div>
+        <div class="table-wrap">
+          <div class="table-toolbar">
+            <span class="table-title">전체 가입자</span>
+            <input type="text" class="table-search" placeholder="아이디 검색..." id="userSearch">
+          </div>
+          <div style="overflow-x:auto">
+            <table><thead><tr><th>아이디</th><th>이메일</th><th>가입일</th><th>최근 로그인</th></tr></thead><tbody id="usersBody"></tbody></table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Projects ── -->
+      <section id="projectsView" style="display:none">
+        <h1 class="page-title">프로젝트 관리</h1>
+        <p class="page-desc">등록된 프로젝트를 관리합니다</p>
+        <div style="margin-bottom:20px">
+          <button class="btn-sm btn-primary-sm" id="btnAddProject" style="padding:9px 18px;font-size:13px">+ 프로젝트 추가</button>
+        </div>
+        <div id="projectList"></div>
+      </section>
+
+      <!-- ── Settings ── -->
+      <section id="settingsView" style="display:none">
+        <h1 class="page-title">설정</h1>
+        <p class="page-desc">관리자 계정 및 시스템 설정</p>
+        <div class="settings-card">
+          <h3>내 계정</h3>
+          <div class="settings-row"><span class="settings-label">아이디</span><span class="settings-value" id="settingUsername"></span></div>
+          <div class="settings-row"><span class="settings-label">User ID</span><span class="settings-value td-mono" id="settingUid" style="font-size:12px;word-break:break-all"></span></div>
+          <div class="settings-row"><span class="settings-label">권한</span><span class="settings-value">관리자 (admin)</span></div>
+        </div>
+        <div class="settings-card">
+          <h3>Supabase 연결</h3>
+          <div class="settings-row"><span class="settings-label">Project</span><span class="settings-value td-mono" style="font-size:12px">nroddjekdjwnwguwkudl</span></div>
+          <div class="settings-row"><span class="settings-label">Auth Domain</span><span class="settings-value td-mono" style="font-size:12px">users.neoix.kr</span></div>
+        </div>
+        <button class="btn-sm btn-danger-outline" id="btnLogout2" style="margin-top:8px">로그아웃</button>
+      </section>
+
+    </div>
+  </div>
+</div>
+
+<!-- ── Project Modal ── -->
+<div class="modal-overlay" id="projectModal">
+  <div class="modal">
+    <h3 id="modalTitle">프로젝트 추가</h3>
+    <div class="field"><label>프로젝트 이름</label><input type="text" id="pName" placeholder="My App"></div>
+    <div class="field"><label>설명</label><textarea id="pDesc" rows="2" placeholder="프로젝트 설명"></textarea></div>
+    <div class="field"><label>URL</label><input type="text" id="pUrl" placeholder="https://example.com"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div class="field"><label>아이콘</label><input type="text" id="pIcon" placeholder="📦" maxlength="4"></div>
+      <div class="field"><label>상태</label><select id="pStatus"><option value="active">운영 중</option><option value="development">개발 중</option><option value="maintenance">점검</option><option value="archived">보관</option></select></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div class="field"><label>인프라</label><input type="text" id="pInfra" placeholder="Netlify, AWS ECS..."></div>
+      <div class="field"><label>유형</label><select id="pCategory"><option value="web">웹</option><option value="mobile">모바일</option><option value="tool">도구</option><option value="api">API</option></select></div>
+    </div>
+    <input type="hidden" id="pId">
+    <div class="modal-actions"><button class="btn-cancel" id="btnModalCancel">취소</button><button class="btn-save" id="btnModalSave">저장</button></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+const SUPABASE_URL = 'https://nroddjekdjwnwguwkudl.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_Uygr7NmVn1wmqopNrb4FRw_CRWw7Xeg';
+const AUTH_DOMAIN = 'users.neoix.kr';
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+const $ = id => document.getElementById(id);
+const idToEmail = id => `${id.trim().toLowerCase()}@${AUTH_DOMAIN}`;
+const emailToId = email => email ? email.split('@')[0] : '';
+const fmt = d => d ? new Date(d).toLocaleDateString('ko-KR', { year:'numeric', month:'short', day:'numeric' }) : '-';
+const fmtFull = d => d ? new Date(d).toLocaleString('ko-KR', { year:'numeric', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' }) : '-';
+
+const headerTitles = { dashboard:'대시보드', ogx:'OGX 찬양팀', users:'사용자 관리', projects:'프로젝트 관리', settings:'설정' };
+const statusMap = { active:['운영 중','badge-success'], development:['개발 중','badge-info'], maintenance:['점검','badge-warning'], archived:['보관','badge-gray'] };
+const catLabels = { web:'웹', mobile:'모바일', tool:'도구', api:'API' };
+
+let currentUser = null, isAdmin = false;
+let cachedProjects = [], cachedRooms = [], cachedMembers = [], cachedUsers = [];
+
+// ── SVG icon helpers ──
+const svgIcon = (paths, cls='') => `<div class="stat-icon ${cls}"><svg viewBox="0 0 24 24">${paths}</svg></div>`;
+const ICO = {
+  projects: '<path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/>',
+  active: '<path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>',
+  users: '<path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4-4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/>',
+  rooms: '<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>',
+  members: '<path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4-4v2"/><circle cx="9" cy="7" r="4"/>',
+  calendar: '<rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>',
+};
+
+// ── Auth ──
+async function checkSession() {
+  const { data: { session } } = await supabase.auth.getSession();
+  if (session) { currentUser = session.user; await verifyAdmin(); }
+}
+
+async function verifyAdmin() {
+  const { data } = await supabase.from('admin_users').select('role').eq('user_id', currentUser.id).single();
+  if (data) { isAdmin = true; enterApp(); }
+  else showLoginInfo(`관리자 권한이 없습니다.\n\nSupabase SQL Editor에서 실행:\nINSERT INTO admin_users (user_id) VALUES ('${currentUser.id}');`);
+}
+
+async function login() {
+  const id = $('loginId').value.trim(), pw = $('loginPw').value;
+  if (!id || !pw) return showLoginError('아이디와 비밀번호를 입력하세요');
+  $('btnLogin').disabled = true; $('btnLogin').textContent = '로그인 중...';
+  const { data, error } = await supabase.auth.signInWithPassword({ email: idToEmail(id), password: pw });
+  if (error) { showLoginError(error.message === 'Invalid login credentials' ? '아이디 또는 비밀번호가 올바르지 않습니다' : error.message); }
+  else { currentUser = data.user; await verifyAdmin(); }
+  $('btnLogin').disabled = false; $('btnLogin').textContent = '로그인';
+}
+
+async function register() {
+  const id = $('regId').value.trim(), pw = $('regPw').value;
+  if (!/^[a-zA-Z0-9._-]{3,20}$/.test(id)) return showLoginError('아이디: 영문/숫자/._- 3~20자');
+  if (pw.length < 6) return showLoginError('비밀번호는 6자 이상');
+  $('btnRegister').disabled = true; $('btnRegister').textContent = '가입 중...';
+  const { data, error } = await supabase.auth.signUp({ email: idToEmail(id), password: pw, options: { data: { username: id } } });
+  if (error) showLoginError(error.message);
+  else if (data?.user) { currentUser = data.user; await verifyAdmin(); }
+  $('btnRegister').disabled = false; $('btnRegister').textContent = '회원가입';
+}
+
+function showLoginError(msg) { $('loginError').textContent = msg; $('loginError').style.display = 'block'; $('loginInfo').style.display = 'none'; }
+function showLoginInfo(msg) { $('loginInfo').textContent = msg; $('loginInfo').style.display = 'block'; $('loginInfo').style.whiteSpace = 'pre-wrap'; $('loginError').style.display = 'none'; }
+async function logout() { await supabase.auth.signOut(); currentUser = null; isAdmin = false; $('appShell').style.display = 'none'; $('loginView').style.display = 'flex'; $('loginError').style.display = 'none'; $('loginInfo').style.display = 'none'; }
+
+// ── App Entry ──
+function enterApp() {
+  $('loginView').style.display = 'none'; $('appShell').style.display = 'block';
+  const username = currentUser.user_metadata?.username || emailToId(currentUser.email);
+  const initial = username[0].toUpperCase();
+  $('sidebarUsername').textContent = username; $('userAvatar').textContent = initial;
+  $('headerUsername').textContent = username; $('headerAvatar').textContent = initial;
+  $('settingUsername').textContent = username; $('settingUid').textContent = currentUser.id;
+  const dateStr = new Date().toLocaleDateString('ko-KR', { year:'numeric', month:'long', day:'numeric', weekday:'long' });
+  $('welcomeTitle').textContent = `안녕하세요, ${username}님`;
+  $('welcomeDate').textContent = dateStr;
+  loadDashboard();
+}
+
+// ── Dashboard ──
+async function loadDashboard() {
+  const { data: projects } = await supabase.from('admin_projects').select('*').order('sort_order');
+  cachedProjects = projects || [];
+  let roomCount = 0, memberCount = 0, userCount = 0;
+  try {
+    const { count: rc } = await supabase.from('rooms').select('*', { count:'exact', head:true }); roomCount = rc || 0;
+    const { count: mc } = await supabase.from('room_members').select('*', { count:'exact', head:true }); memberCount = mc || 0;
+    const { data: users } = await supabase.rpc('get_all_users'); cachedUsers = users || []; userCount = cachedUsers.length;
+  } catch(e) {}
+  const activeCount = cachedProjects.filter(p => p.status === 'active').length;
+
+  $('dashStats').innerHTML = `
+    <div class="stat-card"><div class="stat-card-top">${svgIcon(ICO.projects,'blue')}<span class="stat-label">전체 프로젝트</span></div><div class="stat-value">${cachedProjects.length}</div></div>
+    <div class="stat-card"><div class="stat-card-top">${svgIcon(ICO.active,'green')}<span class="stat-label">운영 중</span></div><div class="stat-value" style="color:var(--success)">${activeCount}</div></div>
+    <div class="stat-card"><div class="stat-card-top">${svgIcon(ICO.users,'purple')}<span class="stat-label">전체 가입자</span></div><div class="stat-value">${userCount}</div></div>
+    <div class="stat-card"><div class="stat-card-top">${svgIcon(ICO.rooms,'cyan')}<span class="stat-label">OGX 방</span></div><div class="stat-value">${roomCount}</div></div>
+  `;
+
+  if (userCount > 0) { $('usersBadge').textContent = userCount; $('usersBadge').style.display = ''; }
+  if (roomCount > 0) { $('ogxBadge').textContent = roomCount; $('ogxBadge').style.display = ''; }
+  renderProjectCards();
+}
+
+function renderProjectCards() {
+  $('projectCards').innerHTML = cachedProjects.map(p => {
+    const [statusLabel, badgeClass] = statusMap[p.status] || ['알 수 없음','badge-gray'];
+    return `<div class="project-card">
+      <div class="project-header">
+        <span class="project-icon">${p.icon || '📦'}</span>
+        <span class="project-name">${p.name}</span>
+        <span class="project-status"><span class="badge ${badgeClass}">${statusLabel}</span></span>
+      </div>
+      <div class="project-desc">${p.description || ''}</div>
+      <div class="project-meta">
+        <span class="meta-tag">${catLabels[p.category] || p.category}</span>
+        ${p.infra ? `<span class="meta-tag">${p.infra}</span>` : ''}
+        ${p.has_own_admin ? '<span class="meta-tag" style="color:var(--warning)">자체 관리자</span>' : ''}
+      </div>
+      <div class="project-actions">
+        ${p.url ? `<a href="${p.url}" target="_blank" class="btn-sm btn-primary-sm">사이트 열기</a>` : ''}
+        <button class="btn-sm btn-outline" onclick="editProject('${p.id}')">편집</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── OGX ──
+async function loadOGX() {
+  try {
+    const [roomsRes, membersRes] = await Promise.all([
+      supabase.from('rooms').select('*').order('created_at', { ascending: false }),
+      supabase.from('room_members').select('*').order('joined_at', { ascending: false }),
+    ]);
+    cachedRooms = roomsRes.data || []; cachedMembers = membersRes.data || [];
+  } catch(e) { cachedRooms = []; cachedMembers = []; }
+  const uniqueUsers = new Set(cachedMembers.map(m => m.user_id));
+
+  $('ogxStats').innerHTML = `
+    <div class="stat-card"><div class="stat-card-top">${svgIcon(ICO.rooms,'blue')}<span class="stat-label">전체 방</span></div><div class="stat-value">${cachedRooms.length}</div></div>
+    <div class="stat-card"><div class="stat-card-top">${svgIcon(ICO.members,'purple')}<span class="stat-label">전체 멤버 기록</span></div><div class="stat-value">${cachedMembers.length}</div></div>
+    <div class="stat-card"><div class="stat-card-top">${svgIcon(ICO.users,'green')}<span class="stat-label">고유 사용자</span></div><div class="stat-value">${uniqueUsers.size}</div></div>
+  `;
+  renderRooms(); renderMembers();
+}
+
+function renderRooms(filter = '') {
+  const filtered = filter ? cachedRooms.filter(r => (r.name||'').toLowerCase().includes(filter) || (r.code||'').toLowerCase().includes(filter)) : cachedRooms;
+  if (!filtered.length) { $('roomsBody').innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--light);padding:40px">방이 없습니다</td></tr>'; return; }
+  $('roomsBody').innerHTML = filtered.map(r => {
+    const mc = cachedMembers.filter(m => m.room_id === r.id).length;
+    const owner = cachedMembers.find(m => m.user_id === r.owner_id && m.room_id === r.id);
+    const conti = Array.isArray(r.conti) ? r.conti.length : 0;
+    return `<tr><td class="td-mono">${r.code||'-'}</td><td class="td-bold">${r.name||'이름 없음'}</td><td>${owner?.display_name||'-'}</td><td>${mc}명${conti?` / 곡 ${conti}`:''}</td><td style="color:var(--light)">${fmt(r.created_at)}</td></tr>`;
+  }).join('');
+}
+
+function renderMembers(filter = '') {
+  const filtered = filter ? cachedMembers.filter(m => (m.display_name||'').toLowerCase().includes(filter)) : cachedMembers;
+  if (!filtered.length) { $('membersBody').innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--light);padding:40px">멤버가 없습니다</td></tr>'; return; }
+  $('membersBody').innerHTML = filtered.map(m => {
+    const room = cachedRooms.find(r => r.id === m.room_id);
+    return `<tr><td class="td-bold">${m.display_name||'-'}</td><td><span class="badge ${m.role==='leader'?'badge-info':'badge-gray'}">${m.role||'member'}</span></td><td>${room?.name||room?.code||'-'}</td><td style="color:var(--light)">${fmt(m.joined_at)}</td></tr>`;
+  }).join('');
+}
+
+// ── Users ──
+async function loadUsers() {
+  if (!cachedUsers.length) { try { const { data } = await supabase.rpc('get_all_users'); cachedUsers = data || []; } catch(e) {} }
+  const today = new Date().toDateString();
+  const todayCount = cachedUsers.filter(u => new Date(u.created_at).toDateString() === today).length;
+  const weekAgo = Date.now() - 7 * 86400000;
+  const weekCount = cachedUsers.filter(u => new Date(u.created_at).getTime() > weekAgo).length;
+
+  $('usersStats').innerHTML = `
+    <div class="stat-card"><div class="stat-card-top">${svgIcon(ICO.users,'blue')}<span class="stat-label">전체 가입자</span></div><div class="stat-value">${cachedUsers.length}</div></div>
+    <div class="stat-card"><div class="stat-card-top">${svgIcon(ICO.calendar,'green')}<span class="stat-label">오늘 가입</span></div><div class="stat-value">${todayCount}</div></div>
+    <div class="stat-card"><div class="stat-card-top">${svgIcon(ICO.calendar,'purple')}<span class="stat-label">이번 주 가입</span></div><div class="stat-value">${weekCount}</div></div>
+  `;
+  renderUsers();
+}
+
+function renderUsers(filter = '') {
+  const filtered = filter ? cachedUsers.filter(u => (u.username||'').toLowerCase().includes(filter) || (u.email||'').toLowerCase().includes(filter)) : cachedUsers;
+  if (!filtered.length) { $('usersBody').innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--light);padding:40px">가입자가 없습니다</td></tr>'; return; }
+  $('usersBody').innerHTML = filtered.map(u => `<tr><td class="td-bold">${u.username||'-'}</td><td class="td-mono">${u.email||'-'}</td><td style="color:var(--light)">${fmt(u.created_at)}</td><td style="color:var(--light)">${fmtFull(u.last_sign_in_at)}</td></tr>`).join('');
+}
+
+// ── Projects CRUD ──
+async function loadProjectsView() {
+  if (!cachedProjects.length) { const { data } = await supabase.from('admin_projects').select('*').order('sort_order'); cachedProjects = data || []; }
+  $('projectList').innerHTML = cachedProjects.map(p => {
+    const [statusLabel, badgeClass] = statusMap[p.status] || ['알 수 없음','badge-gray'];
+    return `<div style="background:#fff;border:1px solid var(--border);border-radius:16px;padding:20px;margin-bottom:12px;display:flex;align-items:center;gap:16px">
+      <span style="font-size:28px">${p.icon||'📦'}</span>
+      <div style="flex:1;min-width:0"><div style="font-size:14px;font-weight:700">${p.name}</div><div style="font-size:12px;color:var(--muted);margin-top:2px">${p.description||''}</div></div>
+      <span class="badge ${badgeClass}" style="flex-shrink:0">${statusLabel}</span>
+      <button class="btn-sm btn-outline" onclick="editProject('${p.id}')">편집</button>
+      <button class="btn-sm btn-danger-outline" onclick="deleteProject('${p.id}','${p.name}')">삭제</button>
+    </div>`;
+  }).join('') || '<div class="empty"><div class="empty-text">등록된 프로젝트가 없습니다</div></div>';
+}
+
+window.editProject = function(id) {
+  const p = cachedProjects.find(x => x.id === id); if (!p) return;
+  $('modalTitle').textContent = '프로젝트 편집'; $('pId').value = p.id;
+  $('pName').value = p.name||''; $('pDesc').value = p.description||''; $('pUrl').value = p.url||'';
+  $('pIcon').value = p.icon||''; $('pStatus').value = p.status||'active'; $('pInfra').value = p.infra||''; $('pCategory').value = p.category||'web';
+  $('projectModal').classList.add('open');
+};
+
+window.deleteProject = async function(id, name) {
+  if (!confirm(`"${name}" 프로젝트를 삭제하시겠습니까?`)) return;
+  const { error } = await supabase.from('admin_projects').delete().eq('id', id);
+  if (error) return toast('삭제 실패: ' + error.message, 'error');
+  cachedProjects = cachedProjects.filter(p => p.id !== id);
+  loadProjectsView(); renderProjectCards(); toast('프로젝트가 삭제되었습니다', 'success');
+};
+
+async function saveProject() {
+  const id = $('pId').value;
+  const payload = { name:$('pName').value.trim(), description:$('pDesc').value.trim(), url:$('pUrl').value.trim()||null, icon:$('pIcon').value.trim()||'📦', status:$('pStatus').value, infra:$('pInfra').value.trim()||null, category:$('pCategory').value, updated_at:new Date().toISOString() };
+  if (!payload.name) return toast('이름을 입력하세요', 'error');
+  let error;
+  if (id) { ({ error } = await supabase.from('admin_projects').update(payload).eq('id', id)); }
+  else { payload.sort_order = cachedProjects.length + 1; ({ error } = await supabase.from('admin_projects').insert(payload)); }
+  if (error) return toast('저장 실패: ' + error.message, 'error');
+  $('projectModal').classList.remove('open');
+  const { data } = await supabase.from('admin_projects').select('*').order('sort_order'); cachedProjects = data || [];
+  renderProjectCards(); loadProjectsView(); toast(id ? '수정 완료' : '추가 완료', 'success');
+}
+
+// ── Navigation ──
+const views = ['dashboard','ogx','users','projects','settings'];
+function navigate(view) {
+  views.forEach(v => { const el = $(`${v}View`); if (el) el.style.display = v === view ? '' : 'none'; });
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.toggle('active', n.dataset.view === view));
+  $('headerTitle').textContent = headerTitles[view] || '';
+  $('sidebar').classList.remove('open'); $('sidebarBackdrop').classList.remove('open');
+  if (view === 'ogx') loadOGX(); else if (view === 'users') loadUsers();
+  else if (view === 'projects') loadProjectsView(); else if (view === 'dashboard') loadDashboard();
+}
+
+// ── Toast ──
+let toastTimer;
+function toast(msg, type='') { const el=$('toast'); el.textContent=msg; el.className='toast show '+type; clearTimeout(toastTimer); toastTimer=setTimeout(()=>el.classList.remove('show'),3000); }
+
+// ── Events ──
+$('btnLogin').addEventListener('click', login);
+$('loginPw').addEventListener('keydown', e => e.key==='Enter' && login());
+$('loginId').addEventListener('keydown', e => e.key==='Enter' && $('loginPw').focus());
+$('btnRegister').addEventListener('click', register);
+$('regPw').addEventListener('keydown', e => e.key==='Enter' && register());
+$('toRegister').addEventListener('click', () => { $('loginForm').style.display='none'; $('registerForm').style.display=''; $('loginError').style.display='none'; $('loginInfo').style.display='none'; });
+$('toLogin').addEventListener('click', () => { $('registerForm').style.display='none'; $('loginForm').style.display=''; $('loginError').style.display='none'; $('loginInfo').style.display='none'; });
+$('btnLogout').addEventListener('click', logout);
+$('btnLogout2').addEventListener('click', logout);
+
+document.querySelectorAll('.nav-item[data-view]').forEach(item => item.addEventListener('click', () => navigate(item.dataset.view)));
+
+document.querySelectorAll('.tab-btn[data-tab]').forEach(btn => btn.addEventListener('click', () => {
+  btn.closest('.tabs').querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active');
+  const tab = btn.dataset.tab;
+  if (tab.startsWith('ogx-')) { $('ogx-rooms').style.display = tab==='ogx-rooms'?'':'none'; $('ogx-members').style.display = tab==='ogx-members'?'':'none'; }
+}));
+
+$('roomSearch').addEventListener('input', e => renderRooms(e.target.value.toLowerCase()));
+$('memberSearch').addEventListener('input', e => renderMembers(e.target.value.toLowerCase()));
+$('userSearch').addEventListener('input', e => renderUsers(e.target.value.toLowerCase()));
+
+$('btnAddProject').addEventListener('click', () => {
+  $('modalTitle').textContent='프로젝트 추가'; $('pId').value=''; $('pName').value=''; $('pDesc').value='';
+  $('pUrl').value=''; $('pIcon').value='📦'; $('pStatus').value='active'; $('pInfra').value=''; $('pCategory').value='web';
+  $('projectModal').classList.add('open');
+});
+$('btnModalCancel').addEventListener('click', () => $('projectModal').classList.remove('open'));
+$('btnModalSave').addEventListener('click', saveProject);
+$('projectModal').addEventListener('click', e => { if (e.target===$('projectModal')) $('projectModal').classList.remove('open'); });
+
+// Sidebar collapse
+$('btnCollapse').addEventListener('click', () => {
+  $('sidebar').classList.toggle('collapsed');
+  document.body.classList.toggle('sidebar-collapsed');
+});
+
+// Mobile
+$('burgerBtn').addEventListener('click', () => { $('sidebar').classList.toggle('open'); $('sidebarBackdrop').classList.toggle('open'); });
+$('sidebarBackdrop').addEventListener('click', () => { $('sidebar').classList.remove('open'); $('sidebarBackdrop').classList.remove('open'); });
+
+checkSession();
+</script>
+</body>
+</html>
