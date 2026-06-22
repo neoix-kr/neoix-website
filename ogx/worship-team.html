@@ -3478,6 +3478,9 @@
     <span class="acc-pos" id="accPos">– / –</span>
     <button class="acc-nav-btn" id="accNext" aria-label="다음 스프레드">▶</button>
   </div>
+
+  <!-- 라이브챗 큐 (반주자 레이어 안 — 네이티브 풀스크린에서도 보이게) -->
+  <div class="present-cue-wrap hidden" id="accCueWrap"></div>
 </div>
 
 <!-- ============ 큐 모니터 모드 (라이브챗만 보기) ============ -->
@@ -3763,6 +3766,7 @@
   const presentPageEl = $('presentPage');
   const presentExit = $('presentExit');
   const presentCueWrap = $('presentCueWrap');
+  const accCueWrap = $('accCueWrap');
   const presentHl = $('presentHl');
   const presentCtrl = $('presentCtrl');
   const btnPresent = $('btnPresent');
@@ -6954,6 +6958,7 @@
   function dispatchCue(payload, selfPreview = false) {
     if (monitorMode) { showMonitorCue(payload, selfPreview); return; }
     if (presentMode) { showPresentCue(payload, selfPreview); return; }
+    if (accompanistMode) { showAccompanistCue(payload, selfPreview); return; }
     showCueToast(payload, selfPreview);
   }
 
@@ -7000,6 +7005,24 @@
     presentCueWrap._t = setTimeout(() => {
       presentCueWrap.classList.add('hidden');
       presentCueWrap.innerHTML = '';
+    }, CUE_LIFE_MS);
+  }
+
+  // 반주자 모드 큐 — 레이어 안(풀스크린)에 present-cue 스타일로 표시 (토스트는 풀스크린 밖이라 안 보임)
+  function showAccompanistCue(payload, selfPreview = false) {
+    if (!accCueWrap) return;
+    const kind = payload.kind || 'neutral';
+    const intensity = Math.min(3, Math.max(1, payload.intensity || 2));
+    const card = document.createElement('div');
+    card.className = `present-cue k-${kind} i-${intensity}`;
+    card.innerHTML = cueInnerHtml(payload, selfPreview);
+    accCueWrap.innerHTML = '';   // 이전 큐 즉시 교체
+    accCueWrap.appendChild(card);
+    accCueWrap.classList.remove('hidden');
+    clearTimeout(accCueWrap._t);
+    accCueWrap._t = setTimeout(() => {
+      accCueWrap.classList.add('hidden');
+      accCueWrap.innerHTML = '';
     }, CUE_LIFE_MS);
   }
 
