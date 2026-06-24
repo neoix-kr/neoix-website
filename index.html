@@ -357,6 +357,25 @@ body.campus-mode nav:not(.cs-nav),body.campus-mode .mobile-menu,body.campus-mode
 .coming-btn{position:relative;margin-top:26px;padding:13px 26px;border-radius:100px;background:#fff;color:#000;font-family:'Pretendard Variable',sans-serif;font-size:13px;font-weight:700;border:none;cursor:pointer;transition:transform .15s;}
 .coming-btn:hover{transform:translateY(-2px);}
 
+/* 캠퍼스 푸터 (사업자 정보) */
+.campus-foot{position:relative;display:block!important;border-top:1px solid var(--border);padding:70px 56px 50px;margin-top:20px;overflow:hidden;font-family:'Pretendard Variable',sans-serif;align-items:initial;justify-content:initial;}
+.cf-glow{position:absolute;left:6%;bottom:-40%;width:480px;height:480px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.06),transparent 65%);filter:blur(30px);pointer-events:none;}
+.cf-top{position:relative;display:flex;justify-content:space-between;gap:40px;flex-wrap:wrap;align-items:flex-start;margin-bottom:44px;}
+.cf-brand{font-size:clamp(44px,8vw,104px);font-weight:800;letter-spacing:-.05em;line-height:.86;background:linear-gradient(180deg,#fff 0%,#fff 45%,#555 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+.cf-tagline{font-size:13px;color:var(--muted);margin-top:16px;letter-spacing:.01em;}
+.cf-contact{text-align:right;}
+.cf-contact a{display:block;font-size:16px;color:#fff;font-weight:700;margin-bottom:5px;letter-spacing:-.01em;transition:opacity .2s;}
+.cf-contact a:hover{opacity:.65;}
+.cf-contact span{font-size:12px;color:var(--muted);}
+.cf-biz{position:relative;display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:22px 40px;padding:30px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
+.cf-biz span{display:block;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--subtle);margin-bottom:7px;}
+.cf-biz b{font-size:14px;font-weight:600;color:#fff;letter-spacing:-.01em;}
+.cf-bottom{position:relative;display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;margin-top:26px;font-size:12px;color:var(--muted);}
+.cf-links{display:flex;gap:22px;}
+.cf-links a{color:var(--muted);cursor:pointer;transition:color .2s;}
+.cf-links a:hover{color:#fff;}
+@media(max-width:768px){.campus-foot{padding:48px 22px 40px;}.cf-contact{text-align:left;}.cf-top{gap:24px;}}
+
 /* 강의/이벤트 카드 (글래스 + 그라디언트 보더) */
 .course-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:20px;}
 .course-card{position:relative;border-radius:20px;padding:1px;background:linear-gradient(145deg,rgba(255,255,255,.18),rgba(255,255,255,.02) 40%,rgba(255,255,255,.06));transition:transform .4s cubic-bezier(.23,1,.32,1);}
@@ -811,6 +830,31 @@ body.campus-mode nav:not(.cs-nav),body.campus-mode .mobile-menu,body.campus-mode
       <div class="sp-marquee"><div class="sp-track" id="spTrack"></div></div>
     </section>
     <div class="campus-content" id="campusContent"></div>
+    <footer class="campus-foot">
+      <div class="cf-glow"></div>
+      <div class="cf-top">
+        <div>
+          <div class="cf-brand">NEOIX</div>
+          <div class="cf-tagline">새로운 아이디어의 무한한 확장 · AI 러닝 커뮤니티</div>
+        </div>
+        <div class="cf-contact">
+          <a href="tel:01037505890">010-3750-5890</a>
+          <a href="mailto:barunsme@gmail.com">barunsme@gmail.com</a>
+          <span>평일 10:00 – 18:00</span>
+        </div>
+      </div>
+      <div class="cf-biz">
+        <div><span>상호</span><b>네오익스 (NEOIX)</b></div>
+        <div><span>대표</span><b>박정겸</b></div>
+        <div><span>사업자등록번호</span><b>292-33-01829</b></div>
+        <div><span>고객지원</span><b>010-3750-5890</b></div>
+        <div><span>이메일</span><b>barunsme@gmail.com</b></div>
+      </div>
+      <div class="cf-bottom">
+        <span>© 2026 NEOIX. All rights reserved.</span>
+        <div class="cf-links"><a>이용약관</a><a>개인정보처리방침</a><a onclick="navigate('')">홈으로</a></div>
+      </div>
+    </footer>
   </main>
  </div>
 </div>
