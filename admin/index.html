@@ -526,6 +526,15 @@ tbody tr:hover { background:#fafbfc; }
           <div class="settings-row"><span class="settings-label">권한</span><span class="settings-value">관리자 (admin)</span></div>
         </div>
         <div class="settings-card">
+          <h3>홈 히어로 단어</h3>
+          <p style="font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:14px">홈페이지 첫 화면 <b>"새로운 [단어] 무한한 확장"</b>에서 가운데 타이핑되는 단어들입니다. 한 줄에 하나씩 입력하세요. 저장하면 홈에 바로 반영됩니다.</p>
+          <textarea id="heroWords" rows="5" placeholder="아이디어의&#10;세대의&#10;경험의" style="width:100%;padding:12px 14px;background:#fff;border:1px solid var(--border);border-radius:12px;color:var(--text);font-size:14px;outline:none;resize:vertical;line-height:1.7"></textarea>
+          <div style="display:flex;align-items:center;gap:12px;margin-top:12px">
+            <button class="btn-save" id="btnSaveHeroWords">저장</button>
+            <span id="heroWordsHint" style="font-size:12px;color:var(--light)"></span>
+          </div>
+        </div>
+        <div class="settings-card">
           <h3>Supabase 연결</h3>
           <div class="settings-row"><span class="settings-label">Project</span><span class="settings-value td-mono" style="font-size:12px">nroddjekdjwnwguwkudl</span></div>
           <div class="settings-row"><span class="settings-label">Auth Domain</span><span class="settings-value td-mono" style="font-size:12px">users.neoix.kr</span></div>
@@ -640,6 +649,25 @@ function enterApp() {
   $('welcomeTitle').textContent = `안녕하세요, ${username}님`;
   $('welcomeDate').textContent = dateStr;
   loadDashboard();
+  loadHeroWords();
+}
+
+// ── 홈 히어로 단어 ──
+async function loadHeroWords() {
+  try {
+    const { data } = await supabase.from('site_settings').select('value').eq('key','hero_words').single();
+    if (data && Array.isArray(data.value)) $('heroWords').value = data.value.join('\n');
+  } catch(e) {}
+}
+async function saveHeroWords() {
+  const words = $('heroWords').value.split('\n').map(s => s.trim()).filter(Boolean);
+  if (!words.length) return toast('단어를 최소 1개 입력하세요', 'error');
+  $('btnSaveHeroWords').disabled = true;
+  const { error } = await supabase.from('site_settings').upsert({ key:'hero_words', value:words, updated_at:new Date().toISOString() });
+  $('btnSaveHeroWords').disabled = false;
+  if (error) return toast('저장 실패: ' + error.message, 'error');
+  $('heroWordsHint').textContent = `${words.length}개 단어 저장됨 · 홈에 반영됨`;
+  toast('저장됐습니다. 홈에 바로 반영됩니다.', 'success');
 }
 
 // ── Dashboard ──
@@ -837,6 +865,7 @@ $('toRegister').addEventListener('click', () => { $('loginForm').style.display='
 $('toLogin').addEventListener('click', () => { $('registerForm').style.display='none'; $('loginForm').style.display=''; $('loginError').style.display='none'; $('loginInfo').style.display='none'; });
 $('btnLogout').addEventListener('click', logout);
 $('btnLogout2').addEventListener('click', logout);
+$('btnSaveHeroWords').addEventListener('click', saveHeroWords);
 
 document.querySelectorAll('.nav-item[data-view]').forEach(item => item.addEventListener('click', () => navigate(item.dataset.view)));
 
