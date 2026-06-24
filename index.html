@@ -14,10 +14,11 @@ body{background:#000;color:#fff;font-family:'Outfit',sans-serif;overflow-x:hidde
 /* === MONO RENEWAL : 파랑/보라 액센트 → 화이트 (로고 그라디언트는 보존) === */
 [stroke="#4FC3F7"],[stroke="#CE93D8"],[stroke="#9FA8DA"]{stroke:rgba(255,255,255,.85)!important;}
 [fill="#CE93D8"],[fill="#9FA8DA"]{fill:rgba(255,255,255,.85)!important;}
-.hero-headline{font-size:clamp(26px,5.5vw,56px);font-weight:700;letter-spacing:-.02em;line-height:1.25;color:#fff;margin-bottom:22px;min-height:1.3em;opacity:0;animation:fadeUp .9s ease .55s forwards;}
+.hero-eyebrow,.hero-logo-desktop,.hero-logo-mobile{display:none!important;}
+.hero-headline{font-size:clamp(40px,10.5vw,150px);font-weight:800;letter-spacing:-.03em;line-height:1.06;color:#fff;margin-bottom:24px;opacity:0;animation:fadeUp .9s ease .2s forwards;}
 .tw-slot{display:inline-block;}
 .tw-word{white-space:nowrap;}
-.tw-caret{display:inline-block;width:3px;height:.95em;background:#fff;margin-left:3px;vertical-align:-.1em;animation:blink 1s step-end infinite;}
+.tw-caret{display:inline-block;width:.055em;height:.9em;background:#fff;margin-left:.04em;vertical-align:-.06em;animation:blink 1s step-end infinite;}
 @keyframes blink{0%,100%{opacity:1;}50%{opacity:0;}}
 
 /* NAV */
@@ -185,7 +186,7 @@ footer{background:#000;border-top:1px solid var(--border);padding:48px;display:f
   .nav-links,.nav-cta{display:none;}
   .hamburger{display:flex;}
   .hero{padding:120px 20px 60px;background:#000;}
-  .hero-sticky-container{height:200vh;}
+  .hero-sticky-container{height:100vh;}
   .hero-logo-mobile{display:none !important;}
   .hero-logo-desktop>div>svg{width:min(485px,90vw);height:auto;}
   .hero-eyebrow{font-size:9px;letter-spacing:.18em;margin-bottom:28px;}
