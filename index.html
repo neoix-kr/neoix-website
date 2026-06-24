@@ -294,6 +294,119 @@ footer{background:#000;border-top:1px solid var(--border);padding:48px;display:f
 body.page-open #home-wrap{display:none;}
 .page-content{max-width:1100px;margin:0 auto;padding:160px 48px 100px;}
 @media(max-width:768px){.page-content{padding:130px 24px 80px;}}
+/* ============ DESIGN UPGRADE (모노톤 + 기교) ============ */
+.grain{position:fixed;inset:0;z-index:9998;pointer-events:none;opacity:.05;mix-blend-mode:overlay;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");}
+.nav-campus{position:relative;color:#fff!important;font-weight:600!important;}
+.nav-campus::before{content:'';position:absolute;left:-10px;top:50%;transform:translateY(-50%);width:5px;height:5px;border-radius:50%;background:#fff;box-shadow:0 0 8px rgba(255,255,255,.8);animation:pulseDot 1.8s ease-in-out infinite;}
+@keyframes pulseDot{0%,100%{opacity:.3;transform:translateY(-50%) scale(.8);}50%{opacity:1;transform:translateY(-50%) scale(1.3);}}
+
+/* ============ AI 캠퍼스 ============ */
+.campus-wrap{background:#000;min-height:100vh;overflow:hidden;}
+.campus-hero{position:relative;padding:140px 48px 50px;text-align:center;overflow:hidden;}
+.campus-aurora{position:absolute;inset:-20% -10% auto -10%;height:520px;pointer-events:none;
+  background:radial-gradient(60% 60% at 30% 30%,rgba(255,255,255,.10),transparent 70%),radial-gradient(50% 50% at 75% 40%,rgba(255,255,255,.06),transparent 70%);
+  filter:blur(20px);animation:auroraFloat 14s ease-in-out infinite;}
+@keyframes auroraFloat{0%,100%{transform:translate(0,0) scale(1);}50%{transform:translate(-3%,4%) scale(1.08);}}
+.campus-kicker{position:relative;font-size:12px;font-weight:700;letter-spacing:.4em;text-transform:uppercase;color:var(--muted);margin-bottom:22px;}
+.campus-title{position:relative;font-family:'Pretendard Variable','Pretendard',sans-serif;font-size:clamp(46px,10vw,150px);font-weight:800;letter-spacing:-.04em;line-height:.98;
+  background:linear-gradient(180deg,#fff 0%,#fff 55%,#7a7a7a 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+.campus-sub{position:relative;font-size:clamp(15px,2vw,19px);color:var(--muted);max-width:560px;margin:24px auto 0;line-height:1.7;font-family:'Pretendard Variable',sans-serif;}
+.campus-stats{position:relative;display:flex;gap:48px;justify-content:center;flex-wrap:wrap;margin-top:48px;}
+.cstat-num{font-size:clamp(28px,4vw,44px);font-weight:800;font-family:'Pretendard Variable',sans-serif;letter-spacing:-.02em;}
+.cstat-label{font-size:12px;color:var(--muted);margin-top:4px;letter-spacing:.05em;}
+
+/* 마퀴 */
+.marquee{position:relative;border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:18px 0;overflow:hidden;display:flex;white-space:nowrap;margin-top:40px;}
+.marquee-track{display:inline-flex;gap:40px;padding-right:40px;animation:marqueeMove 22s linear infinite;flex-shrink:0;}
+.marquee:hover .marquee-track{animation-play-state:paused;}
+.marquee-track span{font-size:clamp(20px,3vw,34px);font-weight:800;font-family:'Pretendard Variable',sans-serif;color:transparent;-webkit-text-stroke:1px rgba(255,255,255,.35);letter-spacing:-.02em;}
+.marquee-track span.fill{color:#fff;-webkit-text-stroke:0;}
+@keyframes marqueeMove{to{transform:translateX(-50%);}}
+
+/* 탭 */
+.campus-body{max-width:1180px;margin:0 auto;padding:72px 48px 120px;}
+.campus-tabs{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:14px;}
+.ct-tab{padding:11px 22px;border-radius:100px;border:1px solid var(--subtle);background:transparent;color:var(--muted);font-family:'Pretendard Variable',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all .25s cubic-bezier(.23,1,.32,1);}
+.ct-tab:hover{color:#fff;border-color:rgba(255,255,255,.35);}
+.ct-tab.active{background:#fff;color:#000;border-color:#fff;}
+.ct-intro{text-align:center;color:var(--muted);font-size:15px;font-family:'Pretendard Variable',sans-serif;margin:0 auto 44px;max-width:560px;line-height:1.7;min-height:26px;}
+
+/* 강의/이벤트 카드 (글래스 + 그라디언트 보더) */
+.course-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:20px;}
+.course-card{position:relative;border-radius:20px;padding:1px;background:linear-gradient(145deg,rgba(255,255,255,.18),rgba(255,255,255,.02) 40%,rgba(255,255,255,.06));transition:transform .4s cubic-bezier(.23,1,.32,1);}
+.course-card:hover{transform:translateY(-6px);}
+.course-card-inner{position:relative;background:linear-gradient(160deg,#0c0c0e,#070708);border-radius:19px;padding:26px 24px 24px;height:100%;overflow:hidden;}
+.course-card-inner::after{content:'';position:absolute;top:-40%;left:-30%;width:80%;height:120%;background:radial-gradient(circle,rgba(255,255,255,.10),transparent 60%);opacity:0;transition:opacity .4s;pointer-events:none;}
+.course-card:hover .course-card-inner::after{opacity:1;}
+.cc-top{display:flex;align-items:center;gap:8px;margin-bottom:18px;}
+.cc-badge{font-size:11px;font-weight:700;letter-spacing:.04em;padding:4px 11px;border-radius:100px;background:rgba(255,255,255,.08);border:1px solid var(--subtle);color:#fff;}
+.cc-live{font-size:11px;font-weight:700;color:#fff;display:flex;align-items:center;gap:5px;margin-left:auto;}
+.cc-live::before{content:'';width:6px;height:6px;border-radius:50%;background:#fff;animation:pulseDot 1.4s infinite;}
+.cc-title{font-size:21px;font-weight:800;font-family:'Pretendard Variable',sans-serif;letter-spacing:-.02em;line-height:1.3;margin-bottom:10px;}
+.cc-desc{font-size:13.5px;color:var(--muted);line-height:1.65;font-family:'Pretendard Variable',sans-serif;margin-bottom:18px;min-height:44px;}
+.cc-meta{display:flex;flex-direction:column;gap:7px;margin-bottom:20px;}
+.cc-meta div{display:flex;align-items:center;gap:9px;font-size:13px;color:var(--muted);font-family:'Pretendard Variable',sans-serif;}
+.cc-meta svg{width:15px;height:15px;stroke:var(--muted);fill:none;stroke-width:1.6;flex-shrink:0;}
+.cc-foot{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;padding-top:18px;border-top:1px solid var(--border);}
+.cc-price{font-family:'Pretendard Variable',sans-serif;}
+.cc-price b{font-size:22px;font-weight:800;letter-spacing:-.02em;}
+.cc-price small{display:block;font-size:11px;color:var(--muted);margin-top:2px;}
+.cc-btn{padding:11px 20px;border-radius:12px;background:#fff;color:#000;font-family:'Pretendard Variable',sans-serif;font-size:13px;font-weight:700;border:none;cursor:pointer;white-space:nowrap;transition:transform .15s,box-shadow .2s;}
+.cc-btn:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(255,255,255,.18);}
+
+/* 데모 모달 */
+.cmodal-bg{position:fixed;inset:0;z-index:100000;background:rgba(0,0,0,.78);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;padding:20px;}
+.cmodal-bg.open{display:flex;}
+.cmodal{background:linear-gradient(160deg,#101013,#08080a);border:1px solid var(--subtle);border-radius:24px;width:560px;max-width:96vw;max-height:92vh;overflow-y:auto;padding:30px;font-family:'Pretendard Variable',sans-serif;}
+.cmodal h3{font-size:22px;font-weight:800;letter-spacing:-.02em;margin-bottom:4px;}
+.cmodal .cm-sub{font-size:13px;color:var(--muted);margin-bottom:22px;}
+.cm-steps{display:flex;gap:6px;margin-bottom:24px;}
+.cm-steps div{flex:1;height:3px;border-radius:3px;background:rgba(255,255,255,.12);}
+.cm-steps div.on{background:#fff;}
+.cm-screen{text-align:center;font-size:11px;letter-spacing:.3em;color:var(--muted);padding:8px;border:1px solid var(--border);border-radius:8px;margin-bottom:6px;}
+.cm-screen-bar{height:5px;width:70%;margin:0 auto 26px;border-radius:0 0 40px 40px;background:linear-gradient(180deg,rgba(255,255,255,.5),rgba(255,255,255,.05));}
+.seatmap{display:flex;flex-direction:column;gap:9px;align-items:center;margin-bottom:22px;}
+.seatrow{display:flex;gap:8px;align-items:center;}
+.seatrow .rl{width:16px;font-size:11px;color:var(--muted);}
+.seat{width:30px;height:30px;border-radius:8px 8px 6px 6px;border:1px solid var(--subtle);background:rgba(255,255,255,.04);cursor:pointer;font-size:10px;color:var(--muted);transition:all .15s;}
+.seat:hover:not(.taken){background:rgba(255,255,255,.18);border-color:#fff;color:#fff;}
+.seat.sel{background:#fff;border-color:#fff;color:#000;font-weight:700;}
+.seat.taken{background:rgba(255,255,255,.02);border-color:transparent;color:#333;cursor:not-allowed;text-decoration:line-through;}
+.seat-legend{display:flex;gap:18px;justify-content:center;font-size:12px;color:var(--muted);margin-bottom:8px;}
+.seat-legend span{display:flex;align-items:center;gap:6px;}
+.lg{width:14px;height:14px;border-radius:4px;border:1px solid var(--subtle);}
+.lg.sel{background:#fff;border-color:#fff;}.lg.taken{background:rgba(255,255,255,.02);}
+.cm-summary{display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-top:1px solid var(--border);font-size:14px;}
+.cm-summary b{font-size:20px;font-weight:800;}
+.cm-field{margin-bottom:14px;}
+.cm-field label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px;font-weight:600;}
+.cm-field input{width:100%;padding:12px 14px;background:rgba(255,255,255,.04);border:1px solid var(--subtle);border-radius:12px;color:#fff;font-size:14px;outline:none;font-family:inherit;}
+.cm-field input:focus{border-color:#fff;}
+.cm-demo-note{font-size:12px;color:var(--muted);background:rgba(255,255,255,.04);border:1px dashed var(--subtle);border-radius:12px;padding:12px 14px;margin-bottom:18px;line-height:1.6;}
+.cm-actions{display:flex;gap:10px;margin-top:8px;}
+.cm-btn{flex:1;padding:14px;border-radius:14px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;border:none;transition:transform .15s,opacity .2s;}
+.cm-btn.primary{background:#fff;color:#000;}
+.cm-btn.primary:hover{transform:translateY(-1px);}
+.cm-btn.primary:disabled{opacity:.4;cursor:not-allowed;transform:none;}
+.cm-btn.ghost{background:transparent;color:var(--muted);border:1px solid var(--subtle);flex:0 0 auto;padding:14px 20px;}
+.cm-success{text-align:center;padding:14px 0;}
+.cm-check{width:64px;height:64px;border-radius:50%;border:2px solid #fff;display:flex;align-items:center;justify-content:center;margin:0 auto 18px;animation:popin .4s cubic-bezier(.18,1.4,.4,1);}
+.cm-check svg{width:30px;height:30px;stroke:#fff;fill:none;stroke-width:2.5;}
+@keyframes popin{from{transform:scale(.4);opacity:0;}to{transform:scale(1);opacity:1;}}
+.cm-code{font-family:'SF Mono',Menlo,monospace;font-size:22px;font-weight:700;letter-spacing:.1em;margin:6px 0 4px;}
+.cm-share{display:flex;gap:10px;justify-content:center;margin-top:22px;}
+.cm-share button{width:46px;height:46px;border-radius:14px;border:1px solid var(--subtle);background:rgba(255,255,255,.04);color:#fff;cursor:pointer;font-size:13px;font-weight:700;transition:all .15s;display:flex;align-items:center;justify-content:center;}
+.cm-share button:hover{background:#fff;color:#000;}
+.cm-share svg{width:18px;height:18px;}
+
+@media(max-width:768px){
+  .campus-hero{padding:110px 20px 40px;}
+  .campus-body{padding:48px 18px 90px;}
+  .campus-stats{gap:28px;}
+  .course-grid{grid-template-columns:1fr;}
+  .cmodal{padding:22px 18px;}
+  .seat{width:26px;height:26px;}
+}
 </style>
 </head>
 <body>
@@ -335,6 +448,7 @@ body.page-open #home-wrap{display:none;}
     <li><a href="#services">서비스</a></li>
     <li><a href="#portfolio">포트폴리오</a></li>
     <li><a href="#contact">연락하기</a></li>
+    <li><a href="#campus" class="nav-campus">AI 캠퍼스</a></li>
     <li><a href="/admin/">어드민</a></li>
   </ul>
   <div class="hamburger" id="hbg"><span></span><span></span><span></span></div>
@@ -346,6 +460,7 @@ body.page-open #home-wrap{display:none;}
   <a href="#services" onclick="cm()">서비스</a>
   <a href="#portfolio" onclick="cm()">포트폴리오</a>
   <a href="#contact" onclick="cm()">연락하기 →</a>
+  <a href="#campus" onclick="cm()">AI 캠퍼스</a>
   <a href="/admin/">어드민</a>
 </div>
 
@@ -642,6 +757,36 @@ body.page-open #home-wrap{display:none;}
   </div>
 </div>
 
+<!-- PAGE: AI 캠퍼스 -->
+<div id="view-campus" class="page-view">
+ <div class="campus-wrap">
+  <div class="campus-hero">
+    <div class="campus-aurora"></div>
+    <div class="campus-kicker">NEOIX · AI CAMPUS</div>
+    <h1 class="campus-title">AI를 배우고<br>연결되는 곳</h1>
+    <p class="campus-sub">아카데미부터 포럼·학회·커피챗까지. 현업 전문가와 함께 배우고, 네트워킹하고, 성장하는 AI 러닝 커뮤니티.</p>
+    <div class="campus-stats">
+      <div><div class="cstat-num" data-count="1280" data-suffix="+">0</div><div class="cstat-label">누적 수강생</div></div>
+      <div><div class="cstat-num" data-count="48">0</div><div class="cstat-label">개설 프로그램</div></div>
+      <div><div class="cstat-num" data-count="96" data-suffix="%">0</div><div class="cstat-label">수료 만족도</div></div>
+      <div><div class="cstat-num" data-count="32">0</div><div class="cstat-label">파트너 기업</div></div>
+    </div>
+  </div>
+  <div class="marquee"><div class="marquee-track" id="campusMarquee"></div></div>
+  <div class="campus-body">
+    <div class="campus-tabs" id="campusTabs"></div>
+    <p class="ct-intro" id="campusIntro"></p>
+    <div class="course-grid" id="campusGrid"></div>
+  </div>
+ </div>
+</div>
+
+<!-- 캠퍼스 데모 모달 -->
+<div class="cmodal-bg" id="cmodalBg"><div class="cmodal" id="cmodal"></div></div>
+
+<!-- 그레인 텍스처 -->
+<div class="grain"></div>
+
 <!-- Cursor Glow -->
 <div class="cursor-glow" id="cursorGlow"></div>
 
@@ -649,7 +794,7 @@ body.page-open #home-wrap{display:none;}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.1/vanilla-tilt.min.js"></script>
 
 <script>
-var pages=['about','philosophy','services','portfolio','contact'];
+var pages=['about','philosophy','services','portfolio','contact','campus'];
 function showPage(id){
   document.querySelectorAll('.page-view').forEach(function(v){v.classList.remove('active');});
   if(id&&pages.indexOf(id)>-1){
@@ -908,6 +1053,134 @@ function startInlineEdit(sb,pf,words,sf,overrides){
       hint.textContent=res.error?('실패: '+res.error.message):'✓ 저장됨 (새로고침하면 적용된 모습 확인)';
     });
   });
+}
+</script>
+<!-- ===== AI 캠퍼스 데모 ===== -->
+<script type="module">
+const SB='https://nroddjekdjwnwguwkudl.supabase.co';
+const KEY='sb_publishable_Uygr7NmVn1wmqopNrb4FRw_CRWw7Xeg';
+const won=n=>n.toLocaleString('ko-KR');
+const $=s=>document.querySelector(s);
+
+const CATS=[
+ {key:'academy',name:'아카데미',intro:'현업 전문가의 집중 트랙. 실전 프로젝트로 포트폴리오까지 완성합니다.',items:[
+   {id:'ac-llm',badge:'8주 과정',title:'LLM 앱 개발 부트캠프',desc:'RAG·에이전트·툴콜링까지, 프로덕션급 AI 앱을 직접 만듭니다.',host:'박정겸 · NEOIX',date:'2026.07.05 (토) 시작',place:'강남 캠퍼스 · 오프라인',price:890000},
+   {id:'ac-cv',badge:'6주 과정',title:'컴퓨터 비전 실전',desc:'이미지 분류부터 디퓨전 모델 파인튜닝까지 핸즈온으로.',host:'김비전 · 리서처',date:'2026.07.12 (토) 시작',place:'온라인 라이브',price:690000},
+   {id:'ac-auto',badge:'4주 과정',title:'데이터 분석 + AI 자동화',desc:'노코드·파이썬으로 업무 자동화 파이프라인 구축.',host:'이데이터',date:'2026.07.19 (토) 시작',place:'강남 캠퍼스',price:490000},
+ ]},
+ {key:'forum',name:'포럼',intro:'업계 리더의 인사이트를 한자리에서. 발표 + 패널 토크 + 네트워킹.',items:[
+   {id:'fo-genai',badge:'포럼',live:true,title:'생성형 AI 비즈니스 포럼 2026',desc:'스타트업·대기업 AI 리더들의 실전 적용 사례 공유.',host:'NEOIX 주최',date:'2026.07.26 (토) 14:00',place:'코엑스 그랜드볼룸',price:50000},
+   {id:'fo-growth',badge:'포럼',title:'AI 스타트업 그로스 포럼',desc:'투자·채용·스케일업 — AI 창업가를 위한 실전 토크.',host:'네오익스 × 폴리랩',date:'2026.08.02 (토) 15:00',place:'디캠프 선릉',price:30000},
+ ]},
+ {key:'conference',name:'학회',intro:'리서치와 산업의 접점. 논문 발표·튜토리얼·포스터 세션.',items:[
+   {id:'co-kaia',badge:'학회',title:'한국 AI 응용학회 정기 컨퍼런스',desc:'최신 연구 발표와 튜토리얼, 산학 네트워킹 세션.',host:'KAIA · NEOIX 후원',date:'2026.08.16 (토) 09:30',place:'KAIST 서울캠퍼스',price:120000},
+   {id:'co-nlp',badge:'학회',title:'한국어 NLP 워크숍',desc:'한국어 LLM·평가·데이터셋을 다루는 실무 워크숍.',host:'NLP Korea',date:'2026.08.23 (토) 10:00',place:'서울대 공학관',price:80000},
+ ]},
+ {key:'coffeechat',name:'커피챗',intro:'현업자와 1:1 / 소그룹으로 가볍게. 진로·실무·창업 무엇이든.',items:[
+   {id:'cc-career',badge:'1:1',title:'AI 엔지니어 커리어 커피챗',desc:'이직·포트폴리오·실무 고민을 30분 1:1로.',host:'박정겸 · NEOIX 대표',date:'매주 목 19:00~',place:'온라인 / 강남',price:29000},
+   {id:'cc-found',badge:'소그룹',title:'AI 창업 커피챗 (4인)',desc:'아이디어 검증부터 MVP까지 라운드테이블.',host:'NEOIX 파운더스',date:'격주 토 11:00',place:'성수 라운지',price:39000},
+ ]},
+];
+
+const grid=$('#campusGrid'),tabsEl=$('#campusTabs'),introEl=$('#campusIntro');
+let active=CATS[0].key;
+const icoCal='<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>';
+const icoPin='<svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>';
+const icoUser='<svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>';
+
+tabsEl.innerHTML=CATS.map(c=>`<button class="ct-tab${c.key===active?' active':''}" data-k="${c.key}">${c.name}</button>`).join('');
+tabsEl.addEventListener('click',e=>{const b=e.target.closest('.ct-tab');if(!b)return;active=b.dataset.k;tabsEl.querySelectorAll('.ct-tab').forEach(t=>t.classList.toggle('active',t.dataset.k===active));renderGrid();});
+
+function renderGrid(){
+  const cat=CATS.find(c=>c.key===active);
+  introEl.textContent=cat.intro;
+  grid.innerHTML=cat.items.map(it=>`<div class="course-card"><div class="course-card-inner">
+    <div class="cc-top"><span class="cc-badge">${it.badge}</span>${it.live?'<span class="cc-live">LIVE 모집중</span>':''}</div>
+    <div class="cc-title">${it.title}</div><div class="cc-desc">${it.desc}</div>
+    <div class="cc-meta"><div>${icoUser}${it.host}</div><div>${icoCal}${it.date}</div><div>${icoPin}${it.place}</div></div>
+    <div class="cc-foot"><div class="cc-price"><b>₩${won(it.price)}</b><small>1인 / 좌석 선택</small></div>
+    <button class="cc-btn" data-id="${it.id}">예약하기</button></div>
+  </div></div>`).join('');
+  grid.querySelectorAll('.cc-btn').forEach(b=>b.addEventListener('click',()=>openReserve(cat.items.find(x=>x.id===b.dataset.id))));
+}
+renderGrid();
+
+const mw=['AI 아카데미','생성형 AI','LLM 부트캠프','커피챗','포럼','학회','RAG','에이전트','네트워킹','실전 프로젝트'];
+$('#campusMarquee').innerHTML=[...mw,...mw].map((w,i)=>`<span class="${i%3===0?'fill':''}">${w} ✦</span>`).join('');
+
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){countUp();io.disconnect();}}),{threshold:.3});
+const stats=document.querySelector('.campus-stats');if(stats)io.observe(stats);
+function countUp(){document.querySelectorAll('.cstat-num').forEach(el=>{const t=+el.dataset.count,sfx=el.dataset.suffix||'';let s=0;const step=t/45;const tk=()=>{s+=step;if(s>=t)el.textContent=t.toLocaleString('ko-KR')+sfx;else{el.textContent=Math.floor(s).toLocaleString('ko-KR')+sfx;requestAnimationFrame(tk);}};tk();});}
+
+// ===== 예약 데모 =====
+const bg=$('#cmodalBg'),modal=$('#cmodal');
+let cur=null,taken=new Set(),sel=new Set();
+bg.addEventListener('click',e=>{if(e.target===bg)closeModal();});
+function closeModal(){bg.classList.remove('open');}
+
+async function openReserve(it){
+  cur=it;sel=new Set();taken=new Set();
+  bg.classList.add('open');
+  modal.innerHTML='<div style="text-align:center;padding:48px;color:var(--muted)">좌석 정보 불러오는 중…</div>';
+  try{const r=await fetch(`${SB}/rest/v1/campus_reservations?event_id=eq.${encodeURIComponent(it.id)}&select=seat`,{headers:{apikey:KEY}});const rows=await r.json();(rows||[]).forEach(x=>taken.add(x.seat));}catch(e){}
+  renderSeats();
+}
+function renderSeats(){
+  const rows=['A','B','C','D','E','F'],cols=8;
+  let h=`<div class="cm-steps"><div class="on"></div><div></div><div></div></div>
+    <h3>${cur.title}</h3><div class="cm-sub">${cur.date} · ${cur.place}</div>
+    <div class="cm-screen">S T A G E</div><div class="cm-screen-bar"></div>
+    <div class="seat-legend"><span><i class="lg"></i>선택가능</span><span><i class="lg sel"></i>선택됨</span><span><i class="lg taken"></i>매진</span></div>
+    <div class="seatmap">`;
+  rows.forEach(rw=>{h+=`<div class="seatrow"><span class="rl">${rw}</span>`;for(let c=1;c<=cols;c++){const s=rw+c,tk=taken.has(s);h+=`<button class="seat${tk?' taken':''}" data-s="${s}" ${tk?'disabled':''}>${c}</button>`;}h+=`</div>`;});
+  h+=`</div><div class="cm-summary"><span id="cmSelTxt">좌석을 선택하세요 (최대 6석)</span><b id="cmTotal">₩0</b></div>
+    <div class="cm-actions"><button class="cm-btn ghost" id="cmCancel">닫기</button><button class="cm-btn primary" id="cmNext" disabled>결제하기</button></div>`;
+  modal.innerHTML=h;
+  modal.querySelectorAll('.seat:not(.taken)').forEach(b=>b.addEventListener('click',()=>{const s=b.dataset.s;if(sel.has(s)){sel.delete(s);b.classList.remove('sel');}else{if(sel.size>=6)return;sel.add(s);b.classList.add('sel');}updateSel();}));
+  $('#cmCancel').addEventListener('click',closeModal);
+  $('#cmNext').addEventListener('click',renderCheckout);
+}
+function updateSel(){const txt=$('#cmSelTxt'),tot=$('#cmTotal'),nx=$('#cmNext');if(sel.size){txt.textContent=[...sel].sort().join(', ')+` (${sel.size}석)`;tot.textContent='₩'+won(cur.price*sel.size);nx.disabled=false;}else{txt.textContent='좌석을 선택하세요 (최대 6석)';tot.textContent='₩0';nx.disabled=true;}}
+function renderCheckout(){
+  modal.innerHTML=`<div class="cm-steps"><div class="on"></div><div class="on"></div><div></div></div>
+    <h3>결제</h3><div class="cm-sub">${cur.title}</div>
+    <div class="cm-summary" style="border-top:none"><span>${[...sel].sort().join(', ')} · ${sel.size}석</span><b>₩${won(cur.price*sel.size)}</b></div>
+    <div class="cm-field"><label>예약자 이름</label><input id="cmName" placeholder="홍길동" autocomplete="name"></div>
+    <div class="cm-demo-note">🔒 <b>데모 결제</b>입니다. 실제 카드 정보는 입력하지 않으며 결제도 일어나지 않습니다. 좌석 예약만 실제로 저장됩니다.</div>
+    <div class="cm-actions"><button class="cm-btn ghost" id="cmBack">뒤로</button><button class="cm-btn primary" id="cmPay">₩${won(cur.price*sel.size)} 결제 (데모)</button></div>`;
+  $('#cmBack').addEventListener('click',renderSeats);
+  $('#cmPay').addEventListener('click',doPay);
+}
+async function doPay(){
+  const name=($('#cmName').value||'게스트').trim();
+  const btn=$('#cmPay');btn.disabled=true;btn.textContent='처리 중…';
+  const body=[...sel].map(s=>({event_id:cur.id,seat:s,name}));
+  try{
+    const r=await fetch(`${SB}/rest/v1/campus_reservations`,{method:'POST',headers:{apikey:KEY,'Content-Type':'application/json',Prefer:'return=minimal'},body:JSON.stringify(body)});
+    if(r.status===409){btn.disabled=false;btn.textContent='다시 선택';modal.insertAdjacentHTML('beforeend','<p style="color:#fff;font-size:13px;text-align:center;margin-top:12px">이미 선점된 좌석이 있어요. 닫고 다시 선택해주세요.</p>');return;}
+    if(!r.ok)throw 0;
+    renderSuccess(name);
+  }catch(e){btn.disabled=false;btn.textContent='결제 (데모)';modal.insertAdjacentHTML('beforeend','<p style="color:#fff;font-size:13px;text-align:center;margin-top:12px">오류가 발생했어요. 다시 시도해주세요.</p>');}
+}
+function renderSuccess(name){
+  const code=(cur.id.toUpperCase().replace(/[^A-Z]/g,'').slice(0,3)||'NEO')+'-'+Math.floor(1000+Math.random()*9000);
+  const seats=[...sel].sort().join(', ');
+  modal.innerHTML=`<div class="cm-steps"><div class="on"></div><div class="on"></div><div class="on"></div></div>
+    <div class="cm-success"><div class="cm-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+    <h3>예약 완료!</h3><div class="cm-code">${code}</div>
+    <div class="cm-sub">${cur.title}<br>${seats} · ${sel.size}석 · ${name}님</div>
+    <div class="cm-share"><button id="shWeb" title="공유"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.6" y1="13.5" x2="15.4" y2="17.5"/><line x1="15.4" y1="6.5" x2="8.6" y2="10.5"/></svg></button>
+    <button id="shCopy" title="링크 복사"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 007 0l2-2a5 5 0 00-7-7l-1 1"/><path d="M14 11a5 5 0 00-7 0l-2 2a5 5 0 007 7l1-1"/></svg></button>
+    <button id="shKakao" title="카카오스토리">K</button></div>
+    <div id="shHint" style="font-size:12px;color:var(--muted);margin-top:12px;min-height:16px"></div>
+    <div class="cm-actions" style="margin-top:18px"><button class="cm-btn ghost" style="flex:1" id="cmDone">완료</button></div></div>`;
+  const url=location.origin+location.pathname+'#campus';
+  const text=`NEOIX AI 캠퍼스 "${cur.title}" 예약 완료! (${seats})`;
+  $('#cmDone').addEventListener('click',()=>{closeModal();renderGrid();});
+  $('#shWeb').addEventListener('click',async()=>{if(navigator.share){try{await navigator.share({title:'NEOIX AI 캠퍼스',text,url});}catch(e){}}else cp(url);});
+  $('#shCopy').addEventListener('click',()=>cp(url));
+  $('#shKakao').addEventListener('click',()=>window.open('https://story.kakao.com/share?url='+encodeURIComponent(url),'_blank'));
+  function cp(u){navigator.clipboard.writeText(text+' '+u).then(()=>{$('#shHint').textContent='✓ 링크가 복사됐어요';});}
 }
 </script>
 </body>
