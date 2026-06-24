@@ -21,6 +21,9 @@ body{background:#000;color:#fff;font-family:'Outfit',sans-serif;overflow-x:hidde
 .tw-word{white-space:nowrap;font-weight:900;}
 .hero-editing .tw-word{white-space:normal;}
 .hero-editing [contenteditable]:focus{outline-color:#fff!important;}
+.hero-editing .ek-on{outline:1px dashed rgba(255,255,255,.28);outline-offset:3px;border-radius:4px;cursor:text;transition:outline-color .15s;}
+.hero-editing .ek-on:hover{outline-color:rgba(255,255,255,.55);}
+.hero-editing .ek-on:focus{outline:2px solid rgba(255,255,255,.85);}
 .tw-caret{display:inline-block;width:.05em;height:.86em;background:#fff;margin-left:.04em;vertical-align:-.05em;animation:blink 1s step-end infinite;}
 @keyframes blink{0%,100%{opacity:1;}50%{opacity:0;}}
 
@@ -774,6 +777,10 @@ if(neoZone&&ixZone){
 /* ─── HERO TYPEWRITER + 라이브 편집 (앞문구/단어/뒤문구는 관리자 설정) ─── */
 var HERO_SB_URL='https://nroddjekdjwnwguwkudl.supabase.co';
 var HERO_SB_KEY='sb_publishable_Uygr7NmVn1wmqopNrb4FRw_CRWw7Xeg';
+/* 인플레이스 편집 대상(히어로 헤드라인 제외 — 그건 별도 처리) */
+var EK_SEL='.nav-links a,.mobile-menu a,.hero-tagline,.btn-primary,.btn-secondary,.section-label,.section-title,.section-desc,.service-num,.service-title,.service-desc,.philosophy-quote,.phil-item h4,.phil-item p,.step-num,.step h4,.step p,.portfolio-title,.portfolio-desc,.ptag,.ceo-tag,.footer-copy,.footer-links a';
+function ekEls(){ return Array.prototype.slice.call(document.querySelectorAll(EK_SEL)); }
+function applyOverrides(map){ if(!map)return; var els=ekEls(); els.forEach(function(el,i){ var v=map['c'+i]; if(v!=null) el.innerHTML=v; }); }
 (function(){
   var el=document.getElementById('twWord');
   if(!el)return;
@@ -800,13 +807,14 @@ var HERO_SB_KEY='sb_publishable_Uygr7NmVn1wmqopNrb4FRw_CRWw7Xeg';
     if(suffix!=null)document.getElementById('twSuffix').textContent=suffix;
   };
   /* 설정 불러오기 (앞문구/단어/뒤문구) — 실패해도 기본값으로 동작 */
-  fetch(HERO_SB_URL+'/rest/v1/site_settings?key=in.(hero_words,hero_prefix,hero_suffix)&select=key,value',{
+  fetch(HERO_SB_URL+'/rest/v1/site_settings?key=in.(hero_words,hero_prefix,hero_suffix,content_overrides)&select=key,value',{
     headers:{apikey:HERO_SB_KEY}
   }).then(function(r){return r.json();}).then(function(rows){
     (rows||[]).forEach(function(row){
       if(row.key==='hero_words'&&Array.isArray(row.value)&&row.value.length)words=row.value;
       if(row.key==='hero_prefix'&&typeof row.value==='string')document.getElementById('twPrefix').textContent=row.value;
       if(row.key==='hero_suffix'&&typeof row.value==='string')document.getElementById('twSuffix').textContent=row.value;
+      if(row.key==='content_overrides'&&row.value&&typeof row.value==='object')applyOverrides(row.value);
     });
   }).catch(function(){});
   /* 관리자 라이브 편집 모드: /?edit=1 */
@@ -821,14 +829,15 @@ function loadHeroEditor(){
       if(!session){ alert('관리자 로그인이 필요합니다.\n먼저 /admin 에서 로그인한 뒤 이 페이지를 새로고침하세요.'); return; }
       sb.from('admin_users').select('user_id').eq('user_id',session.user.id).single().then(function(r){
         if(!r.data){ alert('관리자 권한이 없는 계정입니다.'); return; }
-        sb.from('site_settings').select('key,value').in('key',['hero_words','hero_prefix','hero_suffix']).then(function(g){
-          var words=['아이디어의','세대의','경험의'],pf='새로운',sf='무한한 확장';
+        sb.from('site_settings').select('key,value').in('key',['hero_words','hero_prefix','hero_suffix','content_overrides']).then(function(g){
+          var words=['아이디어의','세대의','경험의'],pf='새로운',sf='무한한 확장',ov={};
           (g.data||[]).forEach(function(row){
             if(row.key==='hero_words'&&Array.isArray(row.value))words=row.value;
             if(row.key==='hero_prefix')pf=row.value;
             if(row.key==='hero_suffix')sf=row.value;
+            if(row.key==='content_overrides'&&row.value&&typeof row.value==='object')ov=row.value;
           });
-          startInlineEdit(sb,pf,words,sf);
+          startInlineEdit(sb,pf,words,sf,ov);
         });
       });
     });
@@ -842,7 +851,7 @@ function heroReadML(el){
   var t=document.createElement('div'); t.innerHTML=html;
   return t.textContent.replace(/ /g,' ');
 }
-function startInlineEdit(sb,pf,words,sf){
+function startInlineEdit(sb,pf,words,sf,overrides){
   if(window.__heroStopAnim)window.__heroStopAnim();   // 애니메이션 정지
   var pre=document.getElementById('twPrefix');
   var suf=document.getElementById('twSuffix');
@@ -861,6 +870,15 @@ function startInlineEdit(sb,pf,words,sf){
     });
   });
   setTimeout(function(){ pre.focus(); },100);
+  // 그 외 모든 텍스트 요소도 편집 가능하게
+  var ekList=ekEls(); var ekOrig=ekList.map(function(el){return el.innerHTML;});
+  ekList.forEach(function(el){
+    el.contentEditable='true'; el.spellcheck=false; el.classList.add('ek-on');
+    el.addEventListener('keydown',function(e){
+      if(e.key==='Enter'){ e.preventDefault(); document.execCommand('insertLineBreak'); }
+    });
+    el.addEventListener('click',function(e){ if(el.tagName==='A')e.preventDefault(); }); // 편집 중 링크 이동 방지
+  });
   // 하단 저장 바
   var bar=document.createElement('div');
   bar.style.cssText='position:fixed;left:50%;bottom:26px;transform:translateX(-50%);z-index:99999;display:flex;gap:8px;align-items:center;background:#fff;color:#111;border-radius:14px;box-shadow:0 10px 40px rgba(0,0,0,.45);padding:10px 12px;font-family:Pretendard,sans-serif;max-width:94vw;flex-wrap:wrap;justify-content:center;';
@@ -878,10 +896,13 @@ function startInlineEdit(sb,pf,words,sf){
     if(!wlist.length){hint.textContent='가운데 단어를 최소 1개 입력하세요';return;}
     var btn=document.getElementById('hpSave'); btn.disabled=true; btn.textContent='저장 중...';
     var now=new Date().toISOString();
+    var newOv={}; if(overrides)for(var k in overrides)newOv[k]=overrides[k];
+    ekList.forEach(function(el,i){ if(el.innerHTML!==ekOrig[i])newOv['c'+i]=el.innerHTML; });
     sb.from('site_settings').upsert([
       {key:'hero_prefix',value:prefix,updated_at:now},
       {key:'hero_words',value:wlist,updated_at:now},
-      {key:'hero_suffix',value:suffix,updated_at:now}
+      {key:'hero_suffix',value:suffix,updated_at:now},
+      {key:'content_overrides',value:newOv,updated_at:now}
     ]).then(function(res){
       btn.disabled=false; btn.textContent='저장';
       hint.textContent=res.error?('실패: '+res.error.message):'✓ 저장됨 (새로고침하면 적용된 모습 확인)';
