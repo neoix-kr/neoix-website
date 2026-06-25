@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS travel_rooms (
   id          TEXT PRIMARY KEY,                 -- URL용 짧은 랜덤 ID
   title       TEXT NOT NULL,                    -- 여행 제목
   months      INT  NOT NULL DEFAULT 4,          -- 캘린더에 펼칠 개월 수
+  nights      INT  NOT NULL DEFAULT 0,          -- 여행 일수: 0=자유,1=1박2일,2=2박3일,3=3박4일 (방장이 정함)
   start_ym    TEXT,                             -- 시작 연-월 (예: '2026-06'), NULL이면 이번 달
   created_at  TIMESTAMPTZ DEFAULT now()
 );
@@ -24,6 +25,7 @@ CREATE TABLE IF NOT EXISTS travel_participants (
 );
 -- 기존 테이블에 done 컬럼 보강 (이미 있으면 무시)
 ALTER TABLE travel_participants ADD COLUMN IF NOT EXISTS done BOOLEAN NOT NULL DEFAULT false;
+ALTER TABLE travel_rooms        ADD COLUMN IF NOT EXISTS nights INT NOT NULL DEFAULT 0;
 CREATE INDEX IF NOT EXISTS idx_travel_participants_room ON travel_participants(room_id);
 
 -- 3) 가능한 날짜 (참가자별로 1행 = 1날짜)

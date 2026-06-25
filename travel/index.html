@@ -254,7 +254,14 @@
   <div class="makebox">
     <div class="label">여행 이름</div>
     <input id="newTitle" class="input" placeholder="예) 여름 제주 여행 ✈️" maxlength="40" />
-    <div class="label" style="margin-top:18px;">기간</div>
+    <div class="label" style="margin-top:18px;">여행 일수 <span style="color:var(--muted);font-weight:600;font-size:12px;">· 방장이 정하면 모두 같은 일수로</span></div>
+    <div class="nseg" id="newNights">
+      <button data-n="0" class="on">자유</button>
+      <button data-n="1">1박 2일</button>
+      <button data-n="2">2박 3일</button>
+      <button data-n="3">3박 4일</button>
+    </div>
+    <div class="label" style="margin-top:18px;">캘린더 기간</div>
     <div class="seg" id="monthSeg">
       <button data-m="2">2개월</button>
       <button data-m="3">3개월</button>
@@ -293,12 +300,6 @@
   </div>
 
   <div id="calView">
-    <div class="nseg" id="nightsSeg">
-      <button data-n="0" class="on">자유</button>
-      <button data-n="1">1박 2일</button>
-      <button data-n="2">2박 3일</button>
-      <button data-n="3">3박 4일</button>
-    </div>
     <div class="hint" id="hint">가능한 날짜를 <b>드래그(스와이프)</b>해서 칠하세요</div>
     <div id="calendar"></div>
   </div>
@@ -359,7 +360,14 @@
     <p>여행 이름과 기간을 바꿀 수 있어요.</p>
     <div class="label">여행 이름</div>
     <input id="editTitle" class="input" maxlength="40" />
-    <div class="label" style="margin-top:16px;">기간</div>
+    <div class="label" style="margin-top:16px;">여행 일수</div>
+    <div class="nseg" id="editNights">
+      <button data-n="0">자유</button>
+      <button data-n="1">1박 2일</button>
+      <button data-n="2">2박 3일</button>
+      <button data-n="3">3박 4일</button>
+    </div>
+    <div class="label" style="margin-top:16px;">캘린더 기간</div>
     <div class="seg" id="editMonthSeg">
       <button data-m="2">2개월</button>
       <button data-m="3">3개월</button>
@@ -431,7 +439,7 @@ async function boot(){
 }
 
 /* ============ 홈 ============ */
-let chosenMonths = 4;
+let chosenMonths = 4, chosenNights = 0;
 function showHome(){
   $('#loading').classList.add('hide');
   $('#room').classList.add('hide');
@@ -458,6 +466,11 @@ $('#monthSeg').addEventListener('click', e=>{
   $$('#monthSeg button').forEach(x=>x.classList.remove('on'));
   b.classList.add('on'); chosenMonths=+b.dataset.m;
 });
+$('#newNights').addEventListener('click', e=>{
+  const b=e.target.closest('button'); if(!b) return;
+  $$('#newNights button').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on'); chosenNights=+b.dataset.n;
+});
 $('#newTitle').addEventListener('keydown', e=>{ if(e.key==='Enter') $('#createBtn').click(); });
 $('#createBtn').addEventListener('click', async ()=>{
   const title = $('#newTitle').value.trim() || '우리 여행';
@@ -465,7 +478,7 @@ $('#createBtn').addEventListener('click', async ()=>{
   const now=new Date();
   const id = genId();
   const { error } = await sb.from('travel_rooms').insert({
-    id, title, months:chosenMonths, start_ym:`${now.getFullYear()}-${pad(now.getMonth()+1)}`
+    id, title, months:chosenMonths, nights:chosenNights, start_ym:`${now.getFullYear()}-${pad(now.getMonth()+1)}`
   });
   if(error){ btn.disabled=false; btn.textContent='여행 방 만들기'; toast('생성 실패: '+error.message); return; }
   localStorage.setItem(LS.owner(id), '1');   // 내가 만든 방 = 방장
@@ -485,11 +498,15 @@ async function enterRoom(id){
   $('#loading').classList.remove('hide');
 
   const { data, error } = await sb.from('travel_rooms').select('*').eq('id',id).single();
-  if(error || !data){ $('#loading').classList.add('hide'); toast('방을 찾을 수 없어요'); showHome(); return; }
+  if(error || !data){
+    try{ localStorage.setItem(LS.rooms, JSON.stringify(recentRooms().filter(x=>x.id!==id))); localStorage.removeItem(LS.owner(id)); }catch{}
+    $('#loading').classList.add('hide'); toast('삭제됐거나 없는 방이에요'); showHome(); return;
+  }
   room = data;
   pushRecent(room);
   isOwner = localStorage.getItem(LS.owner(id))==='1';
   $('#editRoomBtn').classList.toggle('hide', !isOwner);
+  nights = room.nights || 0;   // 일수는 방장이 정한 방 값으로 고정
 
   $('#roomTitle').textContent = room.title;
   buildCalendar();
@@ -566,7 +583,7 @@ async function loadData(){
 }
 
 function renderPeople(){
-  $('#roomMeta').textContent = `참가자 ${total}명`;
+  $('#roomMeta').textContent = `참가자 ${total}명${nights>0?` · ${nights}박 ${nights+1}일`:''}`;
   const ppl=$('#people');
   ppl.classList.toggle('has-hl', !!highlightPid);
   ppl.innerHTML = parts.map(p=>{
@@ -850,29 +867,30 @@ function openDaySheet(ds){
 $('#dayCloseBtn').addEventListener('click', ()=>$('#dayScrim').classList.remove('on'));
 $('#dayScrim').addEventListener('click', e=>{ if(e.target.id==='dayScrim') $('#dayScrim').classList.remove('on'); });
 
-/* ============ 연박 세트 선택 ============ */
-$('#nightsSeg').addEventListener('click', e=>{ const b=e.target.closest('button'); if(!b) return; nights=+b.dataset.n; $$('#nightsSeg button').forEach(x=>x.classList.toggle('on', x===b)); updateHint(); });
-
 /* ============ 방 편집 / 삭제 (방장 전용) ============ */
 function openEditSheet(){
   if(!room) return;
   $('#editTitle').value=room.title;
   $$('#editMonthSeg button').forEach(b=>b.classList.toggle('on', +b.dataset.m===room.months));
+  $$('#editNights button').forEach(b=>b.classList.toggle('on', +b.dataset.n===(room.nights||0)));
   $('#editScrim').classList.add('on');
 }
 $('#editRoomBtn').addEventListener('click', openEditSheet);
 $('#editMonthSeg').addEventListener('click', e=>{ const b=e.target.closest('button'); if(!b) return; $$('#editMonthSeg button').forEach(x=>x.classList.toggle('on', x===b)); });
+$('#editNights').addEventListener('click', e=>{ const b=e.target.closest('button'); if(!b) return; $$('#editNights button').forEach(x=>x.classList.toggle('on', x===b)); });
 $('#editScrim').addEventListener('click', e=>{ if(e.target.id==='editScrim') $('#editScrim').classList.remove('on'); });
 $('#saveRoomBtn').addEventListener('click', async ()=>{
   const title=$('#editTitle').value.trim()||room.title;
   const onBtn=$('#editMonthSeg button.on');
   const months=onBtn ? +onBtn.dataset.m : room.months;
+  const onN=$('#editNights button.on');
+  const newNights=onN ? +onN.dataset.n : (room.nights||0);
   const btn=$('#saveRoomBtn'); btn.disabled=true; btn.textContent='저장 중…';
-  const { error }=await sb.from('travel_rooms').update({ title, months }).eq('id', room.id);
+  const { error }=await sb.from('travel_rooms').update({ title, months, nights:newNights }).eq('id', room.id);
   btn.disabled=false; btn.textContent='저장';
   if(error){ toast('저장 실패'); return; }
-  room.title=title; room.months=months;
-  $('#roomTitle').textContent=title; pushRecent(room);
+  room.title=title; room.months=months; room.nights=newNights; nights=newNights;
+  $('#roomTitle').textContent=title; renderPeople(); updateHint(); pushRecent(room);
   buildCalendar(); applyHighlight();
   $('#editScrim').classList.remove('on');
   toast('저장했어요');
