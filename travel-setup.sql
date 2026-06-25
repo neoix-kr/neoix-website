@@ -19,8 +19,11 @@ CREATE TABLE IF NOT EXISTS travel_participants (
   room_id     TEXT NOT NULL REFERENCES travel_rooms(id) ON DELETE CASCADE,
   name        TEXT NOT NULL,
   color       TEXT NOT NULL DEFAULT '#111111',
+  done        BOOLEAN NOT NULL DEFAULT false,   -- 날짜 선택 완료 여부
   created_at  TIMESTAMPTZ DEFAULT now()
 );
+-- 기존 테이블에 done 컬럼 보강 (이미 있으면 무시)
+ALTER TABLE travel_participants ADD COLUMN IF NOT EXISTS done BOOLEAN NOT NULL DEFAULT false;
 CREATE INDEX IF NOT EXISTS idx_travel_participants_room ON travel_participants(room_id);
 
 -- 3) 가능한 날짜 (참가자별로 1행 = 1날짜)

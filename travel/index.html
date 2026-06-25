@@ -180,6 +180,57 @@
   .spinner{width:30px; height:30px; border:3px solid var(--line); border-top-color:var(--ink); border-radius:50%; animation:spin .7s linear infinite;}
   @keyframes spin{to{transform:rotate(360deg);}}
 
+  /* ===== 뷰 토글 ===== */
+  .viewseg{display:flex; gap:6px; background:var(--soft); padding:4px; border-radius:13px; margin:0 0 16px;}
+  .viewseg button{flex:1; height:40px; border-radius:10px; font-weight:700; font-size:14px; color:var(--muted); transition:.15s;}
+  .viewseg button.on{background:#fff; color:var(--ink); box-shadow:var(--shadow);}
+
+  /* 참가자 칩 인터랙션 */
+  .chip{cursor:pointer; transition:transform .12s, box-shadow .15s, opacity .15s;}
+  .chip:active{transform:scale(.95);}
+  .chip.done::after{content:"✓"; font-size:11px; margin-left:1px; opacity:.65;}
+  .people.has-hl .chip{opacity:.38;}
+  .people.has-hl .chip.hl{opacity:1;}
+  .chip.hl{box-shadow:inset 0 0 0 2.5px var(--hlc) !important;}
+
+  /* 캘린더 하이라이트 모드 */
+  #calendar.hl .day[data-d]:not(.past){opacity:.25;}
+  #calendar.hl .day.hlon{opacity:1 !important; background:var(--hlc) !important; color:#fff !important; box-shadow:none !important;}
+  #calendar.hl .day.hlon .cnt{display:none;}
+
+  /* ===== 간트(누가 언제) ===== */
+  .gantt{overflow-x:auto; -webkit-overflow-scrolling:touch; padding-bottom:8px;}
+  .gantt::-webkit-scrollbar{height:6px;} .gantt::-webkit-scrollbar-thumb{background:var(--line); border-radius:3px;}
+  .gantt-inner{display:inline-block; min-width:100%;}
+  .grow{display:flex; align-items:center; height:38px; border-radius:9px; transition:opacity .15s;}
+  .grow.ghead{height:auto; padding:2px 0 6px;}
+  .grow:not(.ghead){cursor:pointer;}
+  .grow:not(.ghead):active{background:var(--soft);}
+  .gname{position:sticky; left:0; z-index:2; flex:0 0 84px; width:84px; display:flex; align-items:center; gap:6px; padding:0 8px 0 4px; font-size:13px; font-weight:700; white-space:nowrap; overflow:hidden; background:var(--soft2);}
+  .gname i{width:10px; height:10px; border-radius:50%; flex:0 0 auto;}
+  .gcells{display:flex; gap:3px;}
+  .gcell{flex:0 0 22px; height:24px; border-radius:6px; background:var(--soft);}
+  .gcell.on{background:var(--gc);}
+  .ghead .gcell{background:transparent; font-size:9px; font-weight:700; color:var(--muted); display:flex; align-items:center; justify-content:center; line-height:1.15; text-align:center;}
+  .ghead .gcell.we{color:var(--sun);}
+  .gantt-empty{color:var(--muted); font-size:14px; text-align:center; padding:36px 0; font-weight:600;}
+
+  /* 완료/수정 버튼 */
+  .donerow{display:flex; gap:10px; align-items:center; margin-bottom:10px;}
+  .donebtn{flex:1; height:46px; border-radius:12px; font-weight:800; font-size:15px; background:var(--ink); color:#fff; transition:transform .12s;}
+  .donebtn:active{transform:scale(.98);}
+  .donebtn.editing{background:#16a34a;}
+  .donebtn.done{background:#fff; color:var(--ink); box-shadow:inset 0 0 0 1.5px var(--line);}
+  .donestatus{font-size:12px; color:var(--muted); font-weight:700; white-space:nowrap;}
+
+  /* 날짜별 명단 시트 */
+  .daypeople{display:flex; flex-direction:column; gap:16px;}
+  .dpgroup h4{font-size:12px; font-weight:700; color:var(--muted); margin:0 0 8px;}
+  .dpchips{display:flex; flex-wrap:wrap; gap:7px;}
+  .dpchip{display:inline-flex; align-items:center; gap:6px; height:34px; padding:0 14px; border-radius:30px; font-size:14px; font-weight:700; color:#fff;}
+  .dpchip i{width:9px; height:9px; border-radius:50%; background:rgba(255,255,255,.65);}
+  .dpchip.no{background:var(--soft); color:var(--muted);}
+
   @media(min-width:560px){ .hero h1{font-size:38px;} }
 </style>
 </head>
@@ -226,9 +277,21 @@
   </div>
 
   <div class="people" id="people"></div>
-  <div class="hint">가능한 날짜를 <b>드래그(스와이프)</b>해서 칠하세요</div>
 
-  <div id="calendar"></div>
+  <div class="viewseg" id="viewSeg">
+    <button data-v="cal" class="on">📅 달력</button>
+    <button data-v="gantt">📊 누가 언제</button>
+  </div>
+
+  <div id="calView">
+    <div class="hint" id="hint">가능한 날짜를 <b>드래그(스와이프)</b>해서 칠하세요</div>
+    <div id="calendar"></div>
+  </div>
+
+  <div id="ganttView" class="hide">
+    <div class="hint">참가자별 가능한 날을 한눈에 비교 · 이름을 누르면 그 사람만 강조돼요</div>
+    <div class="gantt"><div class="gantt-inner" id="ganttInner"></div></div>
+  </div>
 </main>
 
 <!-- 로딩 -->
@@ -237,6 +300,10 @@
 <!-- ============ 결과바 ============ -->
 <div id="resultbar" class="resultbar hide">
   <div class="inner">
+    <div class="donerow hide" id="doneRow">
+      <button class="donebtn editing" id="doneBtn">선택 완료</button>
+      <span class="donestatus" id="doneStatus"></span>
+    </div>
     <div class="result" style="margin-bottom:8px;">
       <div style="flex:1;">
         <div class="big" id="resultBig">아직 칠한 날이 없어요</div>
@@ -255,6 +322,17 @@
     <p>참가자들이 누가 가능한지 알 수 있게 이름을 적어주세요.</p>
     <input id="nameInput" class="input" placeholder="예) 정겸" maxlength="12" />
     <button id="joinBtn" class="btn" style="margin-top:16px;">들어가기</button>
+  </div>
+</div>
+
+<!-- ============ 날짜별 가능자 명단 시트 ============ -->
+<div id="dayScrim" class="scrim">
+  <div class="sheet">
+    <div class="grab"></div>
+    <h2 id="daySheetTitle">날짜</h2>
+    <p id="daySheetSub"></p>
+    <div class="daypeople" id="dayPeople"></div>
+    <button id="dayCloseBtn" class="btn ghost" style="margin-top:18px;">닫기</button>
   </div>
 </div>
 
@@ -301,9 +379,10 @@ function pushRecent(room){
 /* ---------- 상태 ---------- */
 let room=null, me=null, parts=[], partMap={};
 let mySet=new Set(), myServerSet=new Set();
-let dayCount={}, total=0, maxCount=0;
+let dayCount={}, dayWho={}, total=0, maxCount=0;
 let channel=null;
 let dragging=false, paintMode=null, dragSeen=new Set();
+let viewMode='cal', highlightPid=null;
 
 /* ============ 라우팅 ============ */
 function roomIdFromUrl(){ return new URLSearchParams(location.search).get('room'); }
@@ -423,26 +502,36 @@ async function loadData(){
   if(me){ const fresh=partMap[me.id]; if(fresh) me=fresh; document.documentElement.style.setProperty('--myc', me.color); }
 
   // 집계
-  dayCount={}; maxCount=0;
+  dayCount={}; dayWho={}; maxCount=0;
   const serverMine=new Set();
   (av||[]).forEach(r=>{
+    if(!partMap[r.participant_id]) return;            // 떠난 참가자 무시
     dayCount[r.d]=(dayCount[r.d]||0)+1;
+    (dayWho[r.d]=dayWho[r.d]||[]).push(r.participant_id);
     if(dayCount[r.d]>maxCount) maxCount=dayCount[r.d];
     if(me && r.participant_id===me.id) serverMine.add(r.d);
   });
   // 드래그 중이 아닐 때만 내 선택을 서버 기준으로 동기화
   if(!dragging){ myServerSet=serverMine; mySet=new Set(serverMine); }
+  // 하이라이트 대상이 사라졌으면 해제
+  if(highlightPid && !partMap[highlightPid]) highlightPid=null;
 
   renderPeople();
-  paintAllCells();
+  applyHighlight();
   renderResult();
+  renderDoneBar();
+  updateHint();
+  if(viewMode==='gantt') renderGantt();
 }
 
 function renderPeople(){
   $('#roomMeta').textContent = `참가자 ${total}명`;
-  $('#people').innerHTML = parts.map(p=>{
+  const ppl=$('#people');
+  ppl.classList.toggle('has-hl', !!highlightPid);
+  ppl.innerHTML = parts.map(p=>{
     const isMe = me && p.id===me.id;
-    return `<span class="chip ${isMe?'me':''}"><i style="background:${p.color}"></i>${escapeHtml(p.name)}${isMe?' (나)':''}</span>`;
+    const hl = highlightPid===p.id;
+    return `<span class="chip ${isMe?'me':''} ${p.done?'done':''} ${hl?'hl':''}" data-pid="${p.id}" style="--hlc:${p.color}"><i style="background:${p.color}"></i>${escapeHtml(p.name)}${isMe?' (나)':''}</span>`;
   }).join('') || '<span class="chip" style="color:var(--muted)">아직 아무도 없어요</span>';
 }
 
@@ -492,6 +581,7 @@ function applyCell(el, ds){
   el.classList.toggle('dark', dark);
   el.classList.toggle('mine', mySet.has(ds));
   el.classList.toggle('best', c>0 && c===maxCount && total>=2);
+  el.classList.toggle('hlon', !!highlightPid && (dayWho[ds]||[]).includes(highlightPid));
   const cnt=el.querySelector('.cnt'); if(cnt) cnt.textContent = c>0 ? c : '';
 }
 
@@ -534,6 +624,8 @@ document.addEventListener('pointerdown', e=>{
   const day = e.target.closest && e.target.closest('.day[data-d]');
   if(!day || day.classList.contains('past') || day.classList.contains('empty')) return;
   e.preventDefault();
+  // 완료 상태(보기 모드)면 칠하기 대신 그날 가능자 명단
+  if(me && me.done){ openDaySheet(day.dataset.d); return; }
   startDrag(day, e.clientX, e.clientY);
 }, {passive:false});
 
@@ -611,6 +703,90 @@ $('#shareBtn').addEventListener('click', async ()=>{
   try{ await navigator.clipboard.writeText(url); toast('초대 링크를 복사했어요'); }
   catch{ prompt('초대 링크', url); }
 });
+
+/* ============ 완료 / 수정 ============ */
+function renderDoneBar(){
+  const row=$('#doneRow'), btn=$('#doneBtn'), st=$('#doneStatus');
+  if(!me){ row.classList.add('hide'); return; }
+  row.classList.remove('hide');
+  const doneCount=parts.filter(p=>p.done).length;
+  if(me.done){ btn.textContent='✏️ 다시 수정'; btn.className='donebtn done'; }
+  else { btn.textContent='선택 완료'; btn.className='donebtn editing'; }
+  st.textContent = total ? `${doneCount}/${total}명 완료` : '';
+}
+function updateHint(){
+  const h=$('#hint'); if(!h) return;
+  h.innerHTML = (me && me.done)
+    ? '완료했어요 · 날짜를 <b>탭</b>하면 그날 가능한 사람이 보여요'
+    : '가능한 날짜를 <b>드래그(스와이프)</b>해서 칠하세요';
+}
+$('#doneBtn').addEventListener('click', async ()=>{
+  if(!me) return;
+  const next=!me.done;
+  me.done=next; if(partMap[me.id]) partMap[me.id].done=next;
+  renderDoneBar(); renderPeople(); updateHint();
+  const { error } = await sb.from('travel_participants').update({ done:next }).eq('id', me.id);
+  if(error){ me.done=!next; if(partMap[me.id]) partMap[me.id].done=!next; renderDoneBar(); renderPeople(); updateHint(); toast('저장 실패'); return; }
+  if(next) toast('선택 완료! 날짜를 누르면 누가 되는지 보여요');
+});
+
+/* ============ 참가자 하이라이트 ============ */
+function toggleHighlight(pid){ highlightPid = (highlightPid===pid) ? null : pid; applyHighlight(); }
+function applyHighlight(){
+  const cal=$('#calendar');
+  if(highlightPid && partMap[highlightPid]){ cal.style.setProperty('--hlc', partMap[highlightPid].color); cal.classList.add('hl'); }
+  else cal.classList.remove('hl');
+  paintAllCells();
+  renderPeople();
+  if(viewMode==='gantt') renderGantt();
+}
+$('#people').addEventListener('click', e=>{ const c=e.target.closest('.chip[data-pid]'); if(c) toggleHighlight(c.dataset.pid); });
+
+/* ============ 뷰 토글 (달력 / 누가 언제) ============ */
+$('#viewSeg').addEventListener('click', e=>{ const b=e.target.closest('button'); if(b) setView(b.dataset.v); });
+function setView(v){
+  viewMode=v;
+  $$('#viewSeg button').forEach(x=>x.classList.toggle('on', x.dataset.v===v));
+  $('#calView').classList.toggle('hide', v!=='cal');
+  $('#ganttView').classList.toggle('hide', v!=='gantt');
+  if(v==='gantt') renderGantt();
+}
+
+/* ============ 간트: 누가 언제 되나 ============ */
+function renderGantt(){
+  const inner=$('#ganttInner'); if(!inner) return;
+  const dates=Object.keys(dayCount).filter(d=>dayCount[d]>0).sort();
+  if(!dates.length || !parts.length){ inner.innerHTML='<div class="gantt-empty">아직 아무도 날짜를 고르지 않았어요</div>'; return; }
+  const head=`<div class="grow ghead"><div class="gname"></div><div class="gcells">`
+    + dates.map(d=>{ const [y,m,dd]=d.split('-'); const dow=new Date(+y,+m-1,+dd).getDay(); const we=dow===0||dow===6; return `<div class="gcell ${we?'we':''}">${+m}/${+dd}<br>${WDOW[dow]}</div>`; }).join('')
+    + `</div></div>`;
+  const rows=parts.map(p=>{
+    const dim = highlightPid && highlightPid!==p.id;
+    return `<div class="grow" data-pid="${p.id}" style="--gc:${p.color}; opacity:${dim?0.3:1}">`
+      + `<div class="gname"><i style="background:${p.color}"></i>${escapeHtml(p.name)}${p.done?' ✓':''}</div>`
+      + `<div class="gcells">${dates.map(d=>`<div class="gcell ${(dayWho[d]||[]).includes(p.id)?'on':''}"></div>`).join('')}</div>`
+      + `</div>`;
+  }).join('');
+  inner.innerHTML=head+rows;
+}
+$('#ganttInner').addEventListener('click', e=>{ const r=e.target.closest('.grow[data-pid]'); if(r) toggleHighlight(r.dataset.pid); });
+
+/* ============ 날짜별 가능자 명단 ============ */
+function openDaySheet(ds){
+  const who=dayWho[ds]||[];
+  const yes=parts.filter(p=>who.includes(p.id));
+  const no=parts.filter(p=>!who.includes(p.id));
+  $('#daySheetTitle').textContent=fmtKDate(ds);
+  $('#daySheetSub').textContent=`${yes.length}/${total}명 가능`;
+  $('#dayPeople').innerHTML =
+    `<div class="dpgroup"><h4>✅ 가능 ${yes.length}명</h4><div class="dpchips">`
+    + (yes.map(p=>`<span class="dpchip" style="background:${p.color}"><i></i>${escapeHtml(p.name)}</span>`).join('') || '<span class="dpchip no">아직 없어요</span>')
+    + `</div></div>`
+    + (no.length ? `<div class="dpgroup"><h4>안 됨 ${no.length}명</h4><div class="dpchips">${no.map(p=>`<span class="dpchip no">${escapeHtml(p.name)}</span>`).join('')}</div></div>` : '');
+  $('#dayScrim').classList.add('on');
+}
+$('#dayCloseBtn').addEventListener('click', ()=>$('#dayScrim').classList.remove('on'));
+$('#dayScrim').addEventListener('click', e=>{ if(e.target.id==='dayScrim') $('#dayScrim').classList.remove('on'); });
 
 /* 시작 */
 boot();
