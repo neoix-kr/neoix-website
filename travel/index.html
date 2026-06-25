@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<title>트레블 · 여행 날짜 맞추기</title>
+<meta name="description" content="방 만들고 링크로 초대해서, 다 같이 가능한 여행 날짜를 한눈에 — NEOIX 트레블" />
+<meta property="og:title" content="트레블 · 여행 날짜 맞추기" />
+<meta property="og:description" content="가능한 날짜를 칠하면, 모두가 되는 날이 보입니다." />
+<meta property="og:type" content="website" />
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css" />
+<style>
+  :root{
+    --bg:#ffffff; --ink:#111315; --ink-soft:#3a3d40; --muted:#9aa0a6;
+    --line:#ececef; --soft:#f5f6f7; --soft2:#fafafb;
+    --sun:#e0524b; --sat:#3f73d6;
+    --r:16px; --rs:11px;
+    --shadow:0 1px 2px rgba(0,0,0,.04), 0 8px 30px rgba(0,0,0,.06);
+    --ease:cubic-bezier(.22,.61,.36,1);
+    --maxw:540px;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0; padding:0;}
+  body{
+    font-family:'Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,system-ui,sans-serif;
+    background:var(--soft2); color:var(--ink);
+    -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+    line-height:1.5; letter-spacing:-.01em;
+    min-height:100dvh;
+  }
+  button{font-family:inherit; cursor:pointer; border:none; background:none; color:inherit; letter-spacing:-.01em;}
+  input{font-family:inherit; letter-spacing:-.01em;}
+  .wrap{max-width:var(--maxw); margin:0 auto; padding:0 16px; padding-bottom:120px;}
+
+  /* ===== 공통 ===== */
+  .brand{display:flex; align-items:center; gap:8px; font-weight:800; letter-spacing:-.03em;}
+  .brand .dot{width:9px; height:9px; border-radius:50%; background:var(--ink);}
+  .btn{
+    display:inline-flex; align-items:center; justify-content:center; gap:8px;
+    height:52px; padding:0 22px; border-radius:14px; font-weight:700; font-size:16px;
+    background:var(--ink); color:#fff; transition:transform .12s var(--ease), opacity .15s;
+    width:100%;
+  }
+  .btn:active{transform:scale(.985);}
+  .btn:disabled{opacity:.4; cursor:not-allowed;}
+  .btn.ghost{background:var(--soft); color:var(--ink);}
+  .btn.line{background:#fff; color:var(--ink); box-shadow:inset 0 0 0 1.5px var(--line);}
+  .iconbtn{
+    width:42px; height:42px; border-radius:12px; display:inline-flex; align-items:center; justify-content:center;
+    background:var(--soft); color:var(--ink-soft); transition:background .15s, transform .12s;
+  }
+  .iconbtn:active{transform:scale(.92);}
+  .input{
+    width:100%; height:54px; padding:0 16px; border-radius:14px; font-size:17px; font-weight:600;
+    background:#fff; box-shadow:inset 0 0 0 1.5px var(--line); color:var(--ink); outline:none;
+    transition:box-shadow .15s;
+  }
+  .input::placeholder{color:#c4c8cc; font-weight:500;}
+  .input:focus{box-shadow:inset 0 0 0 2px var(--ink);}
+  .label{font-size:13px; font-weight:700; color:var(--ink-soft); margin:0 0 8px 4px;}
+  .card{background:#fff; border-radius:var(--r); box-shadow:var(--shadow); padding:18px;}
+
+  .hide{display:none !important;}
+
+  /* ===== 홈 ===== */
+  #home{padding-top:max(28px, env(safe-area-inset-top));}
+  .hero{padding:30px 4px 24px;}
+  .hero .eyebrow{font-size:13px; font-weight:700; color:var(--muted); letter-spacing:.02em;}
+  .hero h1{font-size:34px; line-height:1.18; font-weight:800; letter-spacing:-.035em; margin:10px 0 0;}
+  .hero h1 b{background:linear-gradient(transparent 62%, #ffe27a 62%); padding:0 2px;}
+  .hero p{color:var(--ink-soft); font-size:15.5px; margin:14px 0 0; max-width:30ch;}
+
+  .makebox{margin-top:8px;}
+  .seg{display:flex; gap:8px; margin-top:2px;}
+  .seg button{
+    flex:1; height:46px; border-radius:12px; font-weight:700; font-size:14.5px; color:var(--ink-soft);
+    background:#fff; box-shadow:inset 0 0 0 1.5px var(--line); transition:.15s;
+  }
+  .seg button.on{background:var(--ink); color:#fff; box-shadow:none;}
+
+  .recent{margin-top:30px;}
+  .recent h3{font-size:13px; font-weight:700; color:var(--muted); margin:0 0 10px 4px;}
+  .roomrow{
+    display:flex; align-items:center; gap:12px; padding:15px 16px; background:#fff; border-radius:14px;
+    box-shadow:var(--shadow); margin-bottom:9px; transition:transform .12s;
+  }
+  .roomrow:active{transform:scale(.99);}
+  .roomrow .ic{width:38px; height:38px; border-radius:10px; background:var(--soft); display:flex; align-items:center; justify-content:center; flex:0 0 auto;}
+  .roomrow .t{flex:1; min-width:0;}
+  .roomrow .t b{display:block; font-size:15.5px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .roomrow .t span{font-size:12.5px; color:var(--muted);}
+
+  /* ===== 방 헤더 ===== */
+  #room{padding-top:max(12px, env(safe-area-inset-top));}
+  .topbar{display:flex; align-items:center; gap:10px; padding:8px 0 14px; position:sticky; top:0; z-index:20; background:linear-gradient(var(--soft2) 72%, transparent);}
+  .topbar .title{flex:1; min-width:0;}
+  .topbar .title b{display:block; font-size:18px; font-weight:800; letter-spacing:-.03em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .topbar .title span{font-size:12.5px; color:var(--muted);}
+
+  /* 참가자 바 */
+  .people{display:flex; align-items:center; gap:7px; flex-wrap:wrap; padding:2px 2px 14px;}
+  .chip{display:inline-flex; align-items:center; gap:6px; height:32px; padding:0 11px 0 9px; border-radius:30px; background:#fff; box-shadow:inset 0 0 0 1.5px var(--line); font-size:13px; font-weight:700;}
+  .chip i{width:11px; height:11px; border-radius:50%; flex:0 0 auto;}
+  .chip.me{box-shadow:inset 0 0 0 2px var(--ink); background:var(--ink); color:#fff;}
+  .chip.me i{box-shadow:0 0 0 2px rgba(255,255,255,.5);}
+
+  .hint{font-size:13px; color:var(--muted); text-align:center; padding:2px 0 14px; font-weight:600;}
+  .hint b{color:var(--ink-soft);}
+
+  /* ===== 캘린더 ===== */
+  .month{margin-bottom:26px;}
+  .month h2{font-size:16px; font-weight:800; letter-spacing:-.02em; margin:0 0 12px 4px;}
+  .month h2 span{color:var(--muted); font-weight:700; font-size:13px; margin-left:6px;}
+  .dow{display:grid; grid-template-columns:repeat(7,1fr); margin-bottom:6px;}
+  .dow span{text-align:center; font-size:12px; font-weight:700; color:var(--muted);}
+  .dow span:first-child{color:var(--sun);}
+  .dow span:last-child{color:var(--sat);}
+  .grid{display:grid; grid-template-columns:repeat(7,1fr); gap:5px;}
+  .cell{aspect-ratio:1/1.06; position:relative;}
+  .day{
+    width:100%; height:100%; border-radius:12px; position:relative;
+    display:flex; align-items:center; justify-content:center;
+    font-size:15px; font-weight:700; color:var(--ink); background:#fff;
+    box-shadow:inset 0 0 0 1px var(--line);
+    touch-action:none; user-select:none; -webkit-user-select:none;
+    transition:background .18s var(--ease), color .18s, box-shadow .12s;
+  }
+  .day.sun{color:var(--sun);} .day.sat{color:var(--sat);}
+  .day.past{opacity:.32; background:var(--soft); box-shadow:none; pointer-events:none; color:var(--muted);}
+  .day.empty{background:transparent; box-shadow:none; pointer-events:none;}
+  .day .cnt{
+    position:absolute; top:4px; right:5px; font-size:10px; font-weight:800; line-height:1;
+    padding:2px 4px; border-radius:7px; background:rgba(0,0,0,.06); color:var(--ink-soft);
+    opacity:0; transform:scale(.6); transition:.15s var(--ease);
+  }
+  .day.has .cnt{opacity:1; transform:scale(1);}
+  /* 농도가 진할 때 숫자/배지 반전 */
+  .day.dark{color:#fff;}
+  .day.dark.sun{color:#ffb3ae;} .day.dark.sat{color:#aac4f5;}
+  .day.dark .cnt{background:rgba(255,255,255,.22); color:#fff;}
+  /* 내가 선택한 날 = 내 색 링 */
+  .day.mine{box-shadow:inset 0 0 0 2.5px var(--myc, var(--ink));}
+  .day.dark.mine{box-shadow:inset 0 0 0 2.5px #fff;}
+  /* 베스트(최다 겹침) 표식 */
+  .day.best::after{content:""; position:absolute; bottom:5px; left:50%; transform:translateX(-50%); width:5px; height:5px; border-radius:50%; background:#ffce3a; box-shadow:0 0 0 2px rgba(255,206,58,.3);}
+  .day.today{outline:2px dashed var(--muted); outline-offset:2px;}
+
+  /* ===== 결과 바 (하단 고정) ===== */
+  .resultbar{
+    position:fixed; left:0; right:0; bottom:0; z-index:30;
+    padding:12px 16px calc(14px + env(safe-area-inset-bottom));
+    background:rgba(255,255,255,.86); backdrop-filter:saturate(180%) blur(16px); -webkit-backdrop-filter:saturate(180%) blur(16px);
+    box-shadow:0 -1px 0 var(--line);
+  }
+  .resultbar .inner{max-width:var(--maxw); margin:0 auto;}
+  .result{display:flex; align-items:center; gap:12px;}
+  .result .big{font-size:15px; font-weight:800; letter-spacing:-.02em;}
+  .result .sub{font-size:12.5px; color:var(--muted); font-weight:600;}
+  .bestlist{display:flex; gap:8px; overflow-x:auto; padding:2px 0 0; -webkit-overflow-scrolling:touch;}
+  .bestlist::-webkit-scrollbar{display:none;}
+  .bestpill{flex:0 0 auto; display:flex; flex-direction:column; align-items:center; gap:1px; padding:8px 13px; border-radius:13px; background:var(--ink); color:#fff;}
+  .bestpill.alt{background:var(--soft); color:var(--ink);}
+  .bestpill .d{font-size:15px; font-weight:800; letter-spacing:-.02em;}
+  .bestpill .c{font-size:11px; font-weight:700; opacity:.8;}
+
+  /* ===== 모달 / 토스트 ===== */
+  .scrim{position:fixed; inset:0; background:rgba(17,19,21,.42); backdrop-filter:blur(3px); z-index:50; display:flex; align-items:flex-end; justify-content:center; opacity:0; pointer-events:none; transition:opacity .2s;}
+  .scrim.on{opacity:1; pointer-events:auto;}
+  .sheet{width:100%; max-width:var(--maxw); background:#fff; border-radius:22px 22px 0 0; padding:24px 20px calc(24px + env(safe-area-inset-bottom)); transform:translateY(20px); transition:transform .26s var(--ease); box-shadow:0 -10px 40px rgba(0,0,0,.18);}
+  .scrim.on .sheet{transform:translateY(0);}
+  .sheet h2{font-size:21px; font-weight:800; letter-spacing:-.03em; margin:0 0 6px;}
+  .sheet p{color:var(--muted); font-size:14px; margin:0 0 18px;}
+  .grab{width:38px; height:4px; border-radius:4px; background:#e2e4e7; margin:0 auto 16px;}
+
+  .toast{position:fixed; left:50%; bottom:calc(96px + env(safe-area-inset-bottom)); transform:translate(-50%,16px); z-index:80; background:var(--ink); color:#fff; font-size:14px; font-weight:700; padding:12px 18px; border-radius:30px; opacity:0; pointer-events:none; transition:.26s var(--ease); box-shadow:0 8px 30px rgba(0,0,0,.25);}
+  .toast.on{opacity:1; transform:translate(-50%,0);}
+
+  .center{min-height:60dvh; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; text-align:center; color:var(--muted);}
+  .spinner{width:30px; height:30px; border:3px solid var(--line); border-top-color:var(--ink); border-radius:50%; animation:spin .7s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  @media(min-width:560px){ .hero h1{font-size:38px;} }
+</style>
+</head>
+<body>
+
+<!-- ============ 홈 ============ -->
+<main id="home" class="wrap hide">
+  <div class="brand" style="padding-top:8px;"><span class="dot"></span> 트레블</div>
+  <section class="hero">
+    <div class="eyebrow">NEOIX · 여행 날짜 맞추기</div>
+    <h1>다 같이 되는 날,<br><b>한 번에</b> 찾기</h1>
+    <p>방을 만들고 링크로 친구를 초대하세요. 각자 가능한 날을 칠하면 모두가 되는 날이 보입니다.</p>
+  </section>
+
+  <div class="makebox">
+    <div class="label">여행 이름</div>
+    <input id="newTitle" class="input" placeholder="예) 여름 제주 여행 ✈️" maxlength="40" />
+    <div class="label" style="margin-top:18px;">기간</div>
+    <div class="seg" id="monthSeg">
+      <button data-m="2">2개월</button>
+      <button data-m="3">3개월</button>
+      <button data-m="4" class="on">4개월</button>
+      <button data-m="6">6개월</button>
+    </div>
+    <button id="createBtn" class="btn" style="margin-top:22px;">여행 방 만들기</button>
+  </div>
+
+  <div class="recent hide" id="recentWrap">
+    <h3>최근 방</h3>
+    <div id="recentList"></div>
+  </div>
+</main>
+
+<!-- ============ 방 ============ -->
+<main id="room" class="wrap hide">
+  <div class="topbar">
+    <button class="iconbtn" id="homeBtn" aria-label="홈">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 10.5 12 3l9 7.5M5 9v11h14V9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <div class="title"><b id="roomTitle">여행</b><span id="roomMeta">참가자 0명</span></div>
+    <button class="iconbtn" id="shareBtn" aria-label="공유" style="background:var(--ink); color:#fff;">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none"><path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7M12 15V3m0 0L8 7m4-4 4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+  </div>
+
+  <div class="people" id="people"></div>
+  <div class="hint">가능한 날짜를 <b>드래그(스와이프)</b>해서 칠하세요</div>
+
+  <div id="calendar"></div>
+</main>
+
+<!-- 로딩 -->
+<div id="loading" class="wrap"><div class="center"><div class="spinner"></div><div>불러오는 중…</div></div></div>
+
+<!-- ============ 결과바 ============ -->
+<div id="resultbar" class="resultbar hide">
+  <div class="inner">
+    <div class="result" style="margin-bottom:8px;">
+      <div style="flex:1;">
+        <div class="big" id="resultBig">아직 칠한 날이 없어요</div>
+        <div class="sub" id="resultSub">가능한 날을 칠하면 베스트 날짜가 나와요</div>
+      </div>
+    </div>
+    <div class="bestlist" id="bestlist"></div>
+  </div>
+</div>
+
+<!-- ============ 이름 입력 시트 ============ -->
+<div id="nameScrim" class="scrim">
+  <div class="sheet">
+    <div class="grab"></div>
+    <h2>이 여행에서 내 이름은?</h2>
+    <p>참가자들이 누가 가능한지 알 수 있게 이름을 적어주세요.</p>
+    <input id="nameInput" class="input" placeholder="예) 정겸" maxlength="12" />
+    <button id="joinBtn" class="btn" style="margin-top:16px;">들어가기</button>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+const SB_URL = 'https://nroddjekdjwnwguwkudl.supabase.co';
+const SB_KEY = 'sb_publishable_Uygr7NmVn1wmqopNrb4FRw_CRWw7Xeg';
+const sb = createClient(SB_URL, SB_KEY, { realtime:{ params:{ eventsPerSecond:5 } } });
+
+/* ---------- 유틸 ---------- */
+const $ = (s,r=document)=>r.querySelector(s);
+const $$ = (s,r=document)=>[...r.querySelectorAll(s)];
+const PALETTE = ['#2563eb','#e0524b','#16a34a','#d97706','#7c3aed','#db2777','#0891b2','#ea580c','#0d9488','#9333ea','#c026d3','#65a30d'];
+const WDOW = ['일','월','화','수','목','금','토'];
+const pad = n => String(n).padStart(2,'0');
+const ymd = dt => `${dt.getFullYear()}-${pad(dt.getMonth()+1)}-${pad(dt.getDate())}`;
+const todayStr = ymd(new Date());
+
+function genId(n=7){
+  const c='abcdefghjkmnpqrstuvwxyz23456789';
+  const a=crypto.getRandomValues(new Uint8Array(n));
+  return Array.from(a, x=>c[x % c.length]).join('');
+}
+function fmtKDate(s){ const [y,m,d]=s.split('-'); const dt=new Date(+y,+m-1,+d); return `${+m}월 ${+d}일 (${WDOW[dt.getDay()]})`; }
+function toast(msg){ const t=$('#toast'); t.textContent=msg; t.classList.add('on'); clearTimeout(toast._t); toast._t=setTimeout(()=>t.classList.remove('on'),2000); }
+
+/* localStorage 헬퍼 */
+const LS = {
+  pid:  id=>`tv_pid_${id}`,
+  name: 'tv_name',
+  rooms:'tv_rooms',
+};
+function recentRooms(){ try{ return JSON.parse(localStorage.getItem(LS.rooms)||'[]'); }catch{ return []; } }
+function pushRecent(room){
+  let list = recentRooms().filter(r=>r.id!==room.id);
+  list.unshift({ id:room.id, title:room.title });
+  list = list.slice(0,6);
+  localStorage.setItem(LS.rooms, JSON.stringify(list));
+}
+
+/* ---------- 상태 ---------- */
+let room=null, me=null, parts=[], partMap={};
+let mySet=new Set(), myServerSet=new Set();
+let dayCount={}, total=0, maxCount=0;
+let channel=null;
+let dragging=false, paintMode=null, dragSeen=new Set();
+
+/* ============ 라우팅 ============ */
+function roomIdFromUrl(){ return new URLSearchParams(location.search).get('room'); }
+
+async function boot(){
+  const id = roomIdFromUrl();
+  if(id){ await enterRoom(id); }
+  else  { showHome(); }
+}
+
+/* ============ 홈 ============ */
+let chosenMonths = 4;
+function showHome(){
+  $('#loading').classList.add('hide');
+  $('#room').classList.add('hide');
+  $('#resultbar').classList.add('hide');
+  $('#home').classList.remove('hide');
+  if(channel){ sb.removeChannel(channel); channel=null; }
+
+  // 최근 방
+  const list = recentRooms();
+  if(list.length){
+    $('#recentWrap').classList.remove('hide');
+    $('#recentList').innerHTML = list.map(r=>`
+      <a class="roomrow" href="?room=${encodeURIComponent(r.id)}" style="text-decoration:none;color:inherit;">
+        <span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M8 2v3M16 2v3M3.5 8.5h17M5 5h14a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>
+        <span class="t"><b>${escapeHtml(r.title)}</b><span>방 코드 ${escapeHtml(r.id)}</span></span>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style="color:var(--muted)"><path d="m9 6 6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>`).join('');
+  } else $('#recentWrap').classList.add('hide');
+}
+function escapeHtml(s){ return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+$('#monthSeg').addEventListener('click', e=>{
+  const b=e.target.closest('button'); if(!b) return;
+  $$('#monthSeg button').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on'); chosenMonths=+b.dataset.m;
+});
+$('#newTitle').addEventListener('keydown', e=>{ if(e.key==='Enter') $('#createBtn').click(); });
+$('#createBtn').addEventListener('click', async ()=>{
+  const title = $('#newTitle').value.trim() || '우리 여행';
+  const btn=$('#createBtn'); btn.disabled=true; btn.textContent='만드는 중…';
+  const now=new Date();
+  const id = genId();
+  const { error } = await sb.from('travel_rooms').insert({
+    id, title, months:chosenMonths, start_ym:`${now.getFullYear()}-${pad(now.getMonth()+1)}`
+  });
+  if(error){ btn.disabled=false; btn.textContent='여행 방 만들기'; toast('생성 실패: '+error.message); return; }
+  history.pushState({}, '', `?room=${id}`);
+  await enterRoom(id);
+});
+
+$('#homeBtn').addEventListener('click', ()=>{ history.pushState({}, '', location.pathname); showHome(); });
+window.addEventListener('popstate', boot);
+
+/* ============ 방 입장 ============ */
+async function enterRoom(id){
+  $('#home').classList.add('hide');
+  $('#room').classList.add('hide');
+  $('#resultbar').classList.add('hide');
+  $('#loading').classList.remove('hide');
+
+  const { data, error } = await sb.from('travel_rooms').select('*').eq('id',id).single();
+  if(error || !data){ $('#loading').classList.add('hide'); toast('방을 찾을 수 없어요'); showHome(); return; }
+  room = data;
+  pushRecent(room);
+
+  $('#roomTitle').textContent = room.title;
+  buildCalendar();
+
+  // 내 참가자 확인
+  const savedPid = localStorage.getItem(LS.pid(id));
+  if(savedPid){
+    const { data:p } = await sb.from('travel_participants').select('*').eq('id',savedPid).maybeSingle();
+    if(p){ me=p; }
+  }
+  $('#loading').classList.add('hide');
+  $('#room').classList.remove('hide');
+  $('#resultbar').classList.remove('hide');
+
+  await loadData();
+  subscribe();
+
+  if(!me){ openNameSheet(); }
+}
+
+/* 이름 입력 */
+function openNameSheet(){
+  $('#nameInput').value = localStorage.getItem(LS.name) || '';
+  $('#nameScrim').classList.add('on');
+  setTimeout(()=>$('#nameInput').focus(), 280);
+}
+$('#nameInput').addEventListener('keydown', e=>{ if(e.key==='Enter') $('#joinBtn').click(); });
+$('#joinBtn').addEventListener('click', async ()=>{
+  const name = $('#nameInput').value.trim();
+  if(!name){ $('#nameInput').focus(); return; }
+  const btn=$('#joinBtn'); btn.disabled=true; btn.textContent='들어가는 중…';
+  const color = PALETTE[ parts.length % PALETTE.length ];
+  const { data, error } = await sb.from('travel_participants')
+    .insert({ room_id:room.id, name, color }).select().single();
+  btn.disabled=false; btn.textContent='들어가기';
+  if(error){ toast('실패: '+error.message); return; }
+  me=data; localStorage.setItem(LS.pid(room.id), me.id); localStorage.setItem(LS.name, name);
+  $('#nameScrim').classList.remove('on');
+  document.documentElement.style.setProperty('--myc', me.color);
+  await loadData();
+});
+
+/* ============ 데이터 로드 & 집계 ============ */
+async function loadData(){
+  const [{ data:ps }, { data:av }] = await Promise.all([
+    sb.from('travel_participants').select('*').eq('room_id',room.id).order('created_at'),
+    sb.from('travel_availability').select('participant_id,d').eq('room_id',room.id),
+  ]);
+  parts = ps||[]; partMap={}; parts.forEach(p=>partMap[p.id]=p);
+  total = parts.length;
+  if(me){ const fresh=partMap[me.id]; if(fresh) me=fresh; document.documentElement.style.setProperty('--myc', me.color); }
+
+  // 집계
+  dayCount={}; maxCount=0;
+  const serverMine=new Set();
+  (av||[]).forEach(r=>{
+    dayCount[r.d]=(dayCount[r.d]||0)+1;
+    if(dayCount[r.d]>maxCount) maxCount=dayCount[r.d];
+    if(me && r.participant_id===me.id) serverMine.add(r.d);
+  });
+  // 드래그 중이 아닐 때만 내 선택을 서버 기준으로 동기화
+  if(!dragging){ myServerSet=serverMine; mySet=new Set(serverMine); }
+
+  renderPeople();
+  paintAllCells();
+  renderResult();
+}
+
+function renderPeople(){
+  $('#roomMeta').textContent = `참가자 ${total}명`;
+  $('#people').innerHTML = parts.map(p=>{
+    const isMe = me && p.id===me.id;
+    return `<span class="chip ${isMe?'me':''}"><i style="background:${p.color}"></i>${escapeHtml(p.name)}${isMe?' (나)':''}</span>`;
+  }).join('') || '<span class="chip" style="color:var(--muted)">아직 아무도 없어요</span>';
+}
+
+/* ============ 캘린더 빌드 ============ */
+function buildCalendar(){
+  const [sy,sm] = (room.start_ym || ymd(new Date()).slice(0,7)).split('-').map(Number);
+  const cal = $('#calendar'); cal.innerHTML='';
+  for(let i=0;i<room.months;i++){
+    const base = new Date(sy, sm-1+i, 1);
+    const y=base.getFullYear(), m=base.getMonth();
+    const first = new Date(y,m,1).getDay();
+    const days = new Date(y,m+1,0).getDate();
+
+    const sec=document.createElement('section'); sec.className='month';
+    let html = `<h2>${y}년 ${m+1}월</h2>
+      <div class="dow">${WDOW.map(d=>`<span>${d}</span>`).join('')}</div>
+      <div class="grid">`;
+    for(let b=0;b<first;b++) html += `<div class="cell"><div class="day empty"></div></div>`;
+    for(let d=1; d<=days; d++){
+      const ds = `${y}-${pad(m+1)}-${pad(d)}`;
+      const dow = new Date(y,m,d).getDay();
+      const past = ds < todayStr;
+      const cls = [past?'past':'', dow===0?'sun':'', dow===6?'sat':'', ds===todayStr?'today':''].join(' ');
+      html += `<div class="cell"><div class="day ${cls}" data-d="${ds}">${d}<span class="cnt"></span></div></div>`;
+    }
+    html += `</div>`;
+    sec.innerHTML=html;
+    cal.appendChild(sec);
+  }
+  if(me) document.documentElement.style.setProperty('--myc', me.color);
+}
+
+/* 셀 색칠(집계 반영) */
+function paintAllCells(){
+  $$('#calendar .day[data-d]').forEach(el=>{
+    if(el.classList.contains('past')) return;
+    const ds=el.dataset.d;
+    applyCell(el, ds);
+  });
+}
+function applyCell(el, ds){
+  const c = dayCount[ds]||0;
+  const ratio = total>0 ? c/total : 0;
+  const dark = ratio>0.55;
+  el.style.background = c===0 ? '#fff' : `rgba(17,19,21,${(0.12 + ratio*0.78).toFixed(3)})`;
+  el.classList.toggle('has', c>0);
+  el.classList.toggle('dark', dark);
+  el.classList.toggle('mine', mySet.has(ds));
+  el.classList.toggle('best', c>0 && c===maxCount && total>=2);
+  const cnt=el.querySelector('.cnt'); if(cnt) cnt.textContent = c>0 ? c : '';
+}
+
+/* ============ 드래그 페인팅 ============ */
+function cellFromPoint(x,y){
+  const el=document.elementFromPoint(x,y);
+  if(!el) return null;
+  const day=el.closest('.day[data-d]');
+  if(!day || day.classList.contains('past')) return null;
+  return day;
+}
+function startDrag(target, x, y){
+  if(!me){ openNameSheet(); return; }
+  const ds=target.dataset.d;
+  dragging=true; dragSeen=new Set();
+  paintMode = mySet.has(ds) ? 'erase' : 'paint';
+  applyDrag(target);
+}
+function applyDrag(day){
+  const ds=day.dataset.d;
+  if(dragSeen.has(ds)) return;
+  dragSeen.add(ds);
+  if(paintMode==='paint') mySet.add(ds); else mySet.delete(ds);
+  // 낙관적 카운트 갱신
+  const delta = paintMode==='paint' ? 1 : -1;
+  if((paintMode==='paint') !== myServerSet.has(ds)){
+    // 화면 즉시 반영용 임시 카운트 (서버상태와 다를 때만)
+  }
+  recomputeLocalCount();
+  applyCell(day, ds);
+}
+function recomputeLocalCount(){
+  // 내 변경을 반영해 maxCount 재계산 (다른 사람 카운트는 서버값 유지)
+  // dayCount는 서버 기준 + 내 미반영 변경 보정
+  maxCount=0;
+  for(const k in dayCount){ if(dayCount[k]>maxCount) maxCount=dayCount[k]; }
+}
+
+document.addEventListener('pointerdown', e=>{
+  const day = e.target.closest && e.target.closest('.day[data-d]');
+  if(!day || day.classList.contains('past') || day.classList.contains('empty')) return;
+  e.preventDefault();
+  startDrag(day, e.clientX, e.clientY);
+}, {passive:false});
+
+document.addEventListener('pointermove', e=>{
+  if(!dragging) return;
+  e.preventDefault();
+  const day=cellFromPoint(e.clientX, e.clientY);
+  if(day) applyDrag(day);
+}, {passive:false});
+
+async function endDrag(){
+  if(!dragging) return;
+  dragging=false;
+  // diff 계산: mySet vs myServerSet
+  const adds=[...mySet].filter(d=>!myServerSet.has(d));
+  const dels=[...myServerSet].filter(d=>!mySet.has(d));
+  if(!adds.length && !dels.length) return;
+
+  // 낙관적: 서버 dayCount에 내 변경 즉시 반영
+  adds.forEach(d=>{ dayCount[d]=(dayCount[d]||0)+1; });
+  dels.forEach(d=>{ dayCount[d]=Math.max(0,(dayCount[d]||0)-1); });
+  recomputeLocalCount(); paintAllCells(); renderResult();
+
+  myServerSet=new Set(mySet);
+  try{
+    if(adds.length){
+      await sb.from('travel_availability').upsert(
+        adds.map(d=>({ participant_id:me.id, room_id:room.id, d })),
+        { onConflict:'participant_id,d' }
+      );
+    }
+    if(dels.length){
+      await sb.from('travel_availability').delete().eq('participant_id',me.id).in('d', dels);
+    }
+  }catch(err){ toast('저장 중 오류'); }
+}
+document.addEventListener('pointerup', endDrag);
+document.addEventListener('pointercancel', endDrag);
+
+/* ============ 결과(베스트 날짜) ============ */
+function renderResult(){
+  const entries = Object.entries(dayCount).filter(([d,c])=>c>0).sort((a,b)=> b[1]-a[1] || (a[0]<b[0]?-1:1));
+  const big=$('#resultBig'), sub=$('#resultSub'), list=$('#bestlist');
+  if(!entries.length || total===0){
+    big.textContent='아직 칠한 날이 없어요';
+    sub.textContent= total<2 ? '친구를 초대하고 가능한 날을 칠해보세요' : '가능한 날을 칠하면 베스트 날짜가 나와요';
+    list.innerHTML=''; return;
+  }
+  const top = entries[0][1];
+  const bests = entries.filter(([d,c])=>c===top);
+  big.textContent = top===total ? `🎉 ${top}명 모두 되는 날!` : `최다 ${top}/${total}명 가능`;
+  sub.textContent = `${bests.length}개 날짜가 후보예요`;
+
+  list.innerHTML = entries.slice(0,10).map(([d,c])=>`
+    <div class="bestpill ${c===top?'':'alt'}">
+      <span class="d">${fmtKDate(d)}</span>
+      <span class="c">${c}/${total}명</span>
+    </div>`).join('');
+}
+
+/* ============ 실시간 ============ */
+function subscribe(){
+  if(channel) sb.removeChannel(channel);
+  channel = sb.channel(`travel:${room.id}`)
+    .on('postgres_changes', { event:'*', schema:'public', table:'travel_availability', filter:`room_id=eq.${room.id}` }, ()=>{ if(!dragging) loadData(); })
+    .on('postgres_changes', { event:'*', schema:'public', table:'travel_participants', filter:`room_id=eq.${room.id}` }, ()=> loadData())
+    .subscribe();
+}
+
+/* ============ 공유 ============ */
+$('#shareBtn').addEventListener('click', async ()=>{
+  const url = location.origin + location.pathname + '?room=' + room.id;
+  const data = { title:`트레블 · ${room.title}`, text:`"${room.title}" 여행 날짜 맞추기에 초대합니다. 가능한 날을 칠해주세요!`, url };
+  if(navigator.share){ try{ await navigator.share(data); return; }catch{} }
+  try{ await navigator.clipboard.writeText(url); toast('초대 링크를 복사했어요'); }
+  catch{ prompt('초대 링크', url); }
+});
+
+/* 시작 */
+boot();
+</script>
+</body>
+</html>
