@@ -3,255 +3,279 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NEOIX — Design Preview</title>
+<title>NEOIX AI CAMPUS — Design Preview</title>
 <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#0a0a0c; --panel:#0e0e11;
-  --text:#ededf0; --muted:#8b8b95; --faint:#56565f;
-  --line:rgba(255,255,255,.08); --line2:rgba(255,255,255,.14);
-  --violet:#7c6cf6;            /* 단 하나의 포인트 컬러 — 아주 절제해서 사용 */
+  --bg:#0a0910; --panel:#100d1c; --panel2:#15112a;
+  --text:#f3f1f8; --muted:#9a93b0; --faint:#615a78;
+  --line:rgba(255,255,255,.09); --line2:rgba(255,255,255,.16);
+  --violet:#6d4bff;            /* 솔리드 브랜드 보라 — 색블록으로 자신있게 */
+  --violet-hi:#8a6dff; --violet-dim:#1a1330;
   --kr:'Pretendard Variable',-apple-system,sans-serif;
-  --mono:ui-monospace,'SF Mono',Menlo,monospace;
+  --eng:'Space Grotesk',sans-serif;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased;}
 body{background:var(--bg);color:var(--text);font-family:var(--kr);line-height:1.5;overflow-x:hidden;}
-a{color:inherit;text-decoration:none;}
-button{font:inherit;color:inherit;background:none;border:none;cursor:pointer;}
-::selection{background:rgba(124,108,246,.3);}
-::-webkit-scrollbar{width:9px;}::-webkit-scrollbar-thumb{background:#26262c;border-radius:5px;}
-
-.wrap{max-width:1080px;margin:0 auto;padding:0 32px;}
-.label{font-family:var(--mono);font-size:12px;letter-spacing:.12em;color:var(--faint);text-transform:uppercase;}
-.label .i{color:var(--violet);}      /* 번호만 보라 */
+a{color:inherit;text-decoration:none;}button{font:inherit;color:inherit;background:none;border:none;cursor:pointer;}
+::selection{background:var(--violet);color:#fff;}
+::-webkit-scrollbar{width:9px;}::-webkit-scrollbar-thumb{background:#2a2342;border-radius:5px;}
+.wrap{max-width:1180px;margin:0 auto;padding:0 36px;}
+.eng{font-family:var(--eng);}
+.kicker{font-family:var(--eng);font-size:12px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--violet-hi);}
 
 /* nav */
-nav{position:fixed;top:0;left:0;right:0;z-index:50;border-bottom:1px solid var(--line);
-  background:rgba(10,10,12,.72);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);}
-.nav-in{max-width:1080px;margin:0 auto;padding:20px 32px;display:flex;align-items:center;justify-content:space-between;}
-.logo{font-size:18px;font-weight:800;letter-spacing:-.02em;display:flex;align-items:center;gap:3px;}
-.logo .dot{width:5px;height:5px;border-radius:50%;background:var(--violet);margin-top:9px;}   /* 유일한 로고 포인트 */
-.nav-links{display:flex;gap:34px;font-size:14px;color:var(--muted);}
-.nav-links a{transition:color .2s;}.nav-links a:hover{color:var(--text);}
-.nav-cta{font-size:14px;color:var(--text);display:inline-flex;align-items:center;gap:7px;}
-.nav-cta .ar{color:var(--violet);transition:transform .2s;}
-.nav-cta:hover .ar{transform:translateX(3px);}
+nav{position:fixed;top:0;left:0;right:0;z-index:60;border-bottom:1px solid var(--line);background:rgba(10,9,16,.78);backdrop-filter:blur(14px);}
+.nav-in{max-width:1180px;margin:0 auto;padding:18px 36px;display:flex;align-items:center;justify-content:space-between;}
+.logo{font-family:var(--eng);font-weight:700;font-size:18px;letter-spacing:-.01em;}
+.logo b{color:var(--violet-hi);}
+.nav-links{display:flex;gap:32px;font-size:14px;color:var(--muted);}
+.nav-links a:hover{color:#fff;}
+.nav-cta{font-size:13px;font-weight:700;padding:10px 20px;background:var(--violet);color:#fff;border-radius:8px;transition:background .2s;}
+.nav-cta:hover{background:var(--violet-hi);}
 
 /* hero */
-.hero{padding:210px 0 130px;border-bottom:1px solid var(--line);}
-.hero .label{margin-bottom:46px;}
-.hero h1{font-size:clamp(42px,7vw,86px);font-weight:800;letter-spacing:-.035em;line-height:1.02;}
-.hero h1 .q{color:var(--faint);font-weight:300;}   /* 마침표만 흐리게 — 디테일 */
-.hero .sub{margin-top:34px;font-size:clamp(16px,1.6vw,19px);color:var(--muted);max-width:520px;line-height:1.7;}
-.hero .meta{margin-top:54px;display:flex;align-items:center;gap:18px;font-size:14px;color:var(--muted);flex-wrap:wrap;}
-.hero .meta .s{width:4px;height:4px;border-radius:50%;background:var(--violet);}
-.hero .acts{margin-top:44px;display:flex;align-items:center;gap:30px;flex-wrap:wrap;}
-.linkcta{font-size:15px;font-weight:600;display:inline-flex;align-items:center;gap:9px;padding-bottom:4px;border-bottom:1px solid var(--line2);transition:border-color .25s;}
-.linkcta .ar{color:var(--violet);transition:transform .25s;}
-.linkcta:hover{border-color:var(--text);}
-.linkcta:hover .ar{transform:translateX(4px);}
-.linkcta.ghost{color:var(--muted);border-bottom-color:transparent;}
-.linkcta.ghost:hover{color:var(--text);}
+.hero{padding:170px 0 90px;position:relative;}
+.hero .top{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:40px;}
+.chip{font-family:var(--eng);font-size:13px;font-weight:600;padding:9px 16px;border:1px solid var(--line2);border-radius:8px;color:var(--text);}
+.chip.fill{background:var(--violet);border-color:var(--violet);}
+.hero h1{font-size:clamp(46px,8.5vw,118px);font-weight:800;letter-spacing:-.04em;line-height:.96;}
+.mark{background:var(--violet);color:#fff;padding:0 .1em;border-radius:4px;-webkit-box-decoration-break:clone;box-decoration-break:clone;}
+.hero .sub{margin-top:30px;font-size:clamp(16px,1.7vw,20px);color:var(--muted);max-width:560px;line-height:1.65;}
+.hero .acts{margin-top:42px;display:flex;gap:14px;flex-wrap:wrap;}
+.btn{font-size:15px;font-weight:700;padding:16px 30px;border-radius:10px;display:inline-flex;align-items:center;gap:9px;transition:all .2s;}
+.btn.primary{background:var(--violet);color:#fff;}.btn.primary:hover{background:var(--violet-hi);transform:translateY(-2px);}
+.btn.line{border:1px solid var(--line2);color:var(--text);}.btn.line:hover{border-color:#fff;}
+
+/* facts */
+.facts{border-top:1px solid var(--line);border-bottom:1px solid var(--line);}
+.facts .wrap{display:grid;grid-template-columns:repeat(4,1fr);}
+.fact{padding:32px 0;border-left:1px solid var(--line);padding-left:26px;}
+.fact:first-child{border-left:none;padding-left:0;}
+.fact .n{font-family:var(--eng);font-size:clamp(28px,3.6vw,42px);font-weight:700;letter-spacing:-.02em;}
+.fact .l{font-size:13px;color:var(--muted);margin-top:4px;}
 
 /* section */
-section{padding:120px 0;border-bottom:1px solid var(--line);}
-.sec-head{display:grid;grid-template-columns:200px 1fr;gap:40px;margin-bottom:64px;}
-.sec-head h2{font-size:clamp(26px,3.4vw,40px);font-weight:800;letter-spacing:-.025em;line-height:1.15;}
-.sec-head .d{color:var(--muted);font-size:15px;line-height:1.7;max-width:420px;margin-top:14px;}
+section{padding:110px 0;}
+.shead{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap;margin-bottom:50px;}
+.shead h2{font-size:clamp(30px,4.6vw,58px);font-weight:800;letter-spacing:-.03em;line-height:1.04;margin-top:16px;}
+.shead .d{color:var(--muted);font-size:15px;max-width:380px;line-height:1.7;}
 
-/* intro */
-.intro p{font-size:clamp(22px,2.8vw,34px);font-weight:500;letter-spacing:-.02em;line-height:1.5;max-width:880px;color:#cdcdd4;}
-.intro p b{color:var(--text);font-weight:700;}
-.intro .u{color:var(--text);border-bottom:2px solid var(--violet);padding-bottom:1px;}  /* 핵심 단어 한 곳만 보라 밑줄 */
+/* lineup */
+.lineup{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+.spk{position:relative;border-radius:14px;overflow:hidden;aspect-ratio:1/1.18;border:1px solid var(--line);
+  background:var(--panel);transition:transform .3s,border-color .3s;cursor:pointer;}
+.spk:hover{transform:translateY(-5px);border-color:var(--violet);}
+.spk .ph{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--eng);font-size:64px;font-weight:700;color:#241c3d;background:var(--panel2);}
+.spk .cat{position:absolute;top:12px;left:12px;font-size:11px;font-weight:700;padding:5px 10px;border-radius:6px;background:var(--violet);color:#fff;}
+.spk .info{position:absolute;left:0;right:0;bottom:0;padding:16px;background:linear-gradient(0deg,rgba(10,9,16,.96),transparent);}
+.spk .nm{font-size:18px;font-weight:800;}
+.spk .ro{font-size:12px;color:var(--muted);margin-top:2px;}
 
-/* program — 에디토리얼 아젠다 */
-.rows{border-top:1px solid var(--line);}
-.row{display:grid;grid-template-columns:120px 150px 1fr 130px;gap:24px;align-items:baseline;padding:30px 8px;
-  border-bottom:1px solid var(--line);transition:background .25s,padding-left .25s;cursor:default;}
-.row:hover{background:rgba(255,255,255,.018);padding-left:18px;}
-.row .day{font-family:var(--mono);font-size:13px;color:var(--faint);}
-.row .cat{font-size:13px;color:var(--muted);}
-.row .ti{font-size:clamp(19px,2.2vw,26px);font-weight:700;letter-spacing:-.02em;}
-.row .ti .ks{display:block;font-size:14px;font-weight:400;color:var(--muted);margin-top:6px;letter-spacing:0;}
-.row .meta2{font-family:var(--mono);font-size:12px;color:var(--faint);text-align:right;}
-.row.on .cat{color:var(--violet);}    /* 진행 트랙만 카테고리 보라 */
+/* timetable */
+.tt-wrap{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:8px;overflow-x:auto;}
+.tt{min-width:760px;display:grid;grid-template-columns:78px repeat(4,1fr);gap:8px;}
+.tt .h{padding:14px 12px;font-family:var(--eng);font-size:12px;font-weight:700;letter-spacing:.05em;color:var(--muted);text-transform:uppercase;text-align:center;}
+.tt .h.t{text-align:left;}
+.tt .tm{font-family:var(--eng);font-size:13px;color:var(--faint);padding:18px 12px;}
+.cell{border-radius:11px;padding:16px 15px;background:var(--violet-dim);border:1px solid transparent;min-height:74px;transition:transform .2s;}
+.cell:hover{transform:scale(1.015);}
+.cell .ti{font-size:14px;font-weight:700;line-height:1.3;}
+.cell .by{font-size:12px;color:var(--muted);margin-top:5px;}
+.cell.key{background:var(--violet);}
+.cell.key .by{color:rgba(255,255,255,.75);}
+.cell.empty{background:transparent;border:1px dashed var(--line);}
 
-/* speakers — 타이포 리스트 */
-.spk-rows{border-top:1px solid var(--line);}
-.srow{display:grid;grid-template-columns:60px 1fr 1fr 40px;gap:24px;align-items:center;padding:26px 8px;border-bottom:1px solid var(--line);transition:background .25s,padding-left .25s;}
-.srow:hover{background:rgba(255,255,255,.018);padding-left:18px;}
-.srow .no{font-family:var(--mono);font-size:13px;color:var(--faint);}
-.srow .nm{font-size:clamp(20px,2.4vw,28px);font-weight:700;letter-spacing:-.02em;}
-.srow .ro{font-size:14px;color:var(--muted);}
-.srow .ro b{color:var(--text);font-weight:600;}
-.srow .ar{text-align:right;color:var(--faint);transition:color .2s,transform .2s;}
-.srow:hover .ar{color:var(--violet);transform:translateX(3px);}
+/* tracks */
+.tracks{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;}
+.tk{border:1px solid var(--line);border-radius:16px;padding:30px 30px 26px;background:var(--panel);transition:border-color .3s,background .3s;}
+.tk:hover{border-color:var(--violet);}
+.tk .no{font-family:var(--eng);font-size:13px;color:var(--violet-hi);font-weight:700;}
+.tk h3{font-size:24px;font-weight:800;letter-spacing:-.02em;margin:14px 0 8px;}
+.tk p{color:var(--muted);font-size:14px;line-height:1.65;}
+.tk .tag{display:inline-block;margin-top:16px;font-size:12px;color:var(--muted);border:1px solid var(--line);border-radius:100px;padding:5px 12px;}
+
+/* ticket CTA — 풀 보라 블록 */
+.ticket{background:var(--violet);color:#fff;border-radius:24px;padding:64px 56px;display:flex;align-items:center;justify-content:space-between;gap:40px;flex-wrap:wrap;}
+.ticket .kicker{color:rgba(255,255,255,.7);}
+.ticket h2{font-size:clamp(30px,4.4vw,52px);font-weight:800;letter-spacing:-.03em;line-height:1.05;margin-top:14px;}
+.ticket p{color:rgba(255,255,255,.82);font-size:15px;margin-top:14px;max-width:420px;line-height:1.6;}
+.ticket .price{font-family:var(--eng);font-size:15px;margin-top:18px;opacity:.85;}
+.btn.dark{background:#0a0910;color:#fff;}.btn.dark:hover{background:#1a1430;transform:translateY(-2px);}
 
 /* partners */
-.partners{display:flex;flex-wrap:wrap;gap:14px 40px;align-items:center;}
-.partners span{font-size:20px;font-weight:700;letter-spacing:-.01em;color:#3f3f47;transition:color .25s;}
+.partners{display:flex;flex-wrap:wrap;gap:16px 44px;align-items:center;}
+.partners span{font-family:var(--eng);font-size:21px;font-weight:700;color:#3a3450;transition:color .25s;}
 .partners span:hover{color:var(--muted);}
 
 /* footer */
-footer{padding:90px 0 70px;}
-.ft-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:40px;margin-bottom:60px;}
-.ft-logo{font-size:26px;font-weight:800;letter-spacing:-.02em;}
-.ft-logo .dot{color:var(--violet);}
-.ft-tag{color:var(--muted);font-size:14px;margin-top:14px;max-width:280px;line-height:1.7;}
-.ft-col h4{font-family:var(--mono);font-size:11px;letter-spacing:.12em;color:var(--faint);text-transform:uppercase;margin-bottom:18px;}
-.ft-col a,.ft-col p{display:block;color:var(--muted);font-size:14px;margin-bottom:10px;transition:color .2s;}
-.ft-col a:hover{color:var(--text);}
-.ft-biz{border-top:1px solid var(--line);padding-top:28px;display:flex;flex-wrap:wrap;gap:8px 28px;font-size:12.5px;color:var(--faint);}
+footer{border-top:1px solid var(--line);padding:70px 0 60px;}
+.ft-grid{display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:36px;margin-bottom:48px;}
+.ft-logo{font-family:var(--eng);font-size:24px;font-weight:700;}.ft-logo b{color:var(--violet-hi);}
+.ft-tag{color:var(--muted);font-size:14px;margin-top:12px;max-width:260px;line-height:1.6;}
+.ft-col h4{font-family:var(--eng);font-size:11px;letter-spacing:.12em;color:var(--faint);text-transform:uppercase;margin-bottom:16px;}
+.ft-col a,.ft-col p{display:block;color:var(--muted);font-size:14px;margin-bottom:9px;}.ft-col a:hover{color:#fff;}
+.ft-biz{border-top:1px solid var(--line);padding-top:26px;display:flex;flex-wrap:wrap;gap:6px 26px;font-size:12.5px;color:var(--faint);}
 .ft-biz b{color:var(--muted);font-weight:500;}
-.ft-copy{margin-top:24px;font-size:12.5px;color:var(--faint);}
+.ft-copy{margin-top:20px;font-size:12.5px;color:var(--faint);}
 
-/* reveal */
-.rv{opacity:0;transform:translateY(20px);transition:opacity .9s ease,transform .9s cubic-bezier(.2,.8,.2,1);}
+.rv{opacity:0;transform:translateY(22px);transition:opacity .8s ease,transform .8s cubic-bezier(.2,.8,.2,1);}
 .rv.in{opacity:1;transform:none;}
 
-@media(max-width:760px){
-  .nav-links{display:none;}
-  .hero{padding:150px 0 90px;}
-  .sec-head{grid-template-columns:1fr;gap:16px;margin-bottom:40px;}
-  section{padding:80px 0;}
-  .row{grid-template-columns:1fr;gap:8px;}
-  .row .meta2{text-align:left;}
-  .srow{grid-template-columns:30px 1fr 30px;}
-  .srow .ro{display:none;}
-  .ft-grid{grid-template-columns:1fr;gap:32px;}
+@media(max-width:880px){
+  .facts .wrap{grid-template-columns:1fr 1fr;}
+  .fact:nth-child(3){border-left:none;padding-left:0;}
+  .lineup{grid-template-columns:1fr 1fr;}
+  .tracks{grid-template-columns:1fr;}
+}
+@media(max-width:640px){
+  nav .nav-links{display:none;}
+  .hero{padding:130px 0 70px;}
+  section{padding:74px 0;}
+  .ticket{padding:40px 28px;}
+  .ft-grid{grid-template-columns:1fr;}
 }
 </style>
 </head>
 <body>
 
-<nav>
-  <div class="nav-in">
-    <div class="logo">NEOIX<span class="dot"></span></div>
-    <div class="nav-links">
-      <a href="#intro">캠퍼스</a><a href="#program">프로그램</a><a href="#speakers">연사</a><a href="#partners">후원</a>
-    </div>
-    <a class="nav-cta" href="#">신청 <span class="ar">→</span></a>
-  </div>
-</nav>
+<nav><div class="nav-in">
+  <div class="logo">NEOIX <b>/</b> AI CAMPUS</div>
+  <div class="nav-links"><a href="#lineup">라인업</a><a href="#timetable">타임테이블</a><a href="#tracks">트랙</a><a href="#ticket">티켓</a></div>
+  <a class="nav-cta" href="#ticket">참가 신청</a>
+</div></nav>
 
 <!-- HERO -->
-<header class="hero">
-  <div class="wrap">
-    <div class="label rv">NEOIX <span class="i">/</span> AI CAMPUS — 2026</div>
-    <h1 class="rv">AI를 만드는 사람들이<br>모이는 한 주<span class="q">.</span></h1>
-    <p class="sub rv">아카데미 · 포럼 · 학회 · 커피챗. 대한민국 AI 생태계가 한자리에 모여 배우고 연결되는 이틀.</p>
-    <div class="meta rv"><span>2026. 09. 05 – 06</span><span class="s"></span><span>COEX, Seoul</span></div>
-    <div class="acts rv">
-      <a class="linkcta" href="#">티켓 보기 <span class="ar">→</span></a>
-      <a class="linkcta ghost" href="#program">프로그램 보기</a>
-    </div>
+<header class="hero"><div class="wrap">
+  <div class="top rv">
+    <span class="chip fill eng">2026. 09. 05 – 06</span>
+    <span class="chip eng">COEX · Seoul</span>
+    <span class="chip eng">4 TRACKS · 64 SPEAKERS</span>
   </div>
-</header>
+  <h1 class="rv">AI를 만드는<br>사람들의 <span class="mark">컨퍼런스</span></h1>
+  <p class="sub rv">아카데미 · 포럼 · 학회 · 커피챗. 대한민국 AI 생태계가 한자리에 모이는 이틀. 64명의 연사, 48개의 세션.</p>
+  <div class="acts rv">
+    <a class="btn primary" href="#ticket">참가 신청 →</a>
+    <a class="btn line" href="#timetable">타임테이블 보기</a>
+  </div>
+</div></header>
 
-<!-- INTRO -->
-<section id="intro" class="intro">
-  <div class="wrap rv">
-    <p>NEOIX AI CAMPUS는 강의를 파는 행사가 아니라, <b>만드는 사람들의 담론</b>이 오가는 자리입니다. 현업 빌더와 리서처, 창업가가 모여 <span class="u">새로운 아이디어를 확장</span>합니다.</p>
-  </div>
-</section>
+<!-- FACTS -->
+<div class="facts"><div class="wrap">
+  <div class="fact rv"><div class="n">2 DAYS</div><div class="l">09.05 – 09.06</div></div>
+  <div class="fact rv"><div class="n">64</div><div class="l">연사</div></div>
+  <div class="fact rv"><div class="n">48</div><div class="l">세션</div></div>
+  <div class="fact rv"><div class="n">4</div><div class="l">트랙 (아카데미·포럼·학회·커피챗)</div></div>
+</div></div>
 
-<!-- PROGRAM -->
-<section id="program">
-  <div class="wrap">
-    <div class="sec-head rv">
-      <div class="label"><span class="i">01</span> — PROGRAM</div>
-      <div><h2>이틀, 네 개의 트랙</h2><div class="d">아카데미 · 포럼 · 학회 · 커피챗이 같은 시간 다른 무대에서 진행됩니다.</div></div>
-    </div>
-    <div class="rows rv">
-      <div class="row on">
-        <div class="day">DAY 1 · 09.05</div><div class="cat">FORUM</div>
-        <div class="ti">생성형 AI, 비즈니스를 이미 바꿨다<span class="ks">엔터프라이즈 AX 사례와 전략</span></div>
-        <div class="meta2">2 SESSIONS</div>
-      </div>
-      <div class="row">
-        <div class="day">DAY 1 · 09.05</div><div class="cat">ACADEMY</div>
-        <div class="ti">당신의 AI 전환, 지금 시작<span class="ks">바이브코딩 · Agentic Engineering 핸즈온</span></div>
-        <div class="meta2">WORKSHOP</div>
-      </div>
-      <div class="row">
-        <div class="day">DAY 2 · 09.06</div><div class="cat">CONFERENCE</div>
-        <div class="ti">리서치와 산업의 접점<span class="ks">한국어 LLM · 평가 · 데이터셋</span></div>
-        <div class="meta2">ACADEMIC</div>
-      </div>
-      <div class="row">
-        <div class="day">DAY 2 · 09.06</div><div class="cat">COFFEE CHAT</div>
-        <div class="ti">현업자와 1:1, 소그룹<span class="ks">진로 · 실무 · 창업, 가볍게</span></div>
-        <div class="meta2">1:1 / GROUP</div>
-      </div>
-    </div>
+<!-- LINEUP -->
+<section id="lineup"><div class="wrap">
+  <div class="shead rv">
+    <div><div class="kicker">Lineup</div><h2>무대를 채우는 연사</h2></div>
+    <div class="d">현업 최전선의 빌더 · 리서처 · 창업가가 직접 전하는 인사이트.</div>
   </div>
-</section>
+  <div class="lineup rv" id="lineupGrid"></div>
+</div></section>
 
-<!-- SPEAKERS -->
-<section id="speakers">
-  <div class="wrap">
-    <div class="sec-head rv">
-      <div class="label"><span class="i">02</span> — SPEAKERS</div>
-      <div><h2>무대를 채우는 사람들</h2><div class="d">현업 최전선의 빌더 · 리서처 · 창업가.</div></div>
-    </div>
-    <div class="spk-rows rv" id="spk"></div>
+<!-- TIMETABLE -->
+<section id="timetable" style="padding-top:0"><div class="wrap">
+  <div class="shead rv">
+    <div><div class="kicker">Timetable</div><h2>이틀의 타임테이블</h2></div>
+    <div class="d">같은 시간, 네 개의 무대. DAY 1 기준.</div>
   </div>
-</section>
+  <div class="tt-wrap rv">
+    <div class="tt">
+      <div class="h t">TIME</div><div class="h">FORUM</div><div class="h">ACADEMY</div><div class="h">CONFERENCE</div><div class="h">COFFEE</div>
+
+      <div class="tm">10:00</div>
+      <div class="cell key"><div class="ti">[키노트] 생성형 AI, 비즈니스를 이미 바꿨다</div><div class="by">박정겸 · NEOIX</div></div>
+      <div class="cell"><div class="ti">LLM 앱 개발 입문</div><div class="by">김리서</div></div>
+      <div class="cell"><div class="ti">한국어 NLP 동향</div><div class="by">문연구</div></div>
+      <div class="cell empty"></div>
+
+      <div class="tm">11:30</div>
+      <div class="cell"><div class="ti">엔터프라이즈 AX 사례</div><div class="by">정프로</div></div>
+      <div class="cell"><div class="ti">RAG 핸즈온</div><div class="by">이빌더</div></div>
+      <div class="cell"><div class="ti">평가·벤치마크</div><div class="by">한엔지니어</div></div>
+      <div class="cell"><div class="ti">커리어 커피챗</div><div class="by">오데이터</div></div>
+
+      <div class="tm">14:00</div>
+      <div class="cell"><div class="ti">AI 스타트업 그로스</div><div class="by">서창업</div></div>
+      <div class="cell key"><div class="ti">[워크숍] Agentic Engineering</div><div class="by">이빌더 · 90min</div></div>
+      <div class="cell"><div class="ti">데이터셋 구축</div><div class="by">문연구</div></div>
+      <div class="cell"><div class="ti">창업 라운드테이블</div><div class="by">파운더스</div></div>
+
+      <div class="tm">16:00</div>
+      <div class="cell"><div class="ti">패널: AI와 일의 미래</div><div class="by">전체 연사</div></div>
+      <div class="cell"><div class="ti">바이브코딩 실습</div><div class="by">김리서</div></div>
+      <div class="cell empty"></div>
+      <div class="cell"><div class="ti">네트워킹</div><div class="by">all</div></div>
+    </div>
+  </div>
+</div></section>
+
+<!-- TRACKS -->
+<section id="tracks"><div class="wrap">
+  <div class="shead rv">
+    <div><div class="kicker">Tracks</div><h2>네 개의 트랙</h2></div>
+    <div class="d">목적에 맞게 골라 듣는 4개의 무대.</div>
+  </div>
+  <div class="tracks rv">
+    <div class="tk"><div class="no eng">01 / FORUM</div><h3>포럼</h3><p>업계 리더의 인사이트와 패널 토크. 생성형 AI 비즈니스 적용 사례를 한자리에서.</p><span class="tag">발표 + 패널</span></div>
+    <div class="tk"><div class="no eng">02 / ACADEMY</div><h3>아카데미</h3><p>현업 전문가의 핸즈온 트랙. RAG·에이전트·바이브코딩까지 직접 만들며 배웁니다.</p><span class="tag">실습 워크숍</span></div>
+    <div class="tk"><div class="no eng">03 / CONFERENCE</div><h3>학회</h3><p>리서치와 산업의 접점. 한국어 LLM·평가·데이터셋을 다루는 학술 세션.</p><span class="tag">논문 · 튜토리얼</span></div>
+    <div class="tk"><div class="no eng">04 / COFFEE</div><h3>커피챗</h3><p>현업자와 1:1 또는 소그룹으로. 진로·실무·창업 무엇이든 가볍게.</p><span class="tag">1:1 · 소그룹</span></div>
+  </div>
+</div></section>
+
+<!-- TICKET -->
+<section id="ticket"><div class="wrap">
+  <div class="ticket rv">
+    <div>
+      <div class="kicker">Tickets</div>
+      <h2>지금, 자리를<br>먼저 잡으세요</h2>
+      <p>2일 통합권 한 장으로 모든 트랙과 네트워킹 세션에 참여할 수 있습니다. 학생 할인 운영 중.</p>
+      <div class="price eng">EARLY BIRD · ₩89,000 →</div>
+    </div>
+    <a class="btn dark" href="#">참가 신청 →</a>
+  </div>
+</div></section>
 
 <!-- PARTNERS -->
-<section id="partners">
-  <div class="wrap">
-    <div class="sec-head rv">
-      <div class="label"><span class="i">03</span> — PARTNERS</div>
-      <div><h2>함께하는 곳</h2><div class="d">NEOIX 생태계와 파트너.</div></div>
-    </div>
-    <div class="partners rv">
-      <span>NEOIX</span><span>폴리랩</span><span>바른문자</span><span>OGX</span><span>NEW’S</span><span>POLYX</span><span>TRAVEL&nbsp;GLOBE</span><span>네오익스&nbsp;랩스</span>
-    </div>
-  </div>
-</section>
+<section style="padding-top:0"><div class="wrap">
+  <div class="shead rv"><div><div class="kicker">Partners</div><h2>함께하는 곳</h2></div></div>
+  <div class="partners rv"><span>NEOIX</span><span>폴리랩</span><span>바른문자</span><span>OGX</span><span>NEW’S</span><span>POLYX</span><span>TRAVEL&nbsp;GLOBE</span><span>BARUN</span></div>
+</div></section>
 
 <!-- FOOTER -->
-<footer>
-  <div class="wrap rv">
-    <div class="ft-grid">
-      <div>
-        <div class="ft-logo">NEOIX<span class="dot">.</span></div>
-        <div class="ft-tag">새로운 아이디어의 무한한 확장. AI 러닝 커뮤니티.</div>
-      </div>
-      <div class="ft-col">
-        <h4>Campus</h4>
-        <a href="#program">프로그램</a><a href="#speakers">연사</a><a href="#">티켓</a><a href="#partners">후원 문의</a>
-      </div>
-      <div class="ft-col">
-        <h4>Contact</h4>
-        <a href="tel:01037505890">010-3750-5890</a><a href="mailto:barunsme@gmail.com">barunsme@gmail.com</a><p>평일 10:00 – 18:00</p>
-      </div>
-    </div>
-    <div class="ft-biz">
-      <span>상호 <b>네오익스 (NEOIX)</b></span><span>대표 <b>박정겸</b></span><span>사업자등록번호 <b>292-33-01829</b></span>
-    </div>
-    <div class="ft-copy">© 2026 NEOIX. All rights reserved.</div>
+<footer><div class="wrap rv">
+  <div class="ft-grid">
+    <div><div class="ft-logo">NEOIX<b>.</b></div><div class="ft-tag">새로운 아이디어의 무한한 확장. AI 러닝 커뮤니티.</div></div>
+    <div class="ft-col"><h4>Campus</h4><a href="#lineup">라인업</a><a href="#timetable">타임테이블</a><a href="#ticket">티켓</a><a href="#tracks">트랙</a></div>
+    <div class="ft-col"><h4>Contact</h4><a href="tel:01037505890">010-3750-5890</a><a href="mailto:barunsme@gmail.com">barunsme@gmail.com</a><p>평일 10:00 – 18:00</p></div>
   </div>
-</footer>
+  <div class="ft-biz"><span>상호 <b>네오익스 (NEOIX)</b></span><span>대표 <b>박정겸</b></span><span>사업자등록번호 <b>292-33-01829</b></span></div>
+  <div class="ft-copy">© 2026 NEOIX. All rights reserved.</div>
+</div></footer>
 
 <script>
 const spk=[
- {nm:'박정겸',ro:'Founder',co:'NEOIX'},
- {nm:'김리서',ro:'AI Researcher',co:'Lab'},
- {nm:'이빌더',ro:'Staff Engineer',co:'Startup'},
- {nm:'오데이터',ro:'Data Lead',co:'Bank'},
- {nm:'한엔지니어',ro:'ML Engineer',co:'AI Corp'},
- {nm:'문연구',ro:'PhD',co:'KAIST'},
+ {nm:'박정겸',ro:'Founder · NEOIX',c:'FORUM',i:'P'},
+ {nm:'김리서',ro:'AI Researcher',c:'ACADEMY',i:'K'},
+ {nm:'이빌더',ro:'Staff Engineer',c:'ACADEMY',i:'L'},
+ {nm:'오데이터',ro:'Data Lead',c:'COFFEE',i:'O'},
+ {nm:'정프로',ro:'Product Lead',c:'FORUM',i:'J'},
+ {nm:'한엔지니어',ro:'ML Engineer',c:'CONFERENCE',i:'H'},
+ {nm:'서창업',ro:'CEO · Scaleup',c:'FORUM',i:'S'},
+ {nm:'문연구',ro:'PhD · KAIST',c:'CONFERENCE',i:'M'},
 ];
-document.getElementById('spk').innerHTML=spk.map((s,i)=>`<div class="srow">
-  <div class="no">${String(i+1).padStart(2,'0')}</div>
-  <div class="nm">${s.nm}</div>
-  <div class="ro">${s.ro} · <b>${s.co}</b></div>
-  <div class="ar">↗</div>
+document.getElementById('lineupGrid').innerHTML=spk.map(s=>`<div class="spk">
+  <div class="ph">${s.i}</div><div class="cat">${s.c}</div>
+  <div class="info"><div class="nm">${s.nm}</div><div class="ro">${s.ro}</div></div>
 </div>`).join('');
-const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}}),{threshold:.12});
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}}),{threshold:.1});
 document.querySelectorAll('.rv').forEach(el=>io.observe(el));
 </script>
 </body>
