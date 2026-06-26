@@ -33,9 +33,7 @@ a{color:inherit;text-decoration:none;}button{font:inherit;color:inherit;backgrou
 .hero-b{flex:1;display:flex;flex-direction:column;justify-content:center;padding:30px 40px 70px;max-width:1240px;margin:0 auto;width:100%;}
 .hkick{font-family:var(--ar);font-size:14px;font-weight:800;letter-spacing:.1em;margin-bottom:24px;opacity:.65;}
 .htitle{font-size:clamp(46px,8.6vw,118px);font-weight:800;letter-spacing:-.045em;line-height:.98;}
-.tw{color:#fff;}
-.caret{display:inline-block;width:.05em;height:.8em;background:#0b0a10;vertical-align:-.03em;margin-left:.03em;animation:bl 1s step-end infinite;}
-@keyframes bl{50%{opacity:0;}}
+.hlw{color:#fff;}
 .hmeta{margin-top:34px;display:flex;gap:16px;align-items:center;flex-wrap:wrap;font-family:var(--ar);font-size:15px;font-weight:700;}
 .hmeta .s{width:5px;height:5px;border-radius:50%;background:#0b0a10;}
 .hbtns{margin-top:40px;display:flex;gap:12px;flex-wrap:wrap;}
@@ -132,7 +130,7 @@ footer{padding:74px 0 60px;}
   </div>
   <div class="hero-b">
     <div class="hkick">NEOIX AI CAMPUS · 2026</div>
-    <h1 class="htitle">새로운 <span class="tw" id="tw"></span><span class="caret"></span><br>무한한 확장</h1>
+    <h1 class="htitle">쓰는 사람에서,<br><span class="hlw">만드는</span> 사람으로</h1>
     <div class="hmeta"><span>2026. 09. 05 – 06</span><span class="s"></span><span>COEX, SEOUL</span><span class="s"></span><span>4 TRACKS · 64 SPEAKERS</span></div>
     <div class="hbtns"><a class="btn dark" href="#join">참가 신청 ↗</a><a class="btn line" href="#timetable">타임테이블</a></div>
   </div>
@@ -210,10 +208,7 @@ footer{padding:74px 0 60px;}
 </div></footer>
 
 <script>
-(function(){const el=document.getElementById('tw');const w=['아이디어의','세대의','경험의'];let wi=0,ci=0,d=false;
-  (function t(){const c=w[wi%w.length];if(!d){ci++;el.textContent=c.slice(0,ci);if(ci>=c.length){d=true;return setTimeout(t,1700);}return setTimeout(t,150);}
-   ci--;el.textContent=c.slice(0,ci);if(ci<=0){ci=0;d=false;wi++;return setTimeout(t,400);}return setTimeout(t,80);})();})();
-const mw=['새로운 아이디어의 무한한 확장','NEO × IX','AI CAMPUS 2026','만드는 사람들','GENERATIVE AI'];
+const mw=['MAKE, NOT JUST USE','NEO × IX','AI CAMPUS 2026','만드는 사람들','GENERATIVE AI','아카데미 · 포럼 · 학회 · 커피챗'];
 document.getElementById('mq').innerHTML=[...mw,...mw,...mw].map((s,i)=>`<span class="${i%2?'o':''}">${s}</span><span class="o">／</span>`).join('');
 const ppl=[['박정겸','Founder · NEOIX','FORUM','P'],['김리서','AI Researcher','ACADEMY','K'],['이빌더','Staff Engineer','ACADEMY','L'],['오데이터','Data Lead','COFFEE','O'],['정프로','Product Lead','FORUM','J'],['한엔지니어','ML Engineer','CONFERENCE','H'],['서창업','CEO · Scaleup','FORUM','S'],['문연구','PhD · KAIST','CONFERENCE','M']];
 document.getElementById('spk').innerHTML=ppl.map(p=>`<div class="sc"><div class="ph">${p[3]}</div><div class="cat">${p[2]}</div><div class="info"><div class="nm">${p[0]}</div><div class="ro">${p[1]}</div></div></div>`).join('');
