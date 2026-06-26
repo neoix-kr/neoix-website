@@ -31,20 +31,22 @@ nav{position:fixed;top:0;left:0;right:0;z-index:60;display:flex;align-items:cent
 .nav-links a:hover{color:#fff;}
 .nreg{font-size:13px;font-weight:800;padding:10px 20px;border-radius:100px;background:var(--lime);color:#0a0a0b;}
 
-/* hero */
-.hero{position:relative;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:130px 24px 90px;overflow:hidden;}
-.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(60% 50% at 50% 38%,rgba(124,58,237,.20),transparent 62%);z-index:0;}
-.orbit-wrap{position:relative;z-index:2;margin-bottom:34px;}
-.orbit{overflow:visible;display:block;}
-.infobar{position:relative;z-index:2;display:flex;gap:16px;align-items:center;flex-wrap:wrap;justify-content:center;font-family:var(--ar);font-size:13px;font-weight:700;letter-spacing:.02em;color:var(--muted);margin-bottom:26px;}
-.infobar .hl{color:var(--lime);}
-.infobar .s{width:4px;height:4px;border-radius:50%;background:var(--violet);}
-.htitle{position:relative;z-index:2;font-size:clamp(40px,8.2vw,108px);font-weight:800;letter-spacing:-.04em;line-height:1.0;}
+/* hero — 우주 가득 (NEOIX 궤도 행성들) */
+.hero{position:relative;min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:120px 24px 90px;overflow:hidden;}
+#cosmos{position:absolute;inset:0;z-index:0;}
+.osys{position:absolute;will-change:transform;animation:float 8s ease-in-out infinite;}
+.osys svg{overflow:visible;display:block;}
+@keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-20px);}}
+.hero::after{content:'';position:absolute;inset:0;z-index:1;pointer-events:none;background:radial-gradient(46% 42% at 50% 50%,rgba(8,7,13,.92) 0%,rgba(8,7,13,.6) 50%,transparent 78%);}
+.hero-c{position:relative;z-index:3;}
+.htitle{font-size:clamp(44px,9.5vw,128px);font-weight:800;letter-spacing:-.045em;line-height:.98;text-shadow:0 8px 60px rgba(8,7,13,.9);}
 .tw{color:var(--violet);}
 .caret{display:inline-block;width:.05em;height:.8em;background:var(--lime);vertical-align:-.03em;margin-left:.04em;animation:bl 1s step-end infinite;}
 @keyframes bl{50%{opacity:0;}}
-.hsub{position:relative;z-index:2;margin-top:28px;font-size:clamp(15px,1.6vw,18px);color:var(--muted);max-width:540px;line-height:1.7;}
-.hbtns{position:relative;z-index:2;margin-top:38px;display:flex;gap:13px;flex-wrap:wrap;justify-content:center;}
+.hdate{margin-top:30px;font-family:var(--ar);font-size:14px;font-weight:700;letter-spacing:.04em;color:var(--muted);}
+.hdate .hl{color:var(--lime);}
+.hbtns{margin-top:34px;display:flex;gap:13px;flex-wrap:wrap;justify-content:center;}
+.btn.big{padding:18px 40px;font-size:16px;}
 .btn{font-size:15px;font-weight:800;padding:16px 32px;border-radius:100px;display:inline-flex;align-items:center;gap:9px;transition:transform .2s,background .2s;}
 .btn.v{background:var(--violet);color:#fff;}.btn.v:hover{background:#7c3aed;transform:translateY(-2px);}
 .btn.o{border:1px solid var(--line);color:var(--text);}.btn.o:hover{border-color:#fff;}
@@ -139,26 +141,12 @@ footer{padding:74px 0 60px;}
 
 <!-- HERO -->
 <header class="hero">
-  <div class="orbit-wrap">
-    <svg class="orbit" width="240" height="170" viewBox="-120 -85 240 170">
-      <defs>
-        <radialGradient id="pl" cx="34%" cy="30%"><stop offset="0" stop-color="#c3a8ff"/><stop offset="1" stop-color="#5b16c4"/></radialGradient>
-        <linearGradient id="og" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#8b5cf6"/><stop offset="1" stop-color="#c7f536"/></linearGradient>
-      </defs>
-      <g transform="rotate(-20)">
-        <ellipse cx="0" cy="0" rx="98" ry="42" fill="none" stroke="url(#og)" stroke-width="2" opacity=".55"/>
-      </g>
-      <circle cx="0" cy="0" r="38" fill="url(#pl)"/>
-      <circle cx="-12" cy="-13" r="10" fill="rgba(255,255,255,.18)"/>
-      <circle id="sat" r="9" fill="var(--lime)" style="fill:#c7f536"/>
-    </svg>
+  <div id="cosmos"></div>
+  <div class="hero-c">
+    <h1 class="htitle">새로운 <span class="tw" id="tw"></span><span class="caret"></span><br>무한한 확장</h1>
+    <div class="hbtns"><a class="btn v big" href="#join">참가 신청 ↗</a><a class="btn o" href="#sessions">세션 보기</a></div>
+    <div class="hdate">2026. 09. 05 – 06 · COEX, SEOUL · <span class="hl">4 TRACKS · 64 SPEAKERS</span></div>
   </div>
-  <div class="infobar">
-    <span>2026. 09. 05 – 06</span><span class="s"></span><span>COEX, SEOUL</span><span class="s"></span><span class="hl">4 TRACKS · 64 SPEAKERS</span>
-  </div>
-  <h1 class="htitle">새로운 <span class="tw" id="tw"></span><span class="caret"></span><br>무한한 확장</h1>
-  <p class="hsub">아이디어(NEO)를 실행(IX)으로. AI를 만드는 사람들이 한자리에 모이는 이틀.</p>
-  <div class="hbtns"><a class="btn v" href="#join">참가 신청 ↗</a><a class="btn o" href="#sessions">세션 보기</a></div>
 </header>
 
 <!-- marquee -->
@@ -218,7 +206,7 @@ footer{padding:74px 0 60px;}
   <div class="ftg">
     <div><div class="nx" style="font-size:26px">neo<i>ix</i></div><div class="ftt">새로운 아이디어의 무한한 확장. AI 러닝 커뮤니티.</div></div>
     <div class="ftc"><h4>Campus</h4><a href="#concept">NEO×IX</a><a href="#speakers">연사</a><a href="#sessions">세션</a><a href="#join">티켓</a></div>
-    <div class="ftc"><h4>Contact</h4><a href="tel:01037505890">010-3750-5890</a><a href="mailto:barunsme@gmail.com">barunsme@gmail.com</a><p>평일 10:00 – 18:00</p></div>
+    <div class="ftc"><h4>Contact</h4><a href="tel:01037505890">010-3750-5890</a><a href="mailto:jg@neoix.kr">jg@neoix.kr</a><p>평일 10:00 – 18:00</p></div>
   </div>
   <div class="ftb"><span>상호 <b>네오익스 (NEOIX)</b></span><span>대표 <b>박정겸</b></span><span>사업자등록번호 <b>292-33-01829</b></span></div>
   <div class="ftcp">© 2026 NEOIX. All rights reserved.</div>
@@ -229,7 +217,25 @@ footer{padding:74px 0 60px;}
 function orbit(id,rx,ry,deg,spd){var el=document.getElementById(id);if(!el)return;var t=0,a=deg*Math.PI/180;
   (function tick(){var x=rx*Math.cos(t)*Math.cos(a)-ry*Math.sin(t)*Math.sin(a),y=rx*Math.cos(t)*Math.sin(a)+ry*Math.sin(t)*Math.cos(a);
    el.setAttribute('cx',x);el.setAttribute('cy',y);t+=spd;requestAnimationFrame(tick);})();}
-orbit('sat',98,42,-20,.02);
+var SYS=[
+ {l:4,t:14,pr:46,c1:'#c3a8ff',c2:'#5b16c4',rx:96,ry:40,rot:-20,sr:9,sc:'#c7f536',spd:.018,d:0},
+ {l:79,t:9,pr:30,c1:'#bdeaff',c2:'#1b9fd6',rx:64,ry:26,rot:18,sr:7,sc:'#8b5cf6',spd:.024,d:1.2},
+ {l:80,t:58,pr:52,c1:'#d8c2ff',c2:'#6d28d9',rx:108,ry:46,rot:-12,sr:10,sc:'#c7f536',spd:.015,d:.6},
+ {l:11,t:64,pr:24,c1:'#e9ff9a',c2:'#9bd400',rx:52,ry:22,rot:24,sr:6,sc:'#ffffff',spd:.028,d:1.8},
+ {l:45,t:6,pr:17,c1:'#ffb3df',c2:'#e0277a',rx:40,ry:16,rot:-30,sr:5,sc:'#c7f536',spd:.03,d:2.4},
+ {l:60,t:78,pr:19,c1:'#c3a8ff',c2:'#5b16c4',rx:44,ry:18,rot:12,sr:6,sc:'#8b5cf6',spd:.026,d:.9}
+];
+(function(){var cm=document.getElementById('cosmos');SYS.forEach(function(s,i){
+  var box=document.createElement('div');box.className='osys';box.style.left=s.l+'%';box.style.top=s.t+'%';box.style.animationDelay=s.d+'s';
+  var sz=Math.max(s.rx,s.pr)*2.5;
+  box.innerHTML='<svg width="'+sz+'" height="'+sz+'" viewBox="'+(-sz/2)+' '+(-sz/2)+' '+sz+' '+sz+'">'
+   +'<defs><radialGradient id="g'+i+'" cx="34%" cy="30%"><stop offset="0" stop-color="'+s.c1+'"/><stop offset="1" stop-color="'+s.c2+'"/></radialGradient></defs>'
+   +'<g transform="rotate('+s.rot+')"><ellipse rx="'+s.rx+'" ry="'+s.ry+'" fill="none" stroke="'+s.sc+'" stroke-width="1.5" opacity=".4"/></g>'
+   +'<circle r="'+s.pr+'" fill="url(#g'+i+')"/>'
+   +'<circle cx="'+(-s.pr*.32)+'" cy="'+(-s.pr*.34)+'" r="'+(s.pr*.27)+'" fill="rgba(255,255,255,.2)"/>'
+   +'<circle id="sat'+i+'" r="'+s.sr+'" fill="'+s.sc+'"/></svg>';
+  cm.appendChild(box);orbit('sat'+i,s.rx,s.ry,s.rot,s.spd);
+});})();
 /* 타이프라이터 */
 (function(){const el=document.getElementById('tw');const w=['아이디어의','세대의','경험의'];let wi=0,ci=0,d=false;
   (function t(){const cur=w[wi%w.length];if(!d){ci++;el.textContent=cur.slice(0,ci);if(ci>=cur.length){d=true;return setTimeout(t,1700);}return setTimeout(t,150);}
