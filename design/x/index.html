@@ -22,8 +22,25 @@ a{color:inherit;text-decoration:none;}button{font:inherit;color:inherit;backgrou
 .nx{font-family:var(--ar);font-weight:900;letter-spacing:-.03em;}
 
 /* ===== HERO (쨍한 보라 + 거대 블랙) ===== */
-.hero{position:relative;min-height:100vh;display:flex;flex-direction:column;color:#0b0a10;
-  background:linear-gradient(158deg,#6d28d9 0%,#8b5cf6 42%,#b794f6 74%,#d8b4fe 100%);}
+.hero{position:relative;min-height:100vh;display:flex;flex-direction:column;color:#0b0a10;overflow:hidden;
+  background:linear-gradient(125deg,#5b21b6,#7c3aed,#9d6bff,#7c3aed,#5b21b6);background-size:280% 280%;animation:gmove 18s ease-in-out infinite;}
+@keyframes gmove{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+.hero>.hnav,.hero>.hero-b{position:relative;z-index:3;}
+.shapes{position:absolute;inset:0;z-index:1;pointer-events:none;}
+.sh{position:absolute;animation:drift 9s ease-in-out infinite;}
+.sh.b{animation:drift2 11s ease-in-out infinite;}
+.sh.spin{animation:spin 22s linear infinite;}
+@keyframes drift{0%,100%{transform:translate(0,0) rotate(0)}50%{transform:translate(0,-28px) rotate(12deg)}}
+@keyframes drift2{0%,100%{transform:translate(0,0) rotate(0)}50%{transform:translate(20px,20px) rotate(-14deg)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+.ring{border-radius:50%;border:13px solid #0b0a10;}
+.dot{border-radius:50%;}
+.pill{border-radius:100px;}
+.plus{position:relative;}
+.plus::before,.plus::after{content:'';position:absolute;background:#0b0a10;border-radius:6px;}
+.plus::before{left:0;right:0;top:50%;height:13px;transform:translateY(-50%);}
+.plus::after{top:0;bottom:0;left:50%;width:13px;transform:translateX(-50%);}
+.blob{background:#fff;border-radius:62% 38% 55% 45% / 48% 56% 44% 52%;}
 .hnav{display:flex;align-items:center;justify-content:space-between;padding:26px 40px;}
 .hnav .nx{font-size:21px;color:#0b0a10;}
 .hnav .mid{display:flex;gap:8px;background:rgba(11,10,16,.08);border:1px solid rgba(11,10,16,.12);border-radius:100px;padding:5px;}
@@ -123,6 +140,15 @@ footer{padding:74px 0 60px;}
 
 <!-- HERO -->
 <header class="hero">
+  <div class="shapes">
+    <div class="sh ring" style="right:9%;top:20%;width:150px;height:150px;"></div>
+    <div class="sh b dot" style="right:24%;top:34%;width:78px;height:78px;background:#c7f536;"></div>
+    <div class="sh pill" style="right:13%;bottom:22%;width:140px;height:26px;background:#fff;animation-duration:10s;"></div>
+    <div class="sh b plus" style="right:31%;top:58%;width:58px;height:58px;"></div>
+    <div class="sh blob" style="right:6%;bottom:11%;width:108px;height:108px;animation-duration:8s;"></div>
+    <div class="sh b dot" style="right:40%;top:11%;width:46px;height:46px;background:#ff5d8f;animation-duration:12s;"></div>
+    <div class="sh dot" style="left:33%;bottom:9%;width:62px;height:62px;background:#0b0a10;animation-duration:13s;"></div>
+  </div>
   <div class="hnav">
     <div class="nx">neoix</div>
     <div class="mid"><a href="#nio">NEO×IX</a><a href="#speakers">연사</a><a href="#timetable">타임테이블</a><a href="#tracks">트랙</a></div>
