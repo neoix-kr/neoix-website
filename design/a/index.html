@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEOIX AI CAMPUS 2026</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@800;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0b0a10;
+    --bg:#f1eefb;
+    --paper:#fbfaff;
+    --violet:#6d28d9;
+    --violet2:#8b5cf6;
+    --lime:#c7f536;
+    --pink:#ff4fa3;
+    --cyan:#34d3ff;
+    --amber:#ffc53d;
+    --border:3px solid #0b0a10;
+    --shadow:6px 6px 0 #0b0a10;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family:'Pretendard Variable',Pretendard,-apple-system,sans-serif;
+    background:var(--bg);
+    color:var(--ink);
+    overflow-x:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+  .display{font-family:'Archivo',sans-serif;font-weight:900;letter-spacing:-.02em;}
+  .wrap{max-width:1200px;margin:0 auto;padding:0 24px;}
+  a{color:inherit;text-decoration:none;}
+
+  /* ===== NAV ===== */
+  nav{
+    position:sticky;top:0;z-index:60;
+    background:rgba(241,238,251,.82);
+    backdrop-filter:blur(10px);
+    border-bottom:3px solid var(--ink);
+  }
+  .nav-in{max-width:1200px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;}
+  .logo{font-family:'Archivo';font-weight:900;font-size:20px;letter-spacing:-.03em;display:flex;align-items:center;gap:8px;}
+  .logo .dot{width:14px;height:14px;border-radius:50%;background:radial-gradient(circle at 32% 28%,#fff,#8b5cf6 55%,#5b21b6);display:inline-block;border:2px solid var(--ink);}
+  .nav-links{display:flex;gap:26px;font-weight:700;font-size:14px;}
+  .nav-links a{transition:color .15s;}
+  .nav-links a:hover{color:var(--violet);}
+  .nav-cta{font-weight:800;font-size:14px;background:var(--ink);color:#fff;padding:9px 18px;border-radius:999px;border:2px solid var(--ink);}
+  @media(max-width:780px){.nav-links{display:none;}}
+
+  /* ===== HERO ===== */
+  .hero{position:relative;min-height:92vh;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+  .objects{position:absolute;inset:0;z-index:1;pointer-events:none;}
+  .obj{position:absolute;will-change:transform;}
+
+  /* glossy 3D sphere */
+  .sphere{border-radius:50%;border:3px solid var(--ink);}
+  .s-violet{background:radial-gradient(circle at 32% 26%,#fff 2%,#a78bfa 30%,#6d28d9 78%);}
+  .s-pink{background:radial-gradient(circle at 32% 26%,#fff 2%,#ff8cc4 28%,#ff2f8e 80%);}
+  .s-cyan{background:radial-gradient(circle at 32% 26%,#fff 2%,#7fe2ff 28%,#0fb4e8 82%);}
+  .s-amber{background:radial-gradient(circle at 32% 26%,#fff 2%,#ffd96b 30%,#f5a300 82%);}
+  .s-lime{background:radial-gradient(circle at 32% 26%,#fff 2%,#d9f96e 30%,#9bcc16 82%);}
+  .s-ink{background:radial-gradient(circle at 32% 26%,#fff 0%,#3a3346 22%,#0b0a10 80%);}
+
+  /* checkered orb */
+  .check{border-radius:50%;border:3px solid var(--ink);overflow:hidden;}
+  .check::after{content:"";position:absolute;inset:0;background:
+    radial-gradient(circle at 34% 28%,rgba(255,255,255,.85),rgba(255,255,255,0) 42%);
+    border-radius:50%;}
+  .chk-pv{background:repeating-conic-gradient(#6d28d9 0 25%,#c7f536 0 50%);background-size:50% 50%;}
+  .chk-cy{background:repeating-conic-gradient(#0b0a10 0 25%,#34d3ff 0 50%);background-size:50% 50%;}
+
+  /* confetti bar */
+  .bar{border-radius:999px;border:3px solid var(--ink);}
+
+  /* ring */
+  .ring{border-radius:50%;background:transparent;}
+  .r-amber{border:12px solid var(--amber);box-shadow:0 0 0 3px var(--ink),inset 0 0 0 3px var(--ink);}
+  .r-pink{border:12px solid var(--pink);box-shadow:0 0 0 3px var(--ink),inset 0 0 0 3px var(--ink);}
+
+  /* faces */
+  .face{border-radius:50%;border:3px solid var(--ink);position:relative;}
+  .face .eye{position:absolute;width:11%;height:18%;background:var(--ink);border-radius:50%;top:33%;}
+  .face .eye.l{left:28%;}.face .eye.r{right:28%;}
+  .face .mouth{position:absolute;width:46%;height:30%;border:3px solid var(--ink);border-top:0;border-radius:0 0 80px 80px;left:27%;top:46%;}
+  .f-lime{background:radial-gradient(circle at 34% 26%,#eaffb0,#c7f536 60%,#9bcc16);}
+  .f-amber{background:radial-gradient(circle at 34% 26%,#fff0c4,#ffc53d 60%,#f0a500);}
+
+  @keyframes floaty{0%,100%{transform:translateY(0) rotate(var(--rot,0deg));}50%{transform:translateY(-26px) rotate(var(--rot,0deg));}}
+  @keyframes spinny{0%{transform:rotate(0);}100%{transform:rotate(360deg);}}
+  @keyframes bobx{0%,100%{transform:translateX(0) rotate(var(--rot,0deg));}50%{transform:translateX(20px) rotate(var(--rot,0deg));}}
+
+  /* center wash so text stays readable */
+  .wash{position:absolute;z-index:2;left:50%;top:50%;transform:translate(-50%,-50%);
+    width:1000px;height:680px;max-width:120vw;
+    background:radial-gradient(ellipse at center,rgba(241,238,251,.96) 0%,rgba(241,238,251,.86) 38%,rgba(241,238,251,0) 72%);}
+
+  .hero-content{position:relative;z-index:3;text-align:center;padding:60px 0;}
+  .kicker{display:inline-flex;align-items:center;gap:8px;font-weight:800;font-size:13px;letter-spacing:.06em;
+    background:#fff;border:var(--border);padding:8px 16px;border-radius:999px;box-shadow:3px 3px 0 var(--ink);margin-bottom:26px;}
+  .kicker .k-dot{width:9px;height:9px;border-radius:50%;background:var(--pink);}
+  h1.headline{font-size:clamp(38px,7.4vw,98px);line-height:.98;letter-spacing:-.03em;font-weight:900;}
+  h1.headline .row{display:block;}
+  .type-line{display:inline-flex;align-items:baseline;flex-wrap:wrap;justify-content:center;gap:.18em;}
+  .rotate{color:var(--violet);min-width:1ch;}
+  .caret{display:inline-block;width:.06em;height:.86em;background:var(--violet);margin-left:.04em;transform:translateY(.06em);animation:blink 1s steps(1) infinite;}
+  @keyframes blink{50%{opacity:0;}}
+  .sub{margin-top:28px;font-size:clamp(15px,2vw,20px);font-weight:600;color:#3a3346;max-width:620px;margin-left:auto;margin-right:auto;line-height:1.55;}
+  .meta{margin-top:22px;display:inline-flex;flex-wrap:wrap;gap:10px;justify-content:center;font-weight:800;font-size:14px;}
+  .meta .chip{background:#fff;border:var(--border);border-radius:999px;padding:9px 16px;box-shadow:3px 3px 0 var(--ink);}
+  .meta .chip.solid{background:var(--lime);}
+  .cta-row{margin-top:34px;display:flex;gap:14px;justify-content:center;flex-wrap:wrap;}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-weight:800;font-size:16px;padding:16px 30px;border-radius:999px;border:var(--border);box-shadow:var(--shadow);transition:transform .12s,box-shadow .12s;}
+  .btn:active{transform:translate(3px,3px);box-shadow:3px 3px 0 var(--ink);}
+  .btn-dark{background:var(--ink);color:#fff;}
+  .btn-light{background:#fff;color:var(--ink);}
+
+  /* ===== SECTION SHELL ===== */
+  section.block{padding:90px 0;position:relative;}
+  .sec-head{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;margin-bottom:42px;flex-wrap:wrap;}
+  .sec-tag{font-family:'Archivo';font-weight:900;font-size:13px;letter-spacing:.14em;color:var(--violet);}
+  .sec-title{font-family:'Archivo';font-weight:900;font-size:clamp(30px,5vw,56px);line-height:1;letter-spacing:-.02em;}
+  .sec-sub{font-weight:600;color:#3a3346;max-width:380px;font-size:15px;line-height:1.5;}
+
+  /* ===== SPEAKERS ===== */
+  .speak-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;}
+  .spk{background:#fff;border:var(--border);border-radius:20px;overflow:hidden;box-shadow:var(--shadow);transition:transform .14s;}
+  .spk:hover{transform:translateY(-6px);}
+  .spk .ph{height:170px;display:flex;align-items:center;justify-content:center;font-family:'Archivo';font-weight:900;font-size:62px;color:#fff;border-bottom:3px solid var(--ink);}
+  .spk .body{padding:16px;}
+  .spk .nm{font-weight:800;font-size:18px;}
+  .spk .co{font-weight:600;font-size:13px;color:#6b6478;margin-top:3px;}
+  .spk .role{display:inline-block;margin-top:10px;font-weight:800;font-size:11px;letter-spacing:.04em;background:var(--bg);border:2px solid var(--ink);border-radius:999px;padding:4px 10px;}
+  @media(max-width:900px){.speak-grid{grid-template-columns:repeat(2,1fr);}}
+
+  /* ===== SESSIONS ===== */
+  .timetable{border:var(--border);border-radius:20px;overflow:hidden;box-shadow:var(--shadow);background:#fff;}
+  .row{display:grid;grid-template-columns:130px 1fr auto;gap:18px;align-items:center;padding:20px 22px;border-bottom:3px solid var(--ink);}
+  .row:last-child{border-bottom:0;}
+  .row:nth-child(odd){background:#fbfaff;}
+  .row .time{font-family:'Archivo';font-weight:900;font-size:20px;}
+  .row .ttl{font-weight:800;font-size:17px;}
+  .row .who{font-weight:600;font-size:13px;color:#6b6478;margin-top:3px;}
+  .badge{font-weight:800;font-size:11px;letter-spacing:.05em;padding:6px 12px;border-radius:999px;border:2px solid var(--ink);background:var(--lime);white-space:nowrap;}
+  .badge.key{background:var(--pink);color:#fff;}
+  .badge.track{background:var(--cyan);}
+  @media(max-width:680px){.row{grid-template-columns:1fr;gap:8px;}.row .badge{justify-self:start;}}
+
+  /* ===== TRACKS ===== */
+  .track-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;}
+  .trk{border:var(--border);border-radius:22px;padding:26px 22px;min-height:230px;display:flex;flex-direction:column;justify-content:space-between;box-shadow:var(--shadow);position:relative;overflow:hidden;}
+  .trk .num{font-family:'Archivo';font-weight:900;font-size:15px;opacity:.6;}
+  .trk h3{font-size:30px;font-weight:900;letter-spacing:-.02em;}
+  .trk p{font-weight:600;font-size:14px;line-height:1.5;margin-top:8px;}
+  .trk .orb{position:absolute;right:-22px;top:-22px;width:90px;height:90px;border-radius:50%;border:3px solid var(--ink);}
+  .t1{background:var(--violet);color:#fff;}.t1 .orb{background:radial-gradient(circle at 32% 26%,#fff,#c7f536 60%,#9bcc16);}
+  .t2{background:var(--lime);}.t2 .orb{background:radial-gradient(circle at 32% 26%,#fff,#ff8cc4,#ff2f8e);}
+  .t3{background:var(--cyan);}.t3 .orb{background:radial-gradient(circle at 32% 26%,#fff,#ffd96b,#f5a300);}
+  .t4{background:var(--pink);color:#fff;}.t4 .orb{background:radial-gradient(circle at 32% 26%,#fff,#7fe2ff,#0fb4e8);}
+  @media(max-width:900px){.track-grid{grid-template-columns:repeat(2,1fr);}}
+
+  /* ===== TICKET ===== */
+  .ticket{background:var(--ink);color:#fff;border-radius:30px;padding:64px 48px;text-align:center;position:relative;overflow:hidden;border:var(--border);}
+  .ticket .t-orb{position:absolute;border-radius:50%;border:3px solid #fff;}
+  .ticket h2{font-family:'Archivo';font-weight:900;font-size:clamp(34px,6vw,72px);line-height:.98;letter-spacing:-.02em;position:relative;z-index:2;}
+  .ticket .price{margin-top:18px;font-weight:800;font-size:18px;position:relative;z-index:2;}
+  .ticket .price b{color:var(--lime);font-size:26px;}
+  .ticket .cta-row{position:relative;z-index:2;}
+
+  /* ===== FOOTER ===== */
+  footer{background:var(--bg);border-top:3px solid var(--ink);padding:60px 0 40px;}
+  .foot-top{display:flex;justify-content:space-between;gap:30px;flex-wrap:wrap;align-items:flex-start;}
+  .foot-logo{font-family:'Archivo';font-weight:900;font-size:40px;letter-spacing:-.03em;}
+  .foot-logo span{color:var(--violet);}
+  .biz{display:grid;grid-template-columns:repeat(2,minmax(180px,1fr));gap:10px 40px;font-weight:600;font-size:13.5px;color:#3a3346;}
+  .biz b{color:var(--ink);font-weight:800;display:block;font-size:11px;letter-spacing:.04em;margin-bottom:2px;color:#6b6478;}
+  .foot-bottom{margin-top:46px;padding-top:22px;border-top:2px solid rgba(11,10,16,.18);display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;font-weight:600;font-size:13px;color:#6b6478;}
+  @media(max-width:600px){.foot-logo{font-size:32px;}}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-in">
+    <a class="logo" href="#"><span class="dot"></span>NEOIX</a>
+    <div class="nav-links">
+      <a href="#speakers">SPEAKERS</a>
+      <a href="#sessions">SESSIONS</a>
+      <a href="#tracks">TRACKS</a>
+      <a href="#ticket">TICKET</a>
+    </div>
+    <a class="nav-cta" href="#ticket">참가 신청 ↗</a>
+  </div>
+</nav>
+
+<!-- ============ HERO ============ -->
+<header class="hero">
+  <div class="objects" id="objects"></div>
+  <div class="wash"></div>
+
+  <div class="hero-content wrap">
+    <span class="kicker"><span class="k-dot"></span>NEOIX AI CAMPUS · 2026</span>
+    <h1 class="headline">
+      <span class="row">새로운</span>
+      <span class="row type-line">
+        <span class="rotate" id="rotate"></span><span class="caret"></span>
+      </span>
+      <span class="row">무한한 확장</span>
+    </h1>
+    <p class="sub">아카데미 · 포럼 · 학회 · 커피챗.<br>국내 최대 규모의 AI 페스티벌에서 다음 세대를 만나세요.</p>
+    <div class="meta">
+      <span class="chip solid">2026.09.05–06</span>
+      <span class="chip">COEX, Seoul</span>
+      <span class="chip">4 TRACKS · 40+ SESSIONS</span>
+    </div>
+    <div class="cta-row">
+      <a class="btn btn-dark" href="#ticket">참가 신청 ↗</a>
+      <a class="btn btn-light" href="#sessions">세션 보기</a>
+    </div>
+  </div>
+</header>
+
+<!-- ============ SPEAKERS ============ -->
+<section class="block" id="speakers">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <div class="sec-tag">SPEAKERS</div>
+        <div class="sec-title">연사 라인업</div>
+      </div>
+      <p class="sec-sub">학계와 산업 현장의 최전선에서 활동하는 40여 명의 연사가 함께합니다.</p>
+    </div>
+    <div class="speak-grid" id="speakers-grid"></div>
+  </div>
+</section>
+
+<!-- ============ SESSIONS ============ -->
+<section class="block" id="sessions" style="background:#fbfaff;border-top:3px solid var(--ink);border-bottom:3px solid var(--ink);">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <div class="sec-tag">DAY 1 · TIMETABLE</div>
+        <div class="sec-title">세션 일정</div>
+      </div>
+      <p class="sec-sub">09.05 (목) · COEX 그랜드볼룸. 전체 일정은 신청 후 확인하실 수 있습니다.</p>
+    </div>
+    <div class="timetable">
+      <div class="row">
+        <div class="time">10:00</div>
+        <div><div class="ttl">AI, 우리가 모르던 다음 10년</div><div class="who">박정겸 · NEOIX</div></div>
+        <div class="badge key">KEYNOTE</div>
+      </div>
+      <div class="row">
+        <div class="time">11:30</div>
+        <div><div class="ttl">생성형 모델의 산업 적용 사례 연구</div><div class="who">김서연 · LUMINA Lab</div></div>
+        <div class="badge track">학회</div>
+      </div>
+      <div class="row">
+        <div class="time">13:30</div>
+        <div><div class="ttl">에이전트 시대의 프로덕트 설계</div><div class="who">이도현 · Northpeak</div></div>
+        <div class="badge">포럼</div>
+      </div>
+      <div class="row">
+        <div class="time">15:00</div>
+        <div><div class="ttl">실전 프롬프트 엔지니어링 워크숍</div><div class="who">정유진 · ATLAS AI</div></div>
+        <div class="badge">아카데미</div>
+      </div>
+      <div class="row">
+        <div class="time">16:30</div>
+        <div><div class="ttl">창업가와의 커피챗: 0 to 1</div><div class="who">한지우 · Orbit Ventures</div></div>
+        <div class="badge track">커피챗</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ TRACKS ============ -->
+<section class="block" id="tracks">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <div class="sec-tag">PROGRAM</div>
+        <div class="sec-title">4개의 트랙</div>
+      </div>
+      <p class="sec-sub">관심사와 단계에 맞게 골라 듣는 4가지 경험. 자유롭게 넘나드세요.</p>
+    </div>
+    <div class="track-grid">
+      <div class="trk t1"><div class="orb"></div><div class="num">01</div><div><h3>아카데미</h3><p>기초부터 실전까지, 손으로 배우는 핸즈온 워크숍.</p></div></div>
+      <div class="trk t2"><div class="orb"></div><div class="num">02</div><div><h3>포럼</h3><p>산업 리더들이 펼치는 인사이트와 토론의 무대.</p></div></div>
+      <div class="trk t3"><div class="orb"></div><div class="num">03</div><div><h3>학회</h3><p>최신 연구와 논문을 발표하는 아카데믹 세션.</p></div></div>
+      <div class="trk t4"><div class="orb"></div><div class="num">04</div><div><h3>커피챗</h3><p>연사·창업가와 가까이 마주 앉는 네트워킹 라운지.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ TICKET ============ -->
+<section class="block" id="ticket">
+  <div class="wrap">
+    <div class="ticket">
+      <div class="t-orb" style="width:120px;height:120px;left:-30px;bottom:-30px;background:radial-gradient(circle at 32% 26%,#fff,#a78bfa,#6d28d9);"></div>
+      <div class="t-orb" style="width:80px;height:80px;right:40px;top:30px;background:radial-gradient(circle at 32% 26%,#fff,#d9f96e,#9bcc16);"></div>
+      <div class="t-orb" style="width:60px;height:60px;right:-15px;bottom:40px;background:radial-gradient(circle at 32% 26%,#fff,#ff8cc4,#ff2f8e);"></div>
+      <h2>지금, 자리를 잡으세요</h2>
+      <div class="price">2-Day 올패스 · 얼리버드 <b>₩99,000</b> &nbsp;|&nbsp; ~ 2026.07.31</div>
+      <div class="cta-row" style="margin-top:30px;">
+        <a class="btn btn-light" href="#" style="background:var(--lime);">참가 신청 ↗</a>
+        <a class="btn btn-light" href="#" style="background:#fff;">단체 문의</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer>
+  <div class="wrap">
+    <div class="foot-top">
+      <div>
+        <div class="foot-logo">NEO<span>IX</span></div>
+        <p style="font-weight:700;margin-top:10px;font-size:14px;">AI CAMPUS 2026 · 2026.09.05–06 · COEX, Seoul</p>
+      </div>
+      <div class="biz">
+        <div><b>상호</b>네오익스 (NEOIX)</div>
+        <div><b>대표</b>박정겸</div>
+        <div><b>사업자등록번호</b>292-33-01829</div>
+        <div><b>고객지원</b>010-3750-5890</div>
+        <div><b>이메일</b>barunsme@gmail.com</div>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <div>© 2026 NEOIX. All rights reserved.</div>
+      <div>NEOIX AI CAMPUS — 새로운 아이디어의 무한한 확장</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ===== Typewriter ===== */
+(function(){
+  var words = ['아이디어의','세대의','경험의'];
+  var el = document.getElementById('rotate');
+  var w=0,c=0,deleting=false;
+  function tick(){
+    var word = words[w];
+    if(!deleting){
+      c++;
+      el.textContent = word.slice(0,c);
+      if(c===word.length){ deleting=true; return setTimeout(tick,1300); }
+      return setTimeout(tick,110);
+    } else {
+      c--;
+      el.textContent = word.slice(0,c);
+      if(c===0){ deleting=false; w=(w+1)%words.length; return setTimeout(tick,260); }
+      return setTimeout(tick,55);
+    }
+  }
+  el.textContent='';
+  tick();
+})();
+
+/* ===== Floating objects ===== */
+(function(){
+  var host = document.getElementById('objects');
+  // type, css-class, size, left%, top%, rotation, anim, duration, delay
+  var defs = [
+    ['sphere','s-violet',96,  6, 14, 0,'floaty',7,0],
+    ['sphere','s-pink',  64, 16, 64, 0,'floaty',6,.6],
+    ['sphere','s-cyan',  78, 86, 20, 0,'floaty',7.5,1.1],
+    ['sphere','s-amber', 56, 90, 70, 0,'floaty',6.4,.3],
+    ['sphere','s-lime',  44, 78, 8,  0,'bobx',8,.9],
+    ['sphere','s-ink',   38, 30, 12, 0,'floaty',6.8,1.4],
+    ['check','chk-pv',   84,  3, 44, 0,'spinny',16,0],
+    ['check','chk-cy',   58, 93, 46, 0,'spinny',20,0],
+    ['bar','',           120,12, 32, -18,'floaty',6.6,.2],
+    ['bar','',           90, 82, 84, 24,'floaty',7.2,.7],
+    ['bar','',           70, 70, 24, 40,'bobx',8.5,1.2],
+    ['ring','r-amber',   72, 24, 80, 0,'floaty',7,1.6],
+    ['ring','r-pink',    58, 88, 56, 0,'floaty',6.2,.4],
+    ['face','f-lime',    80,  2, 76, 0,'floaty',6.5,.5],
+    ['face','f-amber',   64, 70, 70, 0,'floaty',7.4,1.8],
+    ['sphere','s-violet',40, 50, 4,  0,'bobx',9,.2],
+    ['sphere','s-cyan',  34, 40, 86, 0,'floaty',6.1,1.0]
+  ];
+  defs.forEach(function(d){
+    var el=document.createElement('div');
+    var type=d[0];
+    el.className='obj '+(type==='bar'?'bar':type)+(d[1]?' '+d[1]:'');
+    var sz=d[2];
+    el.style.width=sz+'px';
+    el.style.height=(type==='bar'?Math.round(sz*0.34):sz)+'px';
+    el.style.left=d[3]+'%';
+    el.style.top=d[4]+'%';
+    el.style.setProperty('--rot',d[5]+'deg');
+    if(d[5]) el.style.transform='rotate('+d[5]+'deg)';
+    el.style.animation=d[6]+' '+d[7]+'s ease-in-out '+d[8]+'s infinite';
+    if(d[6]==='spinny') el.style.animationTimingFunction='linear';
+    if(type==='bar'){
+      var cols=['var(--violet)','var(--lime)','var(--pink)','var(--cyan)','var(--amber)'];
+      el.style.background=cols[Math.floor(Math.random()*cols.length)];
+    }
+    if(type==='face'){
+      el.innerHTML='<span class="eye l"></span><span class="eye r"></span><span class="mouth"></span>';
+    }
+    host.appendChild(el);
+  });
+  // scale objects down on small screens
+  function scale(){
+    var f = window.innerWidth < 760 ? 0.58 : 1;
+    host.querySelectorAll('.obj').forEach(function(o){
+      o.style.zoom = f;
+    });
+  }
+  scale(); window.addEventListener('resize',scale);
+})();
+
+/* ===== Speaker cards ===== */
+(function(){
+  var data=[
+    ['SY','김서연','LUMINA Lab','KEYNOTE','var(--violet)'],
+    ['DH','이도현','Northpeak','포럼','var(--pink)'],
+    ['YJ','정유진','ATLAS AI','아카데미','var(--cyan)'],
+    ['JW','한지우','Orbit Ventures','커피챗','var(--amber)'],
+    ['MK','문가람','Polylab','학회','var(--lime)'],
+    ['SH','신하늘','Cloudburst','포럼','var(--ink)'],
+    ['JE','조은별','Meridian','아카데미','var(--violet2)'],
+    ['TY','탁윤호','NEOIX','커피챗','var(--pink)']
+  ];
+  var grid=document.getElementById('speakers-grid');
+  data.forEach(function(s){
+    var card=document.createElement('div');
+    card.className='spk';
+    var dark = (s[4]==='var(--violet)'||s[4]==='var(--ink)'||s[4]==='var(--violet2)'||s[4]==='var(--pink)');
+    card.innerHTML =
+      '<div class="ph" style="background:'+s[4]+';color:'+(dark?'#fff':'#0b0a10')+'">'+s[0]+'</div>'+
+      '<div class="body"><div class="nm">'+s[1]+'</div><div class="co">'+s[2]+'</div>'+
+      '<span class="role">'+s[3]+'</span></div>';
+    grid.appendChild(card);
+  });
+})();
+</script>
+</body>
+</html>

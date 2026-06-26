@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEOIX AI CAMPUS '26 — 코즈믹 AI 컨퍼런스</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,400;0,700;0,900;1,900&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --space-1:#12052e;
+  --space-2:#1a0b3d;
+  --space-3:#2d0a5e;
+  --violet:#7c3aed;
+  --violet-lt:#a855f7;
+  --pink:#ff4fa3;
+  --lime:#c6ff3d;
+  --chrome-1:#fef6ff;
+  --chrome-2:#d9c2ff;
+  --chrome-3:#9d7bff;
+  --ink:#0a0118;
+  --cream:#fff7ec;
+  --shadow: 7px 7px 0 var(--ink);
+  --shadow-sm: 4px 4px 0 var(--ink);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Pretendard Variable',Pretendard,sans-serif;
+  background:var(--space-2);
+  color:var(--cream);
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+.display{font-family:'Archivo','Space Grotesk',sans-serif;font-weight:900;letter-spacing:-.02em;}
+.mono{font-family:'Space Grotesk',sans-serif;}
+
+/* ===== COSMIC BACKGROUND ===== */
+.cosmos{position:fixed;inset:0;z-index:-2;
+  background:
+    radial-gradient(1200px 700px at 78% -8%, #3d0a72 0%, transparent 60%),
+    radial-gradient(900px 600px at 12% 108%, #4a0e80 0%, transparent 55%),
+    linear-gradient(180deg,#1a0b3d 0%,#12052e 55%,#1a0b3d 100%);
+}
+.starfield{position:fixed;inset:0;z-index:-1;pointer-events:none;}
+.starfield .tw{position:absolute;width:2px;height:2px;border-radius:50%;background:#fff;opacity:.8;animation:tw 3s infinite ease-in-out}
+@keyframes tw{0%,100%{opacity:.15;transform:scale(.6)}50%{opacity:.95;transform:scale(1.1)}}
+/* graphic 4-point stars */
+.gstar{position:absolute;display:inline-block;
+  background:currentColor;
+  clip-path:polygon(50% 0,61% 39%,100% 50%,61% 61%,50% 100%,39% 61%,0 50%,39% 39%);
+}
+
+/* ===== NAV ===== */
+header.nav{position:sticky;top:0;z-index:50;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px clamp(16px,4vw,48px);
+  background:rgba(18,5,46,.78);backdrop-filter:blur(8px);
+  border-bottom:3px solid var(--ink);
+}
+.brand{display:flex;align-items:center;gap:10px;font-weight:900;letter-spacing:.04em;font-size:18px;color:#fff}
+.brand .dot{width:26px;height:26px;border-radius:50%;border:3px solid var(--ink);
+  background:radial-gradient(circle at 32% 28%,#fff 0 14%,var(--pink) 15%,var(--violet) 70%);
+  box-shadow:2px 2px 0 var(--ink)}
+.nav nav{display:flex;gap:8px;align-items:center}
+.nav nav a{color:var(--chrome-2);text-decoration:none;font-weight:700;font-size:13px;padding:8px 12px;border-radius:999px}
+.nav nav a:hover{color:#fff}
+.nav .cta-sm{background:var(--lime);color:var(--ink);border:3px solid var(--ink);
+  box-shadow:var(--shadow-sm);font-weight:900;padding:9px 16px}
+.nav .cta-sm:hover{transform:translate(-1px,-1px);box-shadow:5px 5px 0 var(--ink)}
+@media(max-width:760px){.nav nav a:not(.cta-sm){display:none}}
+
+/* ===== HERO ===== */
+.hero{position:relative;padding:clamp(40px,7vw,96px) clamp(16px,4vw,48px) clamp(60px,8vw,120px);
+  max-width:1240px;margin:0 auto;text-align:center}
+.kicker{display:inline-flex;align-items:center;gap:8px;
+  background:var(--violet);color:#fff;border:3px solid var(--ink);
+  box-shadow:var(--shadow-sm);border-radius:999px;padding:7px 16px;
+  font-weight:800;font-size:13px;letter-spacing:.06em;margin-bottom:26px}
+.kicker .blip{width:9px;height:9px;border-radius:50%;background:var(--lime);box-shadow:0 0 0 3px rgba(198,255,61,.25)}
+
+.wordmark{position:relative;line-height:.82;font-size:clamp(58px,15vw,200px);
+  text-transform:uppercase;margin:6px 0 4px}
+.wordmark .ln{display:block}
+.wordmark .chrome{
+  background:linear-gradient(178deg,#fff 0%,#e9d8ff 18%,#a855f7 40%,#fff 52%,#c6b3ff 64%,#7c3aed 82%,#ede9ff 100%);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;
+  -webkit-text-stroke:3px var(--ink);
+  filter:drop-shadow(6px 6px 0 var(--ink));
+  paint-order:stroke fill;
+}
+.wordmark .apos{color:var(--pink);-webkit-text-fill-color:var(--pink);-webkit-text-stroke:3px var(--ink);paint-order:stroke fill;filter:drop-shadow(6px 6px 0 var(--ink))}
+.wordmark .yr{color:var(--lime);-webkit-text-fill-color:var(--lime);-webkit-text-stroke:3px var(--ink);paint-order:stroke fill;filter:drop-shadow(6px 6px 0 var(--ink))}
+
+.tagline{font-size:clamp(18px,2.6vw,30px);font-weight:800;color:#fff;margin:30px auto 8px;max-width:760px;line-height:1.35}
+.tagline b{color:var(--lime)}
+.subline{color:var(--chrome-2);font-weight:600;font-size:clamp(14px,1.7vw,17px);max-width:600px;margin:0 auto}
+
+.meta-row{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin:30px 0 34px}
+.meta-chip{display:inline-flex;align-items:center;gap:9px;background:#fff;color:var(--ink);
+  border:3px solid var(--ink);box-shadow:var(--shadow-sm);border-radius:999px;padding:10px 18px;font-weight:800;font-size:14px}
+.meta-chip .ic{font-size:16px}
+
+.cta-row{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+.btn{font-weight:900;border:3px solid var(--ink);border-radius:14px;padding:16px 30px;cursor:pointer;
+  font-size:16px;text-decoration:none;display:inline-flex;align-items:center;gap:10px;transition:transform .08s,box-shadow .08s}
+.btn-primary{background:var(--pink);color:#fff;box-shadow:var(--shadow)}
+.btn-primary:hover{transform:translate(-2px,-2px);box-shadow:9px 9px 0 var(--ink)}
+.btn-primary:active{transform:translate(3px,3px);box-shadow:2px 2px 0 var(--ink)}
+.btn-ghost{background:var(--space-3);color:#fff;box-shadow:var(--shadow-sm)}
+.btn-ghost:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--ink)}
+
+/* floating stickers */
+.sticker{position:absolute;font-weight:900;border:3px solid var(--ink);box-shadow:var(--shadow-sm);
+  border-radius:12px;padding:10px 16px;font-size:15px;z-index:3;transform:rotate(var(--r,-6deg))}
+.st-2026{top:8%;left:4%;background:var(--lime);color:var(--ink);--r:-9deg}
+.st-coex{top:18%;right:3%;background:#fff;color:var(--ink);--r:8deg}
+.st-sold{bottom:24%;left:2%;background:var(--violet);color:#fff;--r:7deg}
+.st-ai{bottom:30%;right:4%;background:var(--pink);color:#fff;--r:-7deg;border-radius:50%;width:78px;height:78px;display:flex;align-items:center;justify-content:center;text-align:center;line-height:1.05;font-size:13px}
+@media(max-width:900px){.sticker{display:none}}
+
+/* planet */
+.planet{position:absolute;top:-30px;right:-40px;width:230px;height:230px;z-index:0;pointer-events:none}
+.planet .ball{position:absolute;inset:40px;border-radius:50%;border:4px solid var(--ink);
+  background:radial-gradient(circle at 34% 30%,#fff 0 8%,var(--violet-lt) 18%,var(--violet) 55%,#3a0d6e 100%);
+  box-shadow:inset -10px -10px 0 rgba(10,1,24,.25)}
+.planet .ring{position:absolute;top:48%;left:-8%;width:116%;height:64px;border:5px solid var(--ink);border-radius:50%;
+  background:linear-gradient(180deg,var(--pink),transparent 70%);transform:rotate(-22deg)}
+@media(max-width:900px){.planet{display:none}}
+
+/* marquee */
+.marquee{border-top:3px solid var(--ink);border-bottom:3px solid var(--ink);background:var(--lime);
+  color:var(--ink);overflow:hidden;white-space:nowrap;padding:11px 0}
+.marquee .track{display:inline-block;animation:scroll 22s linear infinite;font-weight:900;font-size:17px;letter-spacing:.02em}
+.marquee .track span{margin:0 22px}
+.marquee .track .star{color:var(--violet)}
+@keyframes scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* ===== SECTION SHELL ===== */
+section.sec{max-width:1180px;margin:0 auto;padding:clamp(56px,7vw,100px) clamp(16px,4vw,48px)}
+.sec-head{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;flex-wrap:wrap;margin-bottom:38px}
+.sec-tag{display:inline-block;background:var(--violet);color:#fff;border:3px solid var(--ink);box-shadow:var(--shadow-sm);
+  border-radius:999px;padding:6px 15px;font-weight:900;font-size:12px;letter-spacing:.1em;margin-bottom:14px}
+.sec-title{font-size:clamp(32px,5.5vw,64px);line-height:.95;color:#fff;text-transform:uppercase}
+.sec-title em{font-style:normal;color:var(--lime);-webkit-text-stroke:2px var(--ink);paint-order:stroke fill}
+.sec-sub{color:var(--chrome-2);font-weight:600;max-width:420px;font-size:15px}
+
+/* ===== SPEAKERS ===== */
+.spk-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:22px}
+.spk{background:var(--space-3);border:3px solid var(--ink);border-radius:20px;box-shadow:var(--shadow);
+  overflow:hidden;position:relative;transition:transform .1s,box-shadow .1s}
+.spk:hover{transform:translate(-3px,-3px);box-shadow:10px 10px 0 var(--ink)}
+.spk .ph{height:158px;position:relative;border-bottom:3px solid var(--ink);
+  display:flex;align-items:center;justify-content:center;overflow:hidden}
+.spk .ph .face{font-size:74px;filter:drop-shadow(3px 3px 0 rgba(10,1,24,.4))}
+.spk .badge{position:absolute;top:12px;left:12px;font-weight:900;font-size:11px;letter-spacing:.05em;
+  border:3px solid var(--ink);border-radius:999px;padding:5px 11px;color:var(--ink);box-shadow:2px 2px 0 var(--ink)}
+.spk .body{padding:16px 16px 20px}
+.spk .nm{font-weight:900;font-size:20px;color:#fff}
+.spk .ro{color:var(--chrome-2);font-weight:600;font-size:13.5px;margin-top:3px}
+.spk .topic{margin-top:12px;font-size:13px;font-weight:700;color:var(--lime);display:flex;gap:7px;align-items:flex-start}
+
+/* ===== SESSIONS ===== */
+.sessions{display:flex;flex-direction:column;gap:14px}
+.ses{display:grid;grid-template-columns:130px 1fr auto;gap:18px;align-items:center;
+  background:#fff;color:var(--ink);border:3px solid var(--ink);border-radius:16px;box-shadow:var(--shadow-sm);
+  padding:16px 20px;position:relative;transition:transform .08s}
+.ses:hover{transform:translateX(4px)}
+.ses .time{font-weight:900;font-size:16px;font-family:'Space Grotesk',sans-serif}
+.ses .time small{display:block;font-weight:700;color:var(--violet);font-size:11px;letter-spacing:.08em}
+.ses .ti{font-weight:900;font-size:17px}
+.ses .ds{font-weight:600;font-size:13px;color:#4b3a66;margin-top:2px}
+.ses .tg{font-weight:900;font-size:11px;border:2.5px solid var(--ink);border-radius:999px;padding:5px 11px;white-space:nowrap}
+.ses.key{background:var(--lime)}
+.ses .keytag{position:absolute;top:-12px;left:18px;background:var(--pink);color:#fff;border:3px solid var(--ink);
+  box-shadow:2px 2px 0 var(--ink);border-radius:999px;font-weight:900;font-size:11px;padding:4px 12px;letter-spacing:.06em}
+@media(max-width:680px){.ses{grid-template-columns:1fr;gap:8px}.ses .tg{justify-self:start}}
+
+/* ===== TRACKS ===== */
+.tracks{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:22px}
+.trk{border:3px solid var(--ink);border-radius:22px;box-shadow:var(--shadow);padding:26px 22px;position:relative;
+  overflow:hidden;min-height:230px;display:flex;flex-direction:column;transition:transform .1s,box-shadow .1s}
+.trk:hover{transform:translate(-3px,-3px) rotate(-1deg);box-shadow:11px 11px 0 var(--ink)}
+.trk .no{font-family:'Space Grotesk';font-weight:700;font-size:14px;opacity:.85}
+.trk .ico{font-size:46px;margin:10px 0 14px;filter:drop-shadow(3px 3px 0 rgba(10,1,24,.35))}
+.trk .nm{font-weight:900;font-size:26px;line-height:1}
+.trk .en{font-family:'Archivo';font-weight:900;text-transform:uppercase;font-size:13px;letter-spacing:.12em;opacity:.7;margin-top:5px}
+.trk .ds{margin-top:auto;padding-top:16px;font-weight:600;font-size:13.5px;line-height:1.5}
+.trk.t1{background:var(--violet);color:#fff}
+.trk.t2{background:var(--pink);color:#fff}
+.trk.t3{background:var(--lime);color:var(--ink)}
+.trk.t4{background:#fff;color:var(--ink)}
+.trk .pill{position:absolute;top:18px;right:18px;width:34px;height:34px;border-radius:50%;border:3px solid var(--ink);
+  background:rgba(255,255,255,.25)}
+
+/* ===== TICKET ===== */
+.ticket-wrap{max-width:1180px;margin:0 auto;padding:0 clamp(16px,4vw,48px) clamp(56px,7vw,100px)}
+.ticket{position:relative;background:linear-gradient(135deg,var(--violet) 0%,#4a0e80 100%);
+  border:4px solid var(--ink);border-radius:26px;box-shadow:10px 10px 0 var(--ink);
+  padding:clamp(28px,5vw,56px);overflow:hidden}
+.ticket .tk-stars{position:absolute;inset:0;color:rgba(255,255,255,.18);pointer-events:none}
+.ticket-grid{display:grid;grid-template-columns:1.4fr 1fr;gap:30px;align-items:center;position:relative;z-index:2}
+@media(max-width:780px){.ticket-grid{grid-template-columns:1fr}}
+.tk-l .lbl{font-weight:900;font-size:13px;letter-spacing:.14em;color:var(--lime);text-transform:uppercase}
+.tk-l h3{font-size:clamp(30px,5vw,52px);line-height:.95;color:#fff;text-transform:uppercase;margin:10px 0 14px}
+.tk-l p{color:var(--chrome-2);font-weight:600;max-width:430px;line-height:1.55}
+.tk-feats{display:flex;flex-wrap:wrap;gap:9px;margin-top:18px}
+.tk-feats span{background:rgba(255,255,255,.14);border:2.5px solid rgba(255,255,255,.55);border-radius:999px;
+  padding:6px 13px;font-weight:800;font-size:12.5px;color:#fff}
+.tk-card{background:var(--cream);color:var(--ink);border:4px solid var(--ink);border-radius:18px;
+  box-shadow:6px 6px 0 var(--ink);padding:26px;position:relative}
+.tk-card::before,.tk-card::after{content:"";position:absolute;width:30px;height:30px;background:var(--violet);
+  border:4px solid var(--ink);border-radius:50%;top:50%;transform:translateY(-50%)}
+.tk-card::before{left:-19px}.tk-card::after{right:-19px}
+.tk-card .ribbon{display:inline-block;background:var(--pink);color:#fff;border:3px solid var(--ink);box-shadow:2px 2px 0 var(--ink);
+  font-weight:900;font-size:11px;letter-spacing:.08em;padding:5px 12px;border-radius:999px}
+.tk-card .price{display:flex;align-items:flex-end;gap:6px;margin:14px 0 4px}
+.tk-card .price .now{font-family:'Archivo';font-weight:900;font-size:48px;line-height:.9}
+.tk-card .price .was{font-weight:800;font-size:18px;color:#9a86b5;text-decoration:line-through;margin-bottom:6px}
+.tk-card .unit{font-weight:700;color:#4b3a66;font-size:13px}
+.tk-card ul{list-style:none;margin:16px 0 18px;display:flex;flex-direction:column;gap:9px}
+.tk-card li{font-weight:700;font-size:14px;display:flex;gap:9px;align-items:center}
+.tk-card li .ck{width:20px;height:20px;border-radius:50%;background:var(--lime);border:2.5px solid var(--ink);
+  display:flex;align-items:center;justify-content:center;font-size:11px;flex:none}
+.tk-card .btn{width:100%;justify-content:center}
+
+/* ===== FOOTER ===== */
+footer{border-top:4px solid var(--ink);background:var(--space-1);padding:clamp(44px,6vw,72px) clamp(16px,4vw,48px) 40px}
+.ft-inner{max-width:1180px;margin:0 auto}
+.ft-mark{font-family:'Archivo';font-weight:900;font-size:clamp(44px,11vw,140px);line-height:.85;
+  text-transform:uppercase;color:transparent;-webkit-text-stroke:3px var(--chrome-3);letter-spacing:-.02em;
+  margin-bottom:36px}
+.ft-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:20px;
+  border-top:2px dashed rgba(157,123,255,.45);padding-top:30px}
+.ft-block .k{font-weight:900;font-size:11px;letter-spacing:.12em;color:var(--violet-lt);text-transform:uppercase;margin-bottom:9px}
+.ft-block .v{font-weight:600;font-size:14px;color:var(--chrome-2);line-height:1.7}
+.ft-block .v b{color:#fff;font-weight:800}
+.ft-block a{color:var(--lime);text-decoration:none}
+.ft-bottom{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;
+  margin-top:34px;padding-top:22px;border-top:2px dashed rgba(157,123,255,.45);
+  font-size:12.5px;color:var(--chrome-3);font-weight:600}
+.ft-bottom .tag{display:flex;gap:8px;align-items:center}
+.ft-bottom .tag .gstar{position:static;width:13px;height:13px;color:var(--lime)}
+</style>
+</head>
+<body>
+<div class="cosmos"></div>
+<div class="starfield" id="stars"></div>
+
+<!-- NAV -->
+<header class="nav">
+  <div class="brand"><span class="dot"></span>NEOIX<span style="color:var(--violet-lt)">/</span>AI CAMPUS</div>
+  <nav>
+    <a href="#speakers">연사</a>
+    <a href="#sessions">세션</a>
+    <a href="#tracks">트랙</a>
+    <a href="#ticket">티켓</a>
+    <a href="#ticket" class="cta-sm">참가신청</a>
+  </nav>
+</header>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="planet"><div class="ring"></div><div class="ball"></div></div>
+
+  <span class="sticker st-2026">★ 2026</span>
+  <span class="sticker st-coex">COEX · SEOUL</span>
+  <span class="sticker st-sold">SOLD FAST ⚡</span>
+  <span class="sticker st-ai">AI<br>CAMPUS</span>
+
+  <span class="kicker"><span class="blip"></span>NEOIX 가 만드는 우주급 AI 컨퍼런스</span>
+
+  <h1 class="wordmark display">
+    <span class="ln chrome">AI CAMPUS</span>
+    <span class="ln"><span class="apos">'</span><span class="yr">26</span></span>
+  </h1>
+
+  <p class="tagline">AI의 다음 궤도로. <b>아카데미·포럼·학회·커피챗</b><br>네 개의 트랙이 한 무대에서 충돌하는 이틀.</p>
+  <p class="subline">실무자·연구자·창업가가 같은 별 아래 모입니다. 강연이 아니라 가속.</p>
+
+  <div class="meta-row">
+    <span class="meta-chip"><span class="ic">📅</span>2026.06.26 – 06.27</span>
+    <span class="meta-chip"><span class="ic">📍</span>코엑스 그랜드볼룸 · 서울</span>
+    <span class="meta-chip"><span class="ic">🎟</span>EARLY BIRD 진행중</span>
+  </div>
+
+  <div class="cta-row">
+    <a href="#ticket" class="btn btn-primary">티켓 받기 →</a>
+    <a href="#tracks" class="btn btn-ghost">트랙 둘러보기</a>
+  </div>
+</div>
+
+<!-- MARQUEE -->
+<div class="marquee">
+  <div class="track">
+    <span>아카데미</span><span class="star">✦</span><span>포럼</span><span class="star">✦</span><span>학회</span><span class="star">✦</span><span>커피챗</span><span class="star">✦</span><span>NEOIX AI CAMPUS '26</span><span class="star">✦</span><span>COEX SEOUL</span><span class="star">✦</span>
+    <span>아카데미</span><span class="star">✦</span><span>포럼</span><span class="star">✦</span><span>학회</span><span class="star">✦</span><span>커피챗</span><span class="star">✦</span><span>NEOIX AI CAMPUS '26</span><span class="star">✦</span><span>COEX SEOUL</span><span class="star">✦</span>
+  </div>
+</div>
+
+<!-- SPEAKERS -->
+<section class="sec" id="speakers">
+  <div class="sec-head">
+    <div>
+      <span class="sec-tag">★ LINE-UP</span>
+      <h2 class="sec-title display">우주급 <em>연사단</em></h2>
+    </div>
+    <p class="sec-sub">국내외 AI 최전선의 실무자·연구자가 직접 무대에 오릅니다. 발표 후 커피챗으로 이어집니다.</p>
+  </div>
+
+  <div class="spk-grid">
+    <article class="spk">
+      <div class="ph" style="background:radial-gradient(circle at 50% 30%,#a855f7,#3a0d6e)"><span class="face">👩‍🚀</span></div>
+      <span class="badge" style="background:var(--lime)">KEYNOTE</span>
+      <div class="body"><div class="nm">박정겸</div><div class="ro">NEOIX · Founder / AI Lead</div>
+        <div class="topic"><span>✦</span>한국형 생성AI 제품, 0에서 궤도까지</div></div>
+    </article>
+    <article class="spk">
+      <div class="ph" style="background:radial-gradient(circle at 50% 30%,#ff4fa3,#5e0a40)"><span class="face">🧑‍🔬</span></div>
+      <span class="badge" style="background:#fff">RESEARCH</span>
+      <div class="body"><div class="nm">정하늘 박사</div><div class="ro">대형 멀티모달 연구자</div>
+        <div class="topic"><span>✦</span>멀티모달 추론의 다음 좌표</div></div>
+    </article>
+    <article class="spk">
+      <div class="ph" style="background:radial-gradient(circle at 50% 30%,#c6ff3d,#2d6e0a)"><span class="face">🧑‍💻</span></div>
+      <span class="badge" style="background:var(--pink);color:#fff">ENGINEERING</span>
+      <div class="body"><div class="nm">서민준</div><div class="ro">AI 인프라 · MLOps 리드</div>
+        <div class="topic"><span>✦</span>추론 비용을 1/10로 만드는 설계</div></div>
+    </article>
+    <article class="spk">
+      <div class="ph" style="background:radial-gradient(circle at 50% 30%,#7c3aed,#1a0b3d)"><span class="face">👩‍🏫</span></div>
+      <span class="badge" style="background:var(--lime)">ACADEMY</span>
+      <div class="body"><div class="nm">한가람</div><div class="ro">프롬프트 · 에이전트 교육</div>
+        <div class="topic"><span>✦</span>실무 에이전트 설계 워크숍</div></div>
+    </article>
+    <article class="spk">
+      <div class="ph" style="background:radial-gradient(circle at 50% 30%,#a855f7,#4a0e80)"><span class="face">🧑‍🚀</span></div>
+      <span class="badge" style="background:#fff">FORUM</span>
+      <div class="body"><div class="nm">이도윤</div><div class="ro">AI 정책 · 윤리 패널</div>
+        <div class="topic"><span>✦</span>규제와 혁신, 그 사이의 궤도</div></div>
+    </article>
+    <article class="spk">
+      <div class="ph" style="background:radial-gradient(circle at 50% 30%,#ff4fa3,#5e0a40)"><span class="face">👨‍🚀</span></div>
+      <span class="badge" style="background:var(--pink);color:#fff">STARTUP</span>
+      <div class="body"><div class="nm">최우주</div><div class="ro">AI 스타트업 대표</div>
+        <div class="topic"><span>✦</span>시드부터 시리즈A까지의 항해</div></div>
+    </article>
+  </div>
+</section>
+
+<!-- SESSIONS -->
+<section class="sec" id="sessions" style="padding-top:0">
+  <div class="sec-head">
+    <div>
+      <span class="sec-tag">★ TIMETABLE · DAY 1</span>
+      <h2 class="sec-title display">세션 <em>타임라인</em></h2>
+    </div>
+    <p class="sec-sub">키노트부터 커피챗까지, 하루를 끊김 없이 설계했습니다.</p>
+  </div>
+
+  <div class="sessions">
+    <div class="ses key">
+      <span class="keytag">★ KEYNOTE</span>
+      <div class="time">10:00<small>OPENING</small></div>
+      <div><div class="ti">AI의 다음 궤도</div><div class="ds">박정겸 · NEOIX Founder — 우리가 어디로 가고 있는가</div></div>
+      <span class="tg" style="background:var(--violet);color:#fff">메인홀</span>
+    </div>
+    <div class="ses">
+      <div class="time">11:20<small>SESSION</small></div>
+      <div><div class="ti">멀티모달 추론의 다음 좌표</div><div class="ds">정하늘 박사 · 연구 트랙 (학회)</div></div>
+      <span class="tg" style="background:var(--lime)">학회</span>
+    </div>
+    <div class="ses">
+      <div class="time">13:30<small>WORKSHOP</small></div>
+      <div><div class="ti">실무 에이전트 설계 워크숍</div><div class="ds">한가람 · 핸즈온 (아카데미) — 노트북 지참</div></div>
+      <span class="tg" style="background:var(--pink);color:#fff">아카데미</span>
+    </div>
+    <div class="ses">
+      <div class="time">15:00<small>PANEL</small></div>
+      <div><div class="ti">규제와 혁신, 그 사이</div><div class="ds">이도윤 외 3인 · 라이브 패널 (포럼)</div></div>
+      <span class="tg" style="background:#fff">포럼</span>
+    </div>
+    <div class="ses">
+      <div class="time">16:40<small>NETWORK</small></div>
+      <div><div class="ti">연사 ↔ 참가자 커피챗</div><div class="ds">관심 분야별 매칭 · 15분 라운드 (커피챗)</div></div>
+      <span class="tg" style="background:var(--violet);color:#fff">커피챗</span>
+    </div>
+  </div>
+</section>
+
+<!-- TRACKS -->
+<section class="sec" id="tracks" style="padding-top:0">
+  <div class="sec-head">
+    <div>
+      <span class="sec-tag">★ FOUR TRACKS</span>
+      <h2 class="sec-title display">네 개의 <em>궤도</em></h2>
+    </div>
+    <p class="sec-sub">배우고, 토론하고, 발표하고, 연결됩니다. 원하는 궤도를 자유롭게 갈아타세요.</p>
+  </div>
+
+  <div class="tracks">
+    <article class="trk t1">
+      <span class="pill"></span>
+      <div class="no">TRACK 01</div>
+      <div class="ico">📚</div>
+      <div class="nm">아카데미</div>
+      <div class="en">Academy</div>
+      <div class="ds">핸즈온 워크숍과 실습. AI 도구를 직접 손에 익히는 가장 빠른 길.</div>
+    </article>
+    <article class="trk t2">
+      <span class="pill"></span>
+      <div class="no">TRACK 02</div>
+      <div class="ico">🗣️</div>
+      <div class="nm">포럼</div>
+      <div class="en">Forum</div>
+      <div class="ds">정책·윤리·산업을 둘러싼 라이브 패널 토론. 날선 질문 환영.</div>
+    </article>
+    <article class="trk t3">
+      <span class="pill"></span>
+      <div class="no">TRACK 03</div>
+      <div class="ico">🔬</div>
+      <div class="nm">학회</div>
+      <div class="en">Research</div>
+      <div class="ds">최신 연구 발표와 논문 세션. 프런티어의 좌표를 공유합니다.</div>
+    </article>
+    <article class="trk t4">
+      <span class="pill"></span>
+      <div class="no">TRACK 04</div>
+      <div class="ico">☕</div>
+      <div class="nm">커피챗</div>
+      <div class="en">Coffee Chat</div>
+      <div class="ds">연사·동료와의 1:1 매칭 네트워킹. 명함보다 진한 15분.</div>
+    </article>
+  </div>
+</section>
+
+<!-- TICKET -->
+<div class="ticket-wrap" id="ticket">
+  <div class="ticket">
+    <svg class="tk-stars" viewBox="0 0 800 300" preserveAspectRatio="none">
+      <g fill="currentColor">
+        <path d="M60 40l4 14 14 4-14 4-4 14-4-14-14-4 14-4z"/>
+        <path d="M720 60l3 11 11 3-11 3-3 11-3-11-11-3 11-3z"/>
+        <path d="M640 210l4 14 14 4-14 4-4 14-4-14-14-4 14-4z"/>
+        <path d="M120 230l3 10 10 3-10 3-3 10-3-10-10-3 10-3z"/>
+        <circle cx="400" cy="30" r="3"/><circle cx="560" cy="130" r="3"/><circle cx="240" cy="90" r="2.5"/>
+      </g>
+    </svg>
+    <div class="ticket-grid">
+      <div class="tk-l">
+        <div class="lbl">★ Boarding Pass</div>
+        <h3 class="display">탑승권을<br>받으세요</h3>
+        <p>한 장으로 네 개의 트랙을 모두 통과합니다. 키노트·워크숍·패널·커피챗까지 전부 포함. 좌석은 빠르게 사라집니다.</p>
+        <div class="tk-feats">
+          <span>✦ 전 세션 입장</span>
+          <span>✦ 핸즈온 키트</span>
+          <span>✦ 커피챗 매칭</span>
+          <span>✦ 다시보기 VOD</span>
+          <span>✦ 굿즈 패키지</span>
+        </div>
+      </div>
+      <div class="tk-card">
+        <span class="ribbon">EARLY BIRD · 40% OFF</span>
+        <div class="price">
+          <span class="now display">₩119,000</span>
+          <span class="was">₩198,000</span>
+        </div>
+        <div class="unit">1인 / 이틀 풀패스 · VAT 포함</div>
+        <ul>
+          <li><span class="ck">✓</span>DAY 1 · DAY 2 전 세션 자유 입장</li>
+          <li><span class="ck">✓</span>아카데미 워크숍 핸즈온 키트</li>
+          <li><span class="ck">✓</span>연사 커피챗 우선 매칭권</li>
+          <li><span class="ck">✓</span>현장 굿즈 + VOD 다시보기</li>
+        </ul>
+        <a href="#" class="btn btn-primary">지금 탑승하기 →</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="ft-inner">
+    <div class="ft-mark">NEOIX</div>
+    <div class="ft-grid">
+      <div class="ft-block">
+        <div class="k">Event</div>
+        <div class="v"><b>NEOIX AI CAMPUS '26</b><br>2026.06.26 – 06.27<br>코엑스 그랜드볼룸 · 서울</div>
+      </div>
+      <div class="ft-block">
+        <div class="k">사업자 정보</div>
+        <div class="v">상호 <b>네오익스 (NEOIX)</b><br>대표 <b>박정겸</b><br>사업자등록번호 292-33-01829</div>
+      </div>
+      <div class="ft-block">
+        <div class="k">고객지원</div>
+        <div class="v"><b>010-3750-5890</b><br><a href="mailto:barunsme@gmail.com">barunsme@gmail.com</a></div>
+      </div>
+      <div class="ft-block">
+        <div class="k">트랙</div>
+        <div class="v">아카데미 · 포럼<br>학회 · 커피챗</div>
+      </div>
+    </div>
+    <div class="ft-bottom">
+      <div class="tag"><span class="gstar"></span>© 2026 NEOIX. ALL RIGHTS RESERVED.</div>
+      <div>Designed in the cosmic purple void ✦</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+// crisp twinkling starfield
+(function(){
+  var sf=document.getElementById('stars'),n=window.innerWidth<700?70:130,html='';
+  for(var i=0;i<n;i++){
+    var x=Math.random()*100,y=Math.random()*100,d=(Math.random()*3+1.5).toFixed(2),
+        delay=(Math.random()*3).toFixed(2),s=(Math.random()*1.6+1).toFixed(1),big=Math.random()<0.12;
+    if(big){
+      html+='<span class="gstar" style="left:'+x+'%;top:'+y+'%;width:'+(s*5)+'px;height:'+(s*5)+'px;color:'+(Math.random()<.5?'#c6ff3d':'#ff4fa3')+';opacity:.85;animation:tw '+d+'s '+delay+'s infinite ease-in-out"></span>';
+    }else{
+      html+='<span class="tw" style="left:'+x+'%;top:'+y+'%;width:'+s+'px;height:'+s+'px;animation-duration:'+d+'s;animation-delay:'+delay+'s"></span>';
+    }
+  }
+  sf.innerHTML=html;
+})();
+</script>
+</body>
+</html>

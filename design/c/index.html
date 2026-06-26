@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>NEOIX AI CAMPUS 2026</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@800;900&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --ink:#0c0b10;
+    --paper:#f4f2ec;
+    --violet:#7c3aed;
+    --lime:#c7f536;
+    --hair:rgba(244,242,236,.16);
+    --disp:"Archivo","Space Grotesk",sans-serif;
+    --kr:"Pretendard Variable",Pretendard,sans-serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--ink);
+    color:var(--paper);
+    font-family:var(--kr);
+    overflow-x:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{background:var(--lime);color:var(--ink)}
+  a{color:inherit;text-decoration:none}
+  .disp{font-family:var(--disp);font-weight:900;letter-spacing:-.02em;line-height:.86;text-transform:uppercase}
+  .wrap{max-width:1400px;margin:0 auto;padding:0 clamp(18px,4vw,56px)}
+
+  /* NAV */
+  nav{
+    position:fixed;top:0;left:0;right:0;z-index:100;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:16px clamp(18px,4vw,56px);
+    border-bottom:1px solid var(--hair);
+    backdrop-filter:blur(12px);
+    background:rgba(12,11,16,.55);
+    mix-blend-mode:normal;
+  }
+  .brand{font-family:var(--disp);font-weight:900;font-size:20px;letter-spacing:-.04em}
+  .brand span{color:var(--violet)}
+  .navlinks{display:flex;gap:clamp(14px,2vw,34px);align-items:center;font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+  .navlinks a{opacity:.7;transition:.2s}
+  .navlinks a:hover{opacity:1;color:var(--lime)}
+  .nav-cta{
+    background:var(--violet);color:#fff;padding:9px 18px;border-radius:0;
+    font-family:var(--disp);font-weight:800;font-size:12px;letter-spacing:.06em;
+    transition:.2s;
+  }
+  .nav-cta:hover{background:var(--lime);color:var(--ink)}
+  .navlinks a.nav-cta{opacity:1}
+  @media(max-width:760px){.navlinks a:not(.nav-cta){display:none}}
+
+  /* HERO */
+  .hero{padding:clamp(120px,16vh,180px) 0 0}
+  .hero-meta{
+    display:flex;flex-wrap:wrap;gap:8px 28px;
+    font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+    border-bottom:1px solid var(--hair);padding-bottom:18px;margin-bottom:clamp(24px,5vh,52px);
+  }
+  .hero-meta b{color:var(--lime)}
+  .hero-head{
+    font-family:var(--disp);font-weight:900;
+    font-size:clamp(46px,9.5vw,120px);line-height:.92;letter-spacing:-.03em;
+    text-transform:none;
+  }
+  .hero-head .ko{font-family:var(--kr);font-weight:900}
+  .type-word{color:var(--violet);font-family:var(--kr);font-weight:900}
+  .caret{display:inline-block;width:.06em;height:.82em;background:var(--lime);margin-left:.04em;vertical-align:-.06em;animation:blink 1s steps(1) infinite}
+  @keyframes blink{50%{opacity:0}}
+  .hero-sub{
+    display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:24px;
+    margin-top:clamp(28px,5vh,56px);
+  }
+  .hero-sub p{max-width:46ch;font-size:clamp(15px,1.6vw,19px);line-height:1.5;color:rgba(244,242,236,.74);font-weight:500}
+  .big-cta{
+    display:inline-flex;align-items:center;gap:14px;
+    background:var(--lime);color:var(--ink);
+    font-family:var(--disp);font-weight:900;font-size:clamp(15px,1.4vw,18px);
+    padding:18px 26px;letter-spacing:.02em;transition:.18s;white-space:nowrap;
+  }
+  .big-cta:hover{background:var(--violet);color:#fff;transform:translate(-3px,-3px)}
+  .big-cta .arw{font-family:var(--disp)}
+
+  /* MARQUEE */
+  .marquee{display:flex;overflow:hidden;user-select:none;white-space:nowrap;width:100%}
+  .marquee .track{display:flex;flex-shrink:0;min-width:100%;align-items:center;animation:scroll var(--dur,28s) linear infinite}
+  .marquee.rev .track{animation-direction:reverse}
+  .marquee span{
+    font-family:var(--disp);font-weight:900;font-size:clamp(40px,8vw,104px);
+    letter-spacing:-.02em;padding:0 .28em;line-height:1;text-transform:uppercase;
+  }
+  .marquee .dot{color:var(--violet)}
+  @keyframes scroll{to{transform:translateX(-50%)}}
+  .mq-band{
+    margin:clamp(36px,7vh,70px) 0;padding:clamp(14px,2.4vw,26px) 0;
+    border-top:1px solid var(--hair);border-bottom:1px solid var(--hair);
+  }
+  .mq-accent{background:var(--violet);color:#fff;border:none;margin:0;padding:clamp(8px,1.6vw,16px) 0}
+  .mq-accent .dot{color:var(--lime)}
+  .mq-outline span{-webkit-text-stroke:1.4px var(--paper);color:transparent}
+  .mq-outline .dot{-webkit-text-stroke:1.4px var(--lime)}
+
+  /* SECTION SHARED */
+  section{position:relative}
+  .sec-head{
+    display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap;
+    margin-bottom:clamp(26px,5vh,48px);
+  }
+  .sec-idx{font-family:var(--disp);font-weight:900;font-size:13px;letter-spacing:.1em;color:var(--violet)}
+  .sec-title{font-family:var(--disp);font-weight:900;font-size:clamp(40px,7vw,96px);line-height:.88;text-transform:uppercase}
+  .sec-note{font-size:14px;color:rgba(244,242,236,.6);font-weight:500;max-width:30ch}
+
+  /* SPEAKERS */
+  .speakers{padding:clamp(50px,8vh,90px) 0;border-top:2px solid var(--paper)}
+  .spk{
+    display:grid;grid-template-columns:60px 1fr auto;align-items:center;gap:24px;
+    padding:clamp(18px,3vh,30px) 0;border-bottom:1px solid var(--hair);
+    position:relative;cursor:pointer;transition:.25s;
+  }
+  .spk:first-child{border-top:1px solid var(--hair)}
+  .spk .no{font-family:var(--disp);font-weight:800;font-size:14px;opacity:.4}
+  .spk .nm{font-family:var(--disp);font-weight:900;font-size:clamp(26px,4.6vw,62px);line-height:.9;text-transform:uppercase;transition:.25s}
+  .spk .nm em{font-style:normal;font-family:var(--kr);font-weight:900}
+  .spk .role{font-size:13px;font-weight:700;letter-spacing:.04em;text-align:right;color:rgba(244,242,236,.55);text-transform:uppercase;transition:.25s;max-width:30vw}
+  .spk:hover{padding-left:18px}
+  .spk:hover .nm{color:var(--lime)}
+  .spk:hover .role{color:var(--paper)}
+  .spk:hover .no{opacity:1;color:var(--violet)}
+  @media(max-width:680px){.spk{grid-template-columns:1fr;gap:6px}.spk .role{text-align:left;max-width:none}}
+
+  /* SESSIONS */
+  .sessions{padding:clamp(50px,8vh,90px) 0}
+  .ses{
+    display:grid;grid-template-columns:120px 1fr 150px;gap:24px;align-items:baseline;
+    padding:22px 0;border-bottom:1px solid var(--hair);transition:.2s;
+  }
+  .ses:first-of-type{border-top:1px solid var(--hair)}
+  .ses .tm{font-family:var(--disp);font-weight:800;font-size:clamp(18px,2vw,26px)}
+  .ses .ttl{font-weight:800;font-size:clamp(17px,2vw,24px);line-height:1.2}
+  .ses .ttl small{display:block;font-weight:500;font-size:13px;color:rgba(244,242,236,.55);margin-top:6px;letter-spacing:.02em}
+  .ses .tag{font-family:var(--disp);font-weight:800;font-size:12px;letter-spacing:.06em;text-align:right;opacity:.5;text-transform:uppercase}
+  .ses.key{background:var(--violet);color:#fff;padding:26px clamp(16px,2vw,26px);border:none;margin:8px 0}
+  .ses.key .tag{opacity:1;color:var(--lime)}
+  .ses.key .ttl small{color:rgba(255,255,255,.78)}
+  .ses:not(.key):hover{padding-left:14px;background:rgba(255,255,255,.02)}
+  @media(max-width:680px){.ses{grid-template-columns:1fr;gap:8px}.ses .tag{text-align:left}}
+
+  /* TRACKS */
+  .tracks{padding:clamp(50px,8vh,90px) 0}
+  .track-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--hair);border:1px solid var(--hair)}
+  .trk{background:var(--ink);padding:clamp(28px,4vw,52px);position:relative;overflow:hidden;transition:.3s;min-height:260px;display:flex;flex-direction:column;justify-content:space-between}
+  .trk .tnum{font-family:var(--disp);font-weight:900;font-size:clamp(60px,11vw,150px);line-height:.8;color:transparent;-webkit-text-stroke:1.5px var(--hair);transition:.3s}
+  .trk h3{font-family:var(--kr);font-weight:900;font-size:clamp(24px,3vw,40px);margin-top:auto}
+  .trk .ten{font-family:var(--disp);font-weight:800;font-size:13px;letter-spacing:.08em;opacity:.45;text-transform:uppercase;margin-top:6px}
+  .trk p{font-size:14px;color:rgba(244,242,236,.6);margin-top:12px;line-height:1.5;max-width:34ch}
+  .trk:hover{background:var(--lime);color:var(--ink)}
+  .trk:hover .tnum{-webkit-text-stroke:1.5px var(--ink);color:transparent}
+  .trk:hover .ten{opacity:.85}
+  .trk:hover p{color:rgba(12,11,16,.78)}
+  @media(max-width:680px){.track-grid{grid-template-columns:1fr}}
+
+  /* TICKETS */
+  .tickets{padding:clamp(60px,12vh,140px) 0;text-align:center;position:relative}
+  .tickets .pre{font-family:var(--disp);font-weight:800;font-size:14px;letter-spacing:.12em;color:var(--violet);margin-bottom:18px}
+  .tickets .giant{
+    font-family:var(--disp);font-weight:900;font-size:clamp(60px,16vw,220px);line-height:.82;letter-spacing:-.04em;
+  }
+  .tickets .giant .lime{color:var(--lime)}
+  .tk-line{display:flex;flex-wrap:wrap;justify-content:center;gap:14px 40px;margin:36px 0 40px;font-family:var(--disp);font-weight:800;font-size:clamp(16px,2vw,26px)}
+  .tk-line s{opacity:.4}
+  .tk-line .now{color:var(--violet)}
+
+  /* FOOTER */
+  footer{border-top:2px solid var(--paper);padding:clamp(46px,7vh,84px) 0 40px}
+  .foot-top{font-family:var(--disp);font-weight:900;font-size:clamp(48px,12vw,160px);line-height:.84;letter-spacing:-.03em;margin-bottom:clamp(30px,5vh,56px)}
+  .foot-top span{color:var(--violet)}
+  .foot-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;border-top:1px solid var(--hair);padding-top:28px}
+  .foot-grid .fi b{display:block;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:rgba(244,242,236,.5);font-weight:700;margin-bottom:7px;font-family:var(--disp)}
+  .foot-grid .fi span{font-size:15px;font-weight:600}
+  .foot-bot{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-top:36px;font-size:12px;color:rgba(244,242,236,.45);font-weight:500}
+  @media(max-width:780px){.foot-grid{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="#" class="brand">NEO<span>IX</span></a>
+  <div class="navlinks">
+    <a href="#speakers">Speakers</a>
+    <a href="#sessions">Sessions</a>
+    <a href="#tracks">Tracks</a>
+    <a href="#tickets">Tickets</a>
+    <a href="#tickets" class="nav-cta">등록하기 ↗</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="hero-meta">
+      <span><b>2026.</b> 09. 18 — 09. 19</span>
+      <span>COEX · SEOUL</span>
+      <span>AI CAMPUS / <b>CONFERENCE</b></span>
+      <span>아카데미 · 포럼 · 학회 · 커피챗</span>
+    </div>
+    <h1 class="hero-head">
+      <span class="ko">새로운</span>
+      <span class="type-word" id="typer"></span><span class="caret"></span><br />
+      <span class="ko">무한한 확장</span>
+    </h1>
+    <div class="hero-sub">
+      <p>한국 최대 규모의 AI 컨퍼런스. 연구자와 실무자, 그리고 다음 세대가 한 자리에 모여 아이디어를 확장합니다.</p>
+      <a href="#tickets" class="big-cta">티켓 등록 <span class="arw">→</span></a>
+    </div>
+  </div>
+</header>
+
+<!-- MARQUEE STACK -->
+<div class="mq-band">
+  <div class="marquee" style="--dur:30s">
+    <div class="track" aria-hidden="true">
+      <span>AI CAMPUS<span class="dot"> · </span>2026<span class="dot"> · </span>COEX<span class="dot"> · </span>SEOUL<span class="dot"> · </span>EXPAND<span class="dot"> · </span></span>
+      <span>AI CAMPUS<span class="dot"> · </span>2026<span class="dot"> · </span>COEX<span class="dot"> · </span>SEOUL<span class="dot"> · </span>EXPAND<span class="dot"> · </span></span>
+    </div>
+  </div>
+</div>
+
+<div class="mq-accent">
+  <div class="marquee rev" style="--dur:24s">
+    <div class="track" aria-hidden="true">
+      <span>아카데미<span class="dot"> / </span>포럼<span class="dot"> / </span>학회<span class="dot"> / </span>커피챗<span class="dot"> / </span></span>
+      <span>아카데미<span class="dot"> / </span>포럼<span class="dot"> / </span>학회<span class="dot"> / </span>커피챗<span class="dot"> / </span></span>
+      <span>아카데미<span class="dot"> / </span>포럼<span class="dot"> / </span>학회<span class="dot"> / </span>커피챗<span class="dot"> / </span></span>
+    </div>
+  </div>
+</div>
+
+<div class="mq-band mq-outline">
+  <div class="marquee" style="--dur:38s">
+    <div class="track" aria-hidden="true">
+      <span>NEW IDEAS<span class="dot"> · </span>NEW GENERATION<span class="dot"> · </span>NEW SCALE<span class="dot"> · </span></span>
+      <span>NEW IDEAS<span class="dot"> · </span>NEW GENERATION<span class="dot"> · </span>NEW SCALE<span class="dot"> · </span></span>
+    </div>
+  </div>
+</div>
+
+<!-- SPEAKERS -->
+<section id="speakers" class="speakers">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <div class="sec-idx">[ 01 — SPEAKERS ]</div>
+        <h2 class="sec-title">연사진</h2>
+      </div>
+      <p class="sec-note">현장과 연구 최전선의 12인. 마우스를 올려 소속을 확인하세요.</p>
+    </div>
+
+    <div class="spk"><span class="no">01</span><span class="nm"><em>김도현</em> / DOHYUN KIM</span><span class="role">NEOIX · Chief AI Architect</span></div>
+    <div class="spk"><span class="no">02</span><span class="nm"><em>이서연</em> / SEOYEON LEE</span><span class="role">KAIST · 머신러닝 교수</span></div>
+    <div class="spk"><span class="no">03</span><span class="nm"><em>박정겸</em> / J.G. PARK</span><span class="role">NEOIX · 대표 / Founder</span></div>
+    <div class="spk"><span class="no">04</span><span class="nm"><em>최민준</em> / MINJUN CHOI</span><span class="role">Naver Cloud · LLM Lead</span></div>
+    <div class="spk"><span class="no">05</span><span class="nm"><em>한지우</em> / JIWOO HAN</span><span class="role">Kakao Brain · 생성형AI 리서처</span></div>
+    <div class="spk"><span class="no">06</span><span class="nm"><em>정태양</em> / TAEYANG JUNG</span><span class="role">SNU · 컴퓨터비전 랩</span></div>
+    <div class="spk"><span class="no">07</span><span class="nm"><em>오하늘</em> / HANEUL OH</span><span class="role">Upstage · Product Engineer</span></div>
+    <div class="spk"><span class="no">08</span><span class="nm"><em>윤서진</em> / SEOJIN YOON</span><span class="role">Samsung Research · Robotics</span></div>
+  </div>
+</section>
+
+<!-- SESSIONS -->
+<section id="sessions" class="sessions">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <div class="sec-idx">[ 02 — TIMETABLE ]</div>
+        <h2 class="sec-title">세션</h2>
+      </div>
+      <p class="sec-note">DAY 1 · 09.18 · COEX 그랜드볼룸 · 키노트 강조</p>
+    </div>
+
+    <div class="ses"><span class="tm">09:30</span><span class="ttl">오프닝 & 등록<small>Registration / Welcome Coffee</small></span><span class="tag">Lobby</span></div>
+    <div class="ses key"><span class="tm">10:00</span><span class="ttl">KEYNOTE — 무한히 확장하는 지능<small>새로운 세대를 위한 AI 인프라의 미래 / 박정겸</small></span><span class="tag">★ Keynote</span></div>
+    <div class="ses"><span class="tm">11:30</span><span class="ttl">멀티모달 모델의 다음 단계<small>비전·언어·음성 통합 아키텍처 / 정태양</small></span><span class="tag">Academy</span></div>
+    <div class="ses"><span class="tm">13:00</span><span class="ttl">패널 — AI와 일하는 법<small>실무자가 말하는 도입과 운영 / 포럼</small></span><span class="tag">Forum</span></div>
+    <div class="ses"><span class="tm">14:30</span><span class="ttl">온디바이스 추론 최적화<small>경량화와 엣지 배포 / 오하늘</small></span><span class="tag">학회</span></div>
+    <div class="ses"><span class="tm">16:00</span><span class="ttl">커피챗 네트워킹<small>연사 & 참가자 1:1 라운드 / 커피챗</small></span><span class="tag">Coffee</span></div>
+  </div>
+</section>
+
+<!-- TRACKS -->
+<section id="tracks" class="tracks">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <div class="sec-idx">[ 03 — TRACKS ]</div>
+        <h2 class="sec-title">4 트랙</h2>
+      </div>
+      <p class="sec-note">목적에 맞게 골라 듣는 네 개의 흐름.</p>
+    </div>
+    <div class="track-grid">
+      <div class="trk">
+        <span class="tnum">01</span>
+        <div><h3>아카데미</h3><div class="ten">Academy</div><p>기초부터 실전까지, 핸즈온 중심의 집중 강의 트랙.</p></div>
+      </div>
+      <div class="trk">
+        <span class="tnum">02</span>
+        <div><h3>포럼</h3><div class="ten">Forum</div><p>산업 리더들의 패널 토론과 공개 Q&A 세션.</p></div>
+      </div>
+      <div class="trk">
+        <span class="tnum">03</span>
+        <div><h3>학회</h3><div class="ten">Conference</div><p>최신 논문과 연구 성과를 공유하는 학술 발표.</p></div>
+      </div>
+      <div class="trk">
+        <span class="tnum">04</span>
+        <div><h3>커피챗</h3><div class="ten">Coffee Chat</div><p>연사·참가자가 가볍게 만나는 1:1 네트워킹.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TICKETS -->
+<section id="tickets" class="tickets">
+  <div class="wrap">
+    <div class="pre">[ 04 — REGISTER NOW ]</div>
+    <div class="giant">GET YOUR<br /><span class="lime">TICKET</span></div>
+    <div class="tk-line">
+      <span><s>₩190,000</s></span>
+      <span class="now">얼리버드 ₩120,000</span>
+      <span>~ 2026.08.31</span>
+    </div>
+    <a href="#" class="big-cta">지금 등록하기 <span class="arw">→</span></a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap">
+    <div class="foot-top">NEO<span>IX</span> AI CAMPUS<br />2026 <span>↗</span></div>
+    <div class="foot-grid">
+      <div class="fi"><b>상호</b><span>네오익스 (NEOIX)</span></div>
+      <div class="fi"><b>대표</b><span>박정겸</span></div>
+      <div class="fi"><b>사업자등록번호</b><span>292-33-01829</span></div>
+      <div class="fi"><b>고객지원</b><span>010-3750-5890</span></div>
+      <div class="fi"><b>이메일</b><span>barunsme@gmail.com</span></div>
+      <div class="fi"><b>장소</b><span>COEX · Seoul</span></div>
+      <div class="fi"><b>일정</b><span>2026.09.18 — 09.19</span></div>
+      <div class="fi"><b>트랙</b><span>아카데미 · 포럼 · 학회 · 커피챗</span></div>
+    </div>
+    <div class="foot-bot">
+      <span>© 2026 NEOIX. All rights reserved.</span>
+      <span>NEW IDEAS · INFINITE SCALE</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  (function(){
+    var words = ["아이디어의", "세대의", "경험의"];
+    var el = document.getElementById("typer");
+    var w = 0, c = 0, deleting = false;
+    function tick(){
+      var word = words[w];
+      if(!deleting){
+        c++;
+        el.textContent = word.slice(0, c);
+        if(c === word.length){ deleting = true; return setTimeout(tick, 1400); }
+        return setTimeout(tick, 110);
+      } else {
+        c--;
+        el.textContent = word.slice(0, c);
+        if(c === 0){ deleting = false; w = (w + 1) % words.length; return setTimeout(tick, 320); }
+        return setTimeout(tick, 55);
+      }
+    }
+    tick();
+  })();
+</script>
+</body>
+</html>
