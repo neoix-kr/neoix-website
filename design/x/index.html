@@ -3,120 +3,110 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NEOIX AI CAMPUS — Signature</title>
+<title>NEOIX AI CAMPUS 2026</title>
 <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800;900&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#08070d; --panel:#100e18; --line:rgba(255,255,255,.10);
-  --text:#f3f1f8; --muted:#9b97ad; --faint:#5d586f;
-  --violet:#8b5cf6; --violet-d:#6d28d9; --lime:#c7f536;
+  --ink:#0b0a10; --paper:#100d18; --card:#16121f;
+  --text:#f4f2f8; --muted:#9b95ab; --faint:#5d586f; --line:rgba(255,255,255,.10);
+  --purple:#7c3aed; --purple-l:#a78bfa; --purple-d:#5b21b6;
   --kr:'Pretendard Variable',-apple-system,sans-serif; --ar:'Archivo',sans-serif;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased;}
-body{background:var(--bg);color:var(--text);font-family:var(--kr);line-height:1.5;overflow-x:hidden;}
+body{background:var(--ink);color:var(--text);font-family:var(--kr);line-height:1.5;overflow-x:hidden;}
 a{color:inherit;text-decoration:none;}button{font:inherit;color:inherit;background:none;border:none;cursor:pointer;}
-::selection{background:var(--violet);color:#fff;}
-.wrap{max-width:1240px;margin:0 auto;padding:0 36px;}
-
-/* wordmark */
+::selection{background:var(--purple);color:#fff;}
+.wrap{max-width:1240px;margin:0 auto;padding:0 40px;}
 .nx{font-family:var(--ar);font-weight:900;letter-spacing:-.03em;}
-.nx i{font-style:normal;color:var(--violet);}
 
-/* nav */
-nav{position:fixed;top:0;left:0;right:0;z-index:60;display:flex;align-items:center;justify-content:space-between;
-  padding:20px 36px;background:rgba(8,7,13,.7);backdrop-filter:blur(14px);border-bottom:1px solid var(--line);}
-.nav-links{display:flex;gap:30px;font-size:14px;color:var(--muted);}
-.nav-links a:hover{color:#fff;}
-.nreg{font-size:13px;font-weight:800;padding:10px 20px;border-radius:100px;background:var(--lime);color:#0a0a0b;}
-
-/* hero — 우주 가득 (NEOIX 궤도 행성들) */
-.hero{position:relative;min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:120px 24px 90px;overflow:hidden;}
-#cosmos{position:absolute;inset:0;z-index:0;}
-.osys{position:absolute;will-change:transform;animation:float 8s ease-in-out infinite;}
-.osys svg{overflow:visible;display:block;}
-@keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-20px);}}
-.hero::after{content:'';position:absolute;inset:0;z-index:1;pointer-events:none;background:radial-gradient(46% 42% at 50% 50%,rgba(8,7,13,.92) 0%,rgba(8,7,13,.6) 50%,transparent 78%);}
-.hero-c{position:relative;z-index:3;}
-.htitle{font-size:clamp(44px,9.5vw,128px);font-weight:800;letter-spacing:-.045em;line-height:.98;text-shadow:0 8px 60px rgba(8,7,13,.9);}
-.tw{color:var(--violet);}
-.caret{display:inline-block;width:.05em;height:.8em;background:var(--lime);vertical-align:-.03em;margin-left:.04em;animation:bl 1s step-end infinite;}
+/* ===== HERO (쨍한 보라 + 거대 블랙) ===== */
+.hero{position:relative;min-height:100vh;display:flex;flex-direction:column;color:#0b0a10;
+  background:linear-gradient(158deg,#6d28d9 0%,#8b5cf6 42%,#b794f6 74%,#d8b4fe 100%);}
+.hnav{display:flex;align-items:center;justify-content:space-between;padding:26px 40px;}
+.hnav .nx{font-size:21px;color:#0b0a10;}
+.hnav .mid{display:flex;gap:8px;background:rgba(11,10,16,.08);border:1px solid rgba(11,10,16,.12);border-radius:100px;padding:5px;}
+.hnav .mid a{font-size:13px;font-weight:700;color:#0b0a10;padding:9px 16px;border-radius:100px;transition:background .2s;}
+.hnav .mid a:hover{background:rgba(11,10,16,.1);}
+.hnav .reg{font-size:13px;font-weight:800;color:#fff;background:#0b0a10;padding:11px 22px;border-radius:100px;}
+.hero-b{flex:1;display:flex;flex-direction:column;justify-content:center;padding:30px 40px 70px;max-width:1240px;margin:0 auto;width:100%;}
+.hkick{font-family:var(--ar);font-size:14px;font-weight:800;letter-spacing:.1em;margin-bottom:24px;opacity:.65;}
+.htitle{font-size:clamp(46px,8.6vw,118px);font-weight:800;letter-spacing:-.045em;line-height:.98;}
+.tw{color:#fff;}
+.caret{display:inline-block;width:.05em;height:.8em;background:#0b0a10;vertical-align:-.03em;margin-left:.03em;animation:bl 1s step-end infinite;}
 @keyframes bl{50%{opacity:0;}}
-.hdate{margin-top:30px;font-family:var(--ar);font-size:14px;font-weight:700;letter-spacing:.04em;color:var(--muted);}
-.hdate .hl{color:var(--lime);}
-.hbtns{margin-top:34px;display:flex;gap:13px;flex-wrap:wrap;justify-content:center;}
-.btn.big{padding:18px 40px;font-size:16px;}
+.hmeta{margin-top:34px;display:flex;gap:16px;align-items:center;flex-wrap:wrap;font-family:var(--ar);font-size:15px;font-weight:700;}
+.hmeta .s{width:5px;height:5px;border-radius:50%;background:#0b0a10;}
+.hbtns{margin-top:40px;display:flex;gap:12px;flex-wrap:wrap;}
 .btn{font-size:15px;font-weight:800;padding:16px 32px;border-radius:100px;display:inline-flex;align-items:center;gap:9px;transition:transform .2s,background .2s;}
-.btn.v{background:var(--violet);color:#fff;}.btn.v:hover{background:#7c3aed;transform:translateY(-2px);}
-.btn.o{border:1px solid var(--line);color:var(--text);}.btn.o:hover{border-color:#fff;}
+.btn.dark{background:#0b0a10;color:#fff;}.btn.dark:hover{transform:translateY(-2px);}
+.btn.line{border:1.5px solid rgba(11,10,16,.35);color:#0b0a10;}.btn.line:hover{border-color:#0b0a10;}
 
 /* marquee */
-.mq{border-top:1px solid var(--line);border-bottom:1px solid var(--line);overflow:hidden;display:flex;padding:18px 0;}
-.mq.acc{background:var(--violet);border-color:var(--violet);}
-.mqt{display:inline-flex;gap:38px;white-space:nowrap;animation:mqa 26s linear infinite;padding-right:38px;flex-shrink:0;}
-.mq.r .mqt{animation-direction:reverse;}
-.mqt span{font-family:var(--ar);font-weight:800;font-size:24px;color:transparent;-webkit-text-stroke:1px rgba(255,255,255,.32);}
-.mq.acc .mqt span{color:#0a0a0b;-webkit-text-stroke:0;}
+.mq{background:#0b0a10;overflow:hidden;display:flex;padding:18px 0;}
+.mqt{display:inline-flex;gap:40px;white-space:nowrap;animation:mqa 28s linear infinite;padding-right:40px;flex-shrink:0;}
+.mqt span{font-family:var(--ar);font-weight:800;font-size:24px;color:#fff;}
+.mqt span.o{color:transparent;-webkit-text-stroke:1px rgba(255,255,255,.4);}
 @keyframes mqa{to{transform:translateX(-50%);}}
 
 /* sections */
 section{padding:120px 0;border-bottom:1px solid var(--line);}
-.shead{margin-bottom:50px;}
-.kick{font-family:var(--ar);font-size:13px;font-weight:800;letter-spacing:.14em;color:var(--violet);}
-.shead h2{font-size:clamp(32px,5vw,60px);font-weight:800;letter-spacing:-.03em;line-height:1.04;margin-top:14px;}
-.shead .d{color:var(--muted);font-size:15px;max-width:440px;margin-top:14px;line-height:1.7;}
+.shead{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap;margin-bottom:54px;}
+.kick{font-family:var(--ar);font-size:13px;font-weight:800;letter-spacing:.14em;color:var(--purple-l);}
+.shead h2{font-size:clamp(34px,5.4vw,68px);font-weight:800;letter-spacing:-.035em;line-height:1;margin-top:14px;}
+.shead .d{color:var(--muted);font-size:15px;max-width:380px;line-height:1.7;}
 
-/* NEO x IX 시그니처 컨셉 */
-.neoix{display:grid;grid-template-columns:1fr 80px 1fr;gap:20px;align-items:stretch;}
-.nbox{border:1px solid var(--line);border-radius:22px;padding:40px;background:var(--panel);position:relative;overflow:hidden;}
-.nbox .lab{font-family:var(--ar);font-weight:900;font-size:clamp(40px,6vw,76px);letter-spacing:-.03em;}
-.nbox.neo .lab{color:#fff;}.nbox.ix .lab{color:var(--violet);}
-.nbox .kr{font-size:22px;font-weight:800;margin-top:6px;}
-.nbox p{color:var(--muted);font-size:14px;line-height:1.7;margin-top:14px;max-width:340px;}
-.times{display:flex;align-items:center;justify-content:center;font-family:var(--ar);font-weight:900;font-size:40px;color:var(--lime);}
-.neoix-cap{text-align:center;margin-top:34px;font-size:clamp(18px,2.4vw,30px);font-weight:700;letter-spacing:-.02em;}
-.neoix-cap b{color:var(--violet);}.neoix-cap em{font-style:normal;color:var(--lime);}
+/* NEO x IX */
+.nio{display:grid;grid-template-columns:1fr auto 1fr;gap:24px;align-items:stretch;}
+.nbox{border:1px solid var(--line);border-radius:24px;padding:44px;background:var(--card);}
+.nbox .lab{font-family:var(--ar);font-weight:900;font-size:clamp(44px,6.5vw,84px);letter-spacing:-.03em;line-height:1;}
+.nbox.neo .lab{color:#fff;}.nbox.ix .lab{color:var(--purple-l);}
+.nbox .kr{font-size:22px;font-weight:800;margin-top:8px;}
+.nbox p{color:var(--muted);font-size:14px;line-height:1.7;margin-top:14px;max-width:330px;}
+.nio .x{display:flex;align-items:center;font-family:var(--ar);font-weight:900;font-size:44px;color:var(--purple);}
+.nio-cap{text-align:center;margin-top:36px;font-size:clamp(18px,2.4vw,30px);font-weight:700;letter-spacing:-.02em;}
+.nio-cap b{color:var(--purple-l);}
 
 /* speakers */
 .spk{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
-.card{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);aspect-ratio:1/1.16;background:#141019;transition:transform .3s,border-color .3s;cursor:pointer;}
-.card:hover{transform:translateY(-6px);border-color:var(--violet);}
-.card .ph{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--ar);font-weight:900;font-size:64px;color:#2a2438;filter:grayscale(1);}
-.card .fade{position:absolute;left:0;right:0;bottom:0;height:46%;background:linear-gradient(0deg,var(--violet),transparent);mix-blend-mode:screen;opacity:.85;}
-.card .info{position:absolute;left:0;right:0;bottom:0;padding:15px;}
-.card .nm{font-size:17px;font-weight:800;}
-.card .co{font-family:var(--ar);font-size:11px;font-weight:700;color:#fff;opacity:.85;margin-top:2px;}
+.sc{position:relative;border-radius:18px;overflow:hidden;aspect-ratio:1/1.18;border:1px solid var(--line);background:var(--card);transition:transform .3s,border-color .3s;cursor:pointer;}
+.sc:hover{transform:translateY(-6px);border-color:var(--purple);}
+.sc .ph{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--ar);font-weight:900;font-size:64px;color:#2a2438;filter:grayscale(1);background:linear-gradient(160deg,#211a33,#15101f);}
+.sc .cat{position:absolute;top:12px;left:12px;font-size:11px;font-weight:800;padding:5px 10px;border-radius:7px;background:var(--purple);color:#fff;}
+.sc .info{position:absolute;left:0;right:0;bottom:0;padding:16px;background:linear-gradient(0deg,rgba(11,10,16,.96),transparent);}
+.sc .nm{font-size:18px;font-weight:800;}
+.sc .ro{font-size:12px;color:var(--muted);margin-top:2px;}
 
-/* sessions */
-.sess{border-top:1px solid var(--line);}
-.sr{display:grid;grid-template-columns:110px 150px 1fr 110px;gap:20px;align-items:center;padding:26px 6px;border-bottom:1px solid var(--line);transition:background .2s,padding-left .2s;}
-.sr:hover{background:rgba(255,255,255,.02);padding-left:14px;}
-.sr .tm{font-family:var(--ar);font-weight:700;font-size:13px;color:var(--faint);}
-.sr .ca{font-family:var(--ar);font-weight:800;font-size:13px;color:var(--violet);}
-.sr .ti{font-size:clamp(19px,2.3vw,27px);font-weight:800;letter-spacing:-.02em;}
-.sr .kd{display:inline-block;font-family:var(--ar);font-size:11px;font-weight:800;background:var(--lime);color:#0a0a0b;padding:4px 8px;border-radius:5px;margin-right:8px;}
-.sr .mt{font-family:var(--ar);font-size:12px;color:var(--faint);text-align:right;}
+/* timetable */
+.ttw{border:1px solid var(--line);border-radius:20px;overflow-x:auto;background:var(--paper);}
+.tt{min-width:760px;display:grid;grid-template-columns:80px repeat(4,1fr);}
+.tt .h{padding:18px 14px;font-family:var(--ar);font-size:12px;font-weight:800;letter-spacing:.05em;color:var(--muted);border-bottom:1px solid var(--line);border-left:1px solid var(--line);}
+.tt .h:first-child{border-left:none;}
+.tt .tm{padding:22px 14px;font-family:var(--ar);font-size:13px;color:var(--faint);border-bottom:1px solid var(--line);}
+.tt .cell{padding:18px 16px;border-bottom:1px solid var(--line);border-left:1px solid var(--line);min-height:84px;}
+.tt .cell .ti{font-size:14px;font-weight:700;line-height:1.35;}
+.tt .cell .by{font-size:12px;color:var(--muted);margin-top:5px;}
+.tt .cell.key{background:var(--purple);}.tt .cell.key .by{color:rgba(255,255,255,.78);}
 
 /* tracks */
 .tr{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
-.trc{border:1px solid var(--line);border-radius:16px;padding:26px;transition:border-color .25s,transform .25s;}
-.trc:hover{border-color:var(--violet);transform:translateY(-4px);}
-.trc .no{font-family:var(--ar);font-weight:900;font-size:13px;color:var(--violet);}
+.trc{border:1px solid var(--line);border-radius:18px;padding:28px;transition:border-color .25s,transform .25s;}
+.trc:hover{border-color:var(--purple);transform:translateY(-4px);}
+.trc .no{font-family:var(--ar);font-weight:900;font-size:13px;color:var(--purple-l);}
 .trc h3{font-size:22px;font-weight:800;margin:12px 0 7px;}
 .trc p{color:var(--muted);font-size:13px;line-height:1.6;}
 
-/* join */
-.join{background:linear-gradient(150deg,#6d28d9,#9d6bff);text-align:center;border:none;}
-.join .wrap{padding:120px 36px;}
-.join .big{font-family:var(--ar);font-weight:900;font-size:clamp(44px,9vw,120px);letter-spacing:-.04em;line-height:.9;color:#0a0a0b;}
-.join .big em{font-style:normal;color:var(--lime);}
-.join p{margin:20px auto 0;max-width:440px;color:rgba(10,10,11,.8);font-size:16px;font-weight:600;}
-.join .btn{margin-top:32px;background:#0a0a0b;color:#fff;}
+/* join (보라 블록 bookend) */
+.join{border:none;background:linear-gradient(150deg,#6d28d9,#a78bfa);text-align:center;color:#0b0a10;}
+.join .wrap{padding:130px 40px;}
+.join .big{font-family:var(--ar);font-weight:900;font-size:clamp(46px,9.5vw,130px);letter-spacing:-.045em;line-height:.88;}
+.join p{margin:22px auto 0;max-width:440px;font-size:16px;font-weight:600;color:rgba(11,10,16,.8);}
+.join .btn.dark{margin-top:32px;}
 
 /* footer */
 footer{padding:74px 0 60px;}
-.ftg{display:grid;grid-template-columns:1.6fr 1fr 1fr;gap:36px;margin-bottom:44px;}
+.ftg{display:grid;grid-template-columns:1.6fr 1fr 1fr;gap:36px;margin-bottom:46px;}
 .ftt{color:var(--muted);font-size:14px;margin-top:12px;max-width:250px;line-height:1.6;}
 .ftc h4{font-family:var(--ar);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin-bottom:14px;}
 .ftc a,.ftc p{display:block;color:var(--muted);font-size:14px;margin-bottom:9px;}.ftc a:hover{color:#fff;}
@@ -127,65 +117,72 @@ footer{padding:74px 0 60px;}
 .rv{opacity:0;transform:translateY(22px);transition:opacity .8s ease,transform .8s cubic-bezier(.2,.8,.2,1);}
 .rv.in{opacity:1;transform:none;}
 
-@media(max-width:880px){.spk{grid-template-columns:1fr 1fr;}.tr{grid-template-columns:1fr 1fr;}.neoix{grid-template-columns:1fr;}.times{transform:rotate(90deg);padding:8px 0;}}
-@media(max-width:600px){nav{padding:14px 16px;}.nav-links{display:none;}.sr{grid-template-columns:1fr;gap:6px;}.sr .mt{text-align:left;}.tr{grid-template-columns:1fr;}.ftg{grid-template-columns:1fr;}}
+@media(max-width:880px){.spk{grid-template-columns:1fr 1fr;}.tr{grid-template-columns:1fr 1fr;}.nio{grid-template-columns:1fr;}.nio .x{justify-content:center;transform:rotate(90deg);}}
+@media(max-width:600px){.hnav .mid{display:none;}.hero-b{padding:20px 24px 60px;}section{padding:78px 0;}.wrap{padding:0 24px;}.tr{grid-template-columns:1fr;}.ftg{grid-template-columns:1fr;}}
 </style>
 </head>
 <body>
 
-<nav>
-  <div class="nx" style="font-size:20px">neo<i>ix</i></div>
-  <div class="nav-links"><a href="#concept">NEO×IX</a><a href="#speakers">연사</a><a href="#sessions">세션</a><a href="#tracks">트랙</a></div>
-  <a class="nreg" href="#join">참가 신청 ↗</a>
-</nav>
-
 <!-- HERO -->
 <header class="hero">
-  <div id="cosmos"></div>
-  <div class="hero-c">
+  <div class="hnav">
+    <div class="nx">neoix</div>
+    <div class="mid"><a href="#nio">NEO×IX</a><a href="#speakers">연사</a><a href="#timetable">타임테이블</a><a href="#tracks">트랙</a></div>
+    <a class="reg" href="#join">참가 신청 ↗</a>
+  </div>
+  <div class="hero-b">
+    <div class="hkick">NEOIX AI CAMPUS · 2026</div>
     <h1 class="htitle">새로운 <span class="tw" id="tw"></span><span class="caret"></span><br>무한한 확장</h1>
-    <div class="hbtns"><a class="btn v big" href="#join">참가 신청 ↗</a><a class="btn o" href="#sessions">세션 보기</a></div>
-    <div class="hdate">2026. 09. 05 – 06 · COEX, SEOUL · <span class="hl">4 TRACKS · 64 SPEAKERS</span></div>
+    <div class="hmeta"><span>2026. 09. 05 – 06</span><span class="s"></span><span>COEX, SEOUL</span><span class="s"></span><span>4 TRACKS · 64 SPEAKERS</span></div>
+    <div class="hbtns"><a class="btn dark" href="#join">참가 신청 ↗</a><a class="btn line" href="#timetable">타임테이블</a></div>
   </div>
 </header>
 
-<!-- marquee -->
-<div class="mq acc"><div class="mqt" id="mq1"></div></div>
+<div class="mq"><div class="mqt" id="mq"></div></div>
 
-<!-- NEO x IX 컨셉 (우리만의 것) -->
-<section id="concept"><div class="wrap">
-  <div class="shead rv"><div class="kick">THE NEOIX WAY</div><h2>새로움이 실행을 만날 때</h2></div>
-  <div class="neoix rv">
-    <div class="nbox neo"><div class="lab">NEO</div><div class="kr">새로운</div><p>기존의 틀을 깨는 발상. 아직 아무도 안 만든 것을 상상하는 힘.</p></div>
-    <div class="times">×</div>
+<!-- NEO x IX -->
+<section id="nio"><div class="wrap">
+  <div class="shead rv"><div><div class="kick">THE NEOIX WAY</div><h2>새로움이 실행을 만날 때</h2></div><div class="d">우리만의 방식 — 아이디어로 끝나지 않고, 결국 만들어내는 사람들.</div></div>
+  <div class="nio rv">
+    <div class="nbox neo"><div class="lab">NEO</div><div class="kr">새로운</div><p>기존의 틀을 깨는 발상. 아직 아무도 만들지 않은 것을 상상하는 힘.</p></div>
+    <div class="x">×</div>
     <div class="nbox ix"><div class="lab">IX</div><div class="kr">실행</div><p>아이디어를 현실로 만드는 힘. eXecution — 결국 만드는 사람만 남는다.</p></div>
   </div>
-  <div class="neoix-cap rv">AI CAMPUS는 <b>NEO</b>가 <em>IX</em>를 만나는 무대입니다.</div>
+  <div class="nio-cap rv">AI CAMPUS는 <b>NEO</b>가 <b>IX</b>를 만나는 무대입니다.</div>
 </div></section>
 
 <!-- SPEAKERS -->
 <section id="speakers"><div class="wrap">
-  <div class="shead rv"><div class="kick">SPEAKERS</div><h2>무대를 채우는 사람들</h2><div class="d">현업 최전선의 빌더 · 리서처 · 창업가.</div></div>
+  <div class="shead rv"><div><div class="kick">SPEAKERS</div><h2>무대를 채우는 연사</h2></div><div class="d">현업 최전선의 빌더 · 리서처 · 창업가.</div></div>
   <div class="spk rv" id="spk"></div>
 </div></section>
 
-<!-- SESSIONS -->
-<section id="sessions"><div class="wrap">
-  <div class="shead rv"><div class="kick">SESSIONS</div><h2>이틀의 타임테이블</h2><div class="d">같은 시간, 네 개의 무대. DAY 1 라인업.</div></div>
-  <div class="sess rv">
-    <div class="sr"><div class="tm">10:00</div><div class="ca">FORUM</div><div class="ti"><span class="kd">KEYNOTE</span>생성형 AI, 비즈니스를 이미 바꿨다</div><div class="mt">MAIN</div></div>
-    <div class="sr"><div class="tm">11:30</div><div class="ca">ACADEMY</div><div class="ti">RAG · 에이전트 핸즈온</div><div class="mt">WORKSHOP</div></div>
-    <div class="sr"><div class="tm">14:00</div><div class="ca">CONFERENCE</div><div class="ti">한국어 LLM, 어디까지 왔나</div><div class="mt">ACADEMIC</div></div>
-    <div class="sr"><div class="tm">16:00</div><div class="ca">COFFEE</div><div class="ti">현업자와 커피챗</div><div class="mt">LOUNGE</div></div>
-  </div>
+<!-- TIMETABLE -->
+<section id="timetable"><div class="wrap">
+  <div class="shead rv"><div><div class="kick">TIMETABLE</div><h2>이틀의 타임테이블</h2></div><div class="d">같은 시간, 네 개의 무대. DAY 1.</div></div>
+  <div class="ttw rv"><div class="tt">
+    <div class="h" style="border-bottom:1px solid var(--line)">TIME</div><div class="h">FORUM</div><div class="h">ACADEMY</div><div class="h">CONFERENCE</div><div class="h">COFFEE</div>
+    <div class="tm">10:00</div>
+    <div class="cell key"><div class="ti">[키노트] 생성형 AI, 비즈니스를 바꾸다</div><div class="by">박정겸 · NEOIX</div></div>
+    <div class="cell"><div class="ti">LLM 앱 개발 입문</div><div class="by">김리서</div></div>
+    <div class="cell"><div class="ti">한국어 NLP 동향</div><div class="by">문연구</div></div>
+    <div class="cell"></div>
+    <div class="tm">11:30</div>
+    <div class="cell"><div class="ti">엔터프라이즈 AX</div><div class="by">정프로</div></div>
+    <div class="cell"><div class="ti">RAG 핸즈온</div><div class="by">이빌더</div></div>
+    <div class="cell"><div class="ti">평가 · 벤치마크</div><div class="by">한엔지니어</div></div>
+    <div class="cell"><div class="ti">커리어 커피챗</div><div class="by">오데이터</div></div>
+    <div class="tm">14:00</div>
+    <div class="cell"><div class="ti">AI 스타트업 그로스</div><div class="by">서창업</div></div>
+    <div class="cell key"><div class="ti">[워크숍] Agentic Engineering</div><div class="by">이빌더 · 90min</div></div>
+    <div class="cell"><div class="ti">데이터셋 구축</div><div class="by">문연구</div></div>
+    <div class="cell"><div class="ti">창업 라운드테이블</div><div class="by">파운더스</div></div>
+  </div></div>
 </div></section>
-
-<!-- marquee 2 -->
-<div class="mq r"><div class="mqt" id="mq2"></div></div>
 
 <!-- TRACKS -->
 <section id="tracks"><div class="wrap">
-  <div class="shead rv"><div class="kick">TRACKS</div><h2>네 개의 트랙</h2></div>
+  <div class="shead rv"><div><div class="kick">TRACKS</div><h2>네 개의 트랙</h2></div></div>
   <div class="tr rv">
     <div class="trc"><div class="no">01</div><h3>포럼</h3><p>리더의 인사이트와 패널 토크.</p></div>
     <div class="trc"><div class="no">02</div><h3>아카데미</h3><p>RAG·에이전트 핸즈온.</p></div>
@@ -196,16 +193,16 @@ footer{padding:74px 0 60px;}
 
 <!-- JOIN -->
 <section class="join" id="join"><div class="wrap rv">
-  <div class="big">JOIN <em>US</em></div>
+  <div class="big">JOIN US</div>
   <p>2일 통합권 한 장으로 모든 트랙과 네트워킹에. 학생 할인 운영 중.</p>
-  <a class="btn" href="#">참가 신청 ↗</a>
+  <a class="btn dark" href="#">참가 신청 ↗</a>
 </div></section>
 
 <!-- FOOTER -->
 <footer><div class="wrap rv">
   <div class="ftg">
-    <div><div class="nx" style="font-size:26px">neo<i>ix</i></div><div class="ftt">새로운 아이디어의 무한한 확장. AI 러닝 커뮤니티.</div></div>
-    <div class="ftc"><h4>Campus</h4><a href="#concept">NEO×IX</a><a href="#speakers">연사</a><a href="#sessions">세션</a><a href="#join">티켓</a></div>
+    <div><div class="nx" style="font-size:26px">neoix</div><div class="ftt">새로운 아이디어의 무한한 확장. AI 러닝 커뮤니티.</div></div>
+    <div class="ftc"><h4>Campus</h4><a href="#nio">NEO×IX</a><a href="#speakers">연사</a><a href="#timetable">타임테이블</a><a href="#join">티켓</a></div>
     <div class="ftc"><h4>Contact</h4><a href="tel:01037505890">010-3750-5890</a><a href="mailto:jg@neoix.kr">jg@neoix.kr</a><p>평일 10:00 – 18:00</p></div>
   </div>
   <div class="ftb"><span>상호 <b>네오익스 (NEOIX)</b></span><span>대표 <b>박정겸</b></span><span>사업자등록번호 <b>292-33-01829</b></span></div>
@@ -213,42 +210,13 @@ footer{padding:74px 0 60px;}
 </div></footer>
 
 <script>
-/* 공전 위성 (NEOIX 시그니처) */
-function orbit(id,rx,ry,deg,spd){var el=document.getElementById(id);if(!el)return;var t=0,a=deg*Math.PI/180;
-  (function tick(){var x=rx*Math.cos(t)*Math.cos(a)-ry*Math.sin(t)*Math.sin(a),y=rx*Math.cos(t)*Math.sin(a)+ry*Math.sin(t)*Math.cos(a);
-   el.setAttribute('cx',x);el.setAttribute('cy',y);t+=spd;requestAnimationFrame(tick);})();}
-var SYS=[
- {l:4,t:14,pr:46,c1:'#c3a8ff',c2:'#5b16c4',rx:96,ry:40,rot:-20,sr:9,sc:'#c7f536',spd:.018,d:0},
- {l:79,t:9,pr:30,c1:'#bdeaff',c2:'#1b9fd6',rx:64,ry:26,rot:18,sr:7,sc:'#8b5cf6',spd:.024,d:1.2},
- {l:80,t:58,pr:52,c1:'#d8c2ff',c2:'#6d28d9',rx:108,ry:46,rot:-12,sr:10,sc:'#c7f536',spd:.015,d:.6},
- {l:11,t:64,pr:24,c1:'#e9ff9a',c2:'#9bd400',rx:52,ry:22,rot:24,sr:6,sc:'#ffffff',spd:.028,d:1.8},
- {l:45,t:6,pr:17,c1:'#ffb3df',c2:'#e0277a',rx:40,ry:16,rot:-30,sr:5,sc:'#c7f536',spd:.03,d:2.4},
- {l:60,t:78,pr:19,c1:'#c3a8ff',c2:'#5b16c4',rx:44,ry:18,rot:12,sr:6,sc:'#8b5cf6',spd:.026,d:.9}
-];
-(function(){var cm=document.getElementById('cosmos');SYS.forEach(function(s,i){
-  var box=document.createElement('div');box.className='osys';box.style.left=s.l+'%';box.style.top=s.t+'%';box.style.animationDelay=s.d+'s';
-  var sz=Math.max(s.rx,s.pr)*2.5;
-  box.innerHTML='<svg width="'+sz+'" height="'+sz+'" viewBox="'+(-sz/2)+' '+(-sz/2)+' '+sz+' '+sz+'">'
-   +'<defs><radialGradient id="g'+i+'" cx="34%" cy="30%"><stop offset="0" stop-color="'+s.c1+'"/><stop offset="1" stop-color="'+s.c2+'"/></radialGradient></defs>'
-   +'<g transform="rotate('+s.rot+')"><ellipse rx="'+s.rx+'" ry="'+s.ry+'" fill="none" stroke="'+s.sc+'" stroke-width="1.5" opacity=".4"/></g>'
-   +'<circle r="'+s.pr+'" fill="url(#g'+i+')"/>'
-   +'<circle cx="'+(-s.pr*.32)+'" cy="'+(-s.pr*.34)+'" r="'+(s.pr*.27)+'" fill="rgba(255,255,255,.2)"/>'
-   +'<circle id="sat'+i+'" r="'+s.sr+'" fill="'+s.sc+'"/></svg>';
-  cm.appendChild(box);orbit('sat'+i,s.rx,s.ry,s.rot,s.spd);
-});})();
-/* 타이프라이터 */
 (function(){const el=document.getElementById('tw');const w=['아이디어의','세대의','경험의'];let wi=0,ci=0,d=false;
-  (function t(){const cur=w[wi%w.length];if(!d){ci++;el.textContent=cur.slice(0,ci);if(ci>=cur.length){d=true;return setTimeout(t,1700);}return setTimeout(t,150);}
-   ci--;el.textContent=cur.slice(0,ci);if(ci<=0){ci=0;d=false;wi++;return setTimeout(t,400);}return setTimeout(t,80);})();})();
-/* marquee */
-const m1=['새로운 아이디어의 무한한 확장','NEO × IX','AI CAMPUS 2026','만드는 사람들'];
-const m2=['아카데미','포럼','학회','커피챗','GENERATIVE AI','LLM','AGENTS','네트워킹'];
-document.getElementById('mq1').innerHTML=[...m1,...m1].map(s=>`<span>${s} ✦</span>`).join('');
-document.getElementById('mq2').innerHTML=[...m2,...m2].map(s=>`<span>${s} ✦</span>`).join('');
-/* speakers */
-const ppl=[['박정겸','NEOIX','P'],['김리서','LAB','K'],['이빌더','STARTUP','L'],['오데이터','BANK','O'],['정프로','PLATFORM','J'],['한엔지니어','AI CORP','H'],['서창업','SCALEUP','S'],['문연구','KAIST','M']];
-document.getElementById('spk').innerHTML=ppl.map(p=>`<div class="card"><div class="ph">${p[2]}</div><div class="fade"></div><div class="info"><div class="nm">${p[0]}</div><div class="co">${p[1]}</div></div></div>`).join('');
-/* reveal */
+  (function t(){const c=w[wi%w.length];if(!d){ci++;el.textContent=c.slice(0,ci);if(ci>=c.length){d=true;return setTimeout(t,1700);}return setTimeout(t,150);}
+   ci--;el.textContent=c.slice(0,ci);if(ci<=0){ci=0;d=false;wi++;return setTimeout(t,400);}return setTimeout(t,80);})();})();
+const mw=['새로운 아이디어의 무한한 확장','NEO × IX','AI CAMPUS 2026','만드는 사람들','GENERATIVE AI'];
+document.getElementById('mq').innerHTML=[...mw,...mw,...mw].map((s,i)=>`<span class="${i%2?'o':''}">${s}</span><span class="o">／</span>`).join('');
+const ppl=[['박정겸','Founder · NEOIX','FORUM','P'],['김리서','AI Researcher','ACADEMY','K'],['이빌더','Staff Engineer','ACADEMY','L'],['오데이터','Data Lead','COFFEE','O'],['정프로','Product Lead','FORUM','J'],['한엔지니어','ML Engineer','CONFERENCE','H'],['서창업','CEO · Scaleup','FORUM','S'],['문연구','PhD · KAIST','CONFERENCE','M']];
+document.getElementById('spk').innerHTML=ppl.map(p=>`<div class="sc"><div class="ph">${p[3]}</div><div class="cat">${p[2]}</div><div class="info"><div class="nm">${p[0]}</div><div class="ro">${p[1]}</div></div></div>`).join('');
 const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}}),{threshold:.1});
 document.querySelectorAll('.rv').forEach(el=>io.observe(el));
 </script>
