@@ -440,6 +440,24 @@
       font-weight: 500;
       letter-spacing: -0.01em;
     }
+    .kakao-btn {
+      width: 100%; height: 52px; border: 0; border-radius: 12px;
+      background: #FEE500; color: #191600;
+      font-size: 16px; font-weight: 700; font-family: inherit;
+      cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 9px;
+      transition: filter 0.15s ease, transform 0.05s ease;
+    }
+    .kakao-btn:hover { filter: brightness(0.96); }
+    .kakao-btn:active { transform: translateY(1px); }
+    .kakao-btn svg { width: 20px; height: 20px; }
+    .auth-divider {
+      display: flex; align-items: center; gap: 12px;
+      margin: 16px 0 4px; color: var(--text-disabled);
+      font-size: 13px; font-weight: 600;
+    }
+    .auth-divider::before, .auth-divider::after {
+      content: ''; flex: 1; height: 1px; background: var(--border);
+    }
     .auth-form { display: flex; flex-direction: column; gap: 12px; text-align: left; }
     .auth-field-label {
       font-size: 13px;
@@ -3071,6 +3089,12 @@
     <h1 id="authTitle">로그인</h1>
     <p class="auth-sub" id="authSub">아이디와 비밀번호로 찬양팀 방에 접속해요.</p>
 
+    <button class="kakao-btn" id="btnKakao" type="button">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="#191600"><path d="M12 3C6.477 3 2 6.463 2 10.735c0 2.764 1.872 5.187 4.69 6.55-.207.74-.748 2.694-.856 3.112-.134.518.19.51.4.371.165-.109 2.617-1.778 3.68-2.503.69.102 1.403.156 2.086.156 5.523 0 10-3.463 10-7.686C22 6.463 17.523 3 12 3z"/></svg>
+      카카오로 시작하기
+    </button>
+    <div class="auth-divider"><span>또는 아이디로</span></div>
+
     <form class="auth-form" id="authForm" autocomplete="on">
       <span class="auth-field-label">아이디</span>
       <input class="input" id="authId" placeholder="영문·숫자 아이디" autocomplete="username" autocapitalize="none" spellcheck="false" />
@@ -4107,6 +4131,8 @@
       myUserId = user.id;
       deviceId = user.id;            // 식별자(presence key/배정)를 사람 단위로 고정
       myUsername = userToUsername(user);
+      // NEOIX 통합 멤버십 기록 (가입 경로 추적 — neoix.kr/admin 디렉토리). 없거나 실패해도 무시.
+      try { supabase.rpc('record_membership', { p_service_key: 'ogx', p_service_name: 'OGX 찬양팀' }); } catch (e) {}
     } else {
       myUserId = null;
       myUsername = '';
@@ -4153,6 +4179,18 @@
     if (toggleBtn && !toggleBtn.dataset.wired) {
       toggleBtn.dataset.wired = '1';
       toggleBtn.onclick = () => setAuthMode(authMode === 'login' ? 'signup' : 'login');
+    }
+    const kakaoBtn = $('btnKakao');
+    if (kakaoBtn && !kakaoBtn.dataset.wired) {
+      kakaoBtn.dataset.wired = '1';
+      kakaoBtn.onclick = async () => {
+        kakaoBtn.disabled = true;
+        const { error } = await supabase.auth.signInWithOAuth({
+          provider: 'kakao',
+          options: { redirectTo: location.origin + location.pathname },  // 로그인 후 이 페이지로 복귀
+        });
+        if (error) { kakaoBtn.disabled = false; showAuthError('카카오 로그인을 시작할 수 없어요: ' + error.message); }
+      };
     }
     setAuthMode('login');
   }
