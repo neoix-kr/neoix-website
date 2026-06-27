@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>좌석 예약 데모 | neoix</title>
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@800;900&display=swap" rel="stylesheet">
+<style>
+  :root{ --bg:#0b0b10; --fg:#f4f4f6; --muted:#7a7a88; --line:#23232e;
+         --avail:#1d6cff; --hold:#f5a623; --taken:#3a3a44; --mine:#22c55e; }
+  *{box-sizing:border-box} body{margin:0;font-family:'Pretendard Variable',Pretendard,system-ui,sans-serif;background:var(--bg);color:var(--fg)}
+  .wrap{max-width:980px;margin:0 auto;padding:32px 20px 120px}
+  h1{font-family:Archivo,sans-serif;letter-spacing:-.02em;font-weight:900}
+  .demo-note{display:inline-block;margin:6px 0 22px;font-size:12px;color:#c7f536;background:rgba(199,245,54,.1);border:1px solid rgba(199,245,54,.25);padding:5px 11px;border-radius:100px}
+  .screen{height:34px;border-radius:0 0 60px 60px;background:linear-gradient(#2a2a38,#15151d);
+          text-align:center;color:var(--muted);font-size:12px;line-height:34px;margin-bottom:28px}
+  .map{display:grid;gap:8px;justify-content:center}
+  .row{display:flex;gap:8px;align-items:center}
+  .rlabel{width:22px;color:var(--muted);font-size:12px;text-align:center}
+  .seat{width:30px;height:30px;border-radius:7px;border:1px solid var(--line);
+        background:var(--avail);cursor:pointer;transition:transform .12s, background .2s;font-size:0}
+  .seat:hover{transform:translateY(-3px) scale(1.08)}
+  .seat.hold{background:var(--hold);cursor:not-allowed}
+  .seat.taken{background:var(--taken);cursor:not-allowed}
+  .seat.mine{background:var(--mine)}
+  .legend{display:flex;gap:18px;justify-content:center;margin:26px 0;font-size:13px;color:var(--muted);flex-wrap:wrap}
+  .dot{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+  .bar{position:fixed;left:0;right:0;bottom:0;background:#13131b;border-top:1px solid var(--line);
+       padding:16px 20px;display:flex;justify-content:space-between;align-items:center}
+  button{background:var(--avail);color:#fff;border:0;border-radius:10px;padding:12px 22px;font-weight:600;cursor:pointer}
+  button:disabled{opacity:.4;cursor:not-allowed}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>좌석 선택</h1><br>
+  <span class="demo-note">● 데모 — 실제 버전은 Supabase 실시간 + 더블부킹 방지(hold_seat RPC) 연동</span>
+  <div class="screen">STAGE / 무대</div>
+  <div id="map" class="map"></div>
+  <div class="legend">
+    <span><i class="dot" style="background:var(--avail)"></i>선택가능</span>
+    <span><i class="dot" style="background:var(--mine)"></i>내 선택</span>
+    <span><i class="dot" style="background:var(--hold)"></i>점유중</span>
+    <span><i class="dot" style="background:var(--taken)"></i>매진</span>
+  </div>
+</div>
+<div class="bar">
+  <span id="info">좌석을 선택하세요</span>
+  <button id="pay" disabled>예약 확정</button>
+</div>
+
+<script>
+// === 데모용 정적 좌석맵 (Supabase 없이 시안 보기) ===
+// 실제 연동 버전: neoix-seats-schema.sql + seats-starter 로직 (RPC hold_seat/confirm_seat)
+const ROWS = ['A','B','C','D','E','F','G','H'];
+const COLS = 14;
+const taken = new Set(['A3','A4','B7','C7','C8','D11','E2','E3','E4','F9','G6','H12','H13']); // 매진(예시)
+const hold  = new Set(['B8','D5','F10']);                                                      // 점유중(예시)
+const mapEl = document.getElementById('map');
+const info  = document.getElementById('info');
+const payBtn= document.getElementById('pay');
+let mine = null;
+
+ROWS.forEach(rl=>{
+  const row=document.createElement('div'); row.className='row';
+  const lab=document.createElement('span'); lab.className='rlabel'; lab.textContent=rl; row.appendChild(lab);
+  for(let c=1;c<=COLS;c++){
+    const id=rl+c;
+    const el=document.createElement('button'); el.className='seat'; el.title=id; el.dataset.id=id;
+    if(taken.has(id)) el.classList.add('taken');
+    else if(hold.has(id)) el.classList.add('hold');
+    el.onclick=()=>{
+      if(el.classList.contains('taken')||el.classList.contains('hold')) return;
+      if(mine) mine.classList.remove('mine');
+      mine=el; el.classList.add('mine');
+      info.textContent=`좌석 ${id} 선택됨 (데모)`; payBtn.disabled=false;
+    };
+    row.appendChild(el);
+  }
+  mapEl.appendChild(row);
+});
+payBtn.onclick=()=>alert('데모입니다. 실제 버전은 결제 후 confirm_seat RPC로 확정됩니다.');
+</script>
+</body>
+</html>

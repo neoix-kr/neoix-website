@@ -1,0 +1,46 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>NEOIX 2026 — NET</title>
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@800;900&display=swap" rel="stylesheet">
+<!-- 화려한 배경: Vanta(에셋 다운로드 없음, CDN만) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.net.min.js"></script>
+<!-- 스크롤 모션 -->
+<script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/ScrollTrigger.min.js"></script>
+<!-- 포인트 애니메이션(아이콘 등) -->
+<script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+<style>
+  *{box-sizing:border-box} body{margin:0;background:#05060a;color:#fff;font-family:'Pretendard Variable',Pretendard,system-ui,sans-serif}
+  #hero{height:100vh;position:relative;overflow:hidden}
+  .hero-inner{position:absolute;top:42%;left:8%;z-index:2}
+  h1{font-family:Archivo,sans-serif;font-size:clamp(40px,7vw,84px);font-weight:900;letter-spacing:-.03em;margin:0;line-height:1}
+  .sub{color:#9aa;font-size:clamp(16px,2vw,22px);margin-top:18px}
+  section{padding:120px 8%;font-size:32px;font-weight:700}
+  .reveal{opacity:0;transform:translateY(40px)}
+</style></head>
+<body>
+  <div id="hero"><div class="hero-inner">
+    <h1>NEOIX<br/>CONFERENCE 2026</h1>
+    <div class="sub">AI가 만드는 세계 · 서울 · 2026.10</div>
+  </div></div>
+
+  <section class="reveal">세션 소개</section>
+  <section class="reveal">연사 라인업</section>
+  <section class="reveal">좌석 예약 →</section>
+
+<script>
+  // 1) 화려한 네트워크 배경 (모바일/감속선호 시 끔)
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches || innerWidth < 768;
+  if(!reduce){
+    VANTA.NET({el:"#hero",color:0x1d6cff,backgroundColor:0x05060a,points:12,maxDistance:24,spacing:16,showDots:true});
+  }
+  // 2) GSAP 스크롤 등장
+  gsap.registerPlugin(ScrollTrigger);
+  gsap.utils.toArray('.reveal').forEach(el=>{
+    gsap.to(el,{opacity:1,y:0,duration:1,ease:'power3.out',
+      scrollTrigger:{trigger:el,start:'top 80%'}});
+  });
+</script>
+</body></html>
