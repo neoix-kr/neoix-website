@@ -5,7 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>NEOIX</title>
 <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@800;900&display=swap" rel="stylesheet">
 <style>
+.logo-word{font-family:'Archivo',sans-serif;font-weight:900;font-size:30px;letter-spacing:-.02em;color:#fff;text-transform:uppercase;text-decoration:none;line-height:1;display:inline-block;}
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
 :root{--bg:#000000;--surface:#0a0a0a;--border:rgba(255,255,255,0.07);--text:#fff;--muted:rgba(255,255,255,0.45);--subtle:rgba(255,255,255,0.12);--ice:#ffffff;--lav:#ffffff;--ind:#ffffff;}
 *{margin:0;padding:0;box-sizing:border-box;}
@@ -411,36 +413,7 @@ body.page-open #home-wrap{display:none;}
 <body>
 
 <nav>
-  <a href="#" onclick="showPage(null);return false;">
-    <svg class="dlogo" width="195" height="110" viewBox="0 0 195 110" style="display:block;">
-      <defs>
-        <linearGradient id="ixN" gradientUnits="userSpaceOnUse" x1="119" y1="0" x2="195" y2="0"><stop offset="0%" stop-color="#4FC3F7"/><stop offset="50%" stop-color="#B3E5FC"/><stop offset="100%" stop-color="#CE93D8"/></linearGradient>
-        <radialGradient id="pgN" cx="35%" cy="35%"><stop offset="0%" stop-color="#B3E5FC"/><stop offset="100%" stop-color="#7B6FFF"/></radialGradient>
-        <linearGradient id="ogN" gradientUnits="userSpaceOnUse" x1="130" y1="0" x2="150" y2="0"><stop offset="0%" stop-color="#4FC3F7"/><stop offset="100%" stop-color="#CE93D8"/></linearGradient>
-      </defs>
-      <path d="M30.0 100.0V77.84Q30.0 74.8 28.12 72.91999999999999Q26.240000000000002 71.03999999999999 23.36 71.03999999999999Q21.36 71.03999999999999 19.84 71.88Q18.32 72.72 17.439999999999998 74.28Q16.56 75.84 16.56 77.84L11.84 75.52Q11.84 70.96000000000001 13.84 67.52000000000001Q15.84 64.08 19.4 62.2Q22.96 60.32 27.44 60.32Q31.76 60.32 35.08 62.36Q38.4 64.4 40.32 67.76Q42.24 71.12 42.24 75.12V100.0ZM4.32 100.0V61.12H16.56V100.0ZM67.28 100.88Q60.959999999999994 100.88 56.03999999999999 98.28Q51.12 95.68 48.31999999999999 91.04Q45.519999999999996 86.4 45.519999999999996 80.56Q45.519999999999996 74.72 48.28 70.12Q51.04 65.52 55.76 62.879999999999995Q60.48 60.24 66.4 60.24Q72.16 60.24 76.56 62.72Q80.96000000000001 65.19999999999999 83.48 69.6Q86.0 74.0 86.0 79.68Q86.0 80.72 85.88 81.88Q85.75999999999999 83.03999999999999 85.44 84.56L51.92 84.64V76.24L80.24000000000001 76.16L74.96 79.68Q74.88 76.32 73.91999999999999 74.12Q72.96 71.92 71.08 70.75999999999999Q69.2 69.6 66.47999999999999 69.6Q63.599999999999994 69.6 61.48 70.91999999999999Q59.36 72.24 58.2 74.63999999999999Q57.04 77.03999999999999 57.04 80.48Q57.04 83.92 58.28 86.36Q59.519999999999996 88.8 61.8 90.12Q64.08 91.44 67.2 91.44Q70.08 91.44 72.4 90.44Q74.72 89.44 76.47999999999999 87.44L83.19999999999999 94.16Q80.32 97.52 76.24 99.19999999999999Q72.16 100.88 67.28 100.88ZM108.63999999999999 100.88Q102.63999999999999 100.88 97.79999999999998 98.19999999999999Q92.96 95.52 90.16 90.88Q87.36 86.24 87.36 80.48Q87.36 74.72 90.16 70.16Q92.96 65.6 97.75999999999999 62.92Q102.56 60.24 108.63999999999999 60.24Q114.72 60.24 119.52 62.879999999999995Q124.32 65.52 127.11999999999999 70.12Q129.92 74.72 129.92 80.48Q129.92 86.24 127.11999999999999 90.88Q124.32 95.52 119.52 98.19999999999999Q114.72 100.88 108.63999999999999 100.88ZM108.63999999999999 89.76Q111.28 89.76 113.28 88.6Q115.28 87.44 116.36 85.32Q117.44 83.2 117.44 80.48Q117.44 77.75999999999999 116.32 75.72Q115.19999999999999 73.68 113.24 72.52000000000001Q111.28 71.36 108.63999999999999 71.36Q106.08 71.36 104.08 72.52000000000001Q102.08 73.68 100.96 75.76Q99.83999999999999 77.84 99.83999999999999 80.56Q99.83999999999999 83.2 100.96 85.32Q102.08 87.44 104.08 88.6Q106.08 89.76 108.63999999999999 89.76Z" fill="#fff"/>
-      <path d="M134.0 100.0V61.12H146.24V100.0Z M176.96 100.0 167.6 84.88 164.96 83.2 149.68 61.12H164.0L172.72 75.28L175.28 76.88L191.12 100.0ZM148.96 100.0 164.88 77.36 171.84 85.2 162.32 100.0ZM175.2 83.12 168.24 75.28 177.04 61.12H190.32Z" fill="url(#ixN)"/>
-      <g transform="translate(140.1,47)">
-        <ellipse cx="0" cy="0" rx="9" ry="4" stroke="url(#ogN)" stroke-width="0.5" fill="none" opacity="0.6" transform="rotate(-20)"/>
-        <circle cx="0" cy="0" r="3.5" fill="url(#pgN)"/>
-        <circle id="satNavD" r="1.4" fill="#B3E5FC" opacity="0.9"/>
-      </g>
-    </svg>
-    <svg class="mlogo" width="127" height="78" viewBox="0 0 127 78" style="display:none;">
-      <defs>
-        <linearGradient id="ixNm" gradientUnits="userSpaceOnUse" x1="77" y1="0" x2="127" y2="0"><stop offset="0%" stop-color="#4FC3F7"/><stop offset="50%" stop-color="#B3E5FC"/><stop offset="100%" stop-color="#CE93D8"/></linearGradient>
-        <radialGradient id="pgNm" cx="35%" cy="35%"><stop offset="0%" stop-color="#B3E5FC"/><stop offset="100%" stop-color="#7B6FFF"/></radialGradient>
-        <linearGradient id="ogNm" gradientUnits="userSpaceOnUse" x1="84" y1="0" x2="98" y2="0"><stop offset="0%" stop-color="#4FC3F7"/><stop offset="100%" stop-color="#CE93D8"/></linearGradient>
-      </defs>
-      <path d="M19.5 72.0V57.596000000000004Q19.5 55.620000000000005 18.278 54.398Q17.056 53.176 15.184 53.176Q13.883999999999999 53.176 12.895999999999999 53.722Q11.908 54.268 11.335999999999999 55.282Q10.764 56.296 10.764 57.596000000000004L7.696 56.088Q7.696 53.124 8.995999999999999 50.888000000000005Q10.296 48.652 12.61 47.43Q14.924 46.208 17.836 46.208Q20.644 46.208 22.802 47.534Q24.959999999999997 48.86 26.208 51.044Q27.456 53.228 27.456 55.828V72.0ZM2.808 72.0V46.728H10.764V72.0ZM43.532 72.572Q39.424 72.572 36.226 70.882Q33.028 69.19200000000001 31.208 66.176Q29.387999999999998 63.16 29.387999999999998 59.364000000000004Q29.387999999999998 55.568 31.182 52.578Q32.976 49.588 36.044 47.872Q39.112 46.156000000000006 42.96 46.156000000000006Q46.704 46.156000000000006 49.564 47.768Q52.424 49.38 54.062 52.24Q55.7 55.1 55.7 58.792Q55.7 59.468 55.622 60.222Q55.544 60.976 55.336 61.964L33.548 62.016V56.556L51.956 56.504000000000005L48.524 58.792Q48.471999999999994 56.608000000000004 47.848 55.178000000000004Q47.224000000000004 53.748000000000005 46.002 52.994Q44.78 52.24 43.012 52.24Q41.14 52.24 39.762 53.098Q38.384 53.956 37.629999999999995 55.516000000000005Q36.876 57.076 36.876 59.312Q36.876 61.548 37.682 63.134Q38.488 64.72 39.97 65.578Q41.452 66.436 43.48 66.436Q45.352000000000004 66.436 46.86 65.786Q48.367999999999995 65.136 49.512 63.836L53.879999999999995 68.204Q52.007999999999996 70.388 49.355999999999995 71.48Q46.704 72.572 43.532 72.572ZM70.216 72.572Q66.31599999999999 72.572 63.16999999999999 70.83Q60.023999999999994 69.088 58.20399999999999 66.072Q56.38399999999999 63.056 56.38399999999999 59.312Q56.38399999999999 55.568 58.20399999999999 52.604Q60.023999999999994 49.64 63.14399999999999 47.898Q66.264 46.156000000000006 70.216 46.156000000000006Q74.16799999999999 46.156000000000006 77.28799999999998 47.872Q80.40799999999999 49.588 82.228 52.578Q84.048 55.568 84.048 59.312Q84.048 63.056 82.228 66.072Q80.40799999999999 69.088 77.28799999999998 70.83Q74.16799999999999 72.572 70.216 72.572ZM70.216 65.344Q71.93199999999999 65.344 73.232 64.59Q74.532 63.836 75.234 62.458Q75.93599999999999 61.08 75.93599999999999 59.312Q75.93599999999999 57.544 75.208 56.217999999999996Q74.47999999999999 54.891999999999996 73.20599999999999 54.138Q71.93199999999999 53.384 70.216 53.384Q68.55199999999999 53.384 67.252 54.138Q65.952 54.891999999999996 65.22399999999999 56.244Q64.496 57.596000000000004 64.496 59.364000000000004Q64.496 61.08 65.22399999999999 62.458Q65.952 63.836 67.252 64.59Q68.55199999999999 65.344 70.216 65.344Z" fill="#fff"/>
-      <path d="M86.5 72.0V46.728H94.45599999999999V72.0Z M114.22399999999999 72.0 108.14 62.172 106.42399999999999 61.08 96.49199999999999 46.728H105.8L111.46799999999999 55.932L113.13199999999999 56.972L123.428 72.0ZM96.024 72.0 106.372 57.284 110.896 62.38 104.708 72.0ZM113.08 61.028 108.556 55.932 114.276 46.728H122.90799999999999Z" fill="url(#ixNm)"/>
-      <g transform="translate(90.5,31)">
-        <ellipse cx="0" cy="0" rx="6" ry="2.5" stroke="url(#ogNm)" stroke-width="0.5" fill="none" opacity="0.6" transform="rotate(-20)"/>
-        <circle cx="0" cy="0" r="2.3" fill="url(#pgNm)"/>
-        <circle id="satNavM" r="0.9" fill="#B3E5FC" opacity="0.9"/>
-      </g>
-    </svg>
-  </a>
+  <a href="#" onclick="showPage(null);return false;" class="logo-word">NEOIX</a>
   <ul class="nav-links">
     <li><a href="#about">사람들</a></li>
     <li><a href="#philosophy">철학</a></li>
@@ -827,8 +800,7 @@ window.addEventListener('hashchange',function(){
 });
 // 초기 로드 시 해시 확인
 (function(){var h=window.location.hash.replace('#','');if(pages.indexOf(h)>-1)showPage(h);})();
-function ul(){var m=window.innerWidth<=768;document.querySelector('.dlogo').style.display=m?'none':'block';document.querySelector('.mlogo').style.display=m?'block':'none';}
-ul();window.addEventListener('resize',ul);
+function ul(){}
 document.getElementById('hbg').addEventListener('click',function(){this.classList.toggle('open');document.getElementById('mmenu').classList.toggle('open');});
 function cm(){document.getElementById('hbg').classList.remove('open');document.getElementById('mmenu').classList.remove('open');}
 function orbit(id,rx,ry,deg,spd){var el=document.getElementById(id);if(!el)return;var t=Math.random()*Math.PI*2,a=deg*Math.PI/180;(function tick(){var x=rx*Math.cos(t)*Math.cos(a)-ry*Math.sin(t)*Math.sin(a),y=rx*Math.cos(t)*Math.sin(a)+ry*Math.sin(t)*Math.cos(a);el.setAttribute('cx',x);el.setAttribute('cy',y);t+=spd;requestAnimationFrame(tick);})();}
