@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEOIX 계정 — 통합 로그인</title>
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:#000;color:#fff;font-family:'Pretendard Variable',-apple-system,system-ui,sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;-webkit-font-smoothing:antialiased;}
+.card{width:100%;max-width:380px;text-align:center;}
+.logo{height:30px;margin:0 auto 14px;display:block;color:#fff;}
+.logo svg{height:30px;width:auto;display:block;margin:0 auto;}
+.sub{font-size:14px;color:rgba(255,255,255,.5);margin-bottom:36px;}
+.kakao-btn{width:100%;height:52px;border:0;border-radius:12px;background:#FEE500;color:#191600;font-size:16px;font-weight:700;font-family:inherit;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:9px;transition:filter .15s;}
+.kakao-btn:hover{filter:brightness(.95);}
+.kakao-btn:active{transform:translateY(1px);}
+.kakao-btn svg{width:20px;height:20px;}
+.divider{display:flex;align-items:center;gap:14px;margin:24px 0;color:rgba(255,255,255,.3);font-size:12px;}
+.divider::before,.divider::after{content:"";flex:1;height:1px;background:rgba(255,255,255,.12);}
+.field{text-align:left;margin-bottom:12px;}
+.field input{width:100%;height:48px;background:#0e0e10;border:1px solid rgba(255,255,255,.12);border-radius:12px;color:#fff;font-size:15px;font-family:inherit;padding:0 16px;}
+.field input:focus{outline:none;border-color:rgba(255,255,255,.4);}
+.field input::placeholder{color:rgba(255,255,255,.3);}
+.btn-email{width:100%;height:48px;border:1px solid rgba(255,255,255,.2);border-radius:12px;background:transparent;color:#fff;font-size:15px;font-weight:600;font-family:inherit;cursor:pointer;margin-top:4px;transition:background .15s;}
+.btn-email:hover{background:rgba(255,255,255,.06);}
+.toggle{margin-top:18px;font-size:13px;color:rgba(255,255,255,.45);}
+.toggle a{color:#fff;cursor:pointer;font-weight:600;text-decoration:underline;text-underline-offset:3px;}
+.msg{margin-top:16px;font-size:13px;border-radius:10px;padding:11px 14px;display:none;line-height:1.5;}
+.msg.err{background:rgba(255,80,80,.12);color:#ff9a9a;display:block;}
+.msg.ok{background:rgba(120,220,150,.12);color:#9fe7b6;display:block;}
+/* 로그인된 상태 */
+.me{display:none;}
+.me .avatar{width:64px;height:64px;border-radius:50%;background:#1a1a1d;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:800;margin:0 auto 16px;}
+.me .name{font-size:20px;font-weight:700;}
+.me .email{font-size:13px;color:rgba(255,255,255,.5);margin-top:6px;}
+.me .prov{display:inline-block;margin-top:12px;font-size:12px;font-weight:600;padding:5px 12px;border-radius:100px;background:rgba(255,229,0,.15);color:#FEE500;}
+.me .signout{margin-top:28px;width:100%;height:46px;border:1px solid rgba(255,255,255,.2);border-radius:12px;background:transparent;color:#fff;font-size:14px;font-weight:600;font-family:inherit;cursor:pointer;}
+.me .signout:hover{background:rgba(255,255,255,.06);}
+.foot{margin-top:28px;font-size:11px;color:rgba(255,255,255,.25);}
+.foot a{color:rgba(255,255,255,.4);}
+</style>
+</head>
+<body>
+<div class="card">
+  <a href="https://neoix.kr" class="logo" aria-label="NEOIX">
+    <svg viewBox="0 0 857 256" xmlns="http://www.w3.org/2000/svg"><path d="M170.032 203L105.169 128.038V203H59.6084V48.5869H102.925L167.787 124.671V48.5869H213.348V203H170.032ZM239.834 48.5869H373.374V85.6191H289.434V106.941H361.254V142.402H289.434V165.968H374.945V203H239.834V48.5869ZM471.83 45.8937C498.463 45.8937 519.037 52.7016 533.55 66.3175C548.064 79.9334 555.321 99.7587 555.321 125.793C555.321 151.828 548.064 171.654 533.55 185.269C519.037 198.885 498.463 205.693 471.83 205.693C445.197 205.693 424.623 198.96 410.11 185.494C395.746 171.878 388.564 151.978 388.564 125.793C388.564 99.6091 395.746 79.7838 410.11 66.3175C424.623 52.7016 445.197 45.8937 471.83 45.8937ZM471.83 82.9259C461.207 82.9259 453.127 86.1428 447.591 92.5767C442.055 99.0106 439.287 107.689 439.287 118.611V132.975C439.287 143.898 442.055 152.576 447.591 159.01C453.127 165.444 461.207 168.661 471.83 168.661C482.453 168.661 490.533 165.444 496.069 159.01C501.755 152.576 504.598 143.898 504.598 132.975V118.611C504.598 107.689 501.755 99.0106 496.069 92.5767C490.533 86.1428 482.453 82.9259 471.83 82.9259ZM577.542 203V48.5869H627.143V203H577.542ZM813.801 203H753.652L725.148 154.97H724.251L695.747 203H640.086L695.298 121.305L645.473 48.5869H705.398L728.739 88.0879H729.637L753.203 48.5869H808.639L758.589 121.529L813.801 203Z" fill="currentColor"/></svg>
+  </a>
+  <div class="sub" id="sub">하나의 계정으로 네오익스의 모든 서비스를</div>
+
+  <!-- 로그인 폼 -->
+  <div id="authForm">
+    <button class="kakao-btn" id="btnKakao">
+      <svg viewBox="0 0 24 24" fill="#191600" xmlns="http://www.w3.org/2000/svg"><path d="M12 3C6.477 3 2 6.463 2 10.735c0 2.764 1.872 5.187 4.69 6.55-.207.74-.748 2.694-.856 3.112-.134.518.19.51.4.371.165-.109 2.617-1.778 3.68-2.503.69.102 1.403.156 2.086.156 5.523 0 10-3.463 10-7.686C22 6.463 17.523 3 12 3z"/></svg>
+      카카오로 시작하기
+    </button>
+
+    <div class="divider">또는 이메일로</div>
+
+    <div class="field"><input type="email" id="email" placeholder="이메일" autocomplete="email"></div>
+    <div class="field"><input type="password" id="pw" placeholder="비밀번호" autocomplete="current-password"></div>
+    <div class="field" id="nameField" style="display:none"><input type="text" id="name" placeholder="이름 (표시될 이름)" autocomplete="name"></div>
+    <button class="btn-email" id="btnEmail">로그인</button>
+    <div class="toggle" id="toggle">계정이 없나요? <a id="toggleLink">회원가입</a></div>
+    <div class="msg" id="msg"></div>
+  </div>
+
+  <!-- 로그인됨 -->
+  <div class="me" id="me">
+    <div class="avatar" id="avatar">N</div>
+    <div class="name" id="meName">—</div>
+    <div class="email" id="meEmail"></div>
+    <div class="prov" id="meProv"></div>
+    <button class="signout" id="btnSignout">로그아웃</button>
+  </div>
+
+  <div class="foot">NEOIX 통합 계정 · <a href="https://neoix.kr">neoix.kr</a></div>
+</div>
+
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+const SUPABASE_URL = 'https://nroddjekdjwnwguwkudl.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_Uygr7NmVn1wmqopNrb4FRw_CRWw7Xeg';
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+const $ = id => document.getElementById(id);
+let mode = 'login'; // login | signup
+
+function showMsg(text, ok){ const m=$('msg'); m.textContent=text; m.className='msg '+(ok?'ok':'err'); }
+function clearMsg(){ const m=$('msg'); m.className='msg'; m.textContent=''; }
+
+// 카카오 로그인 — 끝나면 이 페이지로 돌아옴
+$('btnKakao').addEventListener('click', async () => {
+  clearMsg();
+  const { error } = await supabase.auth.signInWithOAuth({
+    provider: 'kakao',
+    options: { redirectTo: window.location.origin + window.location.pathname },
+  });
+  if (error) showMsg('카카오 로그인 오류: ' + error.message, false);
+});
+
+// 이메일 로그인/회원가입 토글 (이벤트 위임 — 링크가 innerHTML로 교체돼도 동작)
+$('toggle').addEventListener('click', (ev) => {
+  if (ev.target.id !== 'toggleLink') return;
+  mode = mode === 'login' ? 'signup' : 'login';
+  $('nameField').style.display = mode==='signup' ? 'block' : 'none';
+  $('btnEmail').textContent = mode==='signup' ? '회원가입' : '로그인';
+  $('toggle').innerHTML = mode==='signup'
+    ? '이미 계정이 있나요? <a id="toggleLink">로그인</a>'
+    : '계정이 없나요? <a id="toggleLink">회원가입</a>';
+  clearMsg();
+});
+
+$('btnEmail').addEventListener('click', async () => {
+  clearMsg();
+  const email=$('email').value.trim(), pw=$('pw').value;
+  if(!email||!pw){ showMsg('이메일과 비밀번호를 입력하세요.', false); return; }
+  $('btnEmail').disabled = true;
+  try {
+    if (mode==='signup') {
+      const { error } = await supabase.auth.signUp({ email, password: pw, options:{ data:{ display_name: $('name').value.trim() } } });
+      if (error) throw error;
+      showMsg('확인 메일을 보냈습니다. 메일의 링크를 눌러 가입을 완료하세요.', true);
+    } else {
+      const { error } = await supabase.auth.signInWithPassword({ email, password: pw });
+      if (error) throw error;
+    }
+  } catch(e){ showMsg(e.message || '오류가 발생했습니다.', false); }
+  $('btnEmail').disabled = false;
+});
+
+$('btnSignout').addEventListener('click', async () => { await supabase.auth.signOut(); });
+
+// 세션 표시
+function render(session){
+  if (session && session.user){
+    const u = session.user;
+    const meta = u.user_metadata || {};
+    const name = meta.display_name || meta.name || meta.full_name || meta.nickname || (u.email ? u.email.split('@')[0] : '회원');
+    const prov = (u.app_metadata && u.app_metadata.provider) || 'email';
+    $('authForm').style.display='none';
+    $('me').style.display='block';
+    $('sub').textContent='로그인되었습니다';
+    $('meName').textContent = name;
+    $('meEmail').textContent = u.email || '(이메일 미제공)';
+    $('avatar').textContent = (name[0]||'N').toUpperCase();
+    const provLabel = {kakao:'카카오',google:'Google',apple:'Apple',email:'이메일'}[prov] || prov;
+    $('meProv').textContent = provLabel + '로 로그인됨';
+  } else {
+    $('authForm').style.display='block';
+    $('me').style.display='none';
+    $('sub').textContent='하나의 계정으로 네오익스의 모든 서비스를';
+  }
+}
+
+supabase.auth.getSession().then(({data})=>render(data.session));
+supabase.auth.onAuthStateChange((_e, session)=>render(session));
+</script>
+</body>
+</html>
