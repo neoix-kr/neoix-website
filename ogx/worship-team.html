@@ -212,9 +212,14 @@
       border-radius: 8px;
       cursor: pointer;
       font-weight: 600;
-      transition: background 0.15s ease;
+      transition: background 0.15s ease, color 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
     }
     .room-code:hover { background: var(--blue-soft); color: var(--blue-strong); }
+    .room-code-share { flex: 0 0 auto; opacity: 0.65; }
+    .room-code:hover .room-code-share { opacity: 1; }
 
     .peers {
       display: inline-flex;
@@ -3202,7 +3207,10 @@
         <span class="peer-dot" id="peerDot"></span>
         <span id="peersCount">1</span>
       </span>
-      <button class="room-code" id="roomCode" title="방 코드를 누르면 초대 링크를 복사해요">----</button>
+      <button class="room-code" id="roomCode" title="눌러서 팀에게 방을 공유해요">
+        <span id="roomCodeLabel">----</span>
+        <svg class="room-code-share" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V4"/><path d="M8 7l4-3 4 3"/><path d="M5 12v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6"/></svg>
+      </button>
       <span class="user-chip" id="appUserChip" title="로그인된 아이디" style="display:none;"><b id="appUserName"></b></span>
       <button class="btn btn-ghost btn-sm" id="btnLeave" title="내 방 목록으로 돌아가기">내 방 목록</button>
     </div>
@@ -3616,7 +3624,7 @@
     <button class="roster-add" id="rosterAdd">+ 팀원 추가</button>
     <div class="roster-empty" id="rosterEmpty" style="display:none;">
       아직 팀원이 없어요. 위 버튼으로 추가하거나 초대 링크를 공유해보세요.
-      <button class="btn btn-ghost btn-sm" id="rosterCopyCode" style="margin-top:12px;">초대 링크 복사</button>
+      <button class="btn btn-ghost btn-sm" id="rosterCopyCode" style="margin-top:12px;">📤 방 공유하기</button>
     </div>
     <div class="modal-actions">
       <button class="btn btn-primary" id="teamDone">완료</button>
@@ -5215,7 +5223,7 @@
     enteringRoom = false;
     showScreen('app');
 
-    roomCodeEl.textContent = roomName ? `${roomName} · #${roomId}` : `방 #${roomId}`;
+    ($('roomCodeLabel') || roomCodeEl).textContent = roomName ? `${roomName} · #${roomId}` : `방 #${roomId}`;
     roleBadge.textContent = isLeader ? '리더' : '팀원';
     roleBadge.className = 'role-badge' + (isLeader ? ' is-leader' : '');
 
@@ -5565,9 +5573,29 @@
     loadMyRooms();
   }
 
-  // 초대 링크 복사 (방 코드 버튼 / 빈 상태 버튼 공용)
+  // 초대 공유 (방 코드 버튼 / 빈 상태 버튼 공용)
+  // 1순위: 네이티브 공유 시트(navigator.share) → 카톡/메시지 등으로 바로 공유 (모바일에서 가장 직관적)
+  // 폴백: 링크 복사 → 클립보드 → prompt
   async function copyInviteLink() {
     const url = `${location.origin}${location.pathname}?room=${roomId}`;
+    const rn = (roomName || '').trim();
+    const shareData = {
+      title: rn ? `${rn} · 실시간 악보` : '실시간 악보',
+      text: rn
+        ? `'${rn}' 방에 들어와요 🎵  방 코드: ${roomId}`
+        : `실시간 악보 방에 들어와요 🎵  방 코드: ${roomId}`,
+      url,
+    };
+    if (navigator.share) {
+      try {
+        await navigator.share(shareData);
+        return; // 공유 시트로 처리 완료
+      } catch (e) {
+        if (e && e.name === 'AbortError') return; // 사용자가 공유 취소 → 조용히 종료
+        // 그 외 오류는 아래 복사 폴백으로 진행
+      }
+    }
+    // 공유 API 미지원(주로 데스크탑) → 링크 복사
     try {
       await navigator.clipboard.writeText(url);
       miniToast('초대 링크를 복사했어요 · 팀에게 공유하세요');
