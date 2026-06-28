@@ -94,7 +94,10 @@ $('btnKakao').addEventListener('click', async () => {
   clearMsg();
   const { error } = await supabase.auth.signInWithOAuth({
     provider: 'kakao',
-    options: { redirectTo: window.location.origin + window.location.pathname },
+    options: {
+      redirectTo: window.location.origin + window.location.pathname,
+      scopes: 'profile_nickname account_email', // 닉네임 + 이메일만 요청 (동의창 짧게). 프로필사진 등은 요청 안 함
+    },
   });
   if (error) showMsg('카카오 로그인 오류: ' + error.message, false);
 });
