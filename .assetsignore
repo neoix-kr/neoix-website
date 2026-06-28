@@ -1,0 +1,6 @@
+wrangler.toml
+.assetsignore
+*.sql
+.git
+node_modules
+.claude

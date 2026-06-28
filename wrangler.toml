@@ -1,0 +1,7 @@
+name = "neoix-website"
+compatibility_date = "2025-06-01"
+
+# 빌드 없는 순수 정적 사이트 — 레포 루트의 파일을 그대로 정적 자산으로 서빙
+[assets]
+directory = "./"
+not_found_handling = "404-page"
