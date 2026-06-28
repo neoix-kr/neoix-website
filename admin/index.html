@@ -214,6 +214,7 @@ body.sidebar-collapsed .content-wrap { margin-left:var(--sidebar-collapsed); }
 .badge-warning { background:var(--warning-bg); color:var(--warning); }
 .badge-gray { background:#f1f5f9; color:var(--muted); }
 .badge-danger { background:var(--danger-bg); color:var(--danger); }
+.badge-kakao { background:#FEE500; color:#3a1d1d; }
 .badge-purple { background:var(--purple-bg); color:var(--purple); }
 .project-desc { font-size:13px; color:var(--muted); margin-bottom:14px; line-height:1.5; }
 .project-meta { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; }
@@ -779,13 +780,13 @@ async function loadUsers() {
   renderUsers();
 }
 
-const providerBadge = { email:['이메일','badge-gray'], apple:['Apple','badge-info'], google:['Google','badge-danger'] };
+const providerBadge = { email:['이메일','badge-gray'], kakao:['카카오','badge-kakao'], apple:['Apple','badge-info'], google:['Google','badge-danger'] };
 function renderUsers(filter = '') {
   const nameOf = u => u.display_name || u.username || '-';
   const filtered = filter ? cachedUsers.filter(u => nameOf(u).toLowerCase().includes(filter) || (u.email||'').toLowerCase().includes(filter) || (u.services||'').toLowerCase().includes(filter)) : cachedUsers;
   if (!filtered.length) { $('usersBody').innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--light);padding:40px">가입자가 없습니다</td></tr>'; return; }
   $('usersBody').innerHTML = filtered.map(u => {
-    const [pLabel, pClass] = providerBadge[u.signup_provider] || ['이메일','badge-gray'];
+    const [pLabel, pClass] = providerBadge[u.signup_provider] || [u.signup_provider ? u.signup_provider : '이메일','badge-gray'];
     const services = u.services ? u.services : '<span style="color:var(--light)">-</span>';
     return `<tr>
       <td class="td-bold">${nameOf(u)}</td>
