@@ -2519,6 +2519,16 @@
     }
 
     /* 여러 장 썸네일 스트립 */
+    .sheet-bigpreview {
+      margin: 6px 0 10px; padding: 8px;
+      border-radius: 12px; background: var(--surface-2);
+      border: 1px solid var(--border); text-align: center;
+    }
+    .sheet-bigpreview img {
+      max-width: 100%; max-height: 300px;
+      object-fit: contain; display: block; margin: 0 auto; border-radius: 6px;
+    }
+    .sheet-thumb.active { box-shadow: 0 0 0 3px var(--blue); }
     .sheet-thumbs {
       display: flex;
       gap: 8px;
@@ -2544,7 +2554,7 @@
     }
     .sheet-thumb:active { cursor: grabbing; }
     .sheet-thumb.sheet-thumb-ghost { opacity: 0.4; }
-    .sheet-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .sheet-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; -webkit-user-drag: none; user-select: none; pointer-events: none; }
     .sheet-thumb .st-num {
       position: absolute;
       left: 3px; bottom: 3px;
@@ -3593,6 +3603,8 @@
         </div>
         <button type="button" class="icon-btn is-danger" id="spRemove" title="악보 전체 제거">✕</button>
       </div>
+      <!-- 썸네일 탭 시 크게 보여주는 미리보기 -->
+      <div class="sheet-bigpreview" id="sheetBigPreview" style="display:none;"><img id="sheetBigImg" alt="선택한 악보 미리보기" /></div>
       <!-- 여러 장일 때 썸네일 스트립 -->
       <div class="sheet-thumbs" id="sheetThumbs" style="display:none;"></div>
       <div class="file-name" id="songFileName"></div>
@@ -5898,7 +5910,11 @@
   function renderSheetThumbs(pages, editable) {
     const strip = $('sheetThumbs');
     if (!strip) return;
-    if (!pages || pages.length <= 1) { strip.style.display = 'none'; strip.innerHTML = ''; return; }
+    if (!pages || pages.length <= 1) {
+      strip.style.display = 'none'; strip.innerHTML = '';
+      const bp = $('sheetBigPreview'); if (bp) bp.style.display = 'none';
+      return;
+    }
     strip.style.display = 'flex';
     const MAX = 12;
     const shown = pages.slice(0, MAX);
@@ -5937,6 +5953,9 @@
           draggable: '.sheet-thumb',
           filter: '.st-del',
           ghostClass: 'sheet-thumb-ghost',
+          delay: 120,               // 터치: 살짝 눌러 끌면 순서변경, 빠른 탭은 미리보기
+          delayOnTouchOnly: true,
+          touchStartThreshold: 6,
           onEnd: () => {
             const order = [...strip.querySelectorAll('.sheet-thumb')].map((el) => parseInt(el.dataset.i, 10));
             const pages = modalContext.pages || [];
@@ -5950,6 +5969,19 @@
         });
       }
     }
+    // 썸네일 탭 → 위 큰 미리보기 (기본: 첫 장). 편집·보기 공통.
+    const bigWrap = $('sheetBigPreview'), bigImg = $('sheetBigImg');
+    const showBig = (src, el) => {
+      if (bigImg && src) bigImg.src = src;
+      if (bigWrap) bigWrap.style.display = src ? 'block' : 'none';
+      strip.querySelectorAll('.sheet-thumb').forEach((t) => t.classList.remove('active'));
+      if (el) el.classList.add('active');
+    };
+    strip.querySelectorAll('.sheet-thumb').forEach((el) => {
+      const idx = parseInt(el.dataset.i, 10);
+      el.addEventListener('click', () => showBig(shown[idx], el));
+    });
+    if (shown.length) showBig(shown[0], strip.querySelector('.sheet-thumb'));
   }
 
   function setupModal() {
@@ -6067,6 +6099,14 @@
         ? { pages: song.pages || null, remoteUrl: song.remoteUrl || '', sheetKind: song.sheetKind || '', fileName: song.fileName || '' }
         : null,
     };
+    // 기존 이미지 악보는 열자마자 편집(순서변경·삭제·추가) 가능하게 스테이징 복사본으로.
+    // 저장 시 실제로 안 바뀌었으면(제목만 수정 등) 재전송은 스킵(saveSong에서 판별).
+    if (hasExisting && song.pages && song.pages.length) {
+      modalContext.staged = true;
+      modalContext.pages = song.pages.slice();
+      modalContext.sheetKind = song.sheetKind || 'image';
+      modalContext.fileName = song.fileName || `악보 ${song.pages.length}장`;
+    }
     $('songModalTitle').textContent = isEditing ? '곡 편집' : (modalContext.special ? '특송 추가' : '곡 추가');
     $('songModalSub').textContent = isEditing ? '곡 정보를 수정해요.' : '악보를 끌어오거나 주소로 등록하고 유튜브를 연결해요.';
     $('songSave').textContent = isEditing ? '저장' : '추가';
@@ -6127,12 +6167,15 @@
 
     let sheetsChanged = false;
     if (modalContext.staged && modalContext.pages && modalContext.pages.length) {
-      // 새 악보(축소 이미지 페이지들)로 교체
+      // 악보 페이지들로 교체. 기존과 동일(순서·구성 안 바뀜)이면 재전송 스킵.
+      const orig = modalContext.existing && modalContext.existing.pages;
+      const changed = !orig || orig.length !== modalContext.pages.length
+        || modalContext.pages.some((p, i) => p !== orig[i]);
       song.pages = modalContext.pages;
       song.remoteUrl = '';
       song.sheetKind = modalContext.sheetKind || 'image';
       song.fileName = modalContext.fileName || '';
-      sheetsChanged = true;
+      sheetsChanged = changed;
     } else if (modalContext.staged && modalContext.remoteUrl) {
       // CORS로 축소 못 한 원격 이미지 → URL 그대로 공유 (sheet 전송 없음, conti로 전달)
       song.pages = [];
