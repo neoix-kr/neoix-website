@@ -83,14 +83,16 @@
   .hero.calm .stage .sub{opacity:1}
   .stage .sub .big{display:block;font-family:'Jua';font-size:clamp(17px,4.8vw,22px);color:var(--magenta);margin-bottom:2px} .stage .sub .big b{color:var(--orange)}
 
-  .sailbtn{position:absolute;z-index:9;width:min(43vw,178px);background:none;border:0;padding:0;opacity:0;pointer-events:none;transition:opacity .7s 1.1s;filter:drop-shadow(0 12px 14px rgba(8,45,85,.3))}
-  .hero.calm .sailbtn{opacity:1;pointer-events:auto} .sailbtn:active{opacity:.82}
-  .sailbtn.s-left{left:2%;top:41%} .sailbtn.s-right{right:2%;top:41%}
+  .sailbtn{position:absolute;z-index:9;width:min(47vw,205px);background:none;border:0;padding:0;opacity:0;pointer-events:none;transition:opacity .7s 1.1s;filter:drop-shadow(0 10px 12px rgba(8,45,85,.32))}
+  .hero.calm .sailbtn{opacity:1;pointer-events:auto} .sailbtn:active{opacity:.85}
+  .sailbtn.s-left{left:-1%;top:40%} .sailbtn.s-right{right:-1%;top:40%}
   .sailbtn .floaty{display:block;position:relative;animation:bobBtn 4.2s ease-in-out infinite} .sailbtn.s-right .floaty{animation-delay:-2.1s}
-  .boatimg{width:100%;height:auto} .sailbtn .lbl{position:absolute;top:15%;left:0;right:0;display:flex;flex-direction:column;align-items:center;gap:1px;pointer-events:none}
-  .sailbtn .lbl .ic{font-size:min(6vw,22px);line-height:1;margin-bottom:3px} .sailbtn .lbl .t1{font-family:'Jua';font-size:min(4.6vw,18px);color:var(--deepblue);line-height:1.08} .sailbtn .lbl .t2{font-size:min(3.1vw,12px);font-weight:800;color:#5a86ad}
+  .boatimg{width:100%;height:auto;display:block} .boatimg.flip{transform:scaleX(-1)}
+  .sailbtn .lbl{position:absolute;top:15%;left:8%;right:8%;display:flex;flex-direction:column;align-items:center;gap:0;pointer-events:none;text-shadow:0 1px 3px rgba(255,255,255,.6)}
+  .sailbtn.s-right .lbl{left:8%;right:8%}
+  .sailbtn .lbl .ic{font-size:min(5vw,20px);line-height:1;margin-bottom:2px;text-shadow:none} .sailbtn .lbl .t1{font-family:'Jua';font-size:min(4.6vw,19px);color:#0c3a68;line-height:1.05} .sailbtn .lbl .t2{font-size:min(3vw,12px);font-weight:800;color:#4a6f96}
   @keyframes bobBtn{0%,100%{transform:translateY(0) rotate(-1.3deg)}50%{transform:translateY(-7px) rotate(1.3deg)}}
-  @media (max-height:760px){.sailbtn{width:min(40vw,150px)}.sailbtn.s-left,.sailbtn.s-right{top:38%}}
+  @media (max-height:760px){.sailbtn{width:min(44vw,175px)}.sailbtn.s-left,.sailbtn.s-right{top:37%}}
   .admin-fab{position:absolute;top:calc(12px + env(safe-area-inset-top));right:14px;z-index:11;background:rgba(0,0,0,.34);color:#fff;border:1px solid rgba(255,255,255,.35);font-size:12.5px;font-weight:700;padding:7px 13px;border-radius:20px;backdrop-filter:blur(6px);transition:background .3s,color .3s}
   .hero.calm .admin-fab{background:rgba(255,255,255,.7);color:var(--deepblue);border-color:rgba(12,68,124,.25)}
   .verse{position:absolute;bottom:4.2%;left:50%;transform:translateX(-50%) translateY(10px);color:var(--deepblue);font-size:clamp(13px,3.6vw,16px);font-weight:600;text-align:center;width:90%;text-shadow:0 1px 0 rgba(255,255,255,.8);opacity:0;transition:opacity 2s ease 1.6s,transform 2s ease 1.6s;z-index:6;pointer-events:none;word-break:keep-all}
@@ -257,27 +259,15 @@
     <div class="sub"><span class="big"><b>2026</b> 교육부서 연합수련회</span><span id="subline">송산제일교회 · 8/6(목)~8/8(토) · 미산제일침례교회</span></div>
   </div>
 
-  <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
-    <linearGradient id="sailg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#e7f1fc"/></linearGradient>
-    <linearGradient id="hullg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#b17a41"/><stop offset="1" stop-color="#754619"/></linearGradient>
-  </defs></svg>
   <button class="sailbtn s-left" data-open="student" aria-label="항해 시작하기">
     <span class="floaty">
-      <svg class="boatimg" viewBox="0 0 200 210" aria-hidden="true">
-        <path d="M100,20 C152,40 166,112 158,142 L42,142 C34,112 48,40 100,20 Z" fill="url(#sailg)" stroke="#cddff0" stroke-width="3"/>
-        <path d="M100,16 L131,27 L100,38 Z" fill="#c02466"/>
-        <path d="M26,146 L174,146 L157,183 Q100,199 43,183 Z" fill="url(#hullg)"/><path d="M42,161 Q100,173 158,161" stroke="rgba(55,32,8,.4)" stroke-width="3" fill="none"/>
-      </svg>
-      <span class="lbl"><span class="ic">⛵</span><span class="t1">항해 시작</span><span class="t2">수련회 입장</span></span>
+      <img class="boatimg" src="assets/boat-btn.webp" alt="" aria-hidden="true">
+      <span class="lbl"><span class="ic">⚓</span><span class="t1">항해 시작</span><span class="t2">수련회 입장</span></span>
     </span>
   </button>
   <button class="sailbtn s-right" data-open="guardian" aria-label="보호자 메뉴">
     <span class="floaty">
-      <svg class="boatimg" viewBox="0 0 200 210" aria-hidden="true">
-        <path d="M100,20 C152,40 166,112 158,142 L42,142 C34,112 48,40 100,20 Z" fill="url(#sailg)" stroke="#cddff0" stroke-width="3"/>
-        <path d="M100,16 L131,27 L100,38 Z" fill="#e08a00"/>
-        <path d="M26,146 L174,146 L157,183 Q100,199 43,183 Z" fill="url(#hullg)"/><path d="M42,161 Q100,173 158,161" stroke="rgba(55,32,8,.4)" stroke-width="3" fill="none"/>
-      </svg>
+      <img class="boatimg flip" src="assets/boat-btn.webp" alt="" aria-hidden="true">
       <span class="lbl"><span class="ic">👨‍👩‍👧</span><span class="t1">보호자</span><span class="t2">사진·신청</span></span>
     </span>
   </button>
