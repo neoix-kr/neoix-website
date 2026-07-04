@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1, user-scalable=no">
+<title>믿음의 항해 — 2026 송산제일교회 교육부서 연합수련회</title>
+<meta name="description" content="예수님과 함께하는 믿음의 항해 · 2026 송산제일교회 교육부서 연합수련회 · 8/6(목)~8/8(토) · 미산제일침례교회(충남 보령) · 히브리서 12:2">
+<meta name="theme-color" content="#0d1520">
+<meta property="og:title" content="믿음의 항해 ⚓ 2026 교육부서 연합수련회">
+<meta property="og:description" content="예수님과 함께하는 믿음의 항해 · 8/6(목)~8/8(토) · 미산제일침례교회 · 히브리서 12:2">
+<meta property="og:image" content="assets/logo.webp">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  :root{
+    --magenta:#c02466; --orange:#e08a00; --blue:#1d6fd6; --deepblue:#0c447c;
+    --wood:#e6c893; --wood2:#c98f4e; --wood-dk:#8a5622; --rope:#c48a4a; --plank:#7a4a1e;
+    --parch:#f6e6c4; --parch2:#efd9ad;
+    --sea1:#0d3b66; --sea2:#1461a8; --sea3:#4aa3d8;
+    --ink:#2a2118; --cream:#fff7e8;
+  }
+  html{ scroll-behavior:smooth; }
+  body{ font-family:'Pretendard Variable',Pretendard,'Apple SD Gothic Neo',-apple-system,sans-serif; color:#22303f; background:#0d3b66; overflow-x:hidden; }
+  body.lock{ overflow:hidden; height:100dvh; }
+  body.in-app{ overflow:hidden; height:100dvh; }
+  .jua{ font-family:'Jua',sans-serif; font-weight:400; }
+  img{ display:block; } button{ font-family:inherit; cursor:pointer; }
+
+  /* ═══════════ HERO (v6 그대로) ═══════════ */
+  .hero { position:relative; width:100%; height:100svh; min-height:600px; overflow:hidden; background:#0d1520; }
+  body.in-app .hero{ display:none; }
+  .bg { position:absolute; inset:0; background-size:cover; background-position:center bottom; transition:opacity 2.8s ease; }
+  .bg-storm { background-image:url(assets/bg-storm.webp); }
+  .bg-calm  { background-image:url(assets/bg-calm.webp); opacity:0; }
+  .hero.calm .bg-storm { opacity:0; } .hero.calm .bg-calm  { opacity:1; }
+  .cloud { position:absolute; z-index:3; transition:opacity 2.2s ease, transform 2.8s ease; pointer-events:none; }
+  .cloud img { width:100%; }
+  .cloud-r{top:1%;right:2%;width:min(34vw,380px);animation:cdrift 13s ease-in-out infinite alternate}
+  .cloud-l{top:6%;left:-3%;width:min(26vw,300px);transform:scaleX(-1);animation:cdrift 17s ease-in-out infinite alternate-reverse}
+  .cloud-m{top:22%;left:24%;width:min(18vw,210px);opacity:.9;animation:cdrift 21s ease-in-out infinite alternate}
+  .cloud-m2{top:17%;right:26%;width:min(15vw,170px);transform:scaleX(-1);opacity:.8;animation:cdrift 15s ease-in-out infinite alternate-reverse}
+  .hero.calm .cloud-r{opacity:0;transform:translate(70px,-50px)} .hero.calm .cloud-l{opacity:0;transform:scaleX(-1) translate(70px,-50px)}
+  .hero.calm .cloud-m{opacity:0;transform:translate(50px,-40px)} .hero.calm .cloud-m2{opacity:0;transform:scaleX(-1) translate(50px,-40px)}
+  @keyframes cdrift { from{margin-top:0;} to{margin-top:14px;} }
+  .cloud img.zap { filter:brightness(2.1); }
+  .bolt { position:absolute; z-index:4; opacity:0; pointer-events:none; filter:drop-shadow(0 0 14px rgba(255,220,80,.9)); }
+  .bolt svg { width:100%; height:auto; } .bolt.on { opacity:1; }
+  #bolt1{top:14%;left:16%;width:52px}#bolt2{top:26%;left:42%;width:40px}#bolt3{top:20%;right:12%;width:60px}#bolt4{top:11%;left:64%;width:46px}
+  .skyflash { position:absolute; inset:0; background:#fff; opacity:0; z-index:4; pointer-events:none; transition:opacity .12s; }
+  .wave { position:absolute; left:0; width:100%; background-repeat:repeat-x; background-size:auto 100%; will-change:background-position; transition:opacity 2.8s ease; pointer-events:none; }
+  .wS-back{bottom:12vw;height:12vw;min-height:110px;z-index:2;background-image:url(assets/wave-storm-back.webp);filter:brightness(.55) saturate(.8);-webkit-mask-image:linear-gradient(to bottom,#000 55%,transparent 96%);mask-image:linear-gradient(to bottom,#000 55%,transparent 96%);animation:driftR 34s linear infinite,bobS 3.2s ease-in-out infinite alternate}
+  .wS-mid{bottom:4.5vw;height:10vw;min-height:95px;z-index:4;background-image:url(assets/wave-storm-mid.webp);filter:brightness(.7);-webkit-mask-image:linear-gradient(to bottom,#000 60%,transparent 97%);mask-image:linear-gradient(to bottom,#000 60%,transparent 97%);animation:driftL 26s linear infinite,bobS 2.8s ease-in-out infinite alternate}
+  .wS-front{bottom:-3vw;height:17vw;min-height:155px;z-index:7;background-image:url(assets/wave-storm-front.webp);filter:brightness(.82);-webkit-mask-image:linear-gradient(to bottom,#000 78%,transparent 100%);mask-image:linear-gradient(to bottom,#000 78%,transparent 100%);animation:driftL 20s linear infinite,bobH 2.4s ease-in-out infinite alternate-reverse}
+  .hero.calm .wS-back,.hero.calm .wS-mid,.hero.calm .wS-front{opacity:0}
+  .wC-back{bottom:12vw;height:8.5vw;min-height:80px;z-index:2;opacity:0;background-image:url(assets/wave-calm-back.webp);-webkit-mask-image:linear-gradient(to bottom,#000 55%,transparent 96%);mask-image:linear-gradient(to bottom,#000 55%,transparent 96%);animation:driftR 60s linear infinite,bobC 6s ease-in-out infinite alternate}
+  .wC-mid{bottom:4.5vw;height:7.5vw;min-height:72px;z-index:4;opacity:0;background-image:url(assets/wave-calm-mid.webp);-webkit-mask-image:linear-gradient(to bottom,#000 60%,transparent 97%);mask-image:linear-gradient(to bottom,#000 60%,transparent 97%);animation:driftL 48s linear infinite,bobC 5.5s ease-in-out infinite alternate}
+  .wC-front{bottom:-2.5vw;height:11vw;min-height:105px;z-index:7;opacity:0;background-image:url(assets/wave-calm-front.webp);-webkit-mask-image:linear-gradient(to bottom,#000 78%,transparent 100%);mask-image:linear-gradient(to bottom,#000 78%,transparent 100%);animation:driftL 42s linear infinite,bobC 5s ease-in-out infinite alternate-reverse}
+  .hero.calm .wC-back,.hero.calm .wC-mid,.hero.calm .wC-front{opacity:1}
+  @keyframes driftL{from{background-position-x:0}to{background-position-x:-2200px}} @keyframes driftR{from{background-position-x:-2200px}to{background-position-x:0}}
+  @keyframes bobH{from{transform:translateY(0)}to{transform:translateY(-14px)}} @keyframes bobS{from{transform:translateY(0)}to{transform:translateY(-9px)}} @keyframes bobC{from{transform:translateY(0)}to{transform:translateY(-6px)}}
+  .boat{position:absolute;left:50%;bottom:6.5vw;width:min(42vw,380px);margin-left:calc(min(42vw,380px)/-2);z-index:5;transform-origin:50% 92%;animation:rockHard 2.4s ease-in-out infinite alternate;filter:drop-shadow(0 12px 16px rgba(0,0,0,.35));transition:filter 2.8s}
+  .boat img{width:100%}
+  .hero.calm .boat{animation:rockSoft 5.5s ease-in-out infinite alternate;filter:drop-shadow(0 12px 16px rgba(8,50,90,.25))}
+  @keyframes rockHard{from{transform:translateY(0) rotate(-3.5deg)}to{transform:translateY(-16px) rotate(3.5deg)}} @keyframes rockSoft{from{transform:translateY(0) rotate(-1.3deg)}to{transform:translateY(-8px) rotate(1.3deg)}}
+  .jesus-btn{position:absolute;left:37%;top:4%;width:28%;height:58%;background:transparent;border:none;z-index:8}
+  .gull{position:absolute;z-index:3;opacity:0;transition:opacity 1.5s 2.5s;pointer-events:none} .gull svg{width:100%;height:auto}
+  #gull1{top:30%;left:-6%;width:46px}#gull2{top:24%;left:-6%;width:32px}
+  .hero.calm .gull{opacity:1} .hero.calm #gull1{animation:fly 34s linear infinite} .hero.calm #gull2{animation:fly 46s linear infinite 8s}
+  @keyframes fly{0%{transform:translate(0,0)}25%{transform:translate(28vw,-14px)}50%{transform:translate(56vw,6px)}75%{transform:translate(84vw,-10px)}100%{transform:translate(112vw,0)}}
+  .hint{position:absolute;bottom:5%;left:50%;transform:translateX(-50%);color:#fff;font-size:15px;font-weight:600;background:rgba(0,0,0,.45);padding:8px 18px;border-radius:20px;z-index:9;animation:pulse 1.8s ease-in-out infinite;transition:opacity 1s;pointer-events:none;white-space:nowrap}
+  .hero.calm .hint{opacity:0;animation:none} @keyframes pulse{0%,100%{opacity:.65}50%{opacity:1}}
+  .whitewash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:12;transition:opacity .5s}
+  .sound{position:absolute;top:calc(12px + env(safe-area-inset-top));left:14px;z-index:11;font-size:12.5px;padding:7px 13px;border-radius:20px;border:1px solid rgba(255,255,255,.5);background:rgba(0,0,0,.35);color:#fff;font-weight:700;backdrop-filter:blur(6px);transition:background .3s,color .3s}
+  .hero.calm .sound{background:rgba(255,255,255,.7);color:var(--deepblue);border-color:rgba(12,68,124,.3)}
+
+  .stage{position:absolute;top:0;left:0;right:0;z-index:9;display:flex;flex-direction:column;align-items:center;padding:8svh 22px 0;opacity:0;pointer-events:none;transition:opacity .5s}
+  .hero.calm .stage{opacity:1}
+  .stage .logo{width:min(78vw,430px);filter:drop-shadow(0 10px 24px rgba(12,68,124,.28));transform:scale(.5) translateY(40px);opacity:0}
+  .hero.calm .stage .logo{animation:logoPop 1.3s cubic-bezier(.2,1.5,.35,1) .35s forwards}
+  @keyframes logoPop{0%{opacity:0;transform:scale(.5) translateY(40px)}60%{opacity:1;transform:scale(1.05)}100%{opacity:1;transform:scale(1)}}
+  .stage .sub{margin-top:6px;text-align:center;color:var(--deepblue);font-size:clamp(12.5px,3.4vw,15px);font-weight:800;text-shadow:0 1px 0 rgba(255,255,255,.85),0 0 12px rgba(255,255,255,.7);opacity:0;transition:opacity 1s .9s}
+  .hero.calm .stage .sub{opacity:1}
+  .stage .sub .big{display:block;font-family:'Jua';font-size:clamp(17px,4.8vw,22px);color:var(--magenta);margin-bottom:2px} .stage .sub .big b{color:var(--orange)}
+
+  .sailbtn{position:absolute;z-index:9;width:min(43vw,178px);background:none;border:0;padding:0;opacity:0;pointer-events:none;transition:opacity .7s 1.1s;filter:drop-shadow(0 12px 14px rgba(8,45,85,.3))}
+  .hero.calm .sailbtn{opacity:1;pointer-events:auto} .sailbtn:active{opacity:.82}
+  .sailbtn.s-left{left:2%;top:41%} .sailbtn.s-right{right:2%;top:41%}
+  .sailbtn .floaty{display:block;position:relative;animation:bobBtn 4.2s ease-in-out infinite} .sailbtn.s-right .floaty{animation-delay:-2.1s}
+  .boatimg{width:100%;height:auto} .sailbtn .lbl{position:absolute;top:15%;left:0;right:0;display:flex;flex-direction:column;align-items:center;gap:1px;pointer-events:none}
+  .sailbtn .lbl .ic{font-size:min(6vw,22px);line-height:1;margin-bottom:3px} .sailbtn .lbl .t1{font-family:'Jua';font-size:min(4.6vw,18px);color:var(--deepblue);line-height:1.08} .sailbtn .lbl .t2{font-size:min(3.1vw,12px);font-weight:800;color:#5a86ad}
+  @keyframes bobBtn{0%,100%{transform:translateY(0) rotate(-1.3deg)}50%{transform:translateY(-7px) rotate(1.3deg)}}
+  @media (max-height:760px){.sailbtn{width:min(40vw,150px)}.sailbtn.s-left,.sailbtn.s-right{top:38%}}
+  .admin-fab{position:absolute;top:calc(12px + env(safe-area-inset-top));right:14px;z-index:11;background:rgba(0,0,0,.34);color:#fff;border:1px solid rgba(255,255,255,.35);font-size:12.5px;font-weight:700;padding:7px 13px;border-radius:20px;backdrop-filter:blur(6px);transition:background .3s,color .3s}
+  .hero.calm .admin-fab{background:rgba(255,255,255,.7);color:var(--deepblue);border-color:rgba(12,68,124,.25)}
+  .verse{position:absolute;bottom:4.2%;left:50%;transform:translateX(-50%) translateY(10px);color:var(--deepblue);font-size:clamp(13px,3.6vw,16px);font-weight:600;text-align:center;width:90%;text-shadow:0 1px 0 rgba(255,255,255,.8);opacity:0;transition:opacity 2s ease 1.6s,transform 2s ease 1.6s;z-index:6;pointer-events:none;word-break:keep-all}
+  .hero.calm .verse{opacity:1;transform:translateX(-50%) translateY(0)}
+  @media (max-height:760px){.verse{display:none}}
+
+  /* ═══════════ APP DECK (수련회 도구) ═══════════ */
+  .app{ position:fixed; inset:0; z-index:40; display:none; flex-direction:column;
+    background:
+      radial-gradient(120% 80% at 50% -10%, rgba(120,200,240,.5), transparent 60%),
+      linear-gradient(180deg, #1f6fb0 0%, #14639f 30%, #0d477c 62%, #08325c 100%); }
+  body.in-app .app{ display:flex; }
+  .app::after{ content:""; position:absolute; left:0; right:0; bottom:0; height:70px; z-index:0; pointer-events:none;
+    background:url(assets/wave-calm-front.webp) repeat-x bottom/auto 100%; opacity:.5;
+    -webkit-mask-image:linear-gradient(to bottom,transparent,#000); mask-image:linear-gradient(to bottom,transparent,#000);
+    animation:driftL 60s linear infinite; }
+
+  .app-head{ position:relative; z-index:2; display:flex; align-items:center; gap:10px; padding:calc(12px + env(safe-area-inset-top)) 16px 12px; }
+  .app-head .whoami{ display:flex; align-items:center; gap:9px; color:#fff; }
+  .app-head .av{ width:38px; height:38px; border-radius:11px; background:rgba(255,255,255,.16); border:1.5px solid rgba(255,255,255,.45); object-fit:cover; display:flex; align-items:center; justify-content:center; font-size:18px; }
+  .app-head .nm{ font-family:'Jua'; font-size:17px; line-height:1; } .app-head .nm small{ display:block; font-family:'Pretendard Variable'; font-weight:700; font-size:11.5px; opacity:.8; margin-top:3px; }
+  .app-head .port{ margin-left:auto; background:rgba(255,255,255,.16); color:#fff; border:1px solid rgba(255,255,255,.35); font-size:12px; font-weight:700; padding:8px 12px; border-radius:16px; }
+
+  .app-scroll{ position:relative; z-index:2; flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:6px 16px calc(24px + env(safe-area-inset-bottom)); }
+  .hub-hello{ text-align:center; color:#eaf5ff; padding:10px 0 20px; }
+  .hub-hello .em{ font-size:40px; filter:drop-shadow(0 4px 8px rgba(0,0,0,.25)); }
+  .hub-hello h1{ font-family:'Jua'; font-size:26px; margin-top:8px; text-shadow:0 2px 10px rgba(0,20,45,.4); }
+  .hub-hello p{ font-size:13.5px; font-weight:600; opacity:.9; margin-top:5px; }
+  .live-banner{ margin:0 0 16px; background:linear-gradient(135deg,#ffe9a8,#ffd36b); border:2px solid #e9b84c; border-radius:18px; padding:14px 16px; box-shadow:0 8px 22px rgba(180,130,20,.35); display:none; }
+  .live-banner.on{ display:block; animation:livein .4s ease; }
+  @keyframes livein{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+  .live-banner .lt{ font-size:12px; font-weight:800; color:#8a5a10; letter-spacing:.04em; } .live-banner .lt::before{ content:"🔴 LIVE · "; }
+  .live-banner .lv{ font-family:'Jua'; font-size:20px; color:#5a3c08; margin-top:4px; line-height:1.4; word-break:keep-all; } .live-banner .lr{ font-size:12.5px; font-weight:700; color:#8a5a10; margin-top:6px; }
+
+  .tiles{ display:grid; grid-template-columns:1fr 1fr; gap:13px; }
+  .tile{ position:relative; border:0; border-radius:20px; padding:20px 14px 18px; text-align:center; color:var(--ink); overflow:hidden;
+    background:linear-gradient(160deg,#f0d7a4,#d9ad63); box-shadow:0 8px 20px rgba(0,20,45,.28), inset 0 0 0 3px rgba(255,255,255,.35), inset 0 0 0 6px var(--rope);
+    transition:transform .12s; }
+  .tile::before{ content:""; position:absolute; inset:6px; border-radius:15px; background:repeating-linear-gradient(180deg, rgba(120,74,30,.06) 0 13px, rgba(120,74,30,.12) 13px 14px); pointer-events:none; }
+  .tile:active{ transform:scale(.96); }
+  .tile .em{ position:relative; font-size:38px; filter:drop-shadow(0 3px 5px rgba(80,45,10,.3)); }
+  .tile .tn{ position:relative; font-family:'Jua'; font-size:18px; color:#5c3a12; margin-top:8px; }
+  .tile .td{ position:relative; font-size:11.5px; font-weight:700; color:#8a6634; margin-top:3px; line-height:1.35; }
+  .tile.wide{ grid-column:1 / -1; display:flex; align-items:center; gap:16px; text-align:left; padding:18px 20px; }
+  .tile.wide .em{ font-size:40px; } .tile.wide .tw{ position:relative; } .tile.wide .td{ margin-top:2px; }
+  .tile .badge{ position:absolute; top:9px; right:11px; z-index:2; background:var(--magenta); color:#fff; font-size:10px; font-weight:800; padding:3px 8px; border-radius:999px; }
+
+  /* 도구 화면 (앱 내부 view) */
+  .screen{ position:absolute; inset:0; z-index:3; background:linear-gradient(180deg,#17639c,#0a3b6b); transform:translateX(100%); transition:transform .32s cubic-bezier(.3,.9,.3,1); display:flex; flex-direction:column; visibility:hidden; }
+  .screen.active{ transform:none; visibility:visible; }
+  .scr-head{ display:flex; align-items:center; gap:12px; padding:calc(12px + env(safe-area-inset-top)) 16px 12px; color:#fff; }
+  .scr-head .back{ width:40px; height:40px; border-radius:12px; border:1.5px solid rgba(255,255,255,.4); background:rgba(255,255,255,.14); color:#fff; font-size:20px; display:flex; align-items:center; justify-content:center; }
+  .scr-head h3{ font-family:'Jua'; font-size:19px; }
+  .scr-body{ flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:8px 16px calc(30px + env(safe-area-inset-bottom)); }
+
+  /* 공통 나무/양피지 카드 */
+  .card{ background:var(--cream); border-radius:18px; padding:18px; box-shadow:0 8px 20px rgba(0,15,35,.28); }
+  .card + .card{ margin-top:12px; }
+  .parch{ background:linear-gradient(150deg,var(--parch),var(--parch2)); border:2px solid #dcbd82; border-radius:18px; padding:20px; box-shadow:0 8px 20px rgba(0,15,35,.25); }
+  .big-btn{ width:100%; border:0; border-radius:15px; padding:16px; font-size:17px; font-weight:800; color:#fff; background:linear-gradient(150deg,#2b8ae6,#0c447c); box-shadow:0 8px 20px rgba(12,68,124,.3); transition:transform .12s; }
+  .big-btn:active{ transform:scale(.98); } .big-btn.warm{ background:linear-gradient(150deg,#f0a020,#d06a00); } .big-btn.rose{ background:linear-gradient(150deg,#e0447a,#a01a52); }
+  .big-btn[disabled]{ opacity:.5; pointer-events:none; }
+  .ghost-btn{ width:100%; border:1.5px solid #cfe3f7; border-radius:15px; padding:14px; font-size:15.5px; font-weight:800; color:var(--deepblue); background:#fff; }
+  .fld{ margin-bottom:13px; } .fld label{ display:block; font-size:13px; font-weight:800; color:#5a6b7d; margin-bottom:6px; }
+  .fld input,.fld select,.fld textarea{ width:100%; border:1.5px solid #dbe4ee; border-radius:13px; padding:13px 14px; font-size:16px; font-family:inherit; background:#fff; }
+  .fld input:focus,.fld select:focus,.fld textarea:focus{ outline:none; border-color:var(--blue); }
+
+  /* 성경암송 */
+  .mem-verse{ font-size:22px; line-height:1.75; font-weight:700; color:#3a2a10; word-break:keep-all; text-align:center; }
+  .mem-verse .blank{ display:inline-block; min-width:1.6em; border-bottom:3px solid #c9a24a; color:transparent; user-select:none; }
+  .mem-ref{ text-align:center; margin-top:16px; font-family:'Jua'; font-size:16px; color:var(--wood-dk); }
+  .mem-ctrl{ display:flex; gap:9px; margin-top:16px; }
+  .mem-ctrl button{ flex:1; border:1.5px solid #dcbd82; background:#fff; border-radius:13px; padding:13px; font-weight:800; font-size:14.5px; color:var(--wood-dk); }
+
+  /* 퀴즈 */
+  .quiz-prog{ display:flex; align-items:center; justify-content:space-between; color:#cfe6fb; font-weight:800; font-size:13px; margin-bottom:12px; }
+  .quiz-q{ font-size:19px; font-weight:800; line-height:1.5; color:#22303f; word-break:keep-all; margin-bottom:16px; }
+  .quiz-opt{ width:100%; text-align:left; border:2px solid #e3e9f0; background:#fff; border-radius:14px; padding:15px 16px; font-size:15.5px; font-weight:700; margin-bottom:10px; transition:all .12s; }
+  .quiz-opt:active{ transform:scale(.98); }
+  .quiz-opt.correct{ background:#e6f7ec; border-color:#37b26a; color:#1c7a44; }
+  .quiz-opt.wrong{ background:#fdecec; border-color:#d9534f; color:#a82722; }
+  .quiz-opt.dim{ opacity:.5; }
+  .quiz-explain{ background:#eef6ff; border-radius:12px; padding:13px 14px; font-size:13.5px; line-height:1.6; color:#33567e; font-weight:600; margin-top:4px; }
+  .quiz-result{ text-align:center; padding:20px 0; } .quiz-result .em{ font-size:56px; } .quiz-result .sc{ font-family:'Jua'; font-size:30px; color:#22303f; margin-top:10px; } .quiz-result .ms{ font-size:15px; font-weight:700; color:#5a6b7d; margin-top:6px; }
+
+  /* 커뮤니케이션 보드 */
+  .post{ background:#fff; border-radius:14px; padding:13px 15px; box-shadow:0 4px 12px rgba(0,15,35,.15); margin-bottom:10px; }
+  .post .ph{ display:flex; align-items:center; gap:7px; margin-bottom:5px; } .post .pn{ font-weight:800; font-size:14px; } .post .pd{ font-size:11px; font-weight:700; color:#fff; background:var(--blue); border-radius:999px; padding:2px 8px; } .post .pt{ margin-left:auto; font-size:11px; color:#9aa7b6; font-weight:600; }
+  .post .pm{ font-size:14.5px; line-height:1.5; word-break:break-word; }
+  .comm-input{ position:sticky; bottom:0; display:flex; gap:8px; padding:10px 0 calc(6px + env(safe-area-inset-bottom)); background:linear-gradient(180deg,transparent,#0a3b6b 30%); }
+  .comm-input input{ flex:1; border:1.5px solid #cfe3f7; border-radius:22px; padding:13px 16px; font-size:16px; background:#fff; }
+  .comm-input button{ flex:0 0 auto; border:0; border-radius:50%; width:48px; height:48px; background:linear-gradient(150deg,#2b8ae6,#0c447c); color:#fff; font-size:20px; }
+
+  /* 역할설정 */
+  .role-chip{ display:inline-flex; align-items:center; gap:6px; border:1.5px solid #dcbd82; background:#fff; border-radius:999px; padding:9px 15px; font-weight:800; font-size:14px; color:var(--wood-dk); margin:0 8px 8px 0; }
+  .roster-row{ display:flex; gap:8px; margin-bottom:8px; align-items:center; }
+  .roster-row input{ flex:1; border:1.5px solid #dbe4ee; border-radius:11px; padding:11px 12px; font-size:15px; background:#fff; }
+  .roster-row select{ flex:0 0 42%; border:1.5px solid #dbe4ee; border-radius:11px; padding:11px 8px; font-size:14px; background:#fff; }
+  .roster-row .del{ flex:0 0 auto; width:38px; height:40px; border:1.5px solid #f0c9c9; border-radius:11px; background:#fff; color:#c0392b; font-size:17px; }
+
+  /* 레크리에이션 */
+  .rec-menu-btn{ width:100%; display:flex; align-items:center; gap:14px; border:0; border-radius:18px; padding:20px; text-align:left; color:#fff; margin-bottom:12px; box-shadow:0 8px 20px rgba(0,15,35,.25); }
+  .rec-menu-btn .em{ font-size:36px; } .rec-menu-btn .rt{ font-family:'Jua'; font-size:20px; } .rec-menu-btn .rd{ font-size:12.5px; font-weight:700; opacity:.9; margin-top:3px; }
+  .rec-menu-btn.mafia{ background:linear-gradient(150deg,#4a3b6b,#241a3d); } .rec-menu-btn.liar{ background:linear-gradient(150deg,#c0562a,#8a2e14); }
+  .reveal-card{ background:linear-gradient(160deg,#1a2a44,#0b1526); border-radius:22px; padding:34px 22px; text-align:center; color:#fff; min-height:340px; display:flex; flex-direction:column; align-items:center; justify-content:center; box-shadow:0 12px 30px rgba(0,0,0,.4); }
+  .reveal-card .who{ font-size:14px; font-weight:700; opacity:.8; } .reveal-card .role{ font-family:'Jua'; font-size:46px; margin:14px 0; } .reveal-card .rdesc{ font-size:15px; font-weight:600; opacity:.9; line-height:1.6; word-break:keep-all; } .reveal-card .word{ font-family:'Jua'; font-size:40px; color:#ffd36b; margin:14px 0; }
+  .reveal-hint{ text-align:center; color:#cfe6fb; font-size:13.5px; font-weight:700; margin-top:14px; }
+
+  .spin{ text-align:center; padding:40px; color:#cfe6fb; font-weight:700; }
+  .empty{ text-align:center; padding:40px 20px; color:#cfe6fb; } .empty .em{ font-size:40px; } .empty p{ margin-top:10px; font-weight:700; line-height:1.6; opacity:.9; }
+
+  /* ═══════════ SHEETS (보호자/관리자/프로필) ═══════════ */
+  .sheet{ position:fixed; inset:0; z-index:50; background:linear-gradient(180deg,#e8f2fb,#f4ead2); transform:translateY(100%); transition:transform .4s cubic-bezier(.3,.9,.3,1); overflow-y:auto; -webkit-overflow-scrolling:touch; visibility:hidden; }
+  .sheet.open{ transform:none; visibility:visible; }
+  .sheet-head{ position:sticky; top:0; z-index:5; display:flex; align-items:center; gap:12px; padding:calc(12px + env(safe-area-inset-top)) 16px 12px; background:rgba(240,246,250,.92); backdrop-filter:blur(10px); border-bottom:1px solid #e3d9c2; }
+  .sheet-head .back{ width:40px; height:40px; border-radius:12px; border:1.5px solid #e3d9c2; background:#fff; font-size:20px; display:flex; align-items:center; justify-content:center; color:var(--deepblue); }
+  .sheet-head h3{ font-size:18px; font-family:'Jua'; color:var(--deepblue); }
+  .sheet-body{ padding:20px 18px calc(40px + env(safe-area-inset-bottom)); max-width:560px; margin:0 auto; }
+  .desc{ font-size:14.5px; color:#5f6f5a; margin-bottom:20px; line-height:1.6; }
+  .field{ margin-bottom:15px; } .field label{ display:block; font-size:13px; font-weight:800; color:#5a6b7d; margin-bottom:6px; } .field label .opt{ font-weight:600; color:#a3b0bf; font-size:11.5px; }
+  .field input,.field select,.field textarea{ width:100%; border:1.5px solid #dbe4ee; border-radius:13px; padding:13px 14px; font-size:16px; font-family:inherit; background:#fff; }
+  .field input:focus,.field select:focus,.field textarea:focus{ outline:none; border-color:var(--blue); } .field textarea{ resize:vertical; min-height:74px; }
+  .seg{ display:flex; flex-wrap:wrap; gap:8px; } .seg label{ flex:1 1 auto; min-width:calc(50% - 4px); position:relative; } .seg input{ position:absolute; opacity:0; pointer-events:none; }
+  .seg span{ display:block; text-align:center; border:1.5px solid #dbe4ee; border-radius:12px; padding:13px 8px; font-weight:700; font-size:14.5px; color:#5a6b7d; background:#fff; transition:all .12s; } .seg input:checked+span{ background:var(--blue); border-color:var(--blue); color:#fff; }
+  .btn{ width:100%; border:0; border-radius:15px; padding:16px; font-size:16.5px; font-weight:800; color:#fff; background:linear-gradient(150deg,#2b8ae6,#0c447c); box-shadow:0 8px 20px rgba(12,68,124,.25); transition:transform .12s; } .btn:active{ transform:scale(.98); } .btn[disabled]{ opacity:.5; pointer-events:none; } .btn.ghost{ background:#fff; color:var(--deepblue); border:1.5px solid #cfe3f7; box-shadow:none; }
+  .hintline{ font-size:12.5px; color:#8b97a8; line-height:1.5; margin-top:6px; }
+  .subtabs{ display:flex; gap:8px; margin-bottom:18px; } .subtab{ flex:1; border:2px solid #d8e4f2; background:#fff; border-radius:13px; padding:12px 4px; text-align:center; font-weight:800; font-size:14.5px; color:#7c8ba1; } .subtab.active{ background:var(--magenta); border-color:var(--magenta); color:#fff; }
+  .pane{ display:none; } .pane.show{ display:block; }
+  .pass{ background:linear-gradient(160deg,#0c447c,#1d6fd6); border-radius:22px; color:#fff; padding:24px; box-shadow:0 14px 30px rgba(12,68,124,.35); position:relative; overflow:hidden; } .pass::before{ content:"⚓"; position:absolute; right:-10px; bottom:-16px; font-size:120px; opacity:.13; }
+  .pass .brow{ display:flex; justify-content:space-between; font-size:12px; font-weight:700; opacity:.85; letter-spacing:.05em; } .pass .pname{ font-family:'Jua'; font-size:30px; margin:14px 0 4px; } .pass .pmeta{ font-size:14px; font-weight:600; opacity:.92; } .pass .pvow{ margin-top:16px; padding-top:16px; border-top:1px dashed rgba(255,255,255,.35); font-size:14.5px; line-height:1.55; font-weight:500; } .pass .pavatar{ width:60px; height:60px; border-radius:16px; object-fit:cover; border:2px solid rgba(255,255,255,.5); background:rgba(255,255,255,.15); } .pass-top{ display:flex; gap:14px; align-items:center; }
+  .gal-group{ margin-bottom:24px; } .gal-group h4{ font-size:15px; font-weight:800; color:var(--deepblue); margin-bottom:10px; display:flex; align-items:center; gap:7px; } .gal-group h4 .cnt{ font-size:12px; font-weight:700; color:#fff; background:var(--blue); border-radius:999px; padding:2px 9px; }
+  .gal{ display:grid; grid-template-columns:repeat(3,1fr); gap:6px; } .gal img{ width:100%; aspect-ratio:1; object-fit:cover; border-radius:12px; background:#e6eef7; }
+  .uprow{ background:#fff; border:1.5px solid #e3d9c2; border-radius:14px; padding:12px 14px; margin-bottom:9px; display:flex; gap:12px; align-items:center; } .uprow .uv{ flex:1; min-width:0; } .uprow .un{ font-weight:800; font-size:14.5px; } .uprow .ud{ font-size:12.5px; color:#8b97a8; margin-top:2px; } .uprow .uph{ font-size:13px; font-weight:700; color:var(--blue); white-space:nowrap; }
+  .upgrid{ display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:6px; } .upthumb{ position:relative; aspect-ratio:1; border-radius:12px; overflow:hidden; background:#e6eef7; } .upthumb img{ width:100%; height:100%; object-fit:cover; } .upthumb .rm{ position:absolute; top:3px; right:3px; width:22px; height:22px; border-radius:50%; background:rgba(0,0,0,.6); color:#fff; border:0; font-size:14px; } .upadd{ aspect-ratio:1; border:2px dashed #b9cbe0; border-radius:12px; background:#fff; color:var(--blue); font-size:28px; display:flex; align-items:center; justify-content:center; }
+
+  .lightbox{ position:fixed; inset:0; z-index:70; background:rgba(0,0,0,.9); display:none; align-items:center; justify-content:center; padding:20px; } .lightbox.open{ display:flex; } .lightbox img{ max-width:100%; max-height:86vh; border-radius:10px; } .lightbox .x{ position:absolute; top:calc(14px + env(safe-area-inset-top)); right:18px; color:#fff; font-size:30px; background:none; border:0; }
+  .toast{ position:fixed; left:50%; bottom:calc(30px + env(safe-area-inset-bottom)); transform:translateX(-50%) translateY(20px); z-index:90; background:#0c447c; color:#fff; font-weight:700; font-size:14.5px; padding:13px 22px; border-radius:14px; box-shadow:0 10px 26px rgba(0,0,0,.3); opacity:0; transition:all .3s; pointer-events:none; max-width:88vw; text-align:center; } .toast.show{ opacity:1; transform:translateX(-50%); } .toast.err{ background:#c0392b; }
+  @media (prefers-reduced-motion: reduce){ .hero *{ animation:none !important; } }
+</style>
+</head>
+<body class="lock">
+
+<!-- ═══════════ HERO ═══════════ -->
+<section class="hero" id="hero">
+  <div class="bg bg-storm"></div><div class="bg bg-calm"></div>
+  <div class="cloud cloud-l"><img src="assets/cloud-l.webp" alt="" id="cimgL"></div>
+  <div class="cloud cloud-m"><img src="assets/cloud-m.webp" alt="" id="cimgM"></div>
+  <div class="cloud cloud-m2"><img src="assets/cloud-m2.webp" alt=""></div>
+  <div class="cloud cloud-r"><img src="assets/cloud-r.webp" alt="" id="cimgR"></div>
+  <div class="bolt" id="bolt1"><svg viewBox="0 0 60 140"><polygon points="34,0 8,62 26,62 14,140 52,52 30,52 48,0" fill="#FFD93B" stroke="#E0A800" stroke-width="3" stroke-linejoin="round"/></svg></div>
+  <div class="bolt" id="bolt2"><svg viewBox="0 0 60 140"><polygon points="34,0 8,62 26,62 14,140 52,52 30,52 48,0" fill="#FFD93B" stroke="#E0A800" stroke-width="3" stroke-linejoin="round"/></svg></div>
+  <div class="bolt" id="bolt3"><svg viewBox="0 0 60 140"><polygon points="34,0 8,62 26,62 14,140 52,52 30,52 48,0" fill="#FFD93B" stroke="#E0A800" stroke-width="3" stroke-linejoin="round"/></svg></div>
+  <div class="bolt" id="bolt4"><svg viewBox="0 0 60 140"><polygon points="34,0 8,62 26,62 14,140 52,52 30,52 48,0" fill="#FFD93B" stroke="#E0A800" stroke-width="3" stroke-linejoin="round"/></svg></div>
+  <div class="skyflash" id="flash"></div>
+  <div class="wave wS-back"></div><div class="wave wC-back"></div>
+  <div class="wave wS-mid"></div><div class="wave wC-mid"></div>
+  <div class="boat"><img src="assets/boat.webp" alt="예수님이 타신 배"><button class="jesus-btn" id="jesusBtn" aria-label="예수님을 눌러 바다를 잠잠하게"></button></div>
+  <div class="wave wS-front"></div><div class="wave wC-front"></div>
+  <div class="gull" id="gull1"><svg viewBox="0 0 60 22"><path d="M2 14 Q14 2 28 12 Q30 13 32 12 Q46 2 58 14 Q44 10 32 16 Q30 17 28 16 Q16 10 2 14 Z" fill="#fdfdfd" stroke="#9db6c8" stroke-width="1.4" stroke-linejoin="round"/></svg></div>
+  <div class="gull" id="gull2"><svg viewBox="0 0 60 22"><path d="M2 14 Q14 2 28 12 Q30 13 32 12 Q46 2 58 14 Q44 10 32 16 Q30 17 28 16 Q16 10 2 14 Z" fill="#fdfdfd" stroke="#9db6c8" stroke-width="1.4" stroke-linejoin="round"/></svg></div>
+
+  <div class="stage">
+    <img class="logo" src="assets/logo.webp" alt="예수님과 함께하는 믿음의 항해">
+    <div class="sub"><span class="big"><b>2026</b> 교육부서 연합수련회</span><span id="subline">송산제일교회 · 8/6(목)~8/8(토) · 미산제일침례교회</span></div>
+  </div>
+
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+    <linearGradient id="sailg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#e7f1fc"/></linearGradient>
+    <linearGradient id="hullg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#b17a41"/><stop offset="1" stop-color="#754619"/></linearGradient>
+  </defs></svg>
+  <button class="sailbtn s-left" data-open="student" aria-label="항해 시작하기">
+    <span class="floaty">
+      <svg class="boatimg" viewBox="0 0 200 210" aria-hidden="true">
+        <path d="M100,20 C152,40 166,112 158,142 L42,142 C34,112 48,40 100,20 Z" fill="url(#sailg)" stroke="#cddff0" stroke-width="3"/>
+        <path d="M100,16 L131,27 L100,38 Z" fill="#c02466"/>
+        <path d="M26,146 L174,146 L157,183 Q100,199 43,183 Z" fill="url(#hullg)"/><path d="M42,161 Q100,173 158,161" stroke="rgba(55,32,8,.4)" stroke-width="3" fill="none"/>
+      </svg>
+      <span class="lbl"><span class="ic">⛵</span><span class="t1">항해 시작</span><span class="t2">수련회 입장</span></span>
+    </span>
+  </button>
+  <button class="sailbtn s-right" data-open="guardian" aria-label="보호자 메뉴">
+    <span class="floaty">
+      <svg class="boatimg" viewBox="0 0 200 210" aria-hidden="true">
+        <path d="M100,20 C152,40 166,112 158,142 L42,142 C34,112 48,40 100,20 Z" fill="url(#sailg)" stroke="#cddff0" stroke-width="3"/>
+        <path d="M100,16 L131,27 L100,38 Z" fill="#e08a00"/>
+        <path d="M26,146 L174,146 L157,183 Q100,199 43,183 Z" fill="url(#hullg)"/><path d="M42,161 Q100,173 158,161" stroke="rgba(55,32,8,.4)" stroke-width="3" fill="none"/>
+      </svg>
+      <span class="lbl"><span class="ic">👨‍👩‍👧</span><span class="t1">보호자</span><span class="t2">사진·신청</span></span>
+    </span>
+  </button>
+
+  <button class="sound" id="soundBtn">🔇 소리 켜기</button>
+  <button class="admin-fab" data-open="admin">🔑 관리자</button>
+  <div class="hint">예수님을 눌러보세요 👆</div>
+  <p class="verse">"잠잠하라 고요하라" — 바람이 그치고 아주 잔잔하여지더라 <b>(막 4:39)</b></p>
+  <div class="whitewash" id="wash"></div>
+</section>
+
+<!-- ═══════════ APP DECK ═══════════ -->
+<div class="app" id="app">
+  <div class="app-head">
+    <div class="whoami"><div class="av" id="app-av">⚓</div><div class="nm" id="app-nm">항해자<small id="app-sub">믿음의 항해 2026</small></div></div>
+    <button class="port" id="app-port">⚓ 항구로</button>
+  </div>
+  <div class="app-scroll" id="hub">
+    <div class="hub-hello">
+      <div class="em">⛵</div>
+      <h1>수련회 도구</h1>
+      <p>함께 항해하며 사용할 도구들이에요</p>
+    </div>
+    <div class="live-banner" id="liveBanner" data-open-tool="memorize">
+      <div class="lt"></div>
+      <div class="lv" id="live-verse"></div>
+      <div class="lr" id="live-ref"></div>
+    </div>
+    <div class="tiles">
+      <button class="tile" data-tool="memorize"><span class="em">📖</span><div class="tn">성경암송</div><div class="td">오늘의 말씀 외우기</div></button>
+      <button class="tile" data-tool="quiz"><span class="em">❓</span><div class="tn">퀴즈</div><div class="td">말씀·성경 퀴즈</div></button>
+      <button class="tile" data-tool="comm"><span class="em">💬</span><div class="tn">커뮤니케이션</div><div class="td">항해일지 나눔</div></button>
+      <button class="tile" data-tool="roles"><span class="em">🎭</span><div class="tn">역할 설정</div><div class="td">우리 조 역할 정하기</div></button>
+      <button class="tile wide" data-tool="rec"><span class="em">🎮</span><div class="tw"><div class="tn">레크리에이션</div><div class="td">마피아 · 라이어 게임</div></div></button>
+    </div>
+  </div>
+
+  <!-- 성경암송 -->
+  <section class="screen" id="scr-memorize">
+    <div class="scr-head"><button class="back" data-back>‹</button><h3>📖 성경암송</h3></div>
+    <div class="scr-body">
+      <div class="parch">
+        <div class="mem-verse" id="mem-verse"></div>
+        <div class="mem-ref" id="mem-ref"></div>
+      </div>
+      <div class="mem-ctrl">
+        <button id="mem-hide">🙈 가리기</button>
+        <button id="mem-more">➕ 더 가리기</button>
+        <button id="mem-reset">↩︎ 다시 보기</button>
+      </div>
+      <p class="hintline" style="color:#cfe6fb;text-align:center;margin-top:14px">관리자가 말씀을 띄우면 자동으로 바뀝니다.</p>
+    </div>
+  </section>
+
+  <!-- 퀴즈 -->
+  <section class="screen" id="scr-quiz">
+    <div class="scr-head"><button class="back" data-back>‹</button><h3>❓ 퀴즈</h3></div>
+    <div class="scr-body" id="quiz-body"></div>
+  </section>
+
+  <!-- 커뮤니케이션 -->
+  <section class="screen" id="scr-comm">
+    <div class="scr-head"><button class="back" data-back>‹</button><h3>💬 커뮤니케이션</h3></div>
+    <div class="scr-body" style="display:flex;flex-direction:column">
+      <div id="comm-list" style="flex:1"><div class="spin">불러오는 중…</div></div>
+      <div class="comm-input"><input id="comm-msg" placeholder="함께 나눌 이야기를 적어요" maxlength="140"><button id="comm-send">➤</button></div>
+    </div>
+  </section>
+
+  <!-- 역할 설정 -->
+  <section class="screen" id="scr-roles">
+    <div class="scr-head"><button class="back" data-back>‹</button><h3>🎭 역할 설정</h3></div>
+    <div class="scr-body">
+      <div class="card">
+        <p class="desc" style="color:#5f6f5a;margin-bottom:14px">우리 조 이름과 조원별 역할을 정해 저장하세요. (이 폰에 저장)</p>
+        <div class="fld"><label>우리 조</label><input id="roles-team" placeholder="예: 3조 / 베드로조" maxlength="14"></div>
+        <div id="roster"></div>
+        <button class="ghost-btn" id="roster-add" style="margin-top:6px">＋ 조원 추가</button>
+        <button class="big-btn" id="roles-save" style="margin-top:12px">저장하기</button>
+      </div>
+      <div class="card" id="roles-view" style="display:none"></div>
+    </div>
+  </section>
+
+  <!-- 레크리에이션 -->
+  <section class="screen" id="scr-rec">
+    <div class="scr-head"><button class="back" data-back>‹</button><h3>🎮 레크리에이션</h3></div>
+    <div class="scr-body" id="rec-body"></div>
+  </section>
+</div>
+
+<!-- ═══════════ SHEET: 학생 프로필 ═══════════ -->
+<div class="sheet" id="sheet-student">
+  <div class="sheet-head"><button class="back" data-close>‹</button><h3>⛵ 항해 시작하기</h3></div>
+  <div class="sheet-body">
+    <div id="student-form">
+      <p class="desc">먼저 나의 <b>승선권</b>을 만들어요. (이 폰에 저장)</p>
+      <div class="field"><label>이름</label><input id="s-name" placeholder="이름을 입력하세요" maxlength="12"></div>
+      <div class="field"><label>부서</label>
+        <div class="seg" id="s-dept">
+          <label><input type="radio" name="sdept" value="유치부"><span>유치부</span></label>
+          <label><input type="radio" name="sdept" value="유년부"><span>유년부</span></label>
+          <label><input type="radio" name="sdept" value="초등부"><span>초등부</span></label>
+          <label><input type="radio" name="sdept" value="중고등부"><span>중고등부</span></label>
+        </div>
+      </div>
+      <div class="field"><label>조 <span class="opt">선택</span></label><input id="s-group" placeholder="예: 3조 / 베드로조" maxlength="14"></div>
+      <div class="field"><label>이번 수련회 각오 <span class="opt">선택</span></label><textarea id="s-vow" placeholder="한 줄로 다짐을 적어보세요" maxlength="60"></textarea></div>
+      <button class="btn" id="s-save">⚓ 승선하고 시작하기</button>
+    </div>
+    <div id="student-pass" style="display:none">
+      <div class="pass" id="pass-card"></div>
+      <div style="margin-top:16px;display:flex;flex-direction:column;gap:10px">
+        <button class="btn" id="s-enter">⛵ 수련회 도구로 입장</button>
+        <button class="btn ghost" id="s-edit">✏️ 승선권 수정</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ SHEET: 보호자 ═══════════ -->
+<div class="sheet" id="sheet-guardian">
+  <div class="sheet-head"><button class="back" data-close>‹</button><h3>👨‍👩‍👧 보호자 메뉴</h3></div>
+  <div class="sheet-body">
+    <div class="subtabs"><button class="subtab active" data-pane="g-photos">📸 우리 아이 사진</button><button class="subtab" data-pane="g-signup">📝 참가 신청</button></div>
+    <div class="pane show" id="g-photos">
+      <p class="desc">수련회 현장 사진을 <b>일정별</b>로 볼 수 있어요.</p>
+      <div class="field"><label>부서로 보기</label><select id="g-filter"><option value="">전체 부서</option><option>유치부</option><option>유년부</option><option>초등부</option><option>중고등부</option></select></div>
+      <div id="gallery"><div class="spin" style="color:#8b97a8">불러오는 중…</div></div>
+    </div>
+    <div class="pane" id="g-signup">
+      <p class="desc">아래 정보를 남겨 주시면 참가 신청이 접수됩니다.</p>
+      <div class="field"><label>학생 이름</label><input id="su-name" placeholder="학생 이름" maxlength="12"></div>
+      <div class="field"><label>부서</label><div class="seg" id="su-dept">
+        <label><input type="radio" name="sudept" value="유치부"><span>유치부</span></label><label><input type="radio" name="sudept" value="유년부"><span>유년부</span></label>
+        <label><input type="radio" name="sudept" value="초등부"><span>초등부</span></label><label><input type="radio" name="sudept" value="중고등부"><span>중고등부</span></label></div></div>
+      <div class="field"><label>학년 <span class="opt">선택</span></label><input id="su-grade" placeholder="예: 초등 4학년" maxlength="12"></div>
+      <div class="field"><label>보호자 이름 <span class="opt">선택</span></label><input id="su-gname" placeholder="보호자 이름" maxlength="12"></div>
+      <div class="field"><label>보호자 연락처</label><input id="su-phone" type="tel" inputmode="numeric" placeholder="010-0000-0000" maxlength="13"></div>
+      <div class="field"><label>알레르기 · 복용약 · 특이사항 <span class="opt">선택</span></label><textarea id="su-notes" placeholder="예: 땅콩 알레르기 / 천식 흡입기 소지"></textarea></div>
+      <div class="field" style="display:flex;align-items:center;gap:10px"><input type="checkbox" id="su-agree" style="width:20px;height:20px;flex:0 0 auto"><label style="margin:0">수련회 참가 및 안전수칙에 동의합니다</label></div>
+      <button class="btn" id="su-submit">참가 신청하기</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ SHEET: 관리자 ═══════════ -->
+<div class="sheet" id="sheet-admin">
+  <div class="sheet-head"><button class="back" data-close>‹</button><h3>🔑 관리자 모드</h3></div>
+  <div class="sheet-body">
+    <div id="admin-gate">
+      <p class="desc">관리자 암호를 입력하세요.</p>
+      <div class="field"><input id="a-pass" type="password" placeholder="관리자 암호" autocomplete="off"></div>
+      <button class="btn" id="a-login">입장</button>
+    </div>
+    <div id="admin-panel" style="display:none">
+      <div class="subtabs"><button class="subtab active" data-pane="a-live">📖 말씀 띄우기</button><button class="subtab" data-pane="a-upload">📸 사진</button><button class="subtab" data-pane="a-signups">📋 신청</button></div>
+      <div class="pane show" id="a-live">
+        <p class="desc">여기서 말씀을 띄우면 학생들 <b>성경암송</b> 화면에 실시간으로 나타납니다.</p>
+        <div class="field"><label>말씀 출처</label><input id="lv-ref" placeholder="예: 히브리서 12:2"></div>
+        <div class="field"><label>말씀 본문</label><textarea id="lv-body" placeholder="말씀 본문을 입력하세요" style="min-height:100px"></textarea></div>
+        <button class="btn" id="lv-push">📢 지금 띄우기</button>
+        <button class="btn ghost" id="lv-clear" style="margin-top:10px">내리기</button>
+      </div>
+      <div class="pane" id="a-upload">
+        <div class="field"><label>일정 (세션)</label><select id="a-session"></select></div>
+        <div class="field"><label>부서 <span class="opt">선택</span></label><select id="a-dept"><option value="">전체</option><option>유치부</option><option>유년부</option><option>초등부</option><option>중고등부</option></select></div>
+        <div class="field"><label>사진 선택 <span class="opt">여러 장 가능</span></label><input type="file" id="a-files" accept="image/*" multiple hidden><div class="upgrid" id="a-preview"><button class="upadd" id="a-add">+</button></div></div>
+        <button class="btn" id="a-upload-btn" disabled>업로드</button>
+        <p class="hintline">업로드하면 보호자 메뉴 '우리 아이 사진'에 바로 나타납니다.</p>
+      </div>
+      <div class="pane" id="a-signups"><div class="spin" style="color:#8b97a8">불러오는 중…</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="lightbox" id="lightbox"><button class="x">✕</button><img src="" alt=""></div>
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+const SUPABASE_URL='https://nroddjekdjwnwguwkudl.supabase.co';
+const SUPABASE_ANON_KEY='sb_publishable_Uygr7NmVn1wmqopNrb4FRw_CRWw7Xeg';
+const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const BUCKET='songsan';
+const ADMIN_PASS='songsan2026';
+const RETREAT_START=new Date(2026,7,6);   // 8/6부터 바로 도구
+const SESSIONS=['1일차 · 개회예배','1일차 · 조별모임','2일차 · 아침경건회','2일차 · 말씀캠프','2일차 · 물놀이','2일차 · 저녁집회','3일차 · 폐회예배','기타'];
+const DEFAULT_VERSE={ref:'히브리서 12:2',body:'믿음의 주요 또 온전하게 하시는 이인 예수를 바라보자'};
+
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const esc=s=>(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function toast(m,e){const t=$('#toast');t.textContent=m;t.className='toast show'+(e?' err':'');setTimeout(()=>t.className='toast',2600);}
+function profile(){return JSON.parse(localStorage.getItem('songsan_student')||'null');}
+function nowKST(){return new Date(new Date().toLocaleString('en-US',{timeZone:'Asia/Seoul'}));}
+
+/* ═══ HERO ═══ */
+(function(){
+  const hero=$('#hero'),wash=$('#wash'),flash=$('#flash');
+  const bolts=[1,2,3,4].map(i=>$('#bolt'+i)), cimgs=[$('#cimgL'),$('#cimgM'),$('#cimgR')];
+  let stormOn=true,timer=null;
+  let AC=null,windGain=null,soundOn=false;
+  function makeNoise(sec){const buf=AC.createBuffer(1,AC.sampleRate*sec,AC.sampleRate);const d=buf.getChannelData(0);let last=0;for(let i=0;i<d.length;i++){const w=Math.random()*2-1;last=(last+0.02*w)/1.02;d[i]=last*3.5;}return buf;}
+  function initAudio(){AC=new(window.AudioContext||window.webkitAudioContext)();const src=AC.createBufferSource();src.buffer=makeNoise(4);src.loop=true;const bp=AC.createBiquadFilter();bp.type='bandpass';bp.frequency.value=380;bp.Q.value=0.6;windGain=AC.createGain();windGain.gain.value=0;const lfo=AC.createOscillator();lfo.frequency.value=0.13;const lfoG=AC.createGain();lfoG.gain.value=120;lfo.connect(lfoG);lfoG.connect(bp.frequency);lfo.start();src.connect(bp);bp.connect(windGain);windGain.connect(AC.destination);src.start();}
+  function windTo(v,t){if(windGain)windGain.gain.linearRampToValueAtTime(v,AC.currentTime+t);}
+  function thunder(s){if(!AC||!soundOn)return;const src=AC.createBufferSource();src.buffer=makeNoise(3);const lp=AC.createBiquadFilter();lp.type='lowpass';lp.frequency.value=140;const g=AC.createGain();const t=AC.currentTime;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(s,t+0.04);g.gain.exponentialRampToValueAtTime(0.001,t+2.6);src.connect(lp);lp.connect(g);g.connect(AC.destination);src.start(t);src.stop(t+3);}
+  $('#soundBtn').addEventListener('click',function(){if(!AC)initAudio();if(AC.state==='suspended')AC.resume();soundOn=!soundOn;this.textContent=soundOn?'🔊 소리 끄기':'🔇 소리 켜기';windTo(soundOn&&stormOn?0.5:(soundOn?0.06:0),1.2);});
+  function strike(){if(!stormOn)return;const b=bolts[Math.floor(Math.random()*4)],c=cimgs[Math.floor(Math.random()*3)],dbl=Math.random()<.4;b.classList.add('on');c.classList.add('zap');flash.style.opacity=.3;thunder(0.9+Math.random()*0.5);setTimeout(()=>{b.classList.remove('on');flash.style.opacity=0;},130);if(dbl)setTimeout(()=>{if(!stormOn)return;b.classList.add('on');flash.style.opacity=.38;thunder(0.7);setTimeout(()=>{b.classList.remove('on');c.classList.remove('zap');flash.style.opacity=0;},110);},240);else setTimeout(()=>c.classList.remove('zap'),300);timer=setTimeout(strike,1200+Math.random()*2600);}
+  function calm(){if(hero.classList.contains('calm'))return;stormOn=false;clearTimeout(timer);bolts.forEach(b=>b.classList.remove('on'));cimgs.forEach(c=>c.classList.remove('zap'));if(soundOn)windTo(0.06,2.5);wash.style.opacity='.85';setTimeout(()=>{hero.classList.add('calm');wash.style.opacity='0';flash.style.opacity=0;document.body.classList.remove('lock');},450);}
+  $('#jesusBtn').addEventListener('click',calm);
+  if(matchMedia('(prefers-reduced-motion:reduce)').matches){hero.classList.add('calm');document.body.classList.remove('lock');}
+  else timer=setTimeout(strike,900);
+  window.__calm=()=>{stormOn=false;clearTimeout(timer);hero.classList.add('calm');document.body.classList.remove('lock');};
+})();
+
+/* ═══ D-day sub ═══ */
+(function(){const n=nowKST();const d=Math.ceil((RETREAT_START-new Date(n.getFullYear(),n.getMonth(),n.getDate()))/864e5);const tag=d>0?`D-${d} · `:(d===0?'D-DAY ⚓ · ':'');$('#subline').textContent=tag+'8/6(목)~8/8(토) · 미산제일침례교회';})();
+
+/* ═══ 시트 ═══ */
+function openSheet(id){const s=$('#sheet-'+id);if(!s)return;
+  if(id==='student'&&profile()){enterApp();return;}   // 프로필 있으면 바로 입장
+  s.classList.add('open');document.body.style.overflow='hidden';if(id==='guardian')loadGallery();}
+function closeSheet(s){s.classList.remove('open');document.body.style.overflow='';}
+$$('[data-open]').forEach(b=>b.addEventListener('click',()=>openSheet(b.dataset.open)));
+$$('[data-close]').forEach(b=>b.addEventListener('click',()=>closeSheet(b.closest('.sheet'))));
+$$('.subtab').forEach(t=>t.addEventListener('click',()=>{const root=t.closest('.sheet-body');$$('.subtab',root).forEach(x=>x.classList.remove('active'));t.classList.add('active');$$('.pane',root).forEach(p=>p.classList.toggle('show',p.id===t.dataset.pane));if(t.dataset.pane==='a-signups')loadSignups();}));
+
+/* ═══ 학생 프로필 ═══ */
+(function(){
+  const formEl=$('#student-form'),passEl=$('#student-pass');
+  function show(p){if(p){formEl.style.display='none';passEl.style.display='block';
+    $('#pass-card').innerHTML=`<div class="brow"><span>⚓ BOARDING PASS</span><span>믿음의 항해 2026</span></div><div class="pass-top"><div><div class="pname">${esc(p.name)}</div><div class="pmeta">${esc(p.dept)}${p.group?' · '+esc(p.group):''}</div></div></div>${p.vow?`<div class="pvow">"${esc(p.vow)}"</div>`:''}`;
+  }else{formEl.style.display='block';passEl.style.display='none';}}
+  const saved=profile();show(saved);
+  if(saved){$('#s-name').value=saved.name||'';const r=$(`#s-dept input[value="${saved.dept}"]`);if(r)r.checked=true;$('#s-group').value=saved.group||'';$('#s-vow').value=saved.vow||'';}
+  $('#s-save').addEventListener('click',()=>{const name=$('#s-name').value.trim(),dept=$('#s-dept input:checked')?.value;if(!name)return toast('이름을 입력해 주세요',1);if(!dept)return toast('부서를 선택해 주세요',1);const p={name,dept,group:$('#s-group').value.trim(),vow:$('#s-vow').value.trim()};localStorage.setItem('songsan_student',JSON.stringify(p));show(p);toast('승선권 발급 🎫');});
+  $('#s-edit').addEventListener('click',()=>show(null));
+  $('#s-enter').addEventListener('click',()=>{closeSheet($('#sheet-student'));enterApp();});
+})();
+
+/* ═══ 참가신청 ═══ */
+$('#su-phone').addEventListener('input',e=>{let v=e.target.value.replace(/\D/g,'').slice(0,11);if(v.length>=8)v=v.replace(/(\d{3})(\d{4})(\d+)/,'$1-$2-$3');else if(v.length>=4)v=v.replace(/(\d{3})(\d+)/,'$1-$2');e.target.value=v;});
+$('#su-submit').addEventListener('click',async()=>{const btn=$('#su-submit');const student_name=$('#su-name').value.trim(),dept=$('#su-dept input:checked')?.value,phone=$('#su-phone').value.trim();if(!student_name)return toast('학생 이름을 입력해 주세요',1);if(!dept)return toast('부서를 선택해 주세요',1);if(phone.replace(/\D/g,'').length<10)return toast('연락처를 정확히 입력해 주세요',1);if(!$('#su-agree').checked)return toast('참가 동의에 체크해 주세요',1);btn.disabled=true;btn.textContent='접수 중…';const{error}=await sb.from('songsan_signups').insert({student_name,dept,grade:$('#su-grade').value.trim()||null,guardian_name:$('#su-gname').value.trim()||null,guardian_phone:phone,notes:$('#su-notes').value.trim()||null,agreed:true});btn.disabled=false;btn.textContent='참가 신청하기';if(error){console.error(error);return toast('신청 실패 — SQL 설정 확인',1);}toast('참가 신청 접수됨 ✅');['#su-name','#su-grade','#su-gname','#su-phone','#su-notes'].forEach(s=>$(s).value='');$('#su-agree').checked=false;$$('#su-dept input').forEach(x=>x.checked=false);});
+
+/* ═══ 갤러리 ═══ */
+async function loadGallery(){const wrap=$('#gallery');wrap.innerHTML='<div class="spin" style="color:#8b97a8">불러오는 중…</div>';const dept=$('#g-filter').value;let q=sb.from('songsan_photos').select('*').order('created_at',{ascending:false});if(dept)q=q.eq('dept',dept);const{data,error}=await q;if(error){wrap.innerHTML=`<div class="empty" style="color:#8b97a8"><div class="em">⚙️</div><p>아직 준비 중이에요.<br>관리자 SQL 설정이 필요합니다.</p></div>`;return;}if(!data||!data.length){wrap.innerHTML=`<div class="empty" style="color:#8b97a8"><div class="em">📷</div><p>아직 올라온 사진이 없어요.</p></div>`;return;}const g={};data.forEach(p=>{(g[p.session]=g[p.session]||[]).push(p);});const order=SESSIONS.filter(s=>g[s]);Object.keys(g).forEach(s=>{if(!order.includes(s))order.push(s);});wrap.innerHTML=order.map(s=>`<div class="gal-group"><h4>📸 ${esc(s)} <span class="cnt">${g[s].length}</span></h4><div class="gal">${g[s].map(p=>`<img loading="lazy" src="${p.url}" alt="">`).join('')}</div></div>`).join('');$$('#gallery .gal img').forEach(img=>img.addEventListener('click',()=>{$('#lightbox img').src=img.src;$('#lightbox').classList.add('open');}));}
+$('#g-filter').addEventListener('change',loadGallery);
+$('#lightbox').addEventListener('click',()=>$('#lightbox').classList.remove('open'));
+
+/* ═══ 관리자 ═══ */
+(function(){
+  $('#a-session').innerHTML=SESSIONS.map(s=>`<option>${s}</option>`).join('');
+  if(sessionStorage.getItem('songsan_admin')==='1')unlock();
+  $('#a-login').addEventListener('click',()=>{if($('#a-pass').value===ADMIN_PASS){sessionStorage.setItem('songsan_admin','1');unlock();}else toast('암호가 틀렸어요',1);});
+  $('#a-pass').addEventListener('keydown',e=>{if(e.key==='Enter')$('#a-login').click();});
+  function unlock(){$('#admin-gate').style.display='none';$('#admin-panel').style.display='block';}
+  // 말씀 띄우기
+  $('#lv-push').addEventListener('click',async()=>{const verse_ref=$('#lv-ref').value.trim(),verse_body=$('#lv-body').value.trim();if(!verse_body)return toast('말씀 본문을 입력하세요',1);const{error}=await sb.from('songsan_live').update({verse_ref,verse_body,updated_at:new Date().toISOString()}).eq('id','current');if(error){console.error(error);return toast('실패 — SQL 설정 확인',1);}toast('말씀을 띄웠습니다 📢');});
+  $('#lv-clear').addEventListener('click',async()=>{const{error}=await sb.from('songsan_live').update({verse_ref:null,verse_body:null,updated_at:new Date().toISOString()}).eq('id','current');if(error)return toast('실패',1);toast('말씀을 내렸습니다');});
+  // 사진 업로드
+  let files=[];
+  $('#a-add').addEventListener('click',()=>$('#a-files').click());
+  $('#a-files').addEventListener('change',e=>{files=files.concat([...e.target.files]);e.target.value='';renderPrev();});
+  function renderPrev(){const grid=$('#a-preview');grid.querySelectorAll('.upthumb').forEach(x=>x.remove());files.forEach(f=>{const d=document.createElement('div');d.className='upthumb';d.innerHTML=`<img src="${URL.createObjectURL(f)}"><button class="rm">✕</button>`;d.querySelector('.rm').addEventListener('click',()=>{files.splice(files.indexOf(f),1);renderPrev();});grid.insertBefore(d,$('#a-add'));});$('#a-upload-btn').disabled=files.length===0;$('#a-upload-btn').textContent=files.length?`업로드 (${files.length}장)`:'업로드';}
+  $('#a-upload-btn').addEventListener('click',async()=>{const btn=$('#a-upload-btn');btn.disabled=true;const session=$('#a-session').value,dept=$('#a-dept').value||null;let ok=0;for(let i=0;i<files.length;i++){btn.textContent=`업로드 중… ${i+1}/${files.length}`;try{const blob=await shrinkBlob(files[i],1400);const path=`${Date.now()}_${i}.jpg`;const up=await sb.storage.from(BUCKET).upload(path,blob,{contentType:'image/jpeg'});if(up.error)throw up.error;const{data:{publicUrl}}=sb.storage.from(BUCKET).getPublicUrl(path);const ins=await sb.from('songsan_photos').insert({session,dept,url:publicUrl});if(ins.error)throw ins.error;ok++;}catch(err){console.error(err);}}files=[];renderPrev();btn.disabled=false;btn.textContent='업로드';if(ok)toast(`${ok}장 업로드 완료 ✅`);else toast('업로드 실패 — SQL 확인',1);});
+})();
+async function loadSignups(){const wrap=$('#a-signups');wrap.innerHTML='<div class="spin" style="color:#8b97a8">불러오는 중…</div>';const{data,error}=await sb.from('songsan_signups').select('*').order('created_at',{ascending:false});if(error){wrap.innerHTML=`<div class="empty" style="color:#8b97a8"><div class="em">⚙️</div><p>SQL 설정이 필요합니다.</p></div>`;return;}if(!data||!data.length){wrap.innerHTML=`<div class="empty" style="color:#8b97a8"><div class="em">📋</div><p>아직 신청 내역이 없습니다.</p></div>`;return;}wrap.innerHTML=`<p class="desc">총 <b>${data.length}</b>명 신청</p>`+data.map(s=>`<div class="uprow"><div class="uv"><div class="un">${esc(s.student_name)} <span style="font-weight:600;color:#8b97a8;font-size:12.5px">${esc(s.dept)}${s.grade?' · '+esc(s.grade):''}</span></div><div class="ud">${s.guardian_name?esc(s.guardian_name)+' · ':''}${s.notes?'📌 '+esc(s.notes):'특이사항 없음'}</div></div><a class="uph" href="tel:${(s.guardian_phone||'').replace(/\D/g,'')}">${esc(s.guardian_phone||'')}</a></div>`).join('');}
+
+/* ═══════════ APP DECK ═══════════ */
+function enterApp(){
+  const p=profile();
+  $('#app-nm').firstChild.textContent=p?p.name:'항해자';
+  $('#app-sub').textContent=p?`${p.dept}${p.group?' · '+p.group:''}`:'믿음의 항해 2026';
+  document.body.classList.add('in-app');document.body.style.overflow='';
+  showScreen(null);startLivePoll();
+}
+function leaveApp(){document.body.classList.remove('in-app');stopLivePoll();}
+$('#app-port').addEventListener('click',leaveApp);
+$$('.tile').forEach(t=>t.addEventListener('click',()=>openTool(t.dataset.tool)));
+$('#liveBanner').addEventListener('click',()=>openTool('memorize'));
+$$('[data-back]').forEach(b=>b.addEventListener('click',()=>showScreen(null)));
+function showScreen(id){$$('.screen').forEach(s=>s.classList.toggle('active',s.id==='scr-'+id));}
+function openTool(name){
+  if(name==='quiz')startQuiz();
+  if(name==='comm')loadComm();
+  if(name==='roles')initRoles();
+  if(name==='rec')recMenu();
+  if(name==='memorize')renderMem();
+  showScreen(name);
+}
+
+/* 자동 진입: 프로필 있고 8/6 이후면 바로 도구 */
+if(profile() && nowKST()>=RETREAT_START){ document.body.classList.remove('lock'); enterApp(); }
+
+/* ═══ 성경암송 ═══ */
+let liveVerse=null, memHideLevel=0;
+function currentVerse(){return liveVerse||DEFAULT_VERSE;}
+function renderMem(){
+  memHideLevel=0;paintMem();
+  $('#mem-ref').textContent='— '+currentVerse().ref;
+}
+function paintMem(){
+  const words=currentVerse().body.split(/(\s+)/);
+  let idx=words.map((w,i)=>w.trim()?i:-1).filter(i=>i>=0);
+  // 가릴 단어: 레벨에 따라 비율
+  const ratio=[0,.34,.6,.85,1][Math.min(memHideLevel,4)];
+  const hideCount=Math.round(idx.length*ratio);
+  const hideSet=new Set();
+  // 고정 시드 느낌: 앞뒤 섞어 균등하게
+  for(let k=0;k<hideCount;k++){hideSet.add(idx[Math.floor(k*idx.length/hideCount)]);}
+  $('#mem-verse').innerHTML=words.map((w,i)=>{
+    if(!w.trim())return w;
+    if(hideSet.has(i))return `<span class="blank">${'　'.repeat(Math.max(1,Math.round(w.length*0.9)))}</span>`;
+    return esc(w);
+  }).join('');
+}
+$('#mem-hide').addEventListener('click',()=>{memHideLevel=1;paintMem();});
+$('#mem-more').addEventListener('click',()=>{memHideLevel=Math.min(4,memHideLevel+1);paintMem();});
+$('#mem-reset').addEventListener('click',()=>{memHideLevel=0;paintMem();});
+
+/* 라이브 폴링 (관리자 푸시) */
+let livePoll=null;
+async function pollLive(){
+  const{data,error}=await sb.from('songsan_live').select('*').eq('id','current').maybeSingle();
+  if(error||!data)return;
+  const has=data.verse_body&&data.verse_body.trim();
+  liveVerse=has?{ref:data.verse_ref||'',body:data.verse_body}:null;
+  const b=$('#liveBanner');
+  if(has){b.classList.add('on');$('#live-verse').textContent=data.verse_body;$('#live-ref').textContent=data.verse_ref?'— '+data.verse_ref:'';}
+  else b.classList.remove('on');
+  if($('#scr-memorize').classList.contains('active')){ if(memHideLevel===0) renderMem(); }
+}
+function startLivePoll(){pollLive();clearInterval(livePoll);livePoll=setInterval(pollLive,4000);}
+function stopLivePoll(){clearInterval(livePoll);}
+
+/* ═══ 퀴즈 ═══ */
+const QUIZ=[
+  {q:'예수님이 바다 위 광풍을 잠잠하게 하신 사건은 어느 복음서에 나올까요?',o:['마가복음 4장','요한계시록 1장','창세기 1장'],a:0,e:'막 4:39 — "잠잠하라 고요하라" 하시니 바람이 그쳤어요.'},
+  {q:'이번 수련회 주제 말씀 히브리서 12:2에서 우리가 바라볼 분은?',o:['천사','예수','바다'],a:1,e:'"믿음의 주요 또 온전하게 하시는 이인 예수를 바라보자"'},
+  {q:'노아가 방주에서 물이 빠졌는지 알아보려고 마지막에 날려 보낸 새는?',o:['까마귀','비둘기','독수리'],a:1,e:'비둘기가 감람 잎사귀를 물고 돌아왔어요 (창 8장).'},
+  {q:'예수님의 열두 제자 중 원래 어부였던 사람은?',o:['마태','베드로','도마'],a:1,e:'베드로와 안드레, 야고보와 요한은 갈릴리의 어부였어요.'},
+  {q:'"내가 너희를 사람 낚는 어부가 되게 하리라"— 누가 하신 말씀?',o:['모세','다윗','예수님'],a:2,e:'예수님이 제자들을 부르실 때 하신 말씀이에요 (마 4:19).'},
+  {q:'요나는 하나님을 피해 배를 타고 어디로 도망쳤나요?',o:['다시스','니느웨','예루살렘'],a:0,e:'요나는 다시스로 도망쳤지만 큰 물고기 뱃속에서 회개했어요.'},
+  {q:'바다가 갈라져 이스라엘 백성이 건넌 사건의 지도자는?',o:['여호수아','모세','사무엘'],a:1,e:'모세가 홍해를 가르는 기적을 통해 백성을 인도했어요 (출 14장).'},
+  {q:'"수고하고 무거운 짐 진 자들아 다 내게로 오라" 하신 분은?',o:['예수님','바울','베드로'],a:0,e:'예수님의 초청 말씀이에요 (마 11:28).'}
+];
+let qi=0,qscore=0;
+function startQuiz(){qi=0;qscore=0;renderQ();}
+function renderQ(){
+  const body=$('#quiz-body');
+  if(qi>=QUIZ.length){
+    const pct=Math.round(qscore/QUIZ.length*100);
+    const em=pct>=80?'🏆':pct>=50?'⛵':'🌊';
+    const ms=pct>=80?'믿음의 항해사! 대단해요':pct>=50?'좋아요! 계속 항해해요':'괜찮아요, 다시 도전해봐요';
+    body.innerHTML=`<div class="quiz-result"><div class="em">${em}</div><div class="sc">${qscore} / ${QUIZ.length}</div><div class="ms">${ms}</div></div><button class="big-btn" id="q-again">다시 풀기</button>`;
+    $('#q-again').addEventListener('click',startQuiz);return;
+  }
+  const it=QUIZ[qi];
+  body.innerHTML=`<div class="quiz-prog"><span>문제 ${qi+1} / ${QUIZ.length}</span><span>⭐ ${qscore}</span></div><div class="card"><div class="quiz-q">${esc(it.q)}</div>${it.o.map((o,i)=>`<button class="quiz-opt" data-i="${i}">${esc(o)}</button>`).join('')}<div class="quiz-explain" id="q-ex" style="display:none"></div></div><button class="big-btn" id="q-next" style="display:none;margin-top:14px">${qi===QUIZ.length-1?'결과 보기':'다음 문제'}</button>`;
+  $$('#quiz-body .quiz-opt').forEach(btn=>btn.addEventListener('click',()=>{
+    if(btn.classList.contains('dim')||$('#q-next').style.display!=='none')return;
+    const i=+btn.dataset.i,correct=i===it.a;
+    $$('#quiz-body .quiz-opt').forEach((b,bi)=>{b.classList.add(bi===it.a?'correct':(bi===i?'wrong':'dim'));});
+    if(correct)qscore++;
+    $('#q-ex').style.display='block';$('#q-ex').textContent=(correct?'✅ 정답! ':'💡 ')+it.e;
+    $('#q-next').style.display='block';
+  }));
+  $('#q-next').addEventListener('click',()=>{qi++;renderQ();});
+}
+
+/* ═══ 커뮤니케이션 ═══ */
+let commPoll=null;
+async function loadComm(){
+  const list=$('#comm-list');
+  const{data,error}=await sb.from('songsan_board').select('*').order('created_at',{ascending:false}).limit(80);
+  if(error){list.innerHTML=`<div class="empty"><div class="em">⚙️</div><p>SQL 설정이 필요합니다.</p></div>`;return;}
+  if(!data||!data.length){list.innerHTML=`<div class="empty"><div class="em">💬</div><p>첫 이야기를 남겨보세요!</p></div>`;}
+  else list.innerHTML=data.map(m=>`<div class="post"><div class="ph"><span class="pn">${esc(m.name||'익명')}</span>${m.dept?`<span class="pd">${esc(m.dept)}</span>`:''}<span class="pt">${timeago(m.created_at)}</span></div><div class="pm">${esc(m.message)}</div></div>`).join('');
+  clearInterval(commPoll);commPoll=setInterval(()=>{if($('#scr-comm').classList.contains('active'))loadComm();else clearInterval(commPoll);},5000);
+}
+$('#comm-send').addEventListener('click',sendComm);
+$('#comm-msg').addEventListener('keydown',e=>{if(e.key==='Enter')sendComm();});
+async function sendComm(){const inp=$('#comm-msg');const message=inp.value.trim();if(!message)return;const p=profile();inp.value='';const{error}=await sb.from('songsan_board').insert({name:p?p.name:'익명',dept:p?p.dept:null,message});if(error){toast('전송 실패 — SQL 확인',1);inp.value=message;return;}loadComm();}
+function timeago(t){const s=(Date.now()-new Date(t).getTime())/1000;if(s<60)return'방금';if(s<3600)return Math.floor(s/60)+'분 전';if(s<86400)return Math.floor(s/3600)+'시간 전';return Math.floor(s/86400)+'일 전';}
+
+/* ═══ 역할 설정 ═══ */
+const ROLE_OPTS=['조장','부조장','서기','총무','기도','찬양','레크','미화','기타'];
+function initRoles(){
+  const saved=JSON.parse(localStorage.getItem('songsan_roles')||'null');
+  $('#roles-team').value=saved?.team||profile()?.group||'';
+  const roster=$('#roster');roster.innerHTML='';
+  const rows=saved?.rows?.length?saved.rows:[{name:'',role:'조장'},{name:'',role:'조원'}];
+  rows.forEach(r=>addRosterRow(r.name,r.role));
+  renderRolesView(saved);
+}
+function addRosterRow(name='',role='조원'){
+  const div=document.createElement('div');div.className='roster-row';
+  div.innerHTML=`<input placeholder="이름" value="${esc(name)}" maxlength="10"><select>${['조원',...ROLE_OPTS].map(o=>`<option${o===role?' selected':''}>${o}</option>`).join('')}</select><button class="del">✕</button>`;
+  div.querySelector('.del').addEventListener('click',()=>div.remove());
+  $('#roster').appendChild(div);
+}
+$('#roster-add').addEventListener('click',()=>addRosterRow());
+$('#roles-save').addEventListener('click',()=>{
+  const team=$('#roles-team').value.trim();
+  const rows=$$('#roster .roster-row').map(r=>({name:r.querySelector('input').value.trim(),role:r.querySelector('select').value})).filter(r=>r.name);
+  if(!rows.length)return toast('조원을 한 명 이상 입력하세요',1);
+  const data={team,rows};localStorage.setItem('songsan_roles',JSON.stringify(data));renderRolesView(data);toast('역할이 저장됐어요 🎭');
+});
+function renderRolesView(data){
+  const v=$('#roles-view');if(!data?.rows?.length){v.style.display='none';return;}
+  v.style.display='block';
+  v.innerHTML=`<h4 style="font-family:'Jua';font-size:19px;color:var(--wood-dk);margin-bottom:12px">⚓ ${esc(data.team||'우리 조')} 역할표</h4>`+data.rows.map(r=>`<span class="role-chip">${esc(r.name)} · ${esc(r.role)}</span>`).join('');
+}
+
+/* ═══ 레크리에이션 ═══ */
+function recMenu(){
+  $('#rec-body').innerHTML=`
+    <p class="desc" style="color:#cfe6fb;margin-bottom:16px">폰 하나로 돌려가며 하는 게임이에요. 인원을 넣으면 역할을 몰래 나눠줍니다.</p>
+    <button class="rec-menu-btn mafia" data-game="mafia"><span class="em">🕵️</span><div><div class="rt">마피아 게임</div><div class="rd">마피아·시민·의사·경찰 역할 배분</div></div></button>
+    <button class="rec-menu-btn liar" data-game="liar"><span class="em">🤥</span><div><div class="rt">라이어 게임</div><div class="rd">한 명만 제시어를 몰라요</div></div></button>`;
+  $$('#rec-body [data-game]').forEach(b=>b.addEventListener('click',()=>b.dataset.game==='mafia'?mafiaSetup():liarSetup()));
+}
+function mafiaSetup(){
+  $('#rec-body').innerHTML=`<div class="card"><div class="fld"><label>참가 인원 (4~20명)</label><input id="mf-n" type="number" inputmode="numeric" value="8" min="4" max="20"></div>
+    <div class="fld"><label style="display:flex;align-items:center;gap:8px;font-weight:700"><input type="checkbox" id="mf-doc" checked style="width:18px;height:18px"> 의사 포함</label>
+    <label style="display:flex;align-items:center;gap:8px;font-weight:700;margin-top:8px"><input type="checkbox" id="mf-pol" checked style="width:18px;height:18px"> 경찰 포함</label></div>
+    <button class="big-btn rose" id="mf-start">역할 나눠주기</button></div>
+    <button class="ghost-btn" id="mf-back" style="margin-top:12px">← 게임 선택</button>`;
+  $('#mf-back').addEventListener('click',recMenu);
+  $('#mf-start').addEventListener('click',()=>{
+    const n=Math.max(4,Math.min(20,+$('#mf-n').value||8));
+    const mafiaCnt=Math.max(1,Math.floor(n/4));
+    let roles=[];for(let i=0;i<mafiaCnt;i++)roles.push({r:'마피아',e:'🕵️',d:'밤에 시민을 지목해요. 낮엔 숨기세요!'});
+    if($('#mf-doc').checked&&roles.length<n)roles.push({r:'의사',e:'🩺',d:'밤에 한 명을 살릴 수 있어요.'});
+    if($('#mf-pol').checked&&roles.length<n)roles.push({r:'경찰',e:'👮',d:'밤에 한 명이 마피아인지 확인해요.'});
+    while(roles.length<n)roles.push({r:'시민',e:'🧑‍🌾',d:'토론으로 마피아를 찾아내요.'});
+    shuffle(roles);passReveal(roles.map((x,i)=>({who:`${i+1}번 참가자`,title:x.r,em:x.e,desc:x.d})),recMenu,'마피아 게임');
+  });
+}
+const LIAR_CATS={'음식':['김치찌개','치킨','피자','떡볶이','삼겹살','비빔밥','라면','짜장면'],'동물':['사자','펭귄','기린','고양이','돌고래','코끼리','토끼','상어'],'성경인물':['모세','다윗','베드로','바울','노아','요셉','다니엘','에스더'],'장소':['교회','바다','수양관','학교','놀이공원','시장','도서관','캠핑장']};
+function liarSetup(){
+  $('#rec-body').innerHTML=`<div class="card"><div class="fld"><label>참가 인원 (3~15명)</label><input id="lr-n" type="number" inputmode="numeric" value="6" min="3" max="15"></div>
+    <div class="fld"><label>주제</label><select id="lr-cat">${Object.keys(LIAR_CATS).map(c=>`<option>${c}</option>`).join('')}</select></div>
+    <button class="big-btn warm" id="lr-start">제시어 나눠주기</button></div>
+    <button class="ghost-btn" id="lr-back" style="margin-top:12px">← 게임 선택</button>`;
+  $('#lr-back').addEventListener('click',recMenu);
+  $('#lr-start').addEventListener('click',()=>{
+    const n=Math.max(3,Math.min(15,+$('#lr-n').value||6));
+    const cat=$('#lr-cat').value;const pool=LIAR_CATS[cat];const word=pool[Math.floor(Math.random()*pool.length)];
+    const liar=Math.floor(Math.random()*n);
+    const cards=[];for(let i=0;i<n;i++)cards.push(i===liar?{who:`${i+1}번 참가자`,title:'라이어',em:'🤥',word:'당신은 라이어!',desc:`주제는 "${cat}" — 제시어를 모르는 척 들키지 마세요!`}:{who:`${i+1}번 참가자`,title:'제시어',em:'🃏',word:word,desc:`주제: ${cat}`});
+    passReveal(cards,recMenu,'라이어 게임');
+  });
+}
+function passReveal(cards,done,title){
+  let idx=0,shown=false;
+  function draw(){
+    const c=cards[idx];
+    $('#rec-body').innerHTML=`<div class="reveal-card" id="rev">${shown?
+      `<div class="who">${esc(c.who)}</div>${c.word?`<div class="word">${esc(c.word)}</div>`:`<div class="role">${c.em} ${esc(c.title)}</div>`}<div class="rdesc">${esc(c.desc||'')}</div>`
+      :`<div class="who">${esc(c.who)}</div><div class="role">👀</div><div class="rdesc">카드를 눌러 나만 확인하세요</div>`}</div>
+      <div class="reveal-hint">${shown?'확인했으면 다음 사람에게 넘겨주세요':`${idx+1} / ${cards.length}`}</div>
+      ${shown?`<button class="big-btn" id="rev-next" style="margin-top:14px">${idx===cards.length-1?'✅ 배분 완료':'다음 사람 ▸'}</button>`:''}`;
+    $('#rev').addEventListener('click',()=>{if(!shown){shown=true;draw();}});
+    if(shown)$('#rev-next').addEventListener('click',()=>{if(idx===cards.length-1){finish();}else{idx++;shown=false;draw();}});
+  }
+  function finish(){$('#rec-body').innerHTML=`<div class="empty"><div class="em">🎉</div><p>모두 역할을 확인했어요!<br>이제 게임을 시작하세요.</p></div><button class="big-btn" id="rev-again" style="margin-top:8px">한 번 더</button><button class="ghost-btn" id="rev-menu" style="margin-top:10px">← 게임 선택</button>`;$('#rev-again').addEventListener('click',()=>{idx=0;shown=false;draw();});$('#rev-menu').addEventListener('click',done);}
+  draw();
+}
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+/* ═══ util ═══ */
+function shrinkBlob(file,max){return new Promise((res,rej)=>{const img=new Image();img.onload=()=>{let w=img.width,h=img.height;if(w>h&&w>max){h=h*max/w;w=max;}else if(h>max){w=w*max/h;h=max;}const c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(img,0,0,w,h);c.toBlob(b=>b?res(b):rej('blob'),'image/jpeg',.85);};img.onerror=rej;img.src=URL.createObjectURL(file);});}
+</script>
+</body>
+</html>
