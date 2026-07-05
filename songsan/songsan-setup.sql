@@ -73,6 +73,45 @@ drop policy if exists "songsan_board insert" on songsan_board;
 create policy "songsan_board read"   on songsan_board for select using (true);
 create policy "songsan_board insert" on songsan_board for insert with check (true);
 
+-- 3-1) 마피아 게임 (실시간)
+create table if not exists songsan_mafia (
+  id          text primary key default 'current',
+  phase       text default 'lobby',   -- lobby|night|day|vote|result|ended
+  settings    jsonb default '{}',      -- {mafia,doctor,police}
+  round       int default 0,
+  mission     text,
+  last_killed text,
+  message     text,
+  winner      text,
+  updated_at  timestamptz default now()
+);
+insert into songsan_mafia (id) values ('current') on conflict (id) do nothing;
+
+create table if not exists songsan_mafia_players (
+  id           uuid primary key default gen_random_uuid(),
+  name         text not null,
+  role         text,
+  alive        boolean default true,
+  vote         text,
+  night_target text,
+  joined_at    timestamptz default now()
+);
+
+create table if not exists songsan_mafia_missions (
+  id   uuid primary key default gen_random_uuid(),
+  text text not null
+);
+
+alter table songsan_mafia          enable row level security;
+alter table songsan_mafia_players  enable row level security;
+alter table songsan_mafia_missions enable row level security;
+drop policy if exists "mafia all"          on songsan_mafia;
+drop policy if exists "mafia_players all"   on songsan_mafia_players;
+drop policy if exists "mafia_missions all"  on songsan_mafia_missions;
+create policy "mafia all"          on songsan_mafia          for all using (true) with check (true);
+create policy "mafia_players all"  on songsan_mafia_players  for all using (true) with check (true);
+create policy "mafia_missions all" on songsan_mafia_missions for all using (true) with check (true);
+
 -- 4) 사진 스토리지 버킷 (공개)
 insert into storage.buckets (id, name, public)
 values ('songsan', 'songsan', true)
