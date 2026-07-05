@@ -1,0 +1,14 @@
+{
+  "name": "믿음의 항해 — 송산제일교회 수련회",
+  "short_name": "믿음의 항해",
+  "start_url": "/songsan/",
+  "scope": "/songsan/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0d3b66",
+  "theme_color": "#0d1520",
+  "icons": [
+    { "src": "assets/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "assets/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  ]
+}
