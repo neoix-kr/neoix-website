@@ -515,6 +515,9 @@ $$('[data-open]').forEach(b=>b.addEventListener('click',()=>openSheet(b.dataset.
 $$('[data-close]').forEach(b=>b.addEventListener('click',()=>closeSheet(b.closest('.sheet'))));
 $$('.subtab').forEach(t=>t.addEventListener('click',()=>{const root=t.closest('.sheet-body');$$('.subtab',root).forEach(x=>x.classList.remove('active'));t.classList.add('active');$$('.pane',root).forEach(p=>p.classList.toggle('show',p.id===t.dataset.pane));if(t.dataset.pane==='a-signups')loadSignups();}));
 
+/* QR/딥링크: …/songsan/#signup → 보호자 시트의 '참가 신청' 탭 바로 열기 */
+if(location.hash==='#signup'){openSheet('guardian');const t=$('.subtab[data-pane="g-signup"]');if(t)t.click();}
+
 /* ═══ 학생 프로필 ═══ */
 (function(){
   const formEl=$('#student-form'),passEl=$('#student-pass');
