@@ -399,29 +399,44 @@ tbody tr:hover { background:#fafbfc; }
         <span class="nav-label">대시보드</span>
       </div>
 
-      <div class="nav-group-title">Services</div>
-      <div class="nav-item" data-view="ogx">
-        <svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
-        <span class="nav-label">OGX 찬양팀</span>
-        <span class="badge" id="ogxBadge" style="display:none"></span>
+      <div class="nav-group-title">서비스</div>
+      <div class="nav-item" data-view="users">
+        <svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4-4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+        <span class="nav-label">통합 사용자</span>
+        <span class="badge" id="usersBadge" style="display:none"></span>
       </div>
       <div class="nav-item" data-view="poly">
         <svg viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
         <span class="nav-label">폴리</span>
         <span class="badge" id="polyBadge" style="display:none"></span>
       </div>
-
-      <div class="nav-group-title">Management</div>
-      <div class="nav-item" data-view="users">
-        <svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4-4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
-        <span class="nav-label">사용자</span>
-        <span class="badge" id="usersBadge" style="display:none"></span>
+      <div class="nav-item" data-view="app-pray">
+        <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+        <span class="nav-label">기도해요</span>
+        <span class="badge" id="prayBadge" style="display:none"></span>
+      </div>
+      <div class="nav-item" data-view="app-travel-globe">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
+        <span class="nav-label">슈웅</span>
+        <span class="badge" id="travelBadge" style="display:none"></span>
+      </div>
+      <div class="nav-item" data-view="ogx">
+        <svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+        <span class="nav-label">OGX 찬양팀</span>
+        <span class="badge" id="ogxBadge" style="display:none"></span>
       </div>
       <div class="nav-item" data-view="jmap">
         <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
-        <span class="nav-label">J맵 신청</span>
+        <span class="nav-label">J맵</span>
         <span class="badge" id="jmapBadge" style="display:none"></span>
       </div>
+      <div class="nav-item" data-view="app-home">
+        <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        <span class="nav-label">홈 (neoix.kr)</span>
+        <span class="badge" id="homeBadge" style="display:none"></span>
+      </div>
+
+      <div class="nav-group-title">기타</div>
       <div class="nav-item" data-view="projects">
         <svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
         <span class="nav-label">프로젝트</span>
@@ -568,8 +583,8 @@ tbody tr:hover { background:#fafbfc; }
 
       <!-- ── Users ── -->
       <section id="usersView" style="display:none">
-        <h1 class="page-title">사용자 관리</h1>
-        <p class="page-desc">통합 전체 = 네오익스 계정 가입자 · 앱 탭 = 그 앱을 쓰는 사용자(한 명이 여러 앱에 중복 집계) · <b>가입 앱</b> 컬럼 = 처음 가입한 출처</p>
+        <h1 class="page-title">통합 사용자</h1>
+        <p class="page-desc">네오익스 통합 계정 전체 · 앱 탭 = 그 앱을 쓰는 사용자(중복 집계) · <b>가입 앱</b> = 처음 가입한 출처</p>
         <div class="stats-row" id="usersStats"></div>
         <div class="table-wrap">
           <div class="table-toolbar" style="flex-wrap:wrap;gap:10px">
@@ -578,6 +593,22 @@ tbody tr:hover { background:#fafbfc; }
           </div>
           <div style="overflow-x:auto">
             <table><thead><tr><th>이름/아이디</th><th>이메일</th><th>가입 앱</th><th>가입경로</th><th>사용 앱</th><th>가입일</th><th>최근 로그인</th></tr></thead><tbody id="usersBody"></tbody></table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── 앱 공용 뷰 (기도해요/슈웅/홈 — 해당 앱 사용자만) ── -->
+      <section id="appView" style="display:none">
+        <h1 class="page-title" id="appViewTitle">앱</h1>
+        <p class="page-desc" id="appViewDesc"></p>
+        <div class="stats-row" id="appViewStats"></div>
+        <div class="table-wrap">
+          <div class="table-toolbar">
+            <span class="table-title" id="appViewTableTitle">사용자</span>
+            <input type="text" class="table-search" placeholder="이름/이메일 검색..." id="appUserSearch">
+          </div>
+          <div style="overflow-x:auto">
+            <table><thead><tr><th>이름/아이디</th><th>이메일</th><th>가입 앱</th><th>가입경로</th><th>첫 사용</th><th>가입일</th><th>최근 로그인</th></tr></thead><tbody id="appUsersBody"></tbody></table>
           </div>
         </div>
       </section>
@@ -702,7 +733,7 @@ const emailToId = email => email ? email.split('@')[0] : '';
 const fmt = d => d ? new Date(d).toLocaleDateString('ko-KR', { year:'numeric', month:'short', day:'numeric' }) : '-';
 const fmtFull = d => d ? new Date(d).toLocaleString('ko-KR', { year:'numeric', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' }) : '-';
 
-const headerTitles = { dashboard:'대시보드', ogx:'OGX 찬양팀', poly:'폴리', users:'사용자 관리', jmap:'J맵 사전신청', projects:'프로젝트 관리', settings:'설정' };
+const headerTitles = { dashboard:'대시보드', ogx:'OGX 찬양팀', poly:'폴리', users:'통합 사용자', jmap:'J맵', projects:'프로젝트 관리', settings:'설정' };
 const statusMap = { active:['운영 중','badge-success'], development:['개발 중','badge-info'], maintenance:['점검','badge-warning'], archived:['보관','badge-gray'] };
 const catLabels = { web:'웹', mobile:'모바일', tool:'도구', api:'API' };
 
@@ -915,8 +946,8 @@ const membershipKeysOf = u => {
 let userAppFilter = 'all';
 let usersHasV2 = false;
 
-async function loadUsers() {
-  // v2(가입앱+사용앱) 우선 → v1 → get_all_users 순 폴백
+// 통합 디렉토리 로딩 — v2(가입앱+사용앱) 우선 → v1 → get_all_users 순 폴백. 사이드바 뱃지도 갱신
+async function fetchDirectory() {
   usersHasV2 = false;
   try {
     const { data, error } = await supabase.rpc('get_user_directory2');
@@ -926,6 +957,16 @@ async function loadUsers() {
     try { const { data, error } = await supabase.rpc('get_user_directory'); if (!error && data) cachedUsers = data; } catch(e) {}
   }
   if (!cachedUsers.length) { try { const { data } = await supabase.rpc('get_all_users'); cachedUsers = data || []; } catch(e) {} }
+  // 사이드바 앱별 뱃지
+  const counts = {};
+  cachedUsers.forEach(u => membershipKeysOf(u).forEach(k => { counts[k] = (counts[k] || 0) + 1; }));
+  const badge = (id, n) => { const el = $(id); if (el && n) { el.textContent = n; el.style.display = ''; } };
+  badge('usersBadge', cachedUsers.length);
+  badge('prayBadge', counts['pray']); badge('travelBadge', counts['travel-globe']); badge('homeBadge', counts['home']);
+}
+
+async function loadUsers() {
+  await fetchDirectory();
 
   const today = new Date().toDateString();
   const todayCount = cachedUsers.filter(u => new Date(u.created_at).toDateString() === today).length;
@@ -979,6 +1020,56 @@ function renderUsers(filter = '') {
       <td><span class="badge ${sa.cls}">${sa.name}</span></td>
       <td><span class="badge ${pClass}">${pLabel}</span></td>
       <td>${usedApps}</td>
+      <td style="color:var(--light)">${fmt(u.created_at)}</td>
+      <td style="color:var(--light)">${fmtFull(u.last_sign_in_at)}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ── 앱 공용 뷰 (기도해요/슈웅/홈 등 — 그 앱 사용자만) ──
+let currentAppKey = null;
+const APP_DESCS = {
+  'pray': '교회 중보기도 앱 — 이 앱을 사용하는 통합 계정',
+  'travel-globe': '세계여행 기록 앱 — 이 앱을 사용하는 통합 계정',
+  'home': 'neoix.kr 홈/계정 페이지로만 가입한 통합 계정 (다른 앱 미사용 포함)',
+};
+async function loadAppView(key) {
+  currentAppKey = key;
+  const info = appInfo(key);
+  $('appViewTitle').textContent = info.name;
+  $('appViewDesc').textContent = APP_DESCS[key] || `${info.name} 앱을 사용하는 통합 계정`;
+  $('appViewTableTitle').textContent = `${info.name} 사용자`;
+  await fetchDirectory();
+  const list = cachedUsers.filter(u => membershipKeysOf(u).includes(key));
+  const weekAgo = Date.now() - 7 * 86400000;
+  const firstSeenOf = u => { const a = (u.apps || []).find(x => x.key === key); return a ? a.first_seen : null; };
+  const newWeek = list.filter(u => { const f = firstSeenOf(u); return f && new Date(f).getTime() > weekAgo; }).length;
+  const kakaoCount = list.filter(u => u.signup_provider === 'kakao').length;
+  $('appViewStats').innerHTML = `
+    <div class="stat-card"><div class="stat-card-top"><span class="app-chip ${info.cls}" style="font-size:12px">${info.name}</span><span class="stat-label">사용자</span></div><div class="stat-value">${list.length}</div></div>
+    <div class="stat-card"><div class="stat-card-top">${svgIcon(ICO.calendar,'green')}<span class="stat-label">이번 주 시작</span></div><div class="stat-value">${newWeek}</div></div>
+    <div class="stat-card"><div class="stat-card-top">${svgIcon(ICO.users,'purple')}<span class="stat-label">카카오 가입</span></div><div class="stat-value">${kakaoCount}</div></div>
+  `;
+  renderAppViewUsers();
+}
+function renderAppViewUsers() {
+  const key = currentAppKey; if (!key) return;
+  const filter = ($('appUserSearch').value || '').toLowerCase();
+  const nameOf = u => u.display_name || u.username || '-';
+  const firstSeenOf = u => { const a = (u.apps || []).find(x => x.key === key); return a ? a.first_seen : null; };
+  let list = cachedUsers.filter(u => membershipKeysOf(u).includes(key));
+  if (filter) list = list.filter(u => nameOf(u).toLowerCase().includes(filter) || (u.email||'').toLowerCase().includes(filter));
+  list.sort((a,b) => new Date(firstSeenOf(b) || b.created_at) - new Date(firstSeenOf(a) || a.created_at));
+  if (!list.length) { $('appUsersBody').innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--light);padding:40px">사용자가 없습니다</td></tr>'; return; }
+  $('appUsersBody').innerHTML = list.map(u => {
+    const [pLabel, pClass] = providerBadge[u.signup_provider] || [u.signup_provider ? u.signup_provider : '이메일','badge-gray'];
+    const sa = appInfo(appOf(u));
+    return `<tr>
+      <td class="td-bold">${nameOf(u)}</td>
+      <td class="td-mono">${u.email||'-'}</td>
+      <td><span class="badge ${sa.cls}">${sa.name}</span></td>
+      <td><span class="badge ${pClass}">${pLabel}</span></td>
+      <td style="color:var(--light)">${fmt(firstSeenOf(u))}</td>
       <td style="color:var(--light)">${fmt(u.created_at)}</td>
       <td style="color:var(--light)">${fmtFull(u.last_sign_in_at)}</td>
     </tr>`;
@@ -1243,14 +1334,16 @@ window.polySetComplaintStatus = async function(id, sel) {
 };
 
 // ── Navigation ──
-const views = ['dashboard','ogx','poly','users','jmap','projects','settings'];
+const views = ['dashboard','ogx','poly','users','app','jmap','projects','settings'];
 function navigate(view) {
-  views.forEach(v => { const el = $(`${v}View`); if (el) el.style.display = v === view ? '' : 'none'; });
+  const sectionOf = v => v.startsWith('app-') ? 'app' : v; // app-pray 등은 공용 appView 사용
+  views.forEach(v => { const el = $(`${v}View`); if (el) el.style.display = v === sectionOf(view) ? '' : 'none'; });
   document.querySelectorAll('.nav-item').forEach(n => n.classList.toggle('active', n.dataset.view === view));
-  $('headerTitle').textContent = headerTitles[view] || '';
+  $('headerTitle').textContent = view.startsWith('app-') ? appInfo(view.slice(4)).name : (headerTitles[view] || '');
   $('sidebar').classList.remove('open'); $('sidebarBackdrop').classList.remove('open');
   if (view === 'ogx') loadOGX(); else if (view === 'users') loadUsers();
   else if (view === 'poly') loadPoly();
+  else if (view.startsWith('app-')) loadAppView(view.slice(4));
   else if (view === 'jmap') loadJmap();
   else if (view === 'projects') loadProjectsView(); else if (view === 'dashboard') loadDashboard();
 }
@@ -1283,6 +1376,7 @@ document.querySelectorAll('.tab-btn[data-tab]').forEach(btn => btn.addEventListe
 $('roomSearch').addEventListener('input', e => renderRooms(e.target.value.toLowerCase()));
 $('memberSearch').addEventListener('input', e => renderMembers(e.target.value.toLowerCase()));
 $('userSearch').addEventListener('input', e => renderUsers(e.target.value.toLowerCase()));
+$('appUserSearch').addEventListener('input', () => renderAppViewUsers());
 $('jmapSearch').addEventListener('input', e => renderJmap(e.target.value.replace(/[^0-9]/g,'')));
 $('polyPoliticianSearch').addEventListener('input', e => renderPolyPoliticians(e.target.value.toLowerCase()));
 $('polyComplaintSearch').addEventListener('input', e => renderPolyComplaints(e.target.value.toLowerCase()));
