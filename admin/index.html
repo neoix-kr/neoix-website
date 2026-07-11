@@ -752,9 +752,16 @@ async function checkSession() {
 }
 
 async function verifyAdmin() {
-  const { data } = await supabase.from('admin_users').select('role').eq('user_id', currentUser.id).single();
-  if (data) { isAdmin = true; enterApp(); }
-  else showLoginInfo(`관리자 권한이 없습니다.\n\nSupabase SQL Editor에서 실행:\nINSERT INTO admin_users (user_id) VALUES ('${currentUser.id}');`);
+  // maybeSingle: 0행이어도 error 아님 → "일시 오류"와 "권한 없음"을 구분
+  const { data, error } = await supabase.from('admin_users').select('role').eq('user_id', currentUser.id).maybeSingle();
+  if (data) { isAdmin = true; enterApp(); return; }
+  if (error) {
+    // 네트워크/Supabase 일시 장애 — 권한 없음으로 오판해 로그인 화면에 가두지 않고 자동 재시도
+    showLoginInfo(`서버 연결이 원활하지 않아요 (일시 오류).\n5초 후 자동으로 다시 시도합니다 — 비밀번호를 다시 입력할 필요 없어요.\n\n(${error.message || '연결 오류'})`);
+    setTimeout(verifyAdmin, 5000);
+    return;
+  }
+  showLoginInfo(`관리자 권한이 없습니다.\n\nSupabase SQL Editor에서 실행:\nINSERT INTO admin_users (user_id) VALUES ('${currentUser.id}');`);
 }
 
 async function login() {
