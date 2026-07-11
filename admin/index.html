@@ -569,7 +569,7 @@ tbody tr:hover { background:#fafbfc; }
       <!-- ── Users ── -->
       <section id="usersView" style="display:none">
         <h1 class="page-title">사용자 관리</h1>
-        <p class="page-desc">앱별 가입자 현황 — <b>가입 앱</b>은 사용자가 처음 가입한 앱 기준입니다</p>
+        <p class="page-desc">통합 전체 = 네오익스 계정 가입자 · 앱 탭 = 그 앱을 쓰는 사용자(한 명이 여러 앱에 중복 집계) · <b>가입 앱</b> 컬럼 = 처음 가입한 출처</p>
         <div class="stats-row" id="usersStats"></div>
         <div class="table-wrap">
           <div class="table-toolbar" style="flex-wrap:wrap;gap:10px">
@@ -815,16 +815,19 @@ async function loadDashboard() {
   renderProjectCards();
 }
 
-// 앱별 가입자 카드 (get_app_stats RPC — 미설치 시 조용히 숨김)
+// 앱별 사용자 카드 — 통합 계정 전체 + 각 앱 사용자 수(멤버십 기준, 중복 집계)
 async function loadAppStats() {
   try {
     const { data, error } = await supabase.rpc('get_app_stats');
     if (error || !data || !data.length) { $('dashAppStats').innerHTML = '<span style="font-size:13px;color:var(--muted)">앱별 통계 없음 (app-directory-setup.sql 실행 필요)</span>'; return; }
     const order = Object.keys(APPS);
     data.sort((a,b) => (order.indexOf(a.app_key)+99999*(order.indexOf(a.app_key)<0)) - (order.indexOf(b.app_key)+99999*(order.indexOf(b.app_key)<0)) || b.total - a.total);
-    $('dashAppStats').innerHTML = data.map(s => {
+    const unifiedCard = `<div class="stat-card" style="border:1.5px solid var(--primary)"><div class="stat-card-top">${svgIcon(ICO.users,'blue')}<span class="stat-label">통합 계정 전체</span></div>
+      <div class="stat-value">${cachedUsers.length}</div>
+      <div style="font-size:12px;color:var(--light);margin-top:4px">네오익스 계정 가입자</div></div>`;
+    $('dashAppStats').innerHTML = unifiedCard + data.map(s => {
       const i = appInfo(s.app_key);
-      return `<div class="stat-card"><div class="stat-card-top"><span class="app-chip ${i.cls}" style="font-size:12px">${i.name}</span><span class="stat-label">가입자</span></div>
+      return `<div class="stat-card"><div class="stat-card-top"><span class="app-chip ${i.cls}" style="font-size:12px">${i.name}</span><span class="stat-label">사용자</span></div>
         <div class="stat-value">${s.total}</div>
         <div style="font-size:12px;color:${s.new_7d>0?'var(--success)':'var(--light)'};margin-top:4px">이번 주 +${s.new_7d}</div></div>`;
     }).join('');
@@ -903,7 +906,12 @@ const APPS = {
   'home':         { name:'홈',      cls:'badge-app-home' },
 };
 const appInfo = key => APPS[key] || { name:key, cls:'badge-app-etc' };
-const appOf = u => u.signup_app || 'home'; // 기록 없으면 홈(neoix.kr) 가입으로 간주
+const appOf = u => u.signup_app || 'home'; // 가입 출처(최초 기록 앱) — "가입 앱" 컬럼용
+// 이 계정이 "쓰는" 앱들 — 앱 탭/집계는 이 기준 (통합계정 1명이 여러 앱에 중복 집계됨)
+const membershipKeysOf = u => {
+  if (Array.isArray(u.apps) && u.apps.length) return [...new Set(u.apps.map(a => a.key))];
+  return ['home']; // 앱 기록이 없으면 = 통합계정(홈)만 있는 사용자
+};
 let userAppFilter = 'all';
 let usersHasV2 = false;
 
@@ -925,7 +933,7 @@ async function loadUsers() {
   const weekCount = cachedUsers.filter(u => new Date(u.created_at).getTime() > weekAgo).length;
 
   $('usersStats').innerHTML = `
-    <div class="stat-card"><div class="stat-card-top">${svgIcon(ICO.users,'blue')}<span class="stat-label">전체 가입자</span></div><div class="stat-value">${cachedUsers.length}</div></div>
+    <div class="stat-card"><div class="stat-card-top">${svgIcon(ICO.users,'blue')}<span class="stat-label">통합 계정 가입자</span></div><div class="stat-value">${cachedUsers.length}</div></div>
     <div class="stat-card"><div class="stat-card-top">${svgIcon(ICO.calendar,'green')}<span class="stat-label">오늘 가입</span></div><div class="stat-value">${todayCount}</div></div>
     <div class="stat-card"><div class="stat-card-top">${svgIcon(ICO.calendar,'purple')}<span class="stat-label">이번 주 가입</span></div><div class="stat-value">${weekCount}</div></div>
   `;
@@ -934,13 +942,14 @@ async function loadUsers() {
 }
 
 function renderAppTabs() {
+  // 앱 탭 = "그 앱을 쓰는 사용자 수" (멤버십 기준, 중복 집계 — 통합 전체와 합이 다른 게 정상)
   const counts = {};
-  cachedUsers.forEach(u => { const k = appOf(u); counts[k] = (counts[k] || 0) + 1; });
+  cachedUsers.forEach(u => membershipKeysOf(u).forEach(k => { counts[k] = (counts[k] || 0) + 1; }));
   // 레지스트리 순서 + 미등록 키(새 앱)도 뒤에 자동 노출
   const keys = [...Object.keys(APPS).filter(k => counts[k]), ...Object.keys(counts).filter(k => !APPS[k])];
   const tab = (key, label, cnt) =>
     `<span class="app-tab${userAppFilter===key?' active':''}" data-app="${key}">${label} <span class="cnt">${cnt}</span></span>`;
-  $('appTabs').innerHTML = tab('all','전체',cachedUsers.length) + keys.map(k => tab(k, appInfo(k).name, counts[k])).join('');
+  $('appTabs').innerHTML = tab('all','통합 전체',cachedUsers.length) + keys.map(k => tab(k, appInfo(k).name, counts[k])).join('');
   $('appTabs').querySelectorAll('.app-tab').forEach(el => el.onclick = () => {
     userAppFilter = el.dataset.app;
     renderAppTabs();
@@ -951,7 +960,7 @@ function renderAppTabs() {
 const providerBadge = { email:['이메일','badge-gray'], kakao:['카카오','badge-kakao'], apple:['Apple','badge-info'], google:['Google','badge-danger'] };
 function renderUsers(filter = '') {
   const nameOf = u => u.display_name || u.username || '-';
-  let list = userAppFilter === 'all' ? cachedUsers : cachedUsers.filter(u => appOf(u) === userAppFilter);
+  let list = userAppFilter === 'all' ? cachedUsers : cachedUsers.filter(u => membershipKeysOf(u).includes(userAppFilter));
   if (filter) list = list.filter(u => nameOf(u).toLowerCase().includes(filter) || (u.email||'').toLowerCase().includes(filter));
   if (!list.length) { $('usersBody').innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--light);padding:40px">가입자가 없습니다</td></tr>'; return; }
   $('usersBody').innerHTML = list.map(u => {

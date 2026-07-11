@@ -57,23 +57,24 @@ LANGUAGE SQL SECURITY DEFINER STABLE SET search_path=public AS $$
   ORDER BY p.created_at DESC;
 $$;
 
--- 3) 앱별 통계 --------------------------------------------------
+-- 3) 앱별 통계 (멤버십 기준: "그 앱을 쓰는 사용자 수" — 한 명이 여러 앱에 중복 집계됨.
+--    통합 계정 전체는 profiles COUNT로 따로 봄. 멤버십이 하나도 없는 계정은 'home'으로 집계)
 CREATE OR REPLACE FUNCTION get_app_stats()
 RETURNS TABLE (app_key TEXT, total BIGINT, new_7d BIGINT)
 LANGUAGE SQL SECURITY DEFINER STABLE SET search_path=public AS $$
-  WITH first_app AS (
-    SELECT DISTINCT ON (sm.user_id) sm.user_id, sm.service_key, sm.first_seen
+  WITH m AS (
+    SELECT sm.user_id, sm.service_key AS app_key, sm.first_seen
     FROM service_memberships sm
-    ORDER BY sm.user_id, sm.first_seen ASC NULLS LAST
-  ), everyone AS (
-    SELECT p.id, COALESCE(fa.service_key, 'home') AS app_key, p.created_at
-    FROM profiles p LEFT JOIN first_app fa ON fa.user_id = p.id
+    UNION ALL
+    SELECT p.id, 'home', p.created_at
+    FROM profiles p
+    WHERE NOT EXISTS (SELECT 1 FROM service_memberships sm WHERE sm.user_id = p.id)
   )
-  SELECT e.app_key, COUNT(*)::BIGINT AS total,
-         COUNT(*) FILTER (WHERE e.created_at > now() - interval '7 days')::BIGINT AS new_7d
-  FROM everyone e
+  SELECT m.app_key, COUNT(DISTINCT m.user_id)::BIGINT AS total,
+         COUNT(DISTINCT m.user_id) FILTER (WHERE m.first_seen > now() - interval '7 days')::BIGINT AS new_7d
+  FROM m
   WHERE is_admin()
-  GROUP BY e.app_key;
+  GROUP BY m.app_key;
 $$;
 
 -- 검증
