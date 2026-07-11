@@ -430,12 +430,6 @@ tbody tr:hover { background:#fafbfc; }
         <span class="nav-label">J맵</span>
         <span class="badge" id="jmapBadge" style="display:none"></span>
       </div>
-      <div class="nav-item" data-view="app-home">
-        <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-        <span class="nav-label">홈 (neoix.kr)</span>
-        <span class="badge" id="homeBadge" style="display:none"></span>
-      </div>
-
       <div class="nav-group-title">기타</div>
       <div class="nav-item" data-view="projects">
         <svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
@@ -847,17 +841,26 @@ async function loadDashboard() {
 }
 
 // 앱별 사용자 카드 — 통합 계정 전체 + 각 앱 사용자 수(멤버십 기준, 중복 집계)
+// 사용자 탭과 동일한 기준으로 디렉토리에서 직접 계산 (통계 불일치 방지)
 async function loadAppStats() {
   try {
-    const { data, error } = await supabase.rpc('get_app_stats');
-    if (error || !data || !data.length) { $('dashAppStats').innerHTML = '<span style="font-size:13px;color:var(--muted)">앱별 통계 없음 (app-directory-setup.sql 실행 필요)</span>'; return; }
+    await fetchDirectory();
+    const weekAgo = Date.now() - 7 * 86400000;
+    const stats = {}; // key → {total, new_7d}
+    cachedUsers.forEach(u => membershipKeysOf(u).forEach(k => {
+      stats[k] = stats[k] || { total: 0, new_7d: 0 };
+      stats[k].total++;
+      const a = (u.apps || []).find(x => x.key === k);
+      const f = a ? a.first_seen : (k === 'ogx' ? u.created_at : null); // 별칭계정은 가입일 기준
+      if (f && new Date(f).getTime() > weekAgo) stats[k].new_7d++;
+    }));
     const order = Object.keys(APPS);
-    data.sort((a,b) => (order.indexOf(a.app_key)+99999*(order.indexOf(a.app_key)<0)) - (order.indexOf(b.app_key)+99999*(order.indexOf(b.app_key)<0)) || b.total - a.total);
+    const keys = [...order.filter(k => stats[k]), ...Object.keys(stats).filter(k => !APPS[k])];
     const unifiedCard = `<div class="stat-card" style="border:1.5px solid var(--primary)"><div class="stat-card-top">${svgIcon(ICO.users,'blue')}<span class="stat-label">통합 계정 전체</span></div>
       <div class="stat-value">${cachedUsers.length}</div>
       <div style="font-size:12px;color:var(--light);margin-top:4px">네오익스 계정 가입자</div></div>`;
-    $('dashAppStats').innerHTML = unifiedCard + data.map(s => {
-      const i = appInfo(s.app_key);
+    $('dashAppStats').innerHTML = unifiedCard + keys.map(k => {
+      const i = appInfo(k), s = stats[k];
       return `<div class="stat-card"><div class="stat-card-top"><span class="app-chip ${i.cls}" style="font-size:12px">${i.name}</span><span class="stat-label">사용자</span></div>
         <div class="stat-value">${s.total}</div>
         <div style="font-size:12px;color:${s.new_7d>0?'var(--success)':'var(--light)'};margin-top:4px">이번 주 +${s.new_7d}</div></div>`;
@@ -934,14 +937,20 @@ const APPS = {
   'pray':         { name:'기도해요',  cls:'badge-app-pray' },
   'travel-globe': { name:'슈웅',     cls:'badge-app-travel' },
   'ogx':          { name:'OGX',     cls:'badge-app-ogx' },
-  'home':         { name:'홈',      cls:'badge-app-home' },
 };
 const appInfo = key => APPS[key] || { name:key, cls:'badge-app-etc' };
-const appOf = u => u.signup_app || 'home'; // 가입 출처(최초 기록 앱) — "가입 앱" 컬럼용
-// 이 계정이 "쓰는" 앱들 — 앱 탭/집계는 이 기준 (통합계정 1명이 여러 앱에 중복 집계됨)
+const isOgxAlias = u => (u.email || '').endsWith('@users.neoix.kr'); // OGX(찬양팀) 별칭 계정
+// 가입 출처(최초 기록 앱) — "가입 앱" 컬럼용. 별칭계정=OGX, 기록없음/홈=null(- 표시)
+const appOf = u => {
+  if (u.signup_app && u.signup_app !== 'home') return u.signup_app;
+  return isOgxAlias(u) ? 'ogx' : null;
+};
+// 이 계정이 "쓰는" 앱들 — 앱 탭/집계 기준 (통합계정 1명이 여러 앱에 중복 집계됨)
+// '홈'은 카테고리에서 제외(의미 없음) · @users.neoix.kr 별칭계정은 항상 OGX 포함
 const membershipKeysOf = u => {
-  if (Array.isArray(u.apps) && u.apps.length) return [...new Set(u.apps.map(a => a.key))];
-  return ['home']; // 앱 기록이 없으면 = 통합계정(홈)만 있는 사용자
+  const keys = new Set(Array.isArray(u.apps) ? u.apps.map(a => a.key).filter(k => k !== 'home') : []);
+  if (isOgxAlias(u)) keys.add('ogx');
+  return [...keys];
 };
 let userAppFilter = 'all';
 let usersHasV2 = false;
@@ -962,7 +971,7 @@ async function fetchDirectory() {
   cachedUsers.forEach(u => membershipKeysOf(u).forEach(k => { counts[k] = (counts[k] || 0) + 1; }));
   const badge = (id, n) => { const el = $(id); if (el && n) { el.textContent = n; el.style.display = ''; } };
   badge('usersBadge', cachedUsers.length);
-  badge('prayBadge', counts['pray']); badge('travelBadge', counts['travel-globe']); badge('homeBadge', counts['home']);
+  badge('prayBadge', counts['pray']); badge('travelBadge', counts['travel-globe']); badge('polyBadge', counts['poly']);
 }
 
 async function loadUsers() {
@@ -1006,18 +1015,17 @@ function renderUsers(filter = '') {
   if (!list.length) { $('usersBody').innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--light);padding:40px">가입자가 없습니다</td></tr>'; return; }
   $('usersBody').innerHTML = list.map(u => {
     const [pLabel, pClass] = providerBadge[u.signup_provider] || [u.signup_provider ? u.signup_provider : '이메일','badge-gray'];
-    const sa = appInfo(appOf(u));
-    // 사용 앱: v2=apps(jsonb 배열) / v1=services(문자열) 폴백
-    let usedApps = '<span style="color:var(--light)">-</span>';
-    if (Array.isArray(u.apps) && u.apps.length) {
-      usedApps = u.apps.map(a => { const i = appInfo(a.key); return `<span class="app-chip ${i.cls}" title="첫 사용 ${fmt(a.first_seen)}">${i.name}</span>`; }).join('');
-    } else if (u.services) {
-      usedApps = `<span style="font-size:12px">${u.services}</span>`;
-    }
+    const saKey = appOf(u);
+    const saBadge = saKey ? (() => { const i = appInfo(saKey); return `<span class="badge ${i.cls}">${i.name}</span>`; })() : '<span style="color:var(--light)">-</span>';
+    // 사용 앱 = 멤버십 기준 (별칭계정 OGX 포함, 홈 제외)
+    const mk = membershipKeysOf(u);
+    const usedApps = mk.length
+      ? mk.map(k => { const i = appInfo(k); const a = (u.apps||[]).find(x => x.key === k); return `<span class="app-chip ${i.cls}"${a ? ` title="첫 사용 ${fmt(a.first_seen)}"` : ''}>${i.name}</span>`; }).join('')
+      : '<span style="color:var(--light)">-</span>';
     return `<tr>
       <td class="td-bold">${nameOf(u)}</td>
       <td class="td-mono">${u.email||'-'}</td>
-      <td><span class="badge ${sa.cls}">${sa.name}</span></td>
+      <td>${saBadge}</td>
       <td><span class="badge ${pClass}">${pLabel}</span></td>
       <td>${usedApps}</td>
       <td style="color:var(--light)">${fmt(u.created_at)}</td>
@@ -1031,7 +1039,6 @@ let currentAppKey = null;
 const APP_DESCS = {
   'pray': '교회 중보기도 앱 — 이 앱을 사용하는 통합 계정',
   'travel-globe': '세계여행 기록 앱 — 이 앱을 사용하는 통합 계정',
-  'home': 'neoix.kr 홈/계정 페이지로만 가입한 통합 계정 (다른 앱 미사용 포함)',
 };
 async function loadAppView(key) {
   currentAppKey = key;
@@ -1042,7 +1049,7 @@ async function loadAppView(key) {
   await fetchDirectory();
   const list = cachedUsers.filter(u => membershipKeysOf(u).includes(key));
   const weekAgo = Date.now() - 7 * 86400000;
-  const firstSeenOf = u => { const a = (u.apps || []).find(x => x.key === key); return a ? a.first_seen : null; };
+  const firstSeenOf = u => { const a = (u.apps || []).find(x => x.key === key); if (a) return a.first_seen; return (key === 'ogx' && isOgxAlias(u)) ? u.created_at : null; };
   const newWeek = list.filter(u => { const f = firstSeenOf(u); return f && new Date(f).getTime() > weekAgo; }).length;
   const kakaoCount = list.filter(u => u.signup_provider === 'kakao').length;
   $('appViewStats').innerHTML = `
@@ -1056,18 +1063,19 @@ function renderAppViewUsers() {
   const key = currentAppKey; if (!key) return;
   const filter = ($('appUserSearch').value || '').toLowerCase();
   const nameOf = u => u.display_name || u.username || '-';
-  const firstSeenOf = u => { const a = (u.apps || []).find(x => x.key === key); return a ? a.first_seen : null; };
+  const firstSeenOf = u => { const a = (u.apps || []).find(x => x.key === key); if (a) return a.first_seen; return (key === 'ogx' && isOgxAlias(u)) ? u.created_at : null; };
   let list = cachedUsers.filter(u => membershipKeysOf(u).includes(key));
   if (filter) list = list.filter(u => nameOf(u).toLowerCase().includes(filter) || (u.email||'').toLowerCase().includes(filter));
   list.sort((a,b) => new Date(firstSeenOf(b) || b.created_at) - new Date(firstSeenOf(a) || a.created_at));
   if (!list.length) { $('appUsersBody').innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--light);padding:40px">사용자가 없습니다</td></tr>'; return; }
   $('appUsersBody').innerHTML = list.map(u => {
     const [pLabel, pClass] = providerBadge[u.signup_provider] || [u.signup_provider ? u.signup_provider : '이메일','badge-gray'];
-    const sa = appInfo(appOf(u));
+    const saKey = appOf(u);
+    const saBadge = saKey ? (() => { const i = appInfo(saKey); return `<span class="badge ${i.cls}">${i.name}</span>`; })() : '<span style="color:var(--light)">-</span>';
     return `<tr>
       <td class="td-bold">${nameOf(u)}</td>
       <td class="td-mono">${u.email||'-'}</td>
-      <td><span class="badge ${sa.cls}">${sa.name}</span></td>
+      <td>${saBadge}</td>
       <td><span class="badge ${pClass}">${pLabel}</span></td>
       <td style="color:var(--light)">${fmt(firstSeenOf(u))}</td>
       <td style="color:var(--light)">${fmt(u.created_at)}</td>

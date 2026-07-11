@@ -32,6 +32,14 @@ ON CONFLICT (user_id, service_key) DO NOTHING;
 -- 슈웅(travel-globe): 데이터가 별도 프로젝트라 백필 불가.
 -- 앱이 로그인 시 record_membership('travel-globe')을 호출하므로 신규 로그인부터 자동 집계됨.
 
+-- OGX 별칭 계정(@users.neoix.kr) 전부 OGX 귀속 — "홈" 카테고리 제거(2026-07-11 대표님 지시:
+-- 홈은 의미 없음, 어차피 찬양팀으로 들어온 계정). 어드민 JS도 별칭계정→OGX로 클라이언트 매핑함.
+INSERT INTO service_memberships (user_id, service_key, service_name, first_seen, last_seen)
+SELECT p.id, 'ogx', 'OGX 찬양팀', COALESCE(p.created_at, now()), COALESCE(p.created_at, now())
+FROM profiles p
+WHERE p.email LIKE '%@users.neoix.kr'
+ON CONFLICT (user_id, service_key) DO NOTHING;
+
 -- 2) 사용자 디렉토리 v2 ----------------------------------------
 -- signup_app = 가장 먼저 기록된 앱(first_seen 최솟값). 기록 없으면 NULL(→어드민에서 '홈' 처리)
 CREATE OR REPLACE FUNCTION get_user_directory2()
