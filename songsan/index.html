@@ -233,6 +233,23 @@
   .seg{ display:flex; flex-wrap:wrap; gap:8px; } .seg label{ flex:1 1 auto; min-width:calc(50% - 4px); position:relative; } .seg input{ position:absolute; opacity:0; pointer-events:none; }
   .seg span{ display:block; text-align:center; border:1px solid var(--line); border-radius:12px; padding:13px 8px; font-weight:600; font-size:14.5px; color:var(--t2); background:var(--surface); transition:all .1s; } .seg input:checked+span{ background:var(--pri); border-color:var(--pri); color:#fff; }
   .btn{ width:100%; border:0; border-radius:12px; height:52px; font-size:16px; font-weight:700; color:#fff; background:var(--pri); transition:transform .1s; } .btn:active{ transform:scale(.98); } .btn[disabled]{ background:#c4ccd4; pointer-events:none; } .btn.ghost{ background:var(--surface); color:var(--t2); border:1px solid var(--line); }
+  /* ── 참가신청 = 승선 신청서 ── */
+  .su-ticket{ background:var(--surface); border:1.5px solid var(--wood); border-bottom:2.5px dashed var(--wood); border-radius:16px 16px 4px 4px; padding:18px 16px; margin-bottom:16px; }
+  .su-tk-badge{ display:block; font-size:10.5px; letter-spacing:.18em; font-weight:800; color:var(--gold); }
+  .su-ticket h4{ font-family:'Jua',sans-serif; font-size:22px; font-weight:400; color:var(--navy); margin:6px 0 7px; }
+  .su-ticket p{ font-size:13.5px; color:var(--t2); line-height:1.65; margin:0; }
+  .su-card{ background:var(--surface); border:1px solid var(--line); border-radius:16px; padding:16px 16px 4px; margin-bottom:12px; }
+  .su-ct{ font-family:'Jua',sans-serif; font-size:15.5px; font-weight:400; color:var(--navy); margin-bottom:12px; }
+  .su-agree{ display:flex; gap:12px; align-items:center; background:var(--surface2); border:1.5px solid var(--wood); border-radius:14px; padding:14px; margin:14px 0 16px; cursor:pointer; }
+  .su-agree input{ width:22px; height:22px; accent-color:var(--pri); flex:0 0 auto; }
+  .su-agree b{ display:block; font-size:14.5px; color:var(--navy); }
+  .su-agree small{ display:block; font-size:12px; color:var(--t3); margin-top:2px; }
+  .su-btn{ font-family:'Jua',sans-serif; font-weight:400; font-size:17.5px; height:56px; background:var(--navy); }
+  .su-done-card{ background:var(--surface); border:1.5px solid var(--wood); border-radius:18px; padding:28px 20px 24px; text-align:center; margin-bottom:14px; }
+  .su-stamp{ display:inline-block; font-family:'Jua',sans-serif; font-weight:400; color:var(--danger); border:2.5px solid var(--danger); border-radius:10px; padding:5px 14px; font-size:18px; transform:rotate(-6deg); margin-bottom:14px; opacity:.85; }
+  .su-dn{ font-family:'Jua',sans-serif; font-weight:400; font-size:24px; color:var(--navy); }
+  .su-dd{ font-size:13.5px; font-weight:700; color:var(--t2); margin-top:4px; }
+  .su-done-card p{ font-size:13.5px; color:var(--t2); line-height:1.7; margin-top:12px; }
   .hintline{ font-size:12.5px; color:var(--t3); line-height:1.5; margin-top:8px; }
   .subtabs{ display:flex; gap:4px; margin-bottom:20px; background:var(--line2); padding:4px; border-radius:12px; } .subtab{ flex:1; border:0; background:none; border-radius:9px; padding:10px 4px; text-align:center; font-weight:600; font-size:14px; color:var(--t2); } .subtab.active{ background:var(--surface); color:var(--pri); box-shadow:0 1px 3px rgba(0,0,0,.08); }
   .pane{ display:none; } .pane.show{ display:block; }
@@ -419,17 +436,41 @@
       <div id="gallery"><div class="spin" style="color:#8b97a8">불러오는 중…</div></div>
     </div>
     <div class="pane" id="g-signup">
-      <p class="desc">아래 정보를 남겨 주시면 참가 신청이 접수됩니다.</p>
-      <div class="field"><label>학생 이름</label><input id="su-name" placeholder="학생 이름" maxlength="12"></div>
-      <div class="field"><label>부서</label><div class="seg" id="su-dept">
-        <label><input type="radio" name="sudept" value="유치부"><span>유치부</span></label><label><input type="radio" name="sudept" value="유년부"><span>유년부</span></label>
-        <label><input type="radio" name="sudept" value="초등부"><span>초등부</span></label><label><input type="radio" name="sudept" value="중고등부"><span>중고등부</span></label></div></div>
-      <div class="field"><label>학년</label><input id="su-grade" placeholder="예: 초등 4학년" maxlength="12"></div>
-      <div class="field"><label>보호자 이름</label><input id="su-gname" placeholder="보호자 이름" maxlength="12"></div>
-      <div class="field"><label>보호자 연락처</label><input id="su-phone" type="tel" inputmode="numeric" placeholder="010-0000-0000" maxlength="13"></div>
-      <div class="field"><label>알레르기 · 복용약 · 특이사항</label><textarea id="su-notes" placeholder="예: 땅콩 알레르기 / 천식 흡입기 소지 — 없으면 '없음'이라고 적어 주세요"></textarea></div>
-      <div class="field" style="display:flex;align-items:center;gap:10px"><input type="checkbox" id="su-agree" style="width:20px;height:20px;flex:0 0 auto"><label style="margin:0">수련회 참가 및 안전수칙에 동의합니다</label></div>
-      <button class="btn" id="su-submit">참가 신청하기</button>
+      <div class="su-ticket">
+        <span class="su-tk-badge">SONGSAN SUMMER RETREAT</span>
+        <h4>⛵ 승선 신청서</h4>
+        <p>여름 수련회 참가 신청서예요. 안전한 항해를 위해<br>아래 항목을 <b>빠짐없이</b> 적어 주세요.</p>
+      </div>
+      <div id="su-form">
+        <div class="su-card">
+          <div class="su-ct">🧒 우리 아이</div>
+          <div class="field"><label>학생 이름</label><input id="su-name" placeholder="학생 이름" maxlength="12"></div>
+          <div class="field"><label>부서</label><div class="seg" id="su-dept">
+            <label><input type="radio" name="sudept" value="유치부"><span>🐣 유치부</span></label><label><input type="radio" name="sudept" value="유년부"><span>🌱 유년부</span></label>
+            <label><input type="radio" name="sudept" value="초등부"><span>⚓ 초등부</span></label><label><input type="radio" name="sudept" value="중고등부"><span>🔥 중고등부</span></label></div></div>
+          <div class="field"><label>학년</label><input id="su-grade" placeholder="예: 초등 4학년" maxlength="12"></div>
+        </div>
+        <div class="su-card">
+          <div class="su-ct">👨‍👩‍👧 보호자</div>
+          <div class="field"><label>보호자 이름</label><input id="su-gname" placeholder="보호자 이름" maxlength="12"></div>
+          <div class="field"><label>보호자 연락처</label><input id="su-phone" type="tel" inputmode="numeric" placeholder="010-0000-0000" maxlength="13"></div>
+        </div>
+        <div class="su-card">
+          <div class="su-ct">🩺 건강 · 특이사항</div>
+          <div class="field"><label>알레르기 · 복용약 · 특이사항</label><textarea id="su-notes" placeholder="예: 땅콩 알레르기 / 천식 흡입기 소지 — 없으면 '없음'이라고 적어 주세요"></textarea></div>
+        </div>
+        <label class="su-agree" for="su-agree"><input type="checkbox" id="su-agree"><span><b>수련회 참가 및 안전수칙에 동의합니다</b><small>보호자 동의가 있어야 승선할 수 있어요</small></span></label>
+        <button class="btn su-btn" id="su-submit">🎫 승선 신청하기</button>
+      </div>
+      <div id="su-done" style="display:none">
+        <div class="su-done-card">
+          <div class="su-stamp">접수 완료</div>
+          <div class="su-dn" id="su-done-name">—</div>
+          <div class="su-dd" id="su-done-dept">—</div>
+          <p>참가 신청이 접수되었습니다.<br>담당 선생님이 확인 후 연락드릴게요 ⚓</p>
+        </div>
+        <button class="btn ghost" id="su-again">한 명 더 신청하기</button>
+      </div>
     </div>
   </div>
 </div>
@@ -533,7 +574,8 @@ if(location.hash==='#signup'){openSheet('guardian');const t=$('.subtab[data-pane
 
 /* ═══ 참가신청 ═══ */
 $('#su-phone').addEventListener('input',e=>{let v=e.target.value.replace(/\D/g,'').slice(0,11);if(v.length>=8)v=v.replace(/(\d{3})(\d{4})(\d+)/,'$1-$2-$3');else if(v.length>=4)v=v.replace(/(\d{3})(\d+)/,'$1-$2');e.target.value=v;});
-$('#su-submit').addEventListener('click',async()=>{const btn=$('#su-submit');const student_name=$('#su-name').value.trim(),dept=$('#su-dept input:checked')?.value,phone=$('#su-phone').value.trim(),grade=$('#su-grade').value.trim(),guardian_name=$('#su-gname').value.trim(),notes=$('#su-notes').value.trim();if(!student_name)return toast('학생 이름을 입력해 주세요',1);if(!dept)return toast('부서를 선택해 주세요',1);if(!grade)return toast('학년을 입력해 주세요',1);if(!guardian_name)return toast('보호자 이름을 입력해 주세요',1);if(phone.replace(/\D/g,'').length<10)return toast('연락처를 정확히 입력해 주세요',1);if(!notes)return toast("특이사항을 입력해 주세요 (없으면 '없음')",1);if(!$('#su-agree').checked)return toast('참가 동의에 체크해 주세요',1);btn.disabled=true;btn.textContent='접수 중…';const{error}=await sb.from('songsan_signups').insert({student_name,dept,grade,guardian_name,guardian_phone:phone,notes,agreed:true});btn.disabled=false;btn.textContent='참가 신청하기';if(error){console.error(error);return toast('신청 실패 — SQL 설정 확인',1);}toast('참가 신청 접수됨 ✅');['#su-name','#su-grade','#su-gname','#su-phone','#su-notes'].forEach(s=>$(s).value='');$('#su-agree').checked=false;$$('#su-dept input').forEach(x=>x.checked=false);});
+$('#su-submit').addEventListener('click',async()=>{const btn=$('#su-submit');const student_name=$('#su-name').value.trim(),dept=$('#su-dept input:checked')?.value,phone=$('#su-phone').value.trim(),grade=$('#su-grade').value.trim(),guardian_name=$('#su-gname').value.trim(),notes=$('#su-notes').value.trim();if(!student_name)return toast('학생 이름을 입력해 주세요',1);if(!dept)return toast('부서를 선택해 주세요',1);if(!grade)return toast('학년을 입력해 주세요',1);if(!guardian_name)return toast('보호자 이름을 입력해 주세요',1);if(phone.replace(/\D/g,'').length<10)return toast('연락처를 정확히 입력해 주세요',1);if(!notes)return toast("특이사항을 입력해 주세요 (없으면 '없음')",1);if(!$('#su-agree').checked)return toast('참가 동의에 체크해 주세요',1);btn.disabled=true;btn.textContent='접수 중…';const{error}=await sb.from('songsan_signups').insert({student_name,dept,grade,guardian_name,guardian_phone:phone,notes,agreed:true});btn.disabled=false;btn.textContent='참가 신청하기';if(error){console.error(error);return toast('신청 실패 — SQL 설정 확인',1);}$('#su-done-name').textContent=student_name;$('#su-done-dept').textContent=dept+' · '+grade;$('#su-form').style.display='none';$('#su-done').style.display='';['#su-name','#su-grade','#su-gname','#su-phone','#su-notes'].forEach(s=>$(s).value='');$('#su-agree').checked=false;$$('#su-dept input').forEach(x=>x.checked=false);});
+$('#su-again').addEventListener('click',()=>{$('#su-done').style.display='none';$('#su-form').style.display='';});
 
 /* ═══ 갤러리 ═══ */
 async function loadGallery(){const wrap=$('#gallery');wrap.innerHTML='<div class="spin" style="color:#8b97a8">불러오는 중…</div>';const dept=$('#g-filter').value;let q=sb.from('songsan_photos').select('*').order('created_at',{ascending:false});if(dept)q=q.eq('dept',dept);const{data,error}=await q;if(error){wrap.innerHTML=`<div class="empty" style="color:#8b97a8"><div class="em">⚙️</div><p>아직 준비 중이에요.<br>관리자 SQL 설정이 필요합니다.</p></div>`;return;}if(!data||!data.length){wrap.innerHTML=`<div class="empty" style="color:#8b97a8"><div class="em">📷</div><p>아직 올라온 사진이 없어요.</p></div>`;return;}const g={};data.forEach(p=>{(g[p.session]=g[p.session]||[]).push(p);});const order=SESSIONS.filter(s=>g[s]);Object.keys(g).forEach(s=>{if(!order.includes(s))order.push(s);});wrap.innerHTML=order.map(s=>`<div class="gal-group"><h4>📸 ${esc(s)} <span class="cnt">${g[s].length}</span></h4><div class="gal">${g[s].map(p=>`<img loading="lazy" src="${p.url}" alt="">`).join('')}</div></div>`).join('');$$('#gallery .gal img').forEach(img=>img.addEventListener('click',()=>{$('#lightbox img').src=img.src;$('#lightbox').classList.add('open');}));}
