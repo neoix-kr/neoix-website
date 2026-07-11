@@ -215,6 +215,21 @@ body.sidebar-collapsed .content-wrap { margin-left:var(--sidebar-collapsed); }
 .badge-gray { background:#f1f5f9; color:var(--muted); }
 .badge-danger { background:var(--danger-bg); color:var(--danger); }
 .badge-kakao { background:#FEE500; color:#3a1d1d; }
+/* 앱별 뱃지 */
+.badge-app-poly { background:#e8f1fe; color:#1b64da; }
+.badge-app-pray { background:#f3e8ff; color:#7c3aed; }
+.badge-app-travel { background:#e0f7fa; color:#0891b2; }
+.badge-app-ogx { background:#e6f9f1; color:#0f9d78; }
+.badge-app-home { background:#f1f5f9; color:#64748b; }
+.badge-app-etc { background:#fef3c7; color:#b45309; }
+/* 사용자 앱 탭 */
+.app-tabs { display:flex; gap:6px; flex-wrap:wrap; }
+.app-tab { display:inline-flex; align-items:center; gap:6px; padding:7px 13px; border-radius:9px; font-size:13px; font-weight:600; color:var(--muted); background:var(--bg); cursor:pointer; border:1px solid var(--border); user-select:none; }
+.app-tab:hover { color:var(--text); }
+.app-tab.active { background:var(--primary-light); color:var(--primary); border-color:transparent; }
+.app-tab .cnt { font-size:11.5px; font-weight:700; background:rgba(0,0,0,.06); padding:1px 7px; border-radius:99px; }
+.app-tab.active .cnt { background:rgba(49,130,246,.15); }
+.app-chip { display:inline-block; font-size:11px; font-weight:600; padding:2px 8px; border-radius:99px; margin:1px 2px 1px 0; }
 .badge-purple { background:var(--purple-bg); color:var(--purple); }
 .project-desc { font-size:13px; color:var(--muted); margin-bottom:14px; line-height:1.5; }
 .project-meta { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; }
@@ -390,12 +405,22 @@ tbody tr:hover { background:#fafbfc; }
         <span class="nav-label">OGX 찬양팀</span>
         <span class="badge" id="ogxBadge" style="display:none"></span>
       </div>
+      <div class="nav-item" data-view="poly">
+        <svg viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+        <span class="nav-label">폴리</span>
+        <span class="badge" id="polyBadge" style="display:none"></span>
+      </div>
 
       <div class="nav-group-title">Management</div>
       <div class="nav-item" data-view="users">
         <svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4-4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
         <span class="nav-label">사용자</span>
         <span class="badge" id="usersBadge" style="display:none"></span>
+      </div>
+      <div class="nav-item" data-view="jmap">
+        <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        <span class="nav-label">J맵 신청</span>
+        <span class="badge" id="jmapBadge" style="display:none"></span>
       </div>
       <div class="nav-item" data-view="projects">
         <svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
@@ -452,6 +477,10 @@ tbody tr:hover { background:#fafbfc; }
         <p class="page-desc" id="welcomeDate"></p>
         <div class="stats-row" id="dashStats"></div>
         <div class="section-header">
+          <h2 class="section-title">앱별 가입자</h2>
+        </div>
+        <div class="stats-row" id="dashAppStats"><span style="font-size:13px;color:var(--muted)">불러오는 중...</span></div>
+        <div class="section-header">
           <h2 class="section-title">프로젝트 현황</h2>
         </div>
         <div class="project-grid" id="projectCards"></div>
@@ -490,18 +519,81 @@ tbody tr:hover { background:#fafbfc; }
         </div>
       </section>
 
+      <!-- ── 폴리 ── -->
+      <section id="polyView" style="display:none">
+        <h1 class="page-title">폴리</h1>
+        <p class="page-desc">정치 소통 플랫폼 관리 — 정치인 인증 · 여론조사 · 민원</p>
+        <div class="stats-row" id="polyStats"></div>
+        <div class="tabs">
+          <button class="tab-btn active" data-tab="poly-politicians">정치인 인증</button>
+          <button class="tab-btn" data-tab="poly-polls">여론조사</button>
+          <button class="tab-btn" data-tab="poly-complaints">민원 현황</button>
+        </div>
+        <div id="poly-politicians">
+          <div class="table-wrap">
+            <div class="table-toolbar">
+              <span class="table-title">정치인 계정</span>
+              <input type="text" class="table-search" placeholder="이름/이메일 검색..." id="polyPoliticianSearch">
+            </div>
+            <div style="overflow-x:auto">
+              <table><thead><tr><th>이름</th><th>이메일</th><th>지역</th><th>상태</th><th>가입일</th><th>인증 처리</th></tr></thead><tbody id="polyPoliticiansBody"></tbody></table>
+            </div>
+          </div>
+        </div>
+        <div id="poly-polls" style="display:none">
+          <div style="margin-bottom:16px">
+            <button class="btn-sm btn-primary-sm" id="btnAddPoll" style="padding:9px 18px;font-size:13px">+ 새 여론조사</button>
+          </div>
+          <div class="table-wrap">
+            <div class="table-toolbar">
+              <span class="table-title">여론조사 목록</span>
+            </div>
+            <div style="overflow-x:auto">
+              <table><thead><tr><th>제목</th><th>카테고리</th><th>지역</th><th>참여</th><th>마감일</th><th>상태</th><th>관리</th></tr></thead><tbody id="polyPollsBody"></tbody></table>
+            </div>
+          </div>
+        </div>
+        <div id="poly-complaints" style="display:none">
+          <div class="table-wrap">
+            <div class="table-toolbar">
+              <span class="table-title">민원 목록</span>
+              <input type="text" class="table-search" placeholder="제목/작성자 검색..." id="polyComplaintSearch">
+            </div>
+            <div style="overflow-x:auto">
+              <table><thead><tr><th>제목</th><th>작성자</th><th>수신 의원</th><th>카테고리</th><th>동의</th><th>상태</th><th>접수일</th></tr></thead><tbody id="polyComplaintsBody"></tbody></table>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <!-- ── Users ── -->
       <section id="usersView" style="display:none">
         <h1 class="page-title">사용자 관리</h1>
-        <p class="page-desc">전체 서비스 가입자 현황</p>
+        <p class="page-desc">앱별 가입자 현황 — <b>가입 앱</b>은 사용자가 처음 가입한 앱 기준입니다</p>
         <div class="stats-row" id="usersStats"></div>
         <div class="table-wrap">
-          <div class="table-toolbar">
-            <span class="table-title">전체 가입자</span>
-            <input type="text" class="table-search" placeholder="아이디 검색..." id="userSearch">
+          <div class="table-toolbar" style="flex-wrap:wrap;gap:10px">
+            <div class="app-tabs" id="appTabs"></div>
+            <input type="text" class="table-search" placeholder="이름/이메일 검색..." id="userSearch">
           </div>
           <div style="overflow-x:auto">
-            <table><thead><tr><th>이름/아이디</th><th>이메일</th><th>가입경로</th><th>사용 서비스</th><th>가입일</th><th>최근 로그인</th></tr></thead><tbody id="usersBody"></tbody></table>
+            <table><thead><tr><th>이름/아이디</th><th>이메일</th><th>가입 앱</th><th>가입경로</th><th>사용 앱</th><th>가입일</th><th>최근 로그인</th></tr></thead><tbody id="usersBody"></tbody></table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── J맵 사전오픈 신청 ── -->
+      <section id="jmapView" style="display:none">
+        <h1 class="page-title">J맵 사전오픈 신청</h1>
+        <p class="page-desc">중보 앱에서 접수된 J맵 사전오픈 신청자 (전화번호)</p>
+        <div class="stats-row" id="jmapStats"></div>
+        <div class="table-wrap">
+          <div class="table-toolbar">
+            <span class="table-title">신청자 목록</span>
+            <input type="text" class="table-search" placeholder="번호 검색..." id="jmapSearch">
+          </div>
+          <div style="overflow-x:auto">
+            <table><thead><tr><th>전화번호</th><th>유입 앱</th><th>교회</th><th>교단</th><th>신청일시</th></tr></thead><tbody id="jmapBody"></tbody></table>
           </div>
         </div>
       </section>
@@ -569,6 +661,31 @@ tbody tr:hover { background:#fafbfc; }
   </div>
 </div>
 
+<!-- ── 폴리 여론조사 등록 Modal ── -->
+<div class="modal-overlay" id="pollModal">
+  <div class="modal">
+    <h3>공식 여론조사 등록</h3>
+    <div class="field"><label>제목</label><input type="text" id="polTitle" placeholder="예: ○○시 청년 교통비 지원 조례"></div>
+    <div class="field"><label>설명 (선택)</label><textarea id="polDesc" rows="2" placeholder="여론조사 배경 설명"></textarea></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div class="field"><label>카테고리</label><select id="polCategory"><option value="정책">정책</option><option value="조례">조례</option><option value="지역이슈">지역이슈</option></select></div>
+      <div class="field"><label>마감일</label><input type="datetime-local" id="polEndsAt"></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div class="field"><label>시/도 (선택, 비우면 전국)</label><input type="text" id="polProvince" placeholder="경기도"></div>
+      <div class="field"><label>시/군/구 (선택)</label><input type="text" id="polCity" placeholder="고양시"></div>
+    </div>
+    <div class="field">
+      <label>보기 (2~4개, 위에서부터 순서대로)</label>
+      <input type="text" id="polOpt1" placeholder="보기 1 (예: 찬성)" style="margin-bottom:8px">
+      <input type="text" id="polOpt2" placeholder="보기 2 (예: 반대)" style="margin-bottom:8px">
+      <input type="text" id="polOpt3" placeholder="보기 3 (선택)" style="margin-bottom:8px">
+      <input type="text" id="polOpt4" placeholder="보기 4 (선택)">
+    </div>
+    <div class="modal-actions"><button class="btn-cancel" id="btnPollCancel">취소</button><button class="btn-save" id="btnPollSave">등록</button></div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script type="module">
@@ -585,7 +702,7 @@ const emailToId = email => email ? email.split('@')[0] : '';
 const fmt = d => d ? new Date(d).toLocaleDateString('ko-KR', { year:'numeric', month:'short', day:'numeric' }) : '-';
 const fmtFull = d => d ? new Date(d).toLocaleString('ko-KR', { year:'numeric', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' }) : '-';
 
-const headerTitles = { dashboard:'대시보드', ogx:'OGX 찬양팀', users:'사용자 관리', projects:'프로젝트 관리', settings:'설정' };
+const headerTitles = { dashboard:'대시보드', ogx:'OGX 찬양팀', poly:'폴리', users:'사용자 관리', jmap:'J맵 사전신청', projects:'프로젝트 관리', settings:'설정' };
 const statusMap = { active:['운영 중','badge-success'], development:['개발 중','badge-info'], maintenance:['점검','badge-warning'], archived:['보관','badge-gray'] };
 const catLabels = { web:'웹', mobile:'모바일', tool:'도구', api:'API' };
 
@@ -694,7 +811,24 @@ async function loadDashboard() {
 
   if (userCount > 0) { $('usersBadge').textContent = userCount; $('usersBadge').style.display = ''; }
   if (roomCount > 0) { $('ogxBadge').textContent = roomCount; $('ogxBadge').style.display = ''; }
+  loadAppStats();
   renderProjectCards();
+}
+
+// 앱별 가입자 카드 (get_app_stats RPC — 미설치 시 조용히 숨김)
+async function loadAppStats() {
+  try {
+    const { data, error } = await supabase.rpc('get_app_stats');
+    if (error || !data || !data.length) { $('dashAppStats').innerHTML = '<span style="font-size:13px;color:var(--muted)">앱별 통계 없음 (app-directory-setup.sql 실행 필요)</span>'; return; }
+    const order = Object.keys(APPS);
+    data.sort((a,b) => (order.indexOf(a.app_key)+99999*(order.indexOf(a.app_key)<0)) - (order.indexOf(b.app_key)+99999*(order.indexOf(b.app_key)<0)) || b.total - a.total);
+    $('dashAppStats').innerHTML = data.map(s => {
+      const i = appInfo(s.app_key);
+      return `<div class="stat-card"><div class="stat-card-top"><span class="app-chip ${i.cls}" style="font-size:12px">${i.name}</span><span class="stat-label">가입자</span></div>
+        <div class="stat-value">${s.total}</div>
+        <div style="font-size:12px;color:${s.new_7d>0?'var(--success)':'var(--light)'};margin-top:4px">이번 주 +${s.new_7d}</div></div>`;
+    }).join('');
+  } catch(e) { $('dashAppStats').innerHTML = ''; }
 }
 
 function renderProjectCards() {
@@ -759,14 +893,32 @@ function renderMembers(filter = '') {
   }).join('');
 }
 
-// ── Users ──
+// ── Users (앱별 구분) ──
+// 앱 레지스트리: service_key → 표시명/뱃지. 새 앱 추가 시 여기에 한 줄만 추가.
+const APPS = {
+  'poly':         { name:'폴리',     cls:'badge-app-poly' },
+  'pray':         { name:'기도해요',  cls:'badge-app-pray' },
+  'travel-globe': { name:'슈웅',     cls:'badge-app-travel' },
+  'ogx':          { name:'OGX',     cls:'badge-app-ogx' },
+  'home':         { name:'홈',      cls:'badge-app-home' },
+};
+const appInfo = key => APPS[key] || { name:key, cls:'badge-app-etc' };
+const appOf = u => u.signup_app || 'home'; // 기록 없으면 홈(neoix.kr) 가입으로 간주
+let userAppFilter = 'all';
+let usersHasV2 = false;
+
 async function loadUsers() {
-  // 통합 디렉토리(프로필+가입서비스) 우선, 없으면 기존 함수로 폴백
+  // v2(가입앱+사용앱) 우선 → v1 → get_all_users 순 폴백
+  usersHasV2 = false;
   try {
-    const { data, error } = await supabase.rpc('get_user_directory');
-    if (!error && data) cachedUsers = data;
+    const { data, error } = await supabase.rpc('get_user_directory2');
+    if (!error && data) { cachedUsers = data; usersHasV2 = true; }
   } catch(e) {}
+  if (!usersHasV2) {
+    try { const { data, error } = await supabase.rpc('get_user_directory'); if (!error && data) cachedUsers = data; } catch(e) {}
+  }
   if (!cachedUsers.length) { try { const { data } = await supabase.rpc('get_all_users'); cachedUsers = data || []; } catch(e) {} }
+
   const today = new Date().toDateString();
   const todayCount = cachedUsers.filter(u => new Date(u.created_at).toDateString() === today).length;
   const weekAgo = Date.now() - 7 * 86400000;
@@ -777,22 +929,47 @@ async function loadUsers() {
     <div class="stat-card"><div class="stat-card-top">${svgIcon(ICO.calendar,'green')}<span class="stat-label">오늘 가입</span></div><div class="stat-value">${todayCount}</div></div>
     <div class="stat-card"><div class="stat-card-top">${svgIcon(ICO.calendar,'purple')}<span class="stat-label">이번 주 가입</span></div><div class="stat-value">${weekCount}</div></div>
   `;
-  renderUsers();
+  renderAppTabs();
+  renderUsers($('userSearch').value.toLowerCase());
+}
+
+function renderAppTabs() {
+  const counts = {};
+  cachedUsers.forEach(u => { const k = appOf(u); counts[k] = (counts[k] || 0) + 1; });
+  // 레지스트리 순서 + 미등록 키(새 앱)도 뒤에 자동 노출
+  const keys = [...Object.keys(APPS).filter(k => counts[k]), ...Object.keys(counts).filter(k => !APPS[k])];
+  const tab = (key, label, cnt) =>
+    `<span class="app-tab${userAppFilter===key?' active':''}" data-app="${key}">${label} <span class="cnt">${cnt}</span></span>`;
+  $('appTabs').innerHTML = tab('all','전체',cachedUsers.length) + keys.map(k => tab(k, appInfo(k).name, counts[k])).join('');
+  $('appTabs').querySelectorAll('.app-tab').forEach(el => el.onclick = () => {
+    userAppFilter = el.dataset.app;
+    renderAppTabs();
+    renderUsers($('userSearch').value.toLowerCase());
+  });
 }
 
 const providerBadge = { email:['이메일','badge-gray'], kakao:['카카오','badge-kakao'], apple:['Apple','badge-info'], google:['Google','badge-danger'] };
 function renderUsers(filter = '') {
   const nameOf = u => u.display_name || u.username || '-';
-  const filtered = filter ? cachedUsers.filter(u => nameOf(u).toLowerCase().includes(filter) || (u.email||'').toLowerCase().includes(filter) || (u.services||'').toLowerCase().includes(filter)) : cachedUsers;
-  if (!filtered.length) { $('usersBody').innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--light);padding:40px">가입자가 없습니다</td></tr>'; return; }
-  $('usersBody').innerHTML = filtered.map(u => {
+  let list = userAppFilter === 'all' ? cachedUsers : cachedUsers.filter(u => appOf(u) === userAppFilter);
+  if (filter) list = list.filter(u => nameOf(u).toLowerCase().includes(filter) || (u.email||'').toLowerCase().includes(filter));
+  if (!list.length) { $('usersBody').innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--light);padding:40px">가입자가 없습니다</td></tr>'; return; }
+  $('usersBody').innerHTML = list.map(u => {
     const [pLabel, pClass] = providerBadge[u.signup_provider] || [u.signup_provider ? u.signup_provider : '이메일','badge-gray'];
-    const services = u.services ? u.services : '<span style="color:var(--light)">-</span>';
+    const sa = appInfo(appOf(u));
+    // 사용 앱: v2=apps(jsonb 배열) / v1=services(문자열) 폴백
+    let usedApps = '<span style="color:var(--light)">-</span>';
+    if (Array.isArray(u.apps) && u.apps.length) {
+      usedApps = u.apps.map(a => { const i = appInfo(a.key); return `<span class="app-chip ${i.cls}" title="첫 사용 ${fmt(a.first_seen)}">${i.name}</span>`; }).join('');
+    } else if (u.services) {
+      usedApps = `<span style="font-size:12px">${u.services}</span>`;
+    }
     return `<tr>
       <td class="td-bold">${nameOf(u)}</td>
       <td class="td-mono">${u.email||'-'}</td>
+      <td><span class="badge ${sa.cls}">${sa.name}</span></td>
       <td><span class="badge ${pClass}">${pLabel}</span></td>
-      <td style="font-size:12px">${services}</td>
+      <td>${usedApps}</td>
       <td style="color:var(--light)">${fmt(u.created_at)}</td>
       <td style="color:var(--light)">${fmtFull(u.last_sign_in_at)}</td>
     </tr>`;
@@ -843,14 +1020,229 @@ async function saveProject() {
   renderProjectCards(); loadProjectsView(); toast(id ? '수정 완료' : '추가 완료', 'success');
 }
 
+// ── J맵 사전신청 ──
+let cachedJmap = [];
+async function loadJmap() {
+  const { data, error } = await supabase.from('jmap_preorders').select('*').order('created_at', { ascending: false });
+  if (error) { $('jmapBody').innerHTML = `<tr><td colspan="5" style="color:var(--text-light)">불러오기 실패 — jmap-setup.sql 실행 여부를 확인하세요 (${error.message})</td></tr>`; return; }
+  cachedJmap = data || [];
+  const today = new Date(); today.setHours(0,0,0,0);
+  const todayCount = cachedJmap.filter(r => new Date(r.created_at) >= today).length;
+  $('jmapStats').innerHTML = `
+    <div class="stat-card"><div class="stat-value">${cachedJmap.length}</div><div class="stat-label">총 신청</div></div>
+    <div class="stat-card"><div class="stat-value">${todayCount}</div><div class="stat-label">오늘 신청</div></div>`;
+  const badge = $('jmapBadge');
+  if (cachedJmap.length) { badge.textContent = cachedJmap.length; badge.style.display = ''; }
+  renderJmap('');
+}
+function renderJmap(q) {
+  const rows = cachedJmap.filter(r => !q || (r.phone||'').includes(q));
+  $('jmapBody').innerHTML = rows.length ? rows.map(r => `
+    <tr>
+      <td style="font-weight:600">${(r.phone||'').replace(/(\d{3})(\d{3,4})(\d{4})/, '$1-$2-$3')}</td>
+      <td>${r.source||'-'}</td>
+      <td>${r.church||'-'}</td>
+      <td>${r.denomination||'-'}</td>
+      <td>${new Date(r.created_at).toLocaleString('ko-KR')}</td>
+    </tr>`).join('') : '<tr><td colspan="5" style="color:var(--text-light)">아직 신청자가 없습니다</td></tr>';
+}
+
+// ── 폴리 (정치앱 관리) ──
+let cachedPolyPoliticians = [], cachedPolyPolls = [], cachedPolyComplaints = [], polyPollCounts = {};
+const polyVerifBadge = { pending:['인증 대기','badge-warning'], approved:['승인됨','badge-success'], rejected:['반려됨','badge-danger'] };
+const polyComplaintStatusLabels = { pending:'접수대기', reviewing:'검토중', accepted:'수락됨', processing:'처리중', resolved:'해결', rejected:'반려' };
+
+async function loadPoly() {
+  loadPolyStats();
+  loadPolyPoliticians();
+  loadPolyPolls();
+  loadPolyComplaints();
+}
+
+async function loadPolyStats() {
+  const { data, error } = await supabase.rpc('poly_admin_stats');
+  if (error) {
+    $('polyStats').innerHTML = '';
+    return toast(`폴리 통계 로드 실패 — admin/poly-admin-setup.sql 실행 여부를 확인하세요 (${error.message})`, 'error');
+  }
+  const s = data || {};
+  const pending = s.pending_verification || 0;
+  $('polyStats').innerHTML = `
+    <div class="stat-card"><div class="stat-card-top">${svgIcon(ICO.users,'blue')}<span class="stat-label">유권자</span></div><div class="stat-value">${s.citizens || 0}</div></div>
+    <div class="stat-card"><div class="stat-card-top">${svgIcon(ICO.members,'purple')}<span class="stat-label">정치인</span></div><div class="stat-value">${s.politicians || 0}</div><div class="stat-sub">${pending ? `인증 대기 ${pending}명` : '인증 대기 없음'}</div></div>
+    <div class="stat-card"><div class="stat-card-top">${svgIcon(ICO.projects,'warning')}<span class="stat-label">민원</span></div><div class="stat-value">${s.complaints_total || 0}</div><div class="stat-sub">해결 ${(s.complaints_by_status||{}).resolved || 0}건</div></div>
+    <div class="stat-card"><div class="stat-card-top">${svgIcon(ICO.active,'green')}<span class="stat-label">진행중 여론조사</span></div><div class="stat-value">${s.active_polls || 0}</div></div>
+  `;
+  const badge = $('polyBadge');
+  if (pending > 0) { badge.textContent = pending; badge.style.display = ''; } else badge.style.display = 'none';
+}
+
+// 정치인 인증
+async function loadPolyPoliticians() {
+  const { data, error } = await supabase.rpc('poly_admin_list_politicians');
+  if (error) { $('polyPoliticiansBody').innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--light);padding:40px">불러오기 실패 — poly-admin-setup.sql 실행 여부를 확인하세요 (${error.message})</td></tr>`; return; }
+  cachedPolyPoliticians = data || [];
+  renderPolyPoliticians($('polyPoliticianSearch').value.toLowerCase());
+}
+
+function renderPolyPoliticians(filter = '') {
+  const filtered = filter ? cachedPolyPoliticians.filter(p => (p.name||'').toLowerCase().includes(filter) || (p.email||'').toLowerCase().includes(filter)) : cachedPolyPoliticians;
+  if (!filtered.length) { $('polyPoliticiansBody').innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--light);padding:40px">정치인 계정이 없습니다</td></tr>'; return; }
+  $('polyPoliticiansBody').innerHTML = filtered.map(p => {
+    const [sLabel, sClass] = polyVerifBadge[p.verification_status] || polyVerifBadge.pending;
+    const region = [p.region_province, p.region_city].filter(Boolean).join(' ') || '-';
+    const actions = p.verification_status === 'approved'
+      ? `<button class="btn-sm btn-danger-outline" onclick="polySetVerification('${p.id}','rejected')">반려</button>`
+      : p.verification_status === 'rejected'
+      ? `<button class="btn-sm btn-primary-sm" onclick="polySetVerification('${p.id}','approved')">승인</button>`
+      : `<button class="btn-sm btn-primary-sm" onclick="polySetVerification('${p.id}','approved')">승인</button> <button class="btn-sm btn-danger-outline" onclick="polySetVerification('${p.id}','rejected')">반려</button>`;
+    return `<tr>
+      <td class="td-bold">${p.name || '-'}</td>
+      <td class="td-mono">${p.email || '-'}</td>
+      <td>${region}</td>
+      <td><span class="badge ${sClass}">${sLabel}</span></td>
+      <td style="color:var(--light)">${fmt(p.created_at)}</td>
+      <td style="white-space:nowrap">${actions}</td>
+    </tr>`;
+  }).join('');
+}
+
+window.polySetVerification = async function(userId, status) {
+  const { error } = await supabase.rpc('poly_admin_set_verification', { p_user_id: userId, p_status: status });
+  if (error) return toast('처리 실패: ' + error.message, 'error');
+  const row = cachedPolyPoliticians.find(p => p.id === userId);
+  if (row) row.verification_status = status;
+  renderPolyPoliticians($('polyPoliticianSearch').value.toLowerCase());
+  loadPolyStats();
+  toast(status === 'approved' ? '승인되었습니다' : '반려되었습니다', 'success');
+};
+
+// 여론조사
+async function loadPolyPolls() {
+  const [pollsRes, resultsRes] = await Promise.all([
+    supabase.from('poly_polls').select('*').order('created_at', { ascending: false }),
+    supabase.from('poly_poll_results').select('*'),
+  ]);
+  if (pollsRes.error) { $('polyPollsBody').innerHTML = `<tr><td colspan="7" style="text-align:center;color:var(--light);padding:40px">불러오기 실패 (${pollsRes.error.message})</td></tr>`; return; }
+  cachedPolyPolls = pollsRes.data || [];
+  polyPollCounts = {};
+  (resultsRes.data || []).forEach(r => { polyPollCounts[r.poll_id] = (polyPollCounts[r.poll_id] || 0) + Number(r.cnt); });
+  renderPolyPolls();
+}
+
+function renderPolyPolls() {
+  if (!cachedPolyPolls.length) { $('polyPollsBody').innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--light);padding:40px">등록된 여론조사가 없습니다</td></tr>'; return; }
+  const now = Date.now();
+  $('polyPollsBody').innerHTML = cachedPolyPolls.map(p => {
+    const active = new Date(p.ends_at).getTime() > now;
+    const region = [p.region_province, p.region_city].filter(Boolean).join(' ') || '전국';
+    return `<tr>
+      <td class="td-bold">${p.title || '-'}${p.is_official ? ' <span class="badge badge-info" style="margin-left:4px">공식</span>' : ''}</td>
+      <td>${p.category || '-'}</td>
+      <td>${region}</td>
+      <td>${polyPollCounts[p.id] || 0}명</td>
+      <td style="color:var(--light)">${fmtFull(p.ends_at)}</td>
+      <td><span class="badge ${active ? 'badge-success' : 'badge-gray'}">${active ? '진행중' : '마감'}</span></td>
+      <td>${active ? `<button class="btn-sm btn-outline" onclick="polyClosePoll('${p.id}', this)">마감</button>` : ''}</td>
+    </tr>`;
+  }).join('');
+}
+
+window.polyClosePoll = async function(id, btn) {
+  // 인라인 재확인 — 첫 클릭 후 3초 내 한 번 더 눌러야 마감 (네이티브 confirm 미사용)
+  if (btn.dataset.confirm !== '1') {
+    btn.dataset.confirm = '1';
+    btn.textContent = '한번 더 클릭';
+    btn.className = 'btn-sm btn-danger-outline';
+    setTimeout(() => { btn.dataset.confirm = ''; btn.textContent = '마감'; btn.className = 'btn-sm btn-outline'; }, 3000);
+    return;
+  }
+  btn.disabled = true;
+  const { error } = await supabase.rpc('poly_admin_close_poll', { p_id: id });
+  btn.disabled = false;
+  if (error) return toast('마감 실패: ' + error.message, 'error');
+  toast('여론조사가 마감되었습니다', 'success');
+  loadPolyPolls(); loadPolyStats();
+};
+
+async function savePoll() {
+  const title = $('polTitle').value.trim();
+  if (!title) return toast('제목을 입력하세요', 'error');
+  const labels = ['polOpt1','polOpt2','polOpt3','polOpt4'].map(id => $(id).value.trim()).filter(Boolean);
+  if (labels.length < 2) return toast('보기를 2개 이상 입력하세요', 'error');
+  const endsRaw = $('polEndsAt').value;
+  if (!endsRaw) return toast('마감일을 선택하세요', 'error');
+  const endsAt = new Date(endsRaw);
+  if (endsAt.getTime() <= Date.now()) return toast('마감일은 미래 시각이어야 합니다', 'error');
+  $('btnPollSave').disabled = true;
+  const { error } = await supabase.rpc('poly_admin_create_poll', {
+    p_title: title,
+    p_description: $('polDesc').value.trim() || null,
+    p_category: $('polCategory').value,
+    p_region_province: $('polProvince').value.trim() || null,
+    p_region_city: $('polCity').value.trim() || null,
+    p_options: labels.map((label, i) => ({ id: `opt${i + 1}`, label })),
+    p_ends_at: endsAt.toISOString(),
+  });
+  $('btnPollSave').disabled = false;
+  if (error) return toast('등록 실패: ' + error.message, 'error');
+  $('pollModal').classList.remove('open');
+  toast('여론조사가 등록되었습니다', 'success');
+  loadPolyPolls(); loadPolyStats();
+}
+
+// 민원
+async function loadPolyComplaints() {
+  const { data, error } = await supabase.rpc('poly_admin_list_complaints');
+  if (error) { $('polyComplaintsBody').innerHTML = `<tr><td colspan="7" style="text-align:center;color:var(--light);padding:40px">불러오기 실패 — poly-admin-setup.sql 실행 여부를 확인하세요 (${error.message})</td></tr>`; return; }
+  cachedPolyComplaints = data || [];
+  renderPolyComplaints($('polyComplaintSearch').value.toLowerCase());
+}
+
+function renderPolyComplaints(filter = '') {
+  const filtered = filter ? cachedPolyComplaints.filter(c => (c.title||'').toLowerCase().includes(filter) || (c.user_name||'').toLowerCase().includes(filter)) : cachedPolyComplaints;
+  if (!filtered.length) { $('polyComplaintsBody').innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--light);padding:40px">민원이 없습니다</td></tr>'; return; }
+  $('polyComplaintsBody').innerHTML = filtered.map(c => {
+    const target = c.politician_name || ([c.target_province, c.target_city].filter(Boolean).join(' ') ? `${[c.target_province, c.target_city].filter(Boolean).join(' ')} 지역구` : '-');
+    const options = Object.entries(polyComplaintStatusLabels).map(([v, l]) => `<option value="${v}"${c.status === v ? ' selected' : ''}>${l}</option>`).join('');
+    return `<tr>
+      <td class="td-bold">${c.title || '-'}</td>
+      <td>${c.user_name || '-'}</td>
+      <td>${target}</td>
+      <td>${c.category || '-'}</td>
+      <td>${c.agree_count || 0}</td>
+      <td><select onchange="polySetComplaintStatus('${c.id}', this)" style="padding:6px 10px;border:1px solid var(--border);border-radius:8px;font-size:12px;color:var(--text);background:#fff;outline:none">${options}</select></td>
+      <td style="color:var(--light)">${fmt(c.created_at)}</td>
+    </tr>`;
+  }).join('');
+}
+
+window.polySetComplaintStatus = async function(id, sel) {
+  const status = sel.value;
+  sel.disabled = true;
+  const { error } = await supabase.rpc('poly_admin_set_complaint_status', { p_id: id, p_status: status });
+  sel.disabled = false;
+  if (error) {
+    const row = cachedPolyComplaints.find(c => c.id === id);
+    if (row) sel.value = row.status; // 실패 시 원상복구
+    return toast('상태 변경 실패: ' + error.message, 'error');
+  }
+  const row = cachedPolyComplaints.find(c => c.id === id);
+  if (row) row.status = status;
+  loadPolyStats();
+  toast(`상태가 "${polyComplaintStatusLabels[status]}"(으)로 변경되었습니다`, 'success');
+};
+
 // ── Navigation ──
-const views = ['dashboard','ogx','users','projects','settings'];
+const views = ['dashboard','ogx','poly','users','jmap','projects','settings'];
 function navigate(view) {
   views.forEach(v => { const el = $(`${v}View`); if (el) el.style.display = v === view ? '' : 'none'; });
   document.querySelectorAll('.nav-item').forEach(n => n.classList.toggle('active', n.dataset.view === view));
   $('headerTitle').textContent = headerTitles[view] || '';
   $('sidebar').classList.remove('open'); $('sidebarBackdrop').classList.remove('open');
   if (view === 'ogx') loadOGX(); else if (view === 'users') loadUsers();
+  else if (view === 'poly') loadPoly();
+  else if (view === 'jmap') loadJmap();
   else if (view === 'projects') loadProjectsView(); else if (view === 'dashboard') loadDashboard();
 }
 
@@ -876,11 +1268,28 @@ document.querySelectorAll('.tab-btn[data-tab]').forEach(btn => btn.addEventListe
   btn.closest('.tabs').querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active');
   const tab = btn.dataset.tab;
   if (tab.startsWith('ogx-')) { $('ogx-rooms').style.display = tab==='ogx-rooms'?'':'none'; $('ogx-members').style.display = tab==='ogx-members'?'':'none'; }
+  if (tab.startsWith('poly-')) { ['poly-politicians','poly-polls','poly-complaints'].forEach(t => { $(t).style.display = tab===t?'':'none'; }); }
 }));
 
 $('roomSearch').addEventListener('input', e => renderRooms(e.target.value.toLowerCase()));
 $('memberSearch').addEventListener('input', e => renderMembers(e.target.value.toLowerCase()));
 $('userSearch').addEventListener('input', e => renderUsers(e.target.value.toLowerCase()));
+$('jmapSearch').addEventListener('input', e => renderJmap(e.target.value.replace(/[^0-9]/g,'')));
+$('polyPoliticianSearch').addEventListener('input', e => renderPolyPoliticians(e.target.value.toLowerCase()));
+$('polyComplaintSearch').addEventListener('input', e => renderPolyComplaints(e.target.value.toLowerCase()));
+
+// 폴리 여론조사 등록 모달
+$('btnAddPoll').addEventListener('click', () => {
+  $('polTitle').value=''; $('polDesc').value=''; $('polCategory').value='정책';
+  $('polProvince').value=''; $('polCity').value='';
+  $('polOpt1').value='찬성'; $('polOpt2').value='반대'; $('polOpt3').value=''; $('polOpt4').value='';
+  const week = new Date(Date.now() + 7 * 86400000); week.setMinutes(0, 0, 0);
+  $('polEndsAt').value = `${week.getFullYear()}-${String(week.getMonth()+1).padStart(2,'0')}-${String(week.getDate()).padStart(2,'0')}T${String(week.getHours()).padStart(2,'0')}:00`;
+  $('pollModal').classList.add('open');
+});
+$('btnPollCancel').addEventListener('click', () => $('pollModal').classList.remove('open'));
+$('btnPollSave').addEventListener('click', savePoll);
+$('pollModal').addEventListener('click', e => { if (e.target===$('pollModal')) $('pollModal').classList.remove('open'); });
 
 $('btnAddProject').addEventListener('click', () => {
   $('modalTitle').textContent='프로젝트 추가'; $('pId').value=''; $('pName').value=''; $('pDesc').value='';

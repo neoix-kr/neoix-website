@@ -157,7 +157,11 @@ function render(session){
 }
 
 supabase.auth.getSession().then(({data})=>render(data.session));
-supabase.auth.onAuthStateChange((_e, session)=>render(session));
+supabase.auth.onAuthStateChange((_e, session)=>{
+  render(session);
+  // 가입/로그인 출처 기록 (어드민 앱별 구분용)
+  if (session?.user) { try { supabase.rpc('record_membership',{p_service_key:'home',p_service_name:'네오익스 홈'}); } catch(e){} }
+});
 </script>
 </body>
 </html>
