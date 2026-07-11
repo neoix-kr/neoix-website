@@ -235,8 +235,7 @@
   .btn{ width:100%; border:0; border-radius:12px; height:52px; font-size:16px; font-weight:700; color:#fff; background:var(--pri); transition:transform .1s; } .btn:active{ transform:scale(.98); } .btn[disabled]{ background:#c4ccd4; pointer-events:none; } .btn.ghost{ background:var(--surface); color:var(--t2); border:1px solid var(--line); }
   /* ── 참가신청 = 승선 신청서 ── */
   .su-ticket{ background:var(--surface); border:1.5px solid var(--wood); border-bottom:2.5px dashed var(--wood); border-radius:16px 16px 4px 4px; padding:18px 16px; margin-bottom:16px; }
-  .su-tk-badge{ display:block; font-size:10.5px; letter-spacing:.18em; font-weight:800; color:var(--gold); }
-  .su-ticket h4{ font-family:'Jua',sans-serif; font-size:22px; font-weight:400; color:var(--navy); margin:6px 0 7px; }
+  .su-ticket h4{ font-family:'Jua',sans-serif; font-size:22px; font-weight:400; color:var(--navy); margin:0 0 7px; }
   .su-ticket p{ font-size:13.5px; color:var(--t2); line-height:1.65; margin:0; }
   .su-card{ background:var(--surface); border:1px solid var(--line); border-radius:16px; padding:16px 16px 4px; margin-bottom:12px; }
   .su-ct{ font-family:'Jua',sans-serif; font-size:15.5px; font-weight:400; color:var(--navy); margin-bottom:12px; }
@@ -437,37 +436,36 @@
     </div>
     <div class="pane" id="g-signup">
       <div class="su-ticket">
-        <span class="su-tk-badge">SONGSAN SUMMER RETREAT</span>
-        <h4>⛵ 승선 신청서</h4>
-        <p>여름 수련회 참가 신청서예요. 안전한 항해를 위해<br>아래 항목을 <b>빠짐없이</b> 적어 주세요.</p>
+        <h4>참가 신청서</h4>
+        <p>여름 수련회 참가 신청서입니다. 모든 항목을 <b>빠짐없이</b> 적어 주세요.</p>
       </div>
       <div id="su-form">
         <div class="su-card">
-          <div class="su-ct">🧒 우리 아이</div>
+          <div class="su-ct">학생 정보</div>
           <div class="field"><label>학생 이름</label><input id="su-name" placeholder="학생 이름" maxlength="12"></div>
           <div class="field"><label>부서</label><div class="seg" id="su-dept">
-            <label><input type="radio" name="sudept" value="유치부"><span>🐣 유치부</span></label><label><input type="radio" name="sudept" value="유년부"><span>🌱 유년부</span></label>
-            <label><input type="radio" name="sudept" value="초등부"><span>⚓ 초등부</span></label><label><input type="radio" name="sudept" value="중고등부"><span>🔥 중고등부</span></label></div></div>
+            <label><input type="radio" name="sudept" value="유치부"><span>유치부</span></label><label><input type="radio" name="sudept" value="유년부"><span>유년부</span></label>
+            <label><input type="radio" name="sudept" value="초등부"><span>초등부</span></label><label><input type="radio" name="sudept" value="중고등부"><span>중고등부</span></label></div></div>
           <div class="field"><label>학년</label><input id="su-grade" placeholder="예: 초등 4학년" maxlength="12"></div>
         </div>
         <div class="su-card">
-          <div class="su-ct">👨‍👩‍👧 보호자</div>
+          <div class="su-ct">보호자 정보</div>
           <div class="field"><label>보호자 이름</label><input id="su-gname" placeholder="보호자 이름" maxlength="12"></div>
           <div class="field"><label>보호자 연락처</label><input id="su-phone" type="tel" inputmode="numeric" placeholder="010-0000-0000" maxlength="13"></div>
         </div>
         <div class="su-card">
-          <div class="su-ct">🩺 건강 · 특이사항</div>
+          <div class="su-ct">건강 · 특이사항</div>
           <div class="field"><label>알레르기 · 복용약 · 특이사항</label><textarea id="su-notes" placeholder="예: 땅콩 알레르기 / 천식 흡입기 소지 — 없으면 '없음'이라고 적어 주세요"></textarea></div>
         </div>
-        <label class="su-agree" for="su-agree"><input type="checkbox" id="su-agree"><span><b>수련회 참가 및 안전수칙에 동의합니다</b><small>보호자 동의가 있어야 승선할 수 있어요</small></span></label>
-        <button class="btn su-btn" id="su-submit">🎫 승선 신청하기</button>
+        <label class="su-agree" for="su-agree"><input type="checkbox" id="su-agree"><span><b>수련회 참가 및 안전수칙에 동의합니다</b></span></label>
+        <button class="btn su-btn" id="su-submit">참가 신청하기</button>
       </div>
       <div id="su-done" style="display:none">
         <div class="su-done-card">
           <div class="su-stamp">접수 완료</div>
           <div class="su-dn" id="su-done-name">—</div>
           <div class="su-dd" id="su-done-dept">—</div>
-          <p>참가 신청이 접수되었습니다.<br>담당 선생님이 확인 후 연락드릴게요 ⚓</p>
+          <p>참가 신청이 접수되었습니다.</p>
         </div>
         <button class="btn ghost" id="su-again">한 명 더 신청하기</button>
       </div>
