@@ -277,6 +277,16 @@
   .sg-tel{ margin-left:auto; font-size:14px; font-weight:700; color:var(--pri); text-decoration:none; white-space:nowrap; }
   .sg-note{ font-size:13px; color:var(--t3); margin-top:8px; padding-top:8px; border-top:1px dashed var(--line2); }
   .sg-note.warn{ color:#8a3d34; background:#fdeae6; border:1px solid #f2cfc8; border-radius:10px; padding:9px 12px; margin-top:10px; font-weight:600; }
+  .sg-del{ border:1px solid #e6c9c4; background:var(--surface); color:#b34b3f; font-weight:600; font-size:11.5px; padding:5px 10px; border-radius:8px; margin-left:8px; }
+  .sg-del:active{ background:#fdeae6; }
+  .sg-confirm{ position:fixed; inset:0; z-index:60; background:rgba(18,58,99,.4); display:flex; align-items:center; justify-content:center; padding:28px; }
+  .sg-confirm-box{ background:var(--surface); border-radius:18px; padding:22px 20px 18px; max-width:320px; width:100%; box-shadow:0 12px 40px rgba(0,0,0,.25); }
+  .sg-cf-t{ font-family:'Jua',sans-serif; font-size:19px; color:var(--navy); margin-bottom:8px; }
+  .sg-confirm-box p{ font-size:14px; color:var(--t2); line-height:1.6; }
+  .sg-cf-btns{ display:flex; gap:8px; margin-top:18px; }
+  .sg-cf-btns button{ flex:1; height:46px; border-radius:11px; font-size:15px; font-weight:700; font-family:inherit; }
+  .sg-cf-no{ border:1px solid var(--line); background:var(--surface); color:var(--t2); }
+  .sg-cf-yes{ border:0; background:var(--danger); color:#fff; }
   .upgrid{ display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:6px; } .upthumb{ position:relative; aspect-ratio:1; border-radius:10px; overflow:hidden; background:var(--line2); } .upthumb img{ width:100%; height:100%; object-fit:cover; } .upthumb .rm{ position:absolute; top:4px; right:4px; width:22px; height:22px; border-radius:50%; background:rgba(0,0,0,.55); color:#fff; border:0; font-size:13px; } .upadd{ aspect-ratio:1; border:1px dashed #c4ccd4; border-radius:10px; background:var(--surface); color:var(--pri); font-size:26px; display:flex; align-items:center; justify-content:center; }
 
   .lightbox{ position:fixed; inset:0; z-index:70; background:rgba(0,0,0,.92); display:none; align-items:center; justify-content:center; padding:20px; } .lightbox.open{ display:flex; } .lightbox img{ max-width:100%; max-height:86vh; border-radius:10px; } .lightbox .x{ position:absolute; top:calc(14px + env(safe-area-inset-top)); right:18px; color:#fff; font-size:28px; background:none; border:0; }
@@ -633,11 +643,12 @@ function renderSignups(){const wrap=$('#a-signups');
     <input class="sg-q" id="sg-q" placeholder="이름 · 보호자 · 연락처 검색" value="${esc(sgQ)}">
     ${list.length?list.map(s=>{const hasNote=s.notes&&s.notes.trim()&&s.notes.trim()!=='없음';
       return `<div class="sg-card">
-        <div class="sg-r1"><span class="sg-name">${esc(s.student_name)}</span><span class="sg-dept">${esc(s.dept)}</span>${s.grade?`<span class="sg-grade">${esc(s.grade)}</span>`:''}<span class="sg-time">${sgTime(s.created_at)} 접수</span></div>
+        <div class="sg-r1"><span class="sg-name">${esc(s.student_name)}</span><span class="sg-dept">${esc(s.dept)}</span>${s.grade?`<span class="sg-grade">${esc(s.grade)}</span>`:''}<span class="sg-time">${sgTime(s.created_at)} 접수</span><button class="sg-del" data-id="${s.id}" data-name="${esc(s.student_name)}" title="삭제">삭제</button></div>
         <div class="sg-r2">보호자 <b>${esc(s.guardian_name||'-')}</b><a class="sg-tel" href="tel:${(s.guardian_phone||'').replace(/\D/g,'')}">${esc(s.guardian_phone||'-')}</a></div>
         <div class="sg-note${hasNote?' warn':''}">${hasNote?esc(s.notes):'특이사항 없음'}</div>
       </div>`;}).join(''):`<div class="empty" style="color:#8b97a8"><p>조건에 맞는 신청이 없습니다.</p></div>`}`;
   $('#sg-dl').addEventListener('click',sgExcel);
+  $$('.sg-del').forEach(b=>b.addEventListener('click',()=>sgDelete(b.dataset.id,b.dataset.name)));
   $$('.sg-chip').forEach(c=>c.addEventListener('click',()=>{sgDept=c.dataset.d;renderSignups();}));
   const q=$('#sg-q');q.addEventListener('input',()=>{sgQ=q.value;const l=sgFiltered();/* 목록만 갱신하면 포커스 유지 복잡 → 전체 리렌더 후 포커스 복원 */renderSignups();const nq=$('#sg-q');nq.focus();nq.setSelectionRange(nq.value.length,nq.value.length);});}
 function sgExcel(){const head=['접수일시','학생 이름','부서','학년','보호자 이름','보호자 연락처','특이사항','동의'];
@@ -646,6 +657,21 @@ function sgExcel(){const head=['접수일시','학생 이름','부서','학년',
   const csv='﻿'+[head,...rows].map(r=>r.map(cell).join(',')).join('\r\n');
   const d=new Date(),fn=`송산수련회_참가신청_${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}.csv`;
   const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.download=fn;a.click();URL.revokeObjectURL(a.href);toast('엑셀 파일 다운로드 완료');}
+function sgDelete(id,name){
+  const ov=document.createElement('div');ov.className='sg-confirm';
+  ov.innerHTML=`<div class="sg-confirm-box"><div class="sg-cf-t">신청 삭제</div><p><b>${esc(name)}</b> 학생의 참가 신청을 삭제할까요?<br>삭제하면 되돌릴 수 없습니다.</p><div class="sg-cf-btns"><button class="sg-cf-no">취소</button><button class="sg-cf-yes">삭제</button></div></div>`;
+  document.body.appendChild(ov);
+  const close=()=>ov.remove();
+  ov.addEventListener('click',e=>{if(e.target===ov)close();});
+  ov.querySelector('.sg-cf-no').addEventListener('click',close);
+  ov.querySelector('.sg-cf-yes').addEventListener('click',async()=>{
+    const btn=ov.querySelector('.sg-cf-yes');btn.disabled=true;btn.textContent='삭제 중…';
+    const{data,error}=await sb.rpc('songsan_delete_signup',{p_id:id,p_pass:ADMIN_PASS});
+    close();
+    if(error){toast('삭제 실패 — 다시 시도해 주세요',1);return;}
+    sgData=sgData.filter(s=>s.id!==id);renderSignups();toast('신청을 삭제했습니다');
+  });
+}
 
 /* ═══════════ APP DECK ═══════════ */
 function enterApp(){

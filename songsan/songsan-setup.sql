@@ -44,6 +44,18 @@ drop policy if exists "songsan_signups insert" on songsan_signups;
 create policy "songsan_signups read"   on songsan_signups for select using (true);
 create policy "songsan_signups insert" on songsan_signups for insert with check (true);
 
+-- 3-1) 신청 삭제 — 직접 delete는 막고, 관리자 암호를 서버에서 검증하는 RPC로만 허용
+create or replace function songsan_delete_signup(p_id uuid, p_pass text)
+returns boolean
+language plpgsql security definer set search_path=public as $$
+begin
+  if p_pass <> 'songsan2026' then
+    raise exception 'wrong_password';
+  end if;
+  delete from songsan_signups where id = p_id;
+  return found;
+end $$;
+
 -- 2-1) 라이브 상태 (관리자가 띄우는 성경암송 말씀 등) — 단일 행
 create table if not exists songsan_live (
   id         text primary key default 'current',
