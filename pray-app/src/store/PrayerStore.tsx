@@ -165,7 +165,7 @@ function emptyState(): StoreState {
     logs: {}, weeklyGoal: 20, church: null, jmapApplied: false,
     hiddenPostIds: [], boxedPostIds: [], collapsedTiers: [],
     profileName: null, profileVerse: null, profilePhotoUri: null,
-    myRegion: MY_REGION, notif: { enabled: false, hour: 7, minute: 0 },
+    myRegion: MY_REGION, notif: { enabled: true, hour: 7, minute: 0 }, // 기본 켜짐 (매일 오전 7시)
     synced: false,
   };
 }
@@ -293,7 +293,7 @@ export function PrayerStoreProvider({ children }: { children: React.ReactNode })
         hiddenPostIds: prefs.hiddenPostIds ?? [],
         boxedPostIds: cache.boxedPostIds ?? [],
         collapsedTiers: prefs.collapsedTiers ?? [],
-        notif: prefs.notif ?? { enabled: false, hour: 7, minute: 0 },
+        notif: prefs.notif ?? { enabled: true, hour: 7, minute: 0 },
         myRegion: cache.myRegion ?? prefs.myRegion ?? MY_REGION,
         profileName: cache.profileName ?? prefs.profileName ?? null,
         profileVerse: cache.profileVerse ?? prefs.profileVerse ?? null,

@@ -50,13 +50,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => subscription.unsubscribe();
   }, []);
 
-  // 로그인 직후: pray_profiles 보장 + 멤버십 기록 + 프로필 로드
+  // 로그인 직후: pray_profiles 보장 + 멤버십 기록 + 프로필 로드 + 푸시 토큰 등록
   const bootstrap = async (userId: string) => {
     try {
       await supabase.rpc('pray_ensure_profile');
     } catch { /* 프로필 트리거가 이미 있으면 무시 */ }
     recordMembership();
     fetchProfile(userId);
+    import('../lib/notifications').then((m) => m.registerPushToken().catch(() => {}));
   };
 
   const fetchProfile = async (userId: string) => {

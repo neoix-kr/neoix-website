@@ -37,7 +37,11 @@
       "permissions": [
         "android.permission.READ_CONTACTS",
         "android.permission.CAMERA",
-        "android.permission.READ_EXTERNAL_STORAGE"
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.WRITE_CONTACTS",
+        "android.permission.RECORD_AUDIO"
       ]
     },
     "web": {
@@ -81,7 +85,9 @@
         "expo-build-properties",
         {
           "android": {
-            "extraMavenRepos": ["https://devrepo.kakao.com/nexus/content/groups/public/"]
+            "extraMavenRepos": [
+              "https://devrepo.kakao.com/nexus/content/groups/public/"
+            ]
           }
         }
       ]
@@ -89,7 +95,7 @@
     "owner": "neoix",
     "extra": {
       "eas": {
-        "projectId": "REPLACE_WITH_EAS_PROJECT_ID"
+        "projectId": "27f088f8-7544-4915-815c-e2052c3ff200"
       }
     }
   }

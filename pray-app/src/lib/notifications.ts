@@ -1,4 +1,7 @@
 import * as Notifications from 'expo-notifications';
+import Constants from 'expo-constants';
+import { Platform } from 'react-native';
+import { supabase } from './supabase';
 
 // 포그라운드에서도 배너 표시
 Notifications.setNotificationHandler({
@@ -9,6 +12,40 @@ Notifications.setNotificationHandler({
     shouldSetBadge: false,
   }),
 });
+
+// ── 원격 푸시(서버에서 보내는 팝업 알림) 등록 ──
+// 기기의 Expo 푸시 토큰을 받아 Supabase pray_push_tokens에 저장.
+// 관리자/서버는 이 토큰으로 Expo Push API에 POST하면 팝업 알림이 발송된다.
+export async function registerPushToken(): Promise<string | null> {
+  const ok = await requestNotifPermission();
+  if (!ok) return null;
+
+  if (Platform.OS === 'android') {
+    await Notifications.setNotificationChannelAsync('default', {
+      name: '기도 알림',
+      importance: Notifications.AndroidImportance.HIGH,
+      sound: 'default',
+    });
+  }
+
+  const projectId =
+    Constants.expoConfig?.extra?.eas?.projectId ?? Constants.easConfig?.projectId;
+  if (!projectId) return null;
+
+  try {
+    const { data: token } = await Notifications.getExpoPushTokenAsync({ projectId });
+    const { data: u } = await supabase.auth.getUser();
+    if (u.user && token) {
+      await supabase.from('pray_push_tokens').upsert(
+        { user_id: u.user.id, token, platform: Platform.OS },
+        { onConflict: 'token' }
+      );
+    }
+    return token ?? null;
+  } catch {
+    return null;
+  }
+}
 
 export async function requestNotifPermission(): Promise<boolean> {
   const cur = await Notifications.getPermissionsAsync();

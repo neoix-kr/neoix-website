@@ -1,5 +1,5 @@
-import React, { useMemo, useState } from 'react';
-import { View, Text, StyleSheet, Pressable, ScrollView, Alert, TextInput, Image } from 'react-native';
+import React, { useMemo, useState, useEffect, useRef } from 'react';
+import { View, Text, StyleSheet, Pressable, ScrollView, Alert, TextInput, Image, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
@@ -8,6 +8,7 @@ import SkyHeader from '../components/common/SkyHeader';
 import { useAuth } from '../contexts/AuthContext';
 import { usePrayerStore } from '../store/PrayerStore';
 import { supabase } from '../lib/supabase';
+import { searchChurch, ChurchHit } from '../lib/churchSearch';
 import type { RootStackParamList } from '../navigation/RootNavigator';
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
@@ -46,6 +47,31 @@ export default function MeScreen() {
   const [churchName, setChurchName] = useState('');
   const [denom, setDenom] = useState('');
 
+  // 교회 검색 (OSM)
+  const [churchHits, setChurchHits] = useState<ChurchHit[]>([]);
+  const [searching, setSearching] = useState(false);
+  const [pickedName, setPickedName] = useState(''); // 방금 선택/저장된 이름 (재검색 방지)
+  const searchAbort = useRef<AbortController | null>(null);
+
+  useEffect(() => {
+    if (!editingChurch) return;
+    const q = churchName.trim();
+    if (q.length < 2 || q === pickedName) { setChurchHits([]); setSearching(false); return; }
+    setSearching(true);
+    const t = setTimeout(async () => {
+      searchAbort.current?.abort();
+      const ctrl = new AbortController();
+      searchAbort.current = ctrl;
+      try {
+        const hits = await searchChurch(q, ctrl.signal);
+        setChurchHits(hits);
+      } catch { /* 취소·오프라인 */ } finally {
+        setSearching(false);
+      }
+    }, 450);
+    return () => clearTimeout(t);
+  }, [churchName, editingChurch, pickedName]);
+
   // J맵
   const [jmapPhone, setJmapPhone] = useState('');
   const [jmapBusy, setJmapBusy] = useState(false);
@@ -54,11 +80,19 @@ export default function MeScreen() {
 
   const openChurchForm = () => {
     setChurchName(store.church?.name ?? '');
+    setPickedName(store.church?.name ?? '');
+    setChurchHits([]);
     const cur = store.church?.denomination ?? '';
     setDenom(cur);
     // 목록에 없는 교단이면 직접 입력칸에 채워둔다
     setCustomDenom(cur && !DENOMS.some((d) => d.full === cur) ? cur : '');
     setEditingChurch(true);
+  };
+
+  const pickChurch = (hit: ChurchHit) => {
+    setChurchName(hit.name);
+    setPickedName(hit.name);
+    setChurchHits([]);
   };
 
   const saveChurch = () => {
@@ -116,9 +150,18 @@ export default function MeScreen() {
             )}
             <View style={{ flex: 1 }}>
               <Text style={styles.name}>{name}</Text>
-              <Text style={styles.sub} numberOfLines={1}>
-                {store.profileVerse ?? user?.email ?? '내 계정 설정'}
-              </Text>
+              {store.church ? (
+                <View style={styles.profileChurchRow}>
+                  {denomOf(store.church.denomination)?.mark && (
+                    <Image source={denomOf(store.church.denomination)!.mark} style={styles.profileChurchMark} resizeMode="contain" />
+                  )}
+                  <Text style={styles.sub} numberOfLines={1}>{store.church.name}</Text>
+                </View>
+              ) : (
+                <Text style={styles.sub} numberOfLines={1}>
+                  {store.profileVerse ?? user?.email ?? '내 계정 설정'}
+                </Text>
+              )}
             </View>
             <Ionicons name="chevron-forward" size={16} color={C.textPlaceholder} />
           </Pressable>
@@ -156,13 +199,35 @@ export default function MeScreen() {
             ) : (
               <View>
                 <Text style={styles.formTitle}>우리교회</Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder="교회 이름"
-                  placeholderTextColor={C.textPlaceholder}
-                  value={churchName}
-                  onChangeText={setChurchName}
-                />
+                <View style={styles.searchWrap}>
+                  <TextInput
+                    style={[styles.input, { marginBottom: 0 }]}
+                    placeholder="교회 이름 검색 (예: 온누리교회)"
+                    placeholderTextColor={C.textPlaceholder}
+                    value={churchName}
+                    onChangeText={setChurchName}
+                    autoCorrect={false}
+                  />
+                  {searching && <ActivityIndicator size="small" color={C.textCaption} style={styles.searchSpin} />}
+                </View>
+                {churchHits.length > 0 && (
+                  <View style={styles.hitList}>
+                    {churchHits.map((h, i) => (
+                      <Pressable
+                        key={`${h.name}-${i}`}
+                        onPress={() => pickChurch(h)}
+                        style={({ pressed }) => [styles.hitRow, i > 0 && styles.hitDivider, pressed && { backgroundColor: C.cardMuted }]}
+                      >
+                        <Ionicons name="location-outline" size={15} color={C.textCaption} />
+                        <View style={{ flex: 1 }}>
+                          <Text style={styles.hitName}>{h.name}</Text>
+                          {!!h.address && <Text style={styles.hitAddr} numberOfLines={1}>{h.address}</Text>}
+                        </View>
+                      </Pressable>
+                    ))}
+                    <Text style={styles.hitHint}>목록에 없으면 이름을 그대로 입력해도 돼요</Text>
+                  </View>
+                )}
                 <Text style={styles.formLabel}>교단</Text>
                 <View style={styles.denomList}>
                   {DENOMS.map((d, idx) => {
@@ -343,6 +408,16 @@ const createStyles = (C: Palette) =>
       fontFamily: FONT.regular,
       marginBottom: SPACING.md,
     },
+    searchWrap: { justifyContent: 'center', marginBottom: SPACING.md },
+    searchSpin: { position: 'absolute', right: 14 },
+    hitList: { backgroundColor: C.cardMuted, borderRadius: RADIUS.md, overflow: 'hidden', marginTop: -SPACING.sm, marginBottom: SPACING.md },
+    hitRow: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 13, paddingVertical: 11 },
+    hitDivider: { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: C.divider },
+    hitName: { fontSize: 14, color: C.text, fontFamily: FONT.medium },
+    hitAddr: { fontSize: 11.5, color: C.textCaption, fontFamily: FONT.regular, marginTop: 1 },
+    hitHint: { fontSize: 11, color: C.textPlaceholder, fontFamily: FONT.regular, paddingHorizontal: 13, paddingVertical: 8, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: C.divider },
+    profileChurchRow: { flexDirection: 'row', alignItems: 'center', gap: 5, marginTop: 3 },
+    profileChurchMark: { width: 15, height: 15 },
     denomList: { backgroundColor: C.cardMuted, borderRadius: RADIUS.md, overflow: 'hidden' },
     denomRow: { flexDirection: 'row', alignItems: 'center', gap: 11, paddingHorizontal: 13, paddingVertical: 11 },
     denomDivider: { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: C.divider },
