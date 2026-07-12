@@ -50,10 +50,14 @@ export default function MeScreen() {
   const [jmapPhone, setJmapPhone] = useState('');
   const [jmapBusy, setJmapBusy] = useState(false);
   const [jmapAgree, setJmapAgree] = useState(false);
+  const [customDenom, setCustomDenom] = useState('');
 
   const openChurchForm = () => {
     setChurchName(store.church?.name ?? '');
-    setDenom(store.church?.denomination ?? '');
+    const cur = store.church?.denomination ?? '';
+    setDenom(cur);
+    // 목록에 없는 교단이면 직접 입력칸에 채워둔다
+    setCustomDenom(cur && !DENOMS.some((d) => d.full === cur) ? cur : '');
     setEditingChurch(true);
   };
 
@@ -179,6 +183,27 @@ export default function MeScreen() {
                       </Pressable>
                     );
                   })}
+
+                  {/* 목록에 없는 교단 직접 입력 */}
+                  <View style={[styles.denomRow, styles.denomDivider]}>
+                    <View style={[styles.denomMarkSm, { backgroundColor: C.cardMuted, borderWidth: 0 }]}>
+                      <Ionicons name="create-outline" size={16} color={C.textCaption} />
+                    </View>
+                    <TextInput
+                      style={styles.customDenomInput}
+                      placeholder="내 교단 직접 입력"
+                      placeholderTextColor={C.textPlaceholder}
+                      value={customDenom}
+                      onChangeText={(t) => {
+                        setCustomDenom(t);
+                        if (t.trim()) setDenom(t.trim());
+                        else if (!DENOMS.some((d) => d.full === denom)) setDenom('');
+                      }}
+                    />
+                    <View style={[styles.radio, !!customDenom.trim() && denom === customDenom.trim() && { borderColor: C.primary }]}>
+                      {!!customDenom.trim() && denom === customDenom.trim() && <View style={styles.radioDot} />}
+                    </View>
+                  </View>
                 </View>
                 <View style={styles.formActions}>
                   <Pressable onPress={() => setEditingChurch(false)} style={styles.cancelBtn}>
@@ -333,6 +358,7 @@ const createStyles = (C: Palette) =>
       overflow: 'hidden',
     },
     denomMarkSmImg: { width: 26, height: 26 },
+    customDenomInput: { flex: 1, fontSize: 14, color: C.text, fontFamily: FONT.regular, paddingVertical: 0 },
     denomFull: { flex: 1, fontSize: 14, color: C.textSecondary, fontFamily: FONT.regular },
     radio: { width: 21, height: 21, borderRadius: 11, borderWidth: 1.5, borderColor: C.borderStrong, alignItems: 'center', justifyContent: 'center' },
     radioDot: { width: 11, height: 11, borderRadius: 6, backgroundColor: C.primary },
