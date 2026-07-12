@@ -239,10 +239,25 @@
   .su-ticket p{ font-size:13.5px; color:var(--t2); line-height:1.65; margin:0; }
   .su-card{ background:var(--surface); border:1px solid var(--line); border-radius:16px; padding:16px 16px 4px; margin-bottom:12px; }
   .su-ct{ font-family:'Jua',sans-serif; font-size:15.5px; font-weight:400; color:var(--navy); margin-bottom:12px; }
-  .su-agree{ display:flex; gap:12px; align-items:center; background:var(--surface2); border:1.5px solid var(--wood); border-radius:14px; padding:14px; margin:14px 0 16px; cursor:pointer; }
-  .su-agree input{ width:22px; height:22px; accent-color:var(--pri); flex:0 0 auto; }
-  .su-agree b{ display:block; font-size:14.5px; color:var(--navy); }
-  .su-agree small{ display:block; font-size:12px; color:var(--t3); margin-top:2px; }
+  .su-agree{ display:flex; gap:12px; align-items:flex-start; background:var(--surface2); border:1.5px solid var(--wood); border-radius:14px; padding:14px; margin:14px 0 16px; }
+  .su-agree input{ width:22px; height:22px; accent-color:var(--pri); flex:0 0 auto; margin-top:1px; }
+  .su-agree label{ margin:0; cursor:pointer; }
+  .su-agree b{ display:block; font-size:14.5px; color:var(--navy); font-weight:700; }
+  .su-terms-link{ display:inline-block; margin-top:6px; padding:0; border:0; background:none; color:var(--pri); font-size:12.5px; font-weight:700; font-family:inherit; text-decoration:underline; text-underline-offset:2px; cursor:pointer; }
+  /* 안전수칙 전문 모달 */
+  .su-terms-ov{ display:none; position:fixed; inset:0; z-index:70; background:rgba(18,58,99,.45); align-items:flex-end; justify-content:center; }
+  .su-terms-ov.on{ display:flex; }
+  .su-terms-box{ background:var(--surface); width:100%; max-width:520px; max-height:88vh; border-radius:20px 20px 0 0; display:flex; flex-direction:column; padding:0 18px calc(18px + env(safe-area-inset-bottom)); }
+  .su-terms-head{ display:flex; align-items:center; justify-content:space-between; padding:18px 2px 12px; position:sticky; top:0; background:var(--surface); border-bottom:1px solid var(--line2); }
+  .su-terms-head h3{ font-family:'Jua',sans-serif; font-weight:400; font-size:19px; color:var(--navy); }
+  .su-terms-x{ border:0; background:none; font-size:18px; color:var(--t3); padding:4px 8px; }
+  .su-terms-body{ overflow-y:auto; padding:14px 2px 8px; -webkit-overflow-scrolling:touch; }
+  .su-terms-intro{ font-size:13.5px; color:var(--t2); line-height:1.6; margin-bottom:14px; }
+  .su-terms-list{ margin:0 0 4px; padding-left:20px; display:flex; flex-direction:column; gap:11px; }
+  .su-terms-list li{ font-size:13.5px; color:var(--t2); line-height:1.62; }
+  .su-terms-list li b{ color:var(--navy); }
+  .su-terms-note{ font-size:12px; color:var(--t3); margin-top:14px; padding-top:12px; border-top:1px dashed var(--line2); }
+  .su-terms-agree{ margin-top:14px; flex:0 0 auto; }
   .su-btn{ font-family:'Jua',sans-serif; font-weight:400; font-size:17.5px; height:56px; background:var(--navy); }
   .su-done-card{ background:var(--surface); border:1.5px solid var(--wood); border-radius:18px; padding:28px 20px 24px; text-align:center; margin-bottom:14px; }
   .su-stamp{ display:inline-block; font-family:'Jua',sans-serif; font-weight:400; color:var(--danger); border:2.5px solid var(--danger); border-radius:10px; padding:5px 14px; font-size:18px; transform:rotate(-6deg); margin-bottom:14px; opacity:.85; }
@@ -487,7 +502,7 @@
           <div class="su-ct">건강 · 특이사항</div>
           <div class="field"><label>알레르기 · 복용약 · 특이사항</label><textarea id="su-notes" placeholder="예: 땅콩 알레르기 / 천식 흡입기 소지 — 없으면 '없음'이라고 적어 주세요"></textarea></div>
         </div>
-        <label class="su-agree" for="su-agree"><input type="checkbox" id="su-agree"><span><b>수련회 참가 및 안전수칙에 동의합니다</b></span></label>
+        <div class="su-agree"><input type="checkbox" id="su-agree"><label for="su-agree"><b>수련회 참가 및 안전수칙에 동의합니다</b><button type="button" class="su-terms-link" id="su-terms">안전수칙 전문 보기 ›</button></label></div>
         <button class="btn su-btn" id="su-submit">참가 신청하기</button>
       </div>
       <div id="su-done" style="display:none">
@@ -500,6 +515,27 @@
         <button class="btn ghost" id="su-again">한 명 더 신청하기</button>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- ═══════════ 안전수칙 전문 모달 ═══════════ -->
+<div class="su-terms-ov" id="su-terms-ov">
+  <div class="su-terms-box">
+    <div class="su-terms-head"><h3>참가 및 안전수칙</h3><button class="su-terms-x" id="su-terms-x" aria-label="닫기">✕</button></div>
+    <div class="su-terms-body">
+      <p class="su-terms-intro">송산제일교회 여름수련회 <b>'믿음의 항해'</b> 참가를 위해 아래 내용을 확인하고 동의해 주세요.</p>
+      <ol class="su-terms-list">
+        <li><b>인솔 지시 준수</b> — 학생은 인솔 교사의 지시에 따르며, 단독 행동이나 무단 이탈을 하지 않습니다.</li>
+        <li><b>물놀이·야외활동</b> — 물놀이 및 야외활동은 정해진 구역에서 교사의 인솔 아래에만 진행하며, 안전 수칙을 지킵니다.</li>
+        <li><b>건강·응급 처치</b> — 지병·알레르기·복용약은 신청서에 사실대로 기재하며, 응급 상황 시 <b>현장 응급처치 및 병원 이송</b>에 동의합니다. (가능한 경우 보호자에게 즉시 연락드립니다.)</li>
+        <li><b>귀중품 관리</b> — 고가의 전자기기·귀중품은 되도록 지참하지 않으며, 개인 물품의 분실·파손 책임은 본인에게 있습니다.</li>
+        <li><b>단체생활</b> — 정해진 일정·취침·기상 시간을 지키고, 숙소와 시설물을 아껴 사용합니다.</li>
+        <li><b>사진·영상</b> — 수련회 중 촬영된 사진·영상이 교회 소식 및 안내(주보·홈페이지·단체방 등)에 사용될 수 있음에 동의합니다.</li>
+        <li><b>안전 책임</b> — 위 수칙을 어겨 발생한 사고에 대해서는 교회가 책임지기 어려움을 이해하며, 안전에 유의하겠습니다.</li>
+      </ol>
+      <p class="su-terms-note">문의: 각 부서 담당 교역자 · 교사</p>
+    </div>
+    <button class="btn su-terms-agree" id="su-terms-agree">동의하고 체크하기</button>
   </div>
 </div>
 
@@ -604,6 +640,12 @@ if(location.hash==='#signup'){openSheet('guardian');const t=$('.subtab[data-pane
 $('#su-phone').addEventListener('input',e=>{let v=e.target.value.replace(/\D/g,'').slice(0,11);if(v.length>=8)v=v.replace(/(\d{3})(\d{4})(\d+)/,'$1-$2-$3');else if(v.length>=4)v=v.replace(/(\d{3})(\d+)/,'$1-$2');e.target.value=v;});
 $('#su-submit').addEventListener('click',async()=>{const btn=$('#su-submit');const student_name=$('#su-name').value.trim(),dept=$('#su-dept input:checked')?.value,phone=$('#su-phone').value.trim(),grade=$('#su-grade').value.trim(),guardian_name=$('#su-gname').value.trim(),notes=$('#su-notes').value.trim();if(!student_name)return toast('학생 이름을 입력해 주세요',1);if(!dept)return toast('부서를 선택해 주세요',1);if(!grade)return toast('학년을 입력해 주세요',1);if(!guardian_name)return toast('보호자 이름을 입력해 주세요',1);if(phone.replace(/\D/g,'').length<10)return toast('연락처를 정확히 입력해 주세요',1);if(!notes)return toast("특이사항을 입력해 주세요 (없으면 '없음')",1);if(!$('#su-agree').checked)return toast('참가 동의에 체크해 주세요',1);btn.disabled=true;btn.textContent='접수 중…';const{error}=await sb.from('songsan_signups').insert({student_name,dept,grade,guardian_name,guardian_phone:phone,notes,agreed:true});btn.disabled=false;btn.textContent='참가 신청하기';if(error){console.error(error);return toast('신청 실패 — SQL 설정 확인',1);}$('#su-done-name').textContent=student_name;$('#su-done-dept').textContent=dept+' · '+grade;$('#su-form').style.display='none';$('#su-done').style.display='';['#su-name','#su-grade','#su-gname','#su-phone','#su-notes'].forEach(s=>$(s).value='');$('#su-agree').checked=false;$$('#su-dept input').forEach(x=>x.checked=false);});
 $('#su-again').addEventListener('click',()=>{$('#su-done').style.display='none';$('#su-form').style.display='';});
+/* 안전수칙 전문 모달 */
+const suTermsClose=()=>$('#su-terms-ov').classList.remove('on');
+$('#su-terms').addEventListener('click',()=>$('#su-terms-ov').classList.add('on'));
+$('#su-terms-x').addEventListener('click',suTermsClose);
+$('#su-terms-ov').addEventListener('click',e=>{if(e.target.id==='su-terms-ov')suTermsClose();});
+$('#su-terms-agree').addEventListener('click',()=>{$('#su-agree').checked=true;suTermsClose();});
 
 /* ═══ 갤러리 ═══ */
 async function loadGallery(){const wrap=$('#gallery');wrap.innerHTML='<div class="spin" style="color:#8b97a8">불러오는 중…</div>';const dept=$('#g-filter').value;let q=sb.from('songsan_photos').select('*').order('created_at',{ascending:false});if(dept)q=q.eq('dept',dept);const{data,error}=await q;if(error){wrap.innerHTML=`<div class="empty" style="color:#8b97a8"><div class="em">⚙️</div><p>아직 준비 중이에요.<br>관리자 SQL 설정이 필요합니다.</p></div>`;return;}if(!data||!data.length){wrap.innerHTML=`<div class="empty" style="color:#8b97a8"><div class="em">📷</div><p>아직 올라온 사진이 없어요.</p></div>`;return;}const g={};data.forEach(p=>{(g[p.session]=g[p.session]||[]).push(p);});const order=SESSIONS.filter(s=>g[s]);Object.keys(g).forEach(s=>{if(!order.includes(s))order.push(s);});wrap.innerHTML=order.map(s=>`<div class="gal-group"><h4>📸 ${esc(s)} <span class="cnt">${g[s].length}</span></h4><div class="gal">${g[s].map(p=>`<img loading="lazy" src="${p.url}" alt="">`).join('')}</div></div>`).join('');$$('#gallery .gal img').forEach(img=>img.addEventListener('click',()=>{$('#lightbox img').src=img.src;$('#lightbox').classList.add('open');}));}
