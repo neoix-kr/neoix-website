@@ -1,0 +1,96 @@
+{
+  "expo": {
+    "name": "기도해요",
+    "slug": "pray-app",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "scheme": "pray-app",
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#F7F5F0"
+    },
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.neoix.pray",
+      "buildNumber": "1",
+      "infoPlist": {
+        "NSContactsUsageDescription": "이웃(교회 성도)을 찾아 서로의 기도제목을 나누기 위해 연락처 접근이 필요합니다. 전화번호는 서버에 저장하지 않고 암호화하여 매칭에만 사용합니다.",
+        "NSCameraUsageDescription": "프로필 사진 촬영을 위해 카메라 권한이 필요합니다.",
+        "NSLocationWhenInUseUsageDescription": "우리동네 기도제목을 보여드리기 위해 위치 정보가 필요합니다. 위치는 동네 이름 확인에만 사용돼요.",
+        "NSPhotoLibraryUsageDescription": "프로필 사진을 갤러리에서 선택하기 위해 접근 권한이 필요합니다.",
+        "CFBundleDisplayName": "기도해요",
+        "UIDesignRequiresCompatibility": false
+      }
+    },
+    "android": {
+      "package": "com.neoix.pray",
+      "versionCode": 1,
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#F7F5F0"
+      },
+      "edgeToEdgeEnabled": true,
+      "permissions": [
+        "android.permission.READ_CONTACTS",
+        "android.permission.CAMERA",
+        "android.permission.READ_EXTERNAL_STORAGE"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      [
+        "@react-native-kakao/core",
+        {
+          "nativeAppKey": "d8125f725e9c9eadec1d5be97ee1f273",
+          "ios": {
+            "handleKakaoOpenUrl": true
+          },
+          "android": {
+            "authCodeHandlerActivity": true
+          }
+        }
+      ],
+      "expo-font",
+      "expo-notifications",
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "우리동네 기도제목을 보여드리기 위해 위치 정보가 필요합니다."
+        }
+      ],
+      [
+        "expo-contacts",
+        {
+          "contactsPermission": "이웃(교회 성도)을 찾아 기도제목을 나누기 위해 연락처 접근이 필요합니다."
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "프로필 사진을 갤러리에서 선택하기 위해 접근 권한이 필요합니다.",
+          "cameraPermission": "프로필 사진 촬영을 위해 카메라 권한이 필요합니다."
+        }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "extraMavenRepos": ["https://devrepo.kakao.com/nexus/content/groups/public/"]
+          }
+        }
+      ]
+    ],
+    "owner": "neoix",
+    "extra": {
+      "eas": {
+        "projectId": "REPLACE_WITH_EAS_PROJECT_ID"
+      }
+    }
+  }
+}
