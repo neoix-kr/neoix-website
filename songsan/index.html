@@ -257,6 +257,26 @@
   .gal-group{ margin-bottom:26px; } .gal-group h4{ font-size:15px; font-weight:700; color:var(--tx); margin-bottom:12px; display:flex; align-items:center; gap:8px; } .gal-group h4 .cnt{ font-size:12px; font-weight:600; color:var(--pri); background:var(--pri-soft); border-radius:8px; padding:2px 8px; }
   .gal{ display:grid; grid-template-columns:repeat(3,1fr); gap:6px; } .gal img{ width:100%; aspect-ratio:1; object-fit:cover; border-radius:10px; background:var(--line2); }
   .uprow{ background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:14px 16px; margin-bottom:8px; display:flex; gap:12px; align-items:center; } .uprow .uv{ flex:1; min-width:0; } .uprow .un{ font-weight:700; font-size:15px; color:var(--tx); } .uprow .ud{ font-size:13px; color:var(--t3); margin-top:2px; } .uprow .uph{ font-size:14px; font-weight:600; color:var(--pri); white-space:nowrap; }
+  /* 관리자: 신청 내역 */
+  .sg-top{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:12px; }
+  .sg-count{ font-size:14px; color:var(--t2); } .sg-count b{ color:var(--tx); }
+  .sg-dl{ border:1px solid var(--line); background:var(--surface); color:var(--pri); font-weight:700; font-size:13.5px; padding:9px 14px; border-radius:10px; }
+  .sg-chips{ display:flex; gap:6px; flex-wrap:wrap; margin-bottom:10px; }
+  .sg-chip{ border:1px solid var(--line); background:var(--surface); color:var(--t2); font-weight:600; font-size:13px; padding:8px 12px; border-radius:99px; }
+  .sg-chip.on{ background:var(--tx); border-color:var(--tx); color:#fff; }
+  .sg-q{ width:100%; border:1px solid var(--line); border-radius:12px; padding:12px 14px; font-size:15px; font-family:inherit; background:var(--surface); color:var(--tx); margin-bottom:12px; }
+  .sg-q:focus{ outline:none; border-color:var(--pri); }
+  .sg-card{ background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:14px 16px; margin-bottom:10px; }
+  .sg-r1{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+  .sg-name{ font-weight:800; font-size:16px; color:var(--tx); }
+  .sg-dept{ font-size:12px; font-weight:700; color:var(--pri); background:var(--pri-soft); padding:3px 9px; border-radius:99px; }
+  .sg-grade{ font-size:12.5px; font-weight:600; color:var(--t3); }
+  .sg-time{ margin-left:auto; font-size:11.5px; color:var(--t3); }
+  .sg-r2{ display:flex; align-items:center; gap:8px; font-size:13.5px; color:var(--t2); margin-top:8px; }
+  .sg-r2 b{ color:var(--tx); }
+  .sg-tel{ margin-left:auto; font-size:14px; font-weight:700; color:var(--pri); text-decoration:none; white-space:nowrap; }
+  .sg-note{ font-size:13px; color:var(--t3); margin-top:8px; padding-top:8px; border-top:1px dashed var(--line2); }
+  .sg-note.warn{ color:#8a3d34; background:#fdeae6; border:1px solid #f2cfc8; border-radius:10px; padding:9px 12px; margin-top:10px; font-weight:600; }
   .upgrid{ display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:6px; } .upthumb{ position:relative; aspect-ratio:1; border-radius:10px; overflow:hidden; background:var(--line2); } .upthumb img{ width:100%; height:100%; object-fit:cover; } .upthumb .rm{ position:absolute; top:4px; right:4px; width:22px; height:22px; border-radius:50%; background:rgba(0,0,0,.55); color:#fff; border:0; font-size:13px; } .upadd{ aspect-ratio:1; border:1px dashed #c4ccd4; border-radius:10px; background:var(--surface); color:var(--pri); font-size:26px; display:flex; align-items:center; justify-content:center; }
 
   .lightbox{ position:fixed; inset:0; z-index:70; background:rgba(0,0,0,.92); display:none; align-items:center; justify-content:center; padding:20px; } .lightbox.open{ display:flex; } .lightbox img{ max-width:100%; max-height:86vh; border-radius:10px; } .lightbox .x{ position:absolute; top:calc(14px + env(safe-area-inset-top)); right:18px; color:#fff; font-size:28px; background:none; border:0; }
@@ -597,7 +617,35 @@ $('#lightbox').addEventListener('click',()=>$('#lightbox').classList.remove('ope
   function renderPrev(){const grid=$('#a-preview');grid.querySelectorAll('.upthumb').forEach(x=>x.remove());files.forEach(f=>{const d=document.createElement('div');d.className='upthumb';d.innerHTML=`<img src="${URL.createObjectURL(f)}"><button class="rm">✕</button>`;d.querySelector('.rm').addEventListener('click',()=>{files.splice(files.indexOf(f),1);renderPrev();});grid.insertBefore(d,$('#a-add'));});$('#a-upload-btn').disabled=files.length===0;$('#a-upload-btn').textContent=files.length?`업로드 (${files.length}장)`:'업로드';}
   $('#a-upload-btn').addEventListener('click',async()=>{const btn=$('#a-upload-btn');btn.disabled=true;const session=$('#a-session').value,dept=$('#a-dept').value||null;let ok=0;for(let i=0;i<files.length;i++){btn.textContent=`업로드 중… ${i+1}/${files.length}`;try{const blob=await shrinkBlob(files[i],1400);const path=`${Date.now()}_${i}.jpg`;const up=await sb.storage.from(BUCKET).upload(path,blob,{contentType:'image/jpeg'});if(up.error)throw up.error;const{data:{publicUrl}}=sb.storage.from(BUCKET).getPublicUrl(path);const ins=await sb.from('songsan_photos').insert({session,dept,url:publicUrl});if(ins.error)throw ins.error;ok++;}catch(err){console.error(err);}}files=[];renderPrev();btn.disabled=false;btn.textContent='업로드';if(ok)toast(`${ok}장 업로드 완료 ✅`);else toast('업로드 실패 — SQL 확인',1);});
 })();
-async function loadSignups(){const wrap=$('#a-signups');wrap.innerHTML='<div class="spin" style="color:#8b97a8">불러오는 중…</div>';const{data,error}=await sb.from('songsan_signups').select('*').order('created_at',{ascending:false});if(error){wrap.innerHTML=`<div class="empty" style="color:#8b97a8"><div class="em">⚙️</div><p>SQL 설정이 필요합니다.</p></div>`;return;}if(!data||!data.length){wrap.innerHTML=`<div class="empty" style="color:#8b97a8"><div class="em">📋</div><p>아직 신청 내역이 없습니다.</p></div>`;return;}wrap.innerHTML=`<p class="desc">총 <b>${data.length}</b>명 신청</p>`+data.map(s=>`<div class="uprow"><div class="uv"><div class="un">${esc(s.student_name)} <span style="font-weight:600;color:#8b97a8;font-size:12.5px">${esc(s.dept)}${s.grade?' · '+esc(s.grade):''}</span></div><div class="ud">${s.guardian_name?esc(s.guardian_name)+' · ':''}${s.notes?'📌 '+esc(s.notes):'특이사항 없음'}</div></div><a class="uph" href="tel:${(s.guardian_phone||'').replace(/\D/g,'')}">${esc(s.guardian_phone||'')}</a></div>`).join('');}
+/* ═══ 관리자: 신청 내역 (부서 필터 · 검색 · 상세 · 엑셀) ═══ */
+let sgData=[],sgDept='',sgQ='';
+async function loadSignups(){const wrap=$('#a-signups');wrap.innerHTML='<div class="spin" style="color:#8b97a8">불러오는 중…</div>';const{data,error}=await sb.from('songsan_signups').select('*').order('created_at',{ascending:false});if(error){wrap.innerHTML=`<div class="empty" style="color:#8b97a8"><div class="em">⚙️</div><p>SQL 설정이 필요합니다.</p></div>`;return;}sgData=data||[];renderSignups();}
+function sgTime(d){const t=new Date(d);return `${t.getMonth()+1}/${t.getDate()} ${String(t.getHours()).padStart(2,'0')}:${String(t.getMinutes()).padStart(2,'0')}`;}
+function sgFiltered(){let l=sgData;if(sgDept)l=l.filter(s=>s.dept===sgDept);const q=sgQ.trim().toLowerCase();if(q)l=l.filter(s=>[s.student_name,s.guardian_name,s.guardian_phone,s.grade,s.notes].some(v=>(v||'').toLowerCase().includes(q)));return l;}
+function renderSignups(){const wrap=$('#a-signups');
+  if(!sgData.length){wrap.innerHTML=`<div class="empty" style="color:#8b97a8"><div class="em">📋</div><p>아직 신청 내역이 없습니다.</p></div>`;return;}
+  const depts=['유치부','유년부','초등부','중고등부'];
+  const cnt=d=>sgData.filter(s=>s.dept===d).length;
+  const list=sgFiltered();
+  wrap.innerHTML=`
+    <div class="sg-top"><div class="sg-count">총 <b>${sgData.length}</b>명 신청${sgDept||sgQ?` · 표시 <b>${list.length}</b>명`:''}</div><button class="sg-dl" id="sg-dl">엑셀 다운로드</button></div>
+    <div class="sg-chips"><button class="sg-chip${sgDept===''?' on':''}" data-d="">전체 ${sgData.length}</button>${depts.map(d=>`<button class="sg-chip${sgDept===d?' on':''}" data-d="${d}">${d} ${cnt(d)}</button>`).join('')}</div>
+    <input class="sg-q" id="sg-q" placeholder="이름 · 보호자 · 연락처 검색" value="${esc(sgQ)}">
+    ${list.length?list.map(s=>{const hasNote=s.notes&&s.notes.trim()&&s.notes.trim()!=='없음';
+      return `<div class="sg-card">
+        <div class="sg-r1"><span class="sg-name">${esc(s.student_name)}</span><span class="sg-dept">${esc(s.dept)}</span>${s.grade?`<span class="sg-grade">${esc(s.grade)}</span>`:''}<span class="sg-time">${sgTime(s.created_at)} 접수</span></div>
+        <div class="sg-r2">보호자 <b>${esc(s.guardian_name||'-')}</b><a class="sg-tel" href="tel:${(s.guardian_phone||'').replace(/\D/g,'')}">${esc(s.guardian_phone||'-')}</a></div>
+        <div class="sg-note${hasNote?' warn':''}">${hasNote?esc(s.notes):'특이사항 없음'}</div>
+      </div>`;}).join(''):`<div class="empty" style="color:#8b97a8"><p>조건에 맞는 신청이 없습니다.</p></div>`}`;
+  $('#sg-dl').addEventListener('click',sgExcel);
+  $$('.sg-chip').forEach(c=>c.addEventListener('click',()=>{sgDept=c.dataset.d;renderSignups();}));
+  const q=$('#sg-q');q.addEventListener('input',()=>{sgQ=q.value;const l=sgFiltered();/* 목록만 갱신하면 포커스 유지 복잡 → 전체 리렌더 후 포커스 복원 */renderSignups();const nq=$('#sg-q');nq.focus();nq.setSelectionRange(nq.value.length,nq.value.length);});}
+function sgExcel(){const head=['접수일시','학생 이름','부서','학년','보호자 이름','보호자 연락처','특이사항','동의'];
+  const cell=v=>`"${String(v==null?'':v).replace(/"/g,'""')}"`;
+  const rows=sgData.slice().reverse().map(s=>[new Date(s.created_at).toLocaleString('ko-KR'),s.student_name,s.dept,s.grade||'',s.guardian_name||'',s.guardian_phone||'',s.notes||'',s.agreed?'동의':'']);
+  const csv='﻿'+[head,...rows].map(r=>r.map(cell).join(',')).join('\r\n');
+  const d=new Date(),fn=`송산수련회_참가신청_${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}.csv`;
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.download=fn;a.click();URL.revokeObjectURL(a.href);toast('엑셀 파일 다운로드 완료');}
 
 /* ═══════════ APP DECK ═══════════ */
 function enterApp(){
