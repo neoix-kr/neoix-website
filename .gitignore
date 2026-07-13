@@ -4,3 +4,8 @@ songsan/assets/boat-btn.png
 AuthKey_*.p8
 *.p8
 neoix-push/.wrangler/
+
+# Firebase (secret — 커밋 금지)
+google-services.json
+**/google-services.json
+*firebase-adminsdk*.json

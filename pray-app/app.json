@@ -29,6 +29,7 @@
     "android": {
       "package": "com.neoix.pray",
       "versionCode": 1,
+      "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#F7F5F0"
