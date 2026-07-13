@@ -6,6 +6,7 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme, FONT, RADIUS, SPACING, CLOUD_SHADOW, Palette } from '../theme';
 import SkyHeader from '../components/common/SkyHeader';
+import AdBanner from '../components/AdBanner';
 import { useAuth } from '../contexts/AuthContext';
 import { usePrayerStore } from '../store/PrayerStore';
 import type { RootStackParamList } from '../navigation/RootNavigator';
@@ -177,12 +178,9 @@ export default function HomeScreen() {
           </View>
         </View>
 
-        {/* ── 광고 영역 (Google AdMob 배너 자리 — SDK 연동 시 교체) ── */}
+        {/* ── 광고 영역 (Google AdMob 배너) ── */}
         <View style={styles.section}>
-          <View style={styles.adSlot}>
-            <Text style={styles.adBadge}>AD</Text>
-            <Text style={styles.adText}>광고 영역 · Google AdMob</Text>
-          </View>
+          <AdBanner />
         </View>
       </ScrollView>
 

@@ -6,8 +6,12 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { AuthProvider } from './src/contexts/AuthContext';
 import { PrayerStoreProvider } from './src/store/PrayerStore';
+import mobileAds from 'react-native-google-mobile-ads';
 import NotificationSync from './src/components/NotificationSync';
 import PermissionNotice from './src/components/PermissionNotice';
+
+// AdMob SDK 초기화 (1회)
+mobileAds().initialize().catch(() => {});
 import RootNavigator from './src/navigation/RootNavigator';
 import { COLORS } from './src/theme/colors';
 
