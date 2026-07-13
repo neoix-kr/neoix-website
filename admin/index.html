@@ -632,6 +632,10 @@ tbody tr:hover { background:#fafbfc; }
         <h1 class="page-title">푸시 발송</h1>
         <p class="page-desc">기도해요 앱 사용자에게 팝업 알림을 보냅니다</p>
         <div class="settings-card" style="max-width:560px">
+          <label style="display:block;font-size:12.5px;color:#4e5968;font-weight:600;margin-bottom:6px">앱 선택</label>
+          <select id="pushApp"
+                 style="width:100%;box-sizing:border-box;padding:11px 13px;border:1px solid #e5e8eb;border-radius:10px;font-size:14px;margin-bottom:16px;background:#fff">
+          </select>
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:18px">
             <span style="font-size:13px;color:#8b95a1">발송 대상</span>
             <span id="pushCount" style="font-size:15px;font-weight:700;color:#191f28">— 명</span>
@@ -1399,23 +1403,35 @@ async function pushAuthHeader() {
   const { data: { session } } = await supabase.auth.getSession();
   return session ? { Authorization: `Bearer ${session.access_token}` } : null;
 }
-async function loadPush() {
+function loadPush() {
+  // 앱 드롭다운 채우기 (한 번만)
+  const sel = $('pushApp');
+  if (!sel.options.length) {
+    sel.innerHTML = Object.entries(APPS).map(([k, v]) => `<option value="${k}">${v.name}</option>`).join('');
+    sel.value = 'pray';
+  }
+  refreshPushCount();
+}
+async function refreshPushCount() {
   $('pushResult').style.display = 'none';
   $('pushCount').textContent = '… 명';
   try {
     const h = await pushAuthHeader();
     if (!h) { $('pushCount').textContent = '로그인 필요'; return; }
-    const r = await fetch(`${PUSH_API}/count`, { headers: h });
+    const app = $('pushApp').value;
+    const r = await fetch(`${PUSH_API}/count?app=${encodeURIComponent(app)}`, { headers: h });
     const j = await r.json();
     $('pushCount').textContent = (j.count ?? 0) + ' 명';
   } catch { $('pushCount').textContent = '조회 실패'; }
 }
 async function sendPush() {
+  const app = $('pushApp').value;
+  const appName = appInfo(app).name;
   const title = $('pushTitle').value.trim();
   const body = $('pushBody').value.trim();
   const res = $('pushResult');
   if (!title || !body) { toast('제목과 본문을 입력해 주세요', 'error'); return; }
-  if (!confirm(`전체 사용자에게 발송할까요?\n\n제목: ${title}\n본문: ${body}`)) return;
+  if (!confirm(`[${appName}] 전체 사용자에게 발송할까요?\n\n제목: ${title}\n본문: ${body}`)) return;
   const btn = $('btnPushSend'); btn.disabled = true; const prev = btn.textContent; btn.textContent = '발송 중…';
   res.style.display = 'none';
   try {
@@ -1423,7 +1439,7 @@ async function sendPush() {
     if (!h) { toast('로그인이 필요합니다', 'error'); return; }
     const r = await fetch(`${PUSH_API}/send`, {
       method: 'POST', headers: { ...h, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ title, body }),
+      body: JSON.stringify({ app, title, body }),
     });
     const j = await r.json();
     if (!r.ok) { res.innerHTML = `<span style="color:#e5484d">발송 실패: ${j.error || r.status}</span>`; }
@@ -1471,7 +1487,8 @@ $('userSearch').addEventListener('input', e => renderUsers(e.target.value.toLowe
 $('appUserSearch').addEventListener('input', () => renderAppViewUsers());
 $('jmapSearch').addEventListener('input', e => renderJmap(e.target.value.replace(/[^0-9]/g,'')));
 $('btnPushSend').addEventListener('click', sendPush);
-$('btnPushRefresh').addEventListener('click', loadPush);
+$('btnPushRefresh').addEventListener('click', refreshPushCount);
+$('pushApp').addEventListener('change', refreshPushCount);
 $('polyPoliticianSearch').addEventListener('input', e => renderPolyPoliticians(e.target.value.toLowerCase()));
 $('polyComplaintSearch').addEventListener('input', e => renderPolyComplaints(e.target.value.toLowerCase()));
 

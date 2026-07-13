@@ -22,11 +22,12 @@ export default {
 
     const url = new URL(request.url);
 
-    // 발송 대상 수 미리보기
+    // 발송 대상 수 미리보기: /count?app=pray
     if (request.method === 'GET' && url.pathname === '/count') {
       const auth = request.headers.get('Authorization') || '';
       if (!auth.startsWith('Bearer ')) return json({ error: '인증 필요' }, 401, cors);
-      const tokens = await fetchTokens(auth);
+      const app = url.searchParams.get('app') || '';
+      const tokens = await fetchTokens(auth, app);
       return json({ count: tokens.length }, 200, cors);
     }
 
@@ -39,11 +40,13 @@ export default {
 
     let payload;
     try { payload = await request.json(); } catch { return json({ error: '잘못된 요청' }, 400, cors); }
+    const app = (payload.app || '').trim();
     const title = (payload.title || '').trim();
     const body = (payload.body || '').trim();
+    if (!app) return json({ error: '발송할 앱을 선택해 주세요' }, 400, cors);
     if (!title || !body) return json({ error: '제목과 본문을 입력해 주세요' }, 400, cors);
 
-    const tokens = await fetchTokens(auth);
+    const tokens = await fetchTokens(auth, app);
     if (!tokens.length) return json({ sent: 0, message: '발송 대상 토큰이 없습니다' }, 200, cors);
 
     let sent = 0;
@@ -64,10 +67,10 @@ export default {
   },
 };
 
-async function fetchTokens(auth) {
-  const r = await fetch(`${SUPABASE_URL}/rest/v1/pray_push_tokens?select=token`, {
-    headers: { apikey: ANON_KEY, Authorization: auth },
-  });
+async function fetchTokens(auth, app) {
+  let q = `${SUPABASE_URL}/rest/v1/neoix_push_tokens?select=token`;
+  if (app) q += `&app=eq.${encodeURIComponent(app)}`;
+  const r = await fetch(q, { headers: { apikey: ANON_KEY, Authorization: auth } });
   if (!r.ok) return [];
   const rows = await r.json().catch(() => []);
   return [...new Set((rows || []).map((x) => x.token))].filter((t) => typeof t === 'string' && t.startsWith('ExponentPushToken'));

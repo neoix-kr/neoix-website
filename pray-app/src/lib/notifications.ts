@@ -36,8 +36,9 @@ export async function registerPushToken(): Promise<string | null> {
     const { data: token } = await Notifications.getExpoPushTokenAsync({ projectId });
     const { data: u } = await supabase.auth.getUser();
     if (u.user && token) {
-      await supabase.from('pray_push_tokens').upsert(
-        { user_id: u.user.id, token, platform: Platform.OS },
+      // NEOIX 통합 푸시 토큰 테이블에 app='pray'로 저장 (어드민 앱별 발송용)
+      await supabase.from('neoix_push_tokens').upsert(
+        { user_id: u.user.id, token, app: 'pray', platform: Platform.OS },
         { onConflict: 'token' }
       );
     }
