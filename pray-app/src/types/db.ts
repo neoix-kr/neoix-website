@@ -14,6 +14,8 @@ export interface Profile {
   verse: string | null;               // 좋아하는 말씀 한 구절
   region: string | null;              // 우리동네
   sensitive_agreed_at: string | null; // 종교정보(민감정보) 별도 동의 시각 — 개보법 23조
+  is_premium: boolean;                // 프리미엄(광고 제거) 구독 여부
+  premium_until: string | null;       // 구독 만료 시각
   created_at: string;
 }
 

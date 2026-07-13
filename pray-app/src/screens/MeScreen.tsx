@@ -9,6 +9,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { usePrayerStore } from '../store/PrayerStore';
 import { supabase } from '../lib/supabase';
 import { searchChurch, ChurchHit } from '../lib/churchSearch';
+import { PREMIUM_PRICE } from '../config';
 import type { RootStackParamList } from '../navigation/RootNavigator';
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
@@ -283,6 +284,18 @@ export default function MeScreen() {
           </View>
         </View>
 
+        {/* 프리미엄 (광고 제거) */}
+        <View style={styles.section}>
+          <Pressable onPress={() => nav.navigate('Premium')} style={({ pressed }) => [styles.card, CLOUD_SHADOW.soft, styles.premiumRow, pressed && { opacity: 0.9 }]}>
+            <View style={styles.premiumIcon}><Ionicons name="star" size={18} color={C.primary} /></View>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.premiumTitle}>{profile?.is_premium ? '프리미엄 이용 중' : '광고 제거 · 프리미엄'}</Text>
+              <Text style={styles.premiumDesc}>{profile?.is_premium ? '광고가 제거됐어요' : `${PREMIUM_PRICE}으로 광고 없이`}</Text>
+            </View>
+            <Ionicons name="chevron-forward" size={16} color={C.textPlaceholder} />
+          </Pressable>
+        </View>
+
         {/* 메뉴 */}
         <View style={styles.section}>
           <View style={[styles.card, CLOUD_SHADOW.soft, { paddingVertical: 6, paddingHorizontal: SPACING.lg }]}>
@@ -470,6 +483,10 @@ const createStyles = (C: Palette) =>
     jmapAgreeBoxOn: { backgroundColor: C.primary, borderColor: C.primary },
     jmapAgreeText: { flex: 1, fontSize: 12, lineHeight: 17, color: C.textSecondary, fontFamily: FONT.regular },
     jmapAgreeSub: { fontSize: 11.5, color: C.textPlaceholder },
+    premiumRow: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 14, paddingHorizontal: SPACING.lg },
+    premiumIcon: { width: 40, height: 40, borderRadius: 20, backgroundColor: C.primaryLight, alignItems: 'center', justifyContent: 'center' },
+    premiumTitle: { fontSize: 15, color: C.text, fontFamily: FONT.semibold },
+    premiumDesc: { fontSize: 12.5, color: C.textSecondary, fontFamily: FONT.regular, marginTop: 2 },
     bizInfo: {
       fontSize: 11.5,
       lineHeight: 17,

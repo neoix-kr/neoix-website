@@ -17,6 +17,7 @@ import PostDetailScreen from '../screens/PostDetailScreen';
 import StatsScreen from '../screens/StatsScreen';
 import ProfileEditScreen from '../screens/ProfileEditScreen';
 import NotificationSettingsScreen from '../screens/NotificationSettingsScreen';
+import PremiumScreen from '../screens/PremiumScreen';
 import ContactsScreen from '../screens/ContactsScreen';
 
 export type RootStackParamList = {
@@ -32,6 +33,7 @@ export type RootStackParamList = {
   Stats: undefined;
   ProfileEdit: undefined;
   NotificationSettings: undefined;
+  Premium: undefined;
   Contacts: undefined;
 };
 
@@ -86,6 +88,7 @@ export default function RootNavigator() {
             <Stack.Screen name="Stats" component={StatsScreen} />
             <Stack.Screen name="ProfileEdit" component={ProfileEditScreen} />
             <Stack.Screen name="NotificationSettings" component={NotificationSettingsScreen} />
+            <Stack.Screen name="Premium" component={PremiumScreen} />
             <Stack.Screen name="Contacts" component={ContactsScreen} />
           </>
         ) : (

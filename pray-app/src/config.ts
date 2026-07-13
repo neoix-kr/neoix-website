@@ -5,13 +5,16 @@
 export const DEV_BYPASS_AUTH = false;
 
 // ── Google AdMob ──
-// 실제 수익화 시 AdMob 콘솔(admob.google.com)에서 발급받은 값으로 교체.
-// 지금은 구글 공식 '테스트 광고 단위' — 실제 광고가 뜨지만 수익은 없고 클릭해도 안전.
-// USE_TEST_ADS=false로 바꾸면 아래 실제 단위 ID를 사용.
+// 앱이 스토어 출시 전이라 실제 광고는 게재 제한(no-fill)됨 → 지금은 테스트 광고 표시.
+// 스토어 출시 + AdMob 검토 통과 후 USE_TEST_ADS=false로 바꾸면 아래 실제 단위로 실광고·수익.
 export const USE_TEST_ADS = true;
 
-// 실제 배너 광고 단위 ID (AdMob에서 발급 후 여기 채우기)
+// 실제 배너 광고 단위 ID (AdMob 발급 완료)
 export const ADMOB_BANNER = {
-  ios: 'ca-app-pub-XXXXXXXXXXXXXXXX/XXXXXXXXXX',
-  android: 'ca-app-pub-XXXXXXXXXXXXXXXX/XXXXXXXXXX',
+  ios: 'ca-app-pub-3210058400326728/7400530758',
+  android: 'ca-app-pub-3210058400326728/7592102442',
 };
+
+// ── 프리미엄 (광고 제거 구독) ──
+export const PREMIUM_PRICE = '월 9,900원';
+export const PREMIUM_PRODUCT_ID = 'pray_premium_monthly'; // App Store/Play 구독 상품 ID
