@@ -292,14 +292,24 @@ h1.title{font-size:42px;color:var(--parch);letter-spacing:1px;text-align:center;
 .scene-fb{display:none;position:absolute;inset:0;z-index:1}
 .scene-fb.show{display:block}
 .scene-fb svg{width:100%;height:100%}
-/* 전체화면 탐색 */
+/* 전체화면 탐색 — 방 이미지가 화면을 꽉 채우고 HUD가 그 위에 뜸 */
 #exploreModal{padding:0}
-#exploreInner{width:100vw;max-width:100vw;height:100dvh;max-height:100dvh;border-radius:0;overflow-y:auto;padding:calc(12px + env(safe-area-inset-top)) 16px 18px;display:flex;flex-direction:column}
-#exploreInner .ex-scene{width:100%;flex:0 0 auto}
-#exploreInner .ex-scene.portrait{width:auto;aspect-ratio:762/1024;height:min(74dvh,124vw);max-width:96vw;margin:0 auto;background:#0e1622}
-.ex-scene.portrait .ex-bg{object-fit:cover}
-.ex-scene.portrait .ex-svgfb{display:flex;align-items:center;justify-content:center;height:100%}
-#exploreInner .ex-feedback{margin-top:auto}
+#exploreInner{width:100vw;max-width:100vw;height:100dvh;max-height:100dvh;border-radius:0;padding:0;overflow:hidden;display:block;position:relative;background:#0a1622}
+.ex-full{position:absolute;inset:0;overflow:hidden}
+.ex-full>.ex-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1}
+.ex-full>.ex-svgfb{position:absolute;inset:0;z-index:1;background:radial-gradient(120% 90% at 50% 0%,rgba(255,255,255,.28),transparent 45%),var(--parch)}
+.ex-full>.ex-svgfb svg{width:100%;height:100%}
+.ex-hud{position:absolute;left:0;right:0;z-index:8;display:flex;align-items:center;gap:9px}
+.ex-hud-top{top:0;padding:calc(11px + env(safe-area-inset-top)) 16px 30px;background:linear-gradient(180deg,rgba(6,12,20,.82),rgba(6,12,20,.28) 62%,transparent)}
+.ex-hud-top .ex-title{flex:0 0 auto;text-shadow:0 2px 8px rgba(0,0,0,.7)}
+.ex-nav{top:47%}
+.ex-hud-bottom{bottom:0;flex-direction:column;gap:12px;padding:30px 16px calc(16px + env(safe-area-inset-bottom));background:linear-gradient(0deg,rgba(6,12,20,.88),rgba(6,12,20,.32) 58%,transparent)}
+.ex-hud-bottom .ex-feedback{margin:0;max-width:660px;width:100%;background:rgba(10,20,32,.55);border-color:rgba(228,196,99,.25)}
+.ex-hud-bottom .inv-strip{margin:0}
+/* 지도(개요) 보조 뷰는 패딩 래퍼로 */
+.ex-pad{padding:calc(14px + env(safe-area-inset-top)) 18px 20px;height:100%;overflow-y:auto;display:flex;flex-direction:column}
+.ex-pad .ex-scene{width:100%}
+.ex-pad .ex-feedback{margin-top:auto}
 /* 확대(closeup) — 침대 등 크게 보기 → 흔적 → 팝 */
 .ex-scene.closeup{aspect-ratio:1;height:min(66dvh,92vw);width:auto;max-width:96vw;margin:0 auto;min-height:0;background:#0e1622;position:relative;overflow:hidden}
 .cu-bg{position:absolute;inset:0;background-repeat:no-repeat;z-index:1;filter:saturate(1.05)}
@@ -970,8 +980,8 @@ const Explore = {
     if(this.view==='closeup' && this.focus){ this.cuScene(); return; }
     const inner=document.getElementById('exploreInner');
     if(this.view==='map'){
-      inner.innerHTML=`
-        <div class="ex-head"><span class="ex-title">믿음호 선내 수색</span><button class="ex-back" onclick="Explore.close()">돌아가기</button></div>
+      inner.innerHTML=`<div class="ex-pad">
+        <div class="ex-head"><span class="ex-title">믿음호 — 배 전체</span><button class="ex-back" onclick="Explore.goRoom(Explore.roomList()[0])">← 방으로</button></div>
         <div class="ex-scene" style="position:relative">
           <img class="ex-bg" src="assets/ship-map.webp" alt="" onerror="this.style.display='none';this.nextElementSibling.classList.add('show')">
           <div class="ex-svgfb"><svg viewBox="0 0 460 300" fill="none" stroke="#2B2416" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
@@ -986,28 +996,31 @@ const Explore = {
           ${MAP_SPOTS.filter(s=>!s.hidden||S.unlocked[s.id]).map(s=>
             `<button class="ex-room-btn${s.hidden?' secret':''}" style="left:${s.x}%;top:${s.y}%" onclick="Explore.goRoom('${s.id}')">${s.hidden?'🔓 ':''}${s.name}</button>`).join('')}
         </div>
-        <div class="ex-feedback" id="exFeedback">배 곳곳을 뒤져 도구를 찾고, 현장에 숨은 것도 찾아 입력하라. 숨겨진 장소는 열려야 드러난다.</div>
-        ${this.invStrip()}`;
+        <div class="ex-feedback" id="exFeedback">방을 눌러 들어가거나, ← 방으로 돌아가라.</div>
+        ${this.invStrip()}
+      </div>`;
     } else {
       const room=ROOMS[this.room];
       const list=this.roomList(); const i=list.indexOf(this.room);
       inner.innerHTML=`
-        <div class="ex-head">
-          <span class="ex-title">${room.name}</span>
-          <span class="ex-dots">${list.map((r,k)=>`<i class="${k===i?'on':''}${ROOMS[r].hidden?' sc':''}"></i>`).join('')}</span>
-          <span class="ex-timer" id="exTimer">${UI.fmt(UI.elapsedMs())}</span>
-          <button class="ex-map-btn" onclick="Explore.showMap()">🧭 지도</button>
-          <button class="ex-back" onclick="Explore.close()">나가기</button>
-        </div>
-        <div class="ex-scene${room.portrait?' portrait':''}">
+        <div class="ex-full">
           <img class="ex-bg" src="assets/room-${this.room}.webp" alt="" onerror="this.style.display='none';this.nextElementSibling.classList.add('show')">
           <div class="ex-svgfb">${SCENES_EX[room.scene]}</div>
           ${room.hotspots.map(h=>`<button class="ex-hs" style="left:${h.x}%;top:${h.y}%;width:${h.w}%;height:${h.h}%" onclick="Explore.tap('${this.room}','${h.id}')">.</button>`).join('')}
           ${i>0?`<button class="ex-nav prev" onclick="Explore.roomNav(-1)" aria-label="이전 방"><span>‹</span><em>${ROOMS[list[i-1]].name}</em></button>`:''}
           ${i<list.length-1?`<button class="ex-nav next" onclick="Explore.roomNav(1)" aria-label="다음 방"><span>›</span><em>${ROOMS[list[i+1]].name}</em></button>`:''}
-        </div>
-        <div class="ex-feedback" id="exFeedback">눈에 띄는 것을 눌러 뒤져라 · 양옆 화살표로 옆방으로 이동</div>
-        ${this.invStrip()}`;
+          <div class="ex-hud ex-hud-top">
+            <span class="ex-title">${room.name}</span>
+            <span class="ex-dots">${list.map((r,k)=>`<i class="${k===i?'on':''}${ROOMS[r].hidden?' sc':''}"></i>`).join('')}</span>
+            <span class="ex-timer" id="exTimer">${UI.fmt(UI.elapsedMs())}</span>
+            <button class="ex-map-btn" onclick="Explore.showMap()">🧭 지도</button>
+            <button class="ex-back" onclick="Explore.close()">나가기</button>
+          </div>
+          <div class="ex-hud ex-hud-bottom">
+            <div class="ex-feedback" id="exFeedback">눈에 띄는 것을 눌러 뒤져라 · 양옆 화살표로 옆방 이동</div>
+            ${this.invStrip()}
+          </div>
+        </div>`;
     }
   },
   cuScene(){
@@ -1017,15 +1030,20 @@ const Explore = {
     const tx=hs.trace?hs.trace.x:50, ty=hs.trace?hs.trace.y:50;
     const inner=document.getElementById('exploreInner');
     inner.innerHTML=`
-      <div class="ex-head"><span class="ex-title">${rm.name}</span><button class="ex-back" onclick="Explore.goRoom('${room}')">← 물러나기</button></div>
-      <div class="ex-scene closeup" id="cuScene">
-        <div class="cu-bg" style="background-image:url(assets/closeup-${room}-${hsId}.webp),url(assets/room-${room}.webp);background-size:cover,240%;background-position:center,${cx}% ${cy}%"></div>
+      <div class="ex-full" id="cuScene">
+        <div class="cu-bg" style="background-image:url(assets/closeup-${room}-${hsId}.webp),url(assets/room-${room}.webp);background-size:cover,260%;background-position:center,${cx}% ${cy}%"></div>
         <div class="cu-bg cu-open" id="cuOpen" style="background-image:url(assets/closeup-${room}-${hsId}-open.webp);background-size:cover;background-position:center"></div>
         <button class="cu-trace" style="left:${tx}%;top:${ty}%" onclick="Explore.reveal('${room}','${hsId}')" aria-label="살펴보기"><span class="cu-glow"></span></button>
-        <div class="cu-hint" id="cuHint">빛나는 곳을 눌러 열어라</div>
-      </div>
-      <div class="ex-feedback" id="exFeedback">가까이서 보니 뭔가 걸린다…</div>
-      ${this.invStrip()}`;
+        <div class="ex-hud ex-hud-top">
+          <span class="ex-title">${rm.name}</span>
+          <span class="ex-dots" style="flex:1"></span>
+          <button class="ex-back" onclick="Explore.goRoom('${room}')">← 물러나기</button>
+        </div>
+        <div class="ex-hud ex-hud-bottom">
+          <div class="ex-feedback" id="exFeedback"><span id="cuHint">빛나는 곳을 눌러 열어라</span></div>
+          ${this.invStrip()}
+        </div>
+      </div>`;
   },
   openCloseup(roomId,hsId){ this.view='closeup'; this.focus={room:roomId,hsId}; this.cuScene(); },
   reveal(roomId,hsId){
