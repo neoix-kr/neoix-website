@@ -448,7 +448,7 @@
       <button class="tile" data-tool="comm"><span class="ic"><img src="assets/tool-comm.png?v=1" alt=""></span><span class="tt"><span class="tn">커뮤니케이션</span><span class="td">항해일지 나눔</span></span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><polyline points="9 18 15 12 9 6"/></svg></span></button>
       <button class="tile" data-tool="roles"><span class="ic"><img src="assets/tool-roles.png?v=1" alt=""></span><span class="tt"><span class="tn">역할 설정</span><span class="td">우리 조 역할 정하기</span></span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><polyline points="9 18 15 12 9 6"/></svg></span></button>
       <button class="tile" data-tool="rec"><span class="ic"><img src="assets/tool-rec.png?v=1" alt=""></span><span class="tt"><span class="tn">레크레이션</span><span class="td">마피아 · 라이어 게임</span></span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><polyline points="9 18 15 12 9 6"/></svg></span></button>
-      <button class="tile" data-tool="escape"><span class="ic"><span style="font-size:27px;line-height:1">🗝️</span></span><span class="tt"><span class="tn">방탈출</span><span class="td">팀별 패드 협동 미션 · 준비 중</span></span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><polyline points="9 18 15 12 9 6"/></svg></span></button>
+      <button class="tile" data-tool="escape"><span class="ic"><span style="font-size:27px;line-height:1">🗝️</span></span><span class="tt"><span class="tn">방탈출</span><span class="td">믿음의 항해 · 5챕터 13관문</span></span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><polyline points="9 18 15 12 9 6"/></svg></span></button>
     </div>
   </div>
 
@@ -505,14 +505,6 @@
     <div class="scr-body" id="rec-body"></div>
   </section>
 
-  <!-- 방탈출 -->
-  <section class="screen" id="scr-escape">
-    <div class="scr-head"><button class="back" data-back>‹</button><h3>방탈출</h3></div>
-    <div class="scr-body">
-      <div class="reveal-card" style="min-height:260px"><div class="who">잠긴 항해일지</div><div class="role" style="font-size:30px">🗝️ 준비 중</div><div class="rdesc">여름성경학교 이야기 속으로 들어가는 팀 협동 미션이에요.<br>조별로 패드 1대를 받아 함께 자물쇠를 풀어요.</div></div>
-      <p class="hintline" style="text-align:center;margin-top:14px">진행자가 열어 주는 날 시작할 수 있어요.</p>
-    </div>
-  </section>
 </div>
 
 <!-- ═══════════ SHEET: 학생 프로필 ═══════════ -->
@@ -963,6 +955,7 @@ $('#liveBanner').addEventListener('click',()=>openTool('memorize'));
 $$('[data-back]').forEach(b=>b.addEventListener('click',()=>showScreen(null)));
 function showScreen(id){$$('.screen').forEach(s=>s.classList.toggle('active',s.id==='scr-'+id));}
 function openTool(name){
+  if(name==='escape'){ location.href='escape/'; return; }
   if(name==='quiz')startQuiz();
   if(name==='comm')loadComm();
   if(name==='roles')initRoles();
