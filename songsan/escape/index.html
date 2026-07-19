@@ -37,25 +37,28 @@ input,textarea{-webkit-user-select:text;user-select:text}
 .serif{font-family:'Gowun Batang',serif}
 svg.ic{display:inline-block;vertical-align:-3px}
 #topbar{
-  display:none;position:sticky;top:0;z-index:50;align-items:center;gap:10px;
-  background:linear-gradient(180deg,#0A1622,#0E1D2E);
-  padding:10px 14px;border-bottom:1px solid var(--sea-line);
-  box-shadow:0 1px 0 rgba(233,237,240,.06), 0 8px 24px rgba(0,0,0,.35);
+  display:none;position:sticky;top:0;z-index:50;align-items:center;gap:9px;
+  background:linear-gradient(180deg,#0c1c2c,#0a1622);
+  padding:calc(9px + env(safe-area-inset-top)) 15px 9px;border-bottom:1px solid rgba(194,154,43,.28);
+  box-shadow:0 1px 0 rgba(228,196,99,.1), 0 10px 26px rgba(0,0,0,.4);
 }
 #topbar.show{display:flex}
-.tb-team{font-size:16px;color:var(--brass-lt);letter-spacing:.5px;white-space:nowrap}
+.tb-team{font-family:'Gowun Batang',serif;font-size:16.5px;color:var(--brass-lt);letter-spacing:.5px;white-space:nowrap}
 .tb-timer{
-  font-size:20px;color:var(--chalk);font-variant-numeric:tabular-nums;letter-spacing:1px;
-  border:1.5px solid var(--brass-dk);border-radius:999px;padding:3px 13px;
-  background:radial-gradient(circle at 50% 0%,rgba(194,154,43,.18),rgba(194,154,43,.04));
+  font-size:22px;font-weight:700;color:#FBEFD2;font-variant-numeric:tabular-nums;letter-spacing:1.5px;
+  border:1.5px solid var(--brass);border-radius:11px;padding:5px 15px;
+  background:linear-gradient(180deg,rgba(194,154,43,.3),rgba(120,86,20,.12));
+  box-shadow:inset 0 1px 3px rgba(255,240,200,.22), 0 2px 8px rgba(0,0,0,.35);
 }
-.tb-pen{font-size:12px;color:#D98070;letter-spacing:.5px}
+.tb-pen{font-size:12px;color:#E89A88;letter-spacing:.5px}
 .tb-spacer{flex:1}
 .tb-btn{
-  font-family:inherit;font-size:12.5px;color:var(--chalk-dim);background:transparent;
-  border:1px solid var(--sea-line);border-radius:8px;padding:7px 9px;display:flex;align-items:center;gap:5px;
+  font-family:inherit;font-size:13px;color:var(--parch);background:rgba(233,237,240,.055);
+  border:1px solid rgba(228,196,99,.22);border-radius:9px;padding:8px 11px;display:flex;align-items:center;gap:5px;white-space:nowrap;
 }
-.tb-btn:active{background:rgba(233,237,240,.08)}
+.tb-btn.tb-explore{color:#FBEFD2;border-color:var(--brass);background:linear-gradient(180deg,rgba(194,154,43,.22),rgba(120,86,20,.08))}
+.tb-btn.tb-ic{padding:8px}
+.tb-btn:active{background:rgba(228,196,99,.18)}
 #routeBar{display:none;padding:10px 18px 4px;justify-content:center}
 #routeBar.show{display:flex}
 #routeBar svg{width:100%;max-width:560px;height:30px;color:var(--chalk-dim)}
@@ -325,6 +328,28 @@ h1.title{font-size:42px;color:var(--parch);letter-spacing:1px;text-align:center;
 }
 .ex-room-btn:active{background:rgba(138,47,30,.85)}
 .ex-room-btn.secret{background:rgba(120,86,20,.9);border-color:var(--brass);color:#FBEFD2;box-shadow:0 0 0 2px rgba(194,154,43,.35)}
+/* 방 좌우 이동 화살표 */
+.ex-nav{position:absolute;top:50%;transform:translateY(-50%);z-index:6;display:flex;flex-direction:column;align-items:center;gap:2px;
+  border:0;background:transparent;color:var(--brass-lt);cursor:pointer}
+.ex-nav.prev{left:10px}.ex-nav.next{right:10px}
+.ex-nav>span{width:54px;height:54px;border-radius:50%;border:1.5px solid rgba(228,196,99,.6);background:rgba(10,17,26,.6);backdrop-filter:blur(3px);
+  font-size:34px;line-height:50px;text-align:center;box-shadow:0 4px 14px rgba(0,0,0,.4)}
+.ex-nav>em{font-style:normal;font-family:'Gowun Batang',serif;font-size:11.5px;color:var(--parch);background:rgba(10,17,26,.55);padding:2px 7px;border-radius:6px;white-space:nowrap}
+.ex-nav:active>span{background:rgba(194,154,43,.35);transform:scale(.94)}
+/* 방 위치 표시 점 */
+.ex-dots{display:flex;gap:7px;flex:1;justify-content:center;align-items:center}
+.ex-dots i{width:8px;height:8px;border-radius:50%;background:rgba(233,237,240,.22);transition:all .2s}
+.ex-dots i.on{background:var(--brass-lt);box-shadow:0 0 8px rgba(228,196,99,.6);transform:scale(1.3)}
+.ex-dots i.sc{border:1.5px solid var(--brass);background:transparent}
+.ex-dots i.sc.on{background:var(--brass-lt)}
+.ex-map-btn{font-family:inherit;font-size:13px;color:var(--parch);background:rgba(233,237,240,.06);border:1px solid var(--sea-line);border-radius:8px;padding:8px 11px}
+.ex-map-btn:active{background:rgba(233,237,240,.12)}
+.ex-timer{font-size:19px;font-weight:700;color:#FBEFD2;font-variant-numeric:tabular-nums;letter-spacing:1px;border:1.5px solid var(--brass);border-radius:9px;padding:3px 12px;background:linear-gradient(180deg,rgba(194,154,43,.28),rgba(120,86,20,.1))}
+/* 도구 획득 버스트 */
+.cu-burst{position:absolute;top:44%;left:50%;width:20px;height:20px;border-radius:50%;transform:translate(-50%,-50%);
+  background:radial-gradient(circle,rgba(255,244,190,.95),rgba(255,214,90,.5) 40%,transparent 70%);
+  animation:cuBurst .7s ease-out forwards}
+@keyframes cuBurst{0%{opacity:1;transform:translate(-50%,-50%) scale(.3)}100%{opacity:0;transform:translate(-50%,-50%) scale(14)}}
 .ex-feedback{
   min-height:44px;margin-top:10px;background:rgba(233,237,240,.05);border:1px dashed var(--sea-line);
   border-radius:8px;padding:11px 14px;font-family:'Gowun Batang',serif;font-size:15px;color:var(--chalk-dim);
@@ -341,21 +366,29 @@ h1.title{font-size:42px;color:var(--parch);letter-spacing:1px;text-align:center;
 .phys-ok{margin-top:0;width:auto;padding:0 18px;white-space:nowrap}
 .phys-err{color:#F0A0A0;font-size:13px;min-height:16px;margin-top:8px}
 .phys-cancel{margin-top:6px;background:none;border:0;color:var(--chalk-dim);font-family:inherit;font-size:13px;padding:4px 2px}
-.inv-strip{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:12px}
+/* 동그란 인벤토리 버튼 */
+.inv-strip{display:flex;gap:13px;justify-content:center;flex-wrap:wrap;margin-top:14px;padding:4px 0}
 .inv-slot{
-  width:74px;border-radius:8px;border:1.5px dashed rgba(233,237,240,.25);padding:8px 4px 6px;text-align:center;color:var(--chalk-dim);
+  width:58px;height:58px;border-radius:50%;display:flex;align-items:center;justify-content:center;position:relative;
+  border:2px solid rgba(233,237,240,.16);
+  background:radial-gradient(circle at 50% 32%, rgba(233,237,240,.07), rgba(10,20,32,.5));
+  transition:transform .12s;
 }
-.inv-slot svg{width:30px;height:30px;opacity:.35}
-.inv-slot .nm{font-size:10.5px;font-family:'Gowun Batang',serif;margin-top:3px;letter-spacing:.5px}
-.inv-slot.got{border:1.5px solid var(--brass-dk);background:rgba(194,154,43,.12);color:var(--brass-lt)}
+.inv-slot.got{
+  border-color:var(--brass);
+  background:radial-gradient(circle at 50% 30%, rgba(228,196,99,.28), rgba(120,86,20,.14));
+  box-shadow:0 0 14px rgba(194,154,43,.3), inset 0 1px 2px rgba(255,240,200,.25);
+}
+.inv-slot.got:active{transform:scale(.94)}
+.inv-slot svg{width:30px;height:30px;opacity:.32}
 .inv-slot.got svg{opacity:1}
 /* 도구 아이콘 이미지 오버레이 (있을 때만) */
-.ti{position:relative;display:inline-block;line-height:0}
-.ti>svg{display:block;visibility:hidden}
+.ti{position:relative;display:inline-block;line-height:0;width:34px;height:34px}
+.ti>svg{display:block;visibility:hidden;width:100%;height:100%}
 .ti.svgfb>svg{visibility:visible}
 .ti>img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
 .ti.svgfb>img{display:none}
-.inv-slot .ti>img{opacity:.4}
+.inv-slot .ti>img{opacity:.38}
 .inv-slot.got .ti>img{opacity:1}
 .need-chips{display:flex;gap:10px;justify-content:center;margin-top:12px;flex-wrap:wrap}
 .need-chip{
@@ -422,13 +455,13 @@ h1.title{font-size:42px;color:var(--parch);letter-spacing:1px;text-align:center;
 <div id="app">
   <div id="topbar">
     <span class="tb-team" id="tbTeam">팀</span>
-    <span class="tb-timer" id="tbTimer">00:00</span>
     <span class="tb-pen" id="tbPen"></span>
     <span class="tb-spacer"></span>
-    <button class="tb-btn" onclick="Explore.open()">수색</button>
+    <button class="tb-btn tb-explore" onclick="Explore.open()">🧭 수색</button>
     <button class="tb-btn" id="btnSeals" onclick="UI.showSeals()">인장 <span id="sealCount">0</span>/4</button>
-    <button class="tb-btn" onclick="UI.showMyHints()">받은 힌트</button>
-    <button class="tb-btn" onclick="Admin.openGate()" aria-label="관리자"><svg class="ic" width="16" height="16" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="6"><circle cx="50" cy="50" r="26"/><circle cx="50" cy="50" r="9"/><path d="M50 24 V4 M50 76 v20 M24 50 H4 M76 50 h20 M32 32 L18 18 M68 32 L82 18 M32 68 L18 82 M68 68 L82 82"/></svg></button>
+    <button class="tb-btn" onclick="UI.showMyHints()">힌트</button>
+    <button class="tb-btn tb-ic" onclick="Admin.openGate()" aria-label="관리자"><svg class="ic" width="16" height="16" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="6"><circle cx="50" cy="50" r="26"/><circle cx="50" cy="50" r="9"/><path d="M50 24 V4 M50 76 v20 M24 50 H4 M76 50 h20 M32 32 L18 18 M68 32 L82 18 M32 68 L18 82 M68 68 L82 82"/></svg></button>
+    <span class="tb-timer" id="tbTimer">00:00</span>
   </div>
   <div id="routeBar"></div>
   <div id="screen-root"></div>
@@ -920,13 +953,16 @@ secret:`<svg viewBox="0 0 460 260" fill="none" stroke="#2B2416" stroke-width="3.
 };
 const Explore = {
   view:'map', room:null,
-  open(){ if(!S||!S.teamName){ return; } this.view='map'; this.room=null; this.render(); document.getElementById('exploreModal').classList.add('show'); },
+  open(){ if(!S||!S.teamName){ return; } this.view='room'; this.room=this.roomList()[0]; this.render(); document.getElementById('exploreModal').classList.add('show'); },
   close(){ document.getElementById('exploreModal').classList.remove('show'); },
   goRoom(id){ this.view='room'; this.room=id; this.render(); },
-  back(){ if(this.view==='room'){ this.view='map'; this.room=null; this.render(); } else this.close(); },
+  showMap(){ this.view='map'; this.room=null; this.render(); },
+  back(){ this.close(); },
+  roomList(){ return MAP_SPOTS.filter(s=>!s.hidden||S.unlocked[s.id]).map(s=>s.id); },
+  roomNav(dir){ const l=this.roomList(); let i=l.indexOf(this.room); i=Math.max(0,Math.min(l.length-1,i+dir)); this.goRoom(l[i]); },
   invStrip(){
     return `<div class="inv-strip">${Object.entries(ITEMS).map(([k,it])=>
-      `<div class="inv-slot ${S.items[k]?'got':''}">${it.icon}<div class="nm">${S.items[k]?it.name:'?'}</div></div>`).join('')}</div>`;
+      `<div class="inv-slot ${S.items[k]?'got':''}" title="${S.items[k]?it.name:'아직 찾지 못함'}">${it.icon}</div>`).join('')}</div>`;
   },
   render(){
     if(this.view==='closeup' && this.focus){ this.cuScene(); return; }
@@ -952,14 +988,23 @@ const Explore = {
         ${this.invStrip()}`;
     } else {
       const room=ROOMS[this.room];
+      const list=this.roomList(); const i=list.indexOf(this.room);
       inner.innerHTML=`
-        <div class="ex-head"><span class="ex-title">${room.name}</span><button class="ex-back" onclick="Explore.back()">← 배 전체</button></div>
+        <div class="ex-head">
+          <span class="ex-title">${room.name}</span>
+          <span class="ex-dots">${list.map((r,k)=>`<i class="${k===i?'on':''}${ROOMS[r].hidden?' sc':''}"></i>`).join('')}</span>
+          <span class="ex-timer" id="exTimer">${UI.fmt(UI.elapsedMs())}</span>
+          <button class="ex-map-btn" onclick="Explore.showMap()">🧭 지도</button>
+          <button class="ex-back" onclick="Explore.close()">나가기</button>
+        </div>
         <div class="ex-scene${room.portrait?' portrait':''}">
           <img class="ex-bg" src="assets/room-${this.room}.webp" alt="" onerror="this.style.display='none';this.nextElementSibling.classList.add('show')">
           <div class="ex-svgfb">${SCENES_EX[room.scene]}</div>
           ${room.hotspots.map(h=>`<button class="ex-hs" style="left:${h.x}%;top:${h.y}%;width:${h.w}%;height:${h.h}%" onclick="Explore.tap('${this.room}','${h.id}')">.</button>`).join('')}
+          ${i>0?`<button class="ex-nav prev" onclick="Explore.roomNav(-1)" aria-label="이전 방"><span>‹</span><em>${ROOMS[list[i-1]].name}</em></button>`:''}
+          ${i<list.length-1?`<button class="ex-nav next" onclick="Explore.roomNav(1)" aria-label="다음 방"><span>›</span><em>${ROOMS[list[i+1]].name}</em></button>`:''}
         </div>
-        <div class="ex-feedback" id="exFeedback">눈에 띄는 것을 눌러 뒤져 보라.</div>
+        <div class="ex-feedback" id="exFeedback">눈에 띄는 것을 눌러 뒤져라 · 양옆 화살표로 옆방으로 이동</div>
         ${this.invStrip()}`;
     }
   },
@@ -983,14 +1028,14 @@ const Explore = {
   reveal(roomId,hsId){
     const hs=ROOMS[roomId].hotspots.find(h=>h.id===hsId); const k=hs.item;
     if(!k||S.items[k]) return;
-    S.items[k]=true; S.opened[roomId+'.'+hsId]=true; save(); Sound.good(); logEvent('도구 획득: '+ITEMS[k].name);
+    S.items[k]=true; S.opened[roomId+'.'+hsId]=true; save(); Sound.chest(); logEvent('도구 획득: '+ITEMS[k].name);
     const sc=document.getElementById('cuScene');
-    if(sc){ const pop=document.createElement('div'); pop.className='cu-pop';
-      pop.innerHTML=`<div class="cu-pop-ic">${ITEMS[k].icon}</div><div class="cu-pop-t">${ITEMS[k].name} 획득!</div>`;
+    if(sc){ const t=sc.querySelector('.cu-trace'); if(t)t.style.display='none';
+      const pop=document.createElement('div'); pop.className='cu-pop';
+      pop.innerHTML=`<div class="cu-burst"></div><div class="cu-pop-ic">${ITEMS[k].icon}</div><div class="cu-pop-t">${ITEMS[k].name} 획득!</div>`;
       sc.appendChild(pop);
-      const t=sc.querySelector('.cu-trace'); if(t)t.style.display='none';
     }
-    setTimeout(()=>{ this.goRoom(roomId); this.feedback('※ '+(hs.text||(ITEMS[k].name+'을(를) 얻었다.'))); }, 1500);
+    setTimeout(()=>{ this.goRoom(roomId); this.feedback('※ '+(hs.text||(ITEMS[k].name+'을(를) 얻었다.'))); }, 1750);
   },
   tap(roomId,hsId){
     const hs=ROOMS[roomId].hotspots.find(h=>h.id===hsId);
@@ -1206,6 +1251,12 @@ const Sound = {
   good(){ this.tone(660,.15);this.tone(880,.2,.12);this.tone(1100,.3,.24); },
   bad(){ this.tone(220,.25,0,'square',.12);this.tone(180,.3,.15,'square',.12); },
   bell(){ this.tone(880,.6,0,'triangle',.3);this.tone(1174,.8,.1,'triangle',.25); },
+  creak(){ try{ const c=this.ac(),o=c.createOscillator(),g=c.createGain(),f=c.createBiquadFilter();
+    o.type='sawtooth';o.frequency.setValueAtTime(150,c.currentTime);o.frequency.exponentialRampToValueAtTime(64,c.currentTime+.5);
+    f.type='lowpass';f.frequency.value=520;o.connect(f);f.connect(g);g.connect(c.destination);
+    g.gain.setValueAtTime(.0001,c.currentTime);g.gain.linearRampToValueAtTime(.13,c.currentTime+.06);g.gain.exponentialRampToValueAtTime(.001,c.currentTime+.52);
+    o.start();o.stop(c.currentTime+.56);}catch(e){} },
+  chest(){ this.creak(); this.tone(2000,.03,.5,'square',.16); setTimeout(()=>{this.tone(784,.14,0,'triangle',.22);this.tone(1046,.18,.1,'triangle',.2);this.tone(1568,.34,.22,'triangle',.18);},560); },
   fanfare(){ [523,659,784,1046].forEach((f,i)=>this.tone(f,.35,i*.15,'triangle',.3)); this.tone(1318,.8,.6,'triangle',.3); },
 };
 
@@ -1445,7 +1496,9 @@ const UI = {
     if(!S||S.phase==='lobby'){ tb.classList.remove('show'); rb.classList.remove('show'); return; }
     tb.classList.add('show');
     document.getElementById('tbTeam').textContent=S.teamName;
-    document.getElementById('tbTimer').textContent=this.fmt(this.elapsedMs());
+    const _t=this.fmt(this.elapsedMs());
+    document.getElementById('tbTimer').textContent=_t;
+    const _et=document.getElementById('exTimer'); if(_et)_et.textContent=_t;
     document.getElementById('tbPen').textContent=S.penaltyMin>0?`벌점 +${S.penaltyMin}분`:'';
     document.getElementById('sealCount').textContent=sealCount();
     rb.classList.add('show');
