@@ -134,4 +134,12 @@ end $$;
 revoke all on function public.songsan_delete_post(text, text) from public;
 grant execute on function public.songsan_delete_post(text, text) to anon, authenticated;
 
+-- 5) PostgREST 스키마 캐시 새로고침 (새 RPC를 API가 즉시 인식하도록) ---
+notify pgrst, 'reload schema';
+
 -- 완료. 실행 후 앱을 새로고침하면 선장실에서 명단·공지·퀴즈·게시판 관리가 활성화됩니다.
+-- ── 그래도 "준비 중"이 뜨면 아래 진단 쿼리를 실행해 결과를 알려주세요 ──
+-- select proname from pg_proc
+--   where proname in ('songsan_admin_signups','songsan_check_admin',
+--     'songsan_admin_crew','songsan_admin_quiz','songsan_set_notice','songsan_delete_post')
+--   order by proname;
