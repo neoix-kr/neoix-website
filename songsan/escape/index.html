@@ -303,6 +303,8 @@ h1.title{font-size:42px;color:var(--parch);letter-spacing:1px;text-align:center;
 /* 확대(closeup) — 침대 등 크게 보기 → 흔적 → 팝 */
 .ex-scene.closeup{aspect-ratio:1;height:min(66dvh,92vw);width:auto;max-width:96vw;margin:0 auto;min-height:0;background:#0e1622;position:relative;overflow:hidden}
 .cu-bg{position:absolute;inset:0;background-repeat:no-repeat;z-index:1;filter:saturate(1.05)}
+.cu-open{z-index:2;opacity:0;transition:opacity .55s ease}
+.cu-open.show{opacity:1}
 .cu-hint{position:absolute;left:0;right:0;bottom:10px;text-align:center;color:var(--parch);font-family:'Gowun Batang',serif;font-size:15px;z-index:4;text-shadow:0 2px 6px rgba(0,0,0,.7)}
 .cu-trace{position:absolute;transform:translate(-50%,-50%);width:74px;height:74px;background:transparent;border:0;z-index:5;cursor:pointer}
 .cu-glow{display:block;width:100%;height:100%;border-radius:50%;background:radial-gradient(circle,rgba(255,244,180,.95),rgba(255,214,80,.35) 42%,transparent 68%);animation:cuPulse 1.25s ease-in-out infinite}
@@ -1018,8 +1020,9 @@ const Explore = {
       <div class="ex-head"><span class="ex-title">${rm.name}</span><button class="ex-back" onclick="Explore.goRoom('${room}')">← 물러나기</button></div>
       <div class="ex-scene closeup" id="cuScene">
         <div class="cu-bg" style="background-image:url(assets/closeup-${room}-${hsId}.webp),url(assets/room-${room}.webp);background-size:cover,240%;background-position:center,${cx}% ${cy}%"></div>
+        <div class="cu-bg cu-open" id="cuOpen" style="background-image:url(assets/closeup-${room}-${hsId}-open.webp);background-size:cover;background-position:center"></div>
         <button class="cu-trace" style="left:${tx}%;top:${ty}%" onclick="Explore.reveal('${room}','${hsId}')" aria-label="살펴보기"><span class="cu-glow"></span></button>
-        <div class="cu-hint">빛나는 곳에 무언가 있다 — 눌러 보라</div>
+        <div class="cu-hint" id="cuHint">빛나는 곳을 눌러 열어라</div>
       </div>
       <div class="ex-feedback" id="exFeedback">가까이서 보니 뭔가 걸린다…</div>
       ${this.invStrip()}`;
@@ -1031,11 +1034,15 @@ const Explore = {
     S.items[k]=true; S.opened[roomId+'.'+hsId]=true; save(); Sound.chest(); logEvent('도구 획득: '+ITEMS[k].name);
     const sc=document.getElementById('cuScene');
     if(sc){ const t=sc.querySelector('.cu-trace'); if(t)t.style.display='none';
-      const pop=document.createElement('div'); pop.className='cu-pop';
-      pop.innerHTML=`<div class="cu-burst"></div><div class="cu-pop-ic">${ITEMS[k].icon}</div><div class="cu-pop-t">${ITEMS[k].name} 획득!</div>`;
-      sc.appendChild(pop);
+      const hint=document.getElementById('cuHint'); if(hint)hint.style.display='none';
+      const op=document.getElementById('cuOpen'); if(op)op.classList.add('show'); // 닫힘→열림 크로스페이드
+      setTimeout(()=>{
+        const pop=document.createElement('div'); pop.className='cu-pop';
+        pop.innerHTML=`<div class="cu-burst"></div><div class="cu-pop-ic">${ITEMS[k].icon}</div><div class="cu-pop-t">${ITEMS[k].name} 획득!</div>`;
+        sc.appendChild(pop);
+      }, 520);
     }
-    setTimeout(()=>{ this.goRoom(roomId); this.feedback('※ '+(hs.text||(ITEMS[k].name+'을(를) 얻었다.'))); }, 1750);
+    setTimeout(()=>{ this.goRoom(roomId); this.feedback('※ '+(hs.text||(ITEMS[k].name+'을(를) 얻었다.'))); }, 2200);
   },
   tap(roomId,hsId){
     const hs=ROOMS[roomId].hotspots.find(h=>h.id===hsId);
