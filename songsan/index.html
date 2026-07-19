@@ -643,6 +643,7 @@
           <button class="adm-item" data-go="a-board"><span class="ai">💬</span><span><b>항해일지 관리</b><small>게시글 확인 · 삭제</small></span></button>
           <button class="adm-item" data-go="a-upload"><span class="ai">📸</span><span><b>사진 업로드</b><small>보호자 갤러리로 전송</small></span></button>
           <button class="adm-item" data-go="a-signups"><span class="ai">📋</span><span><b>참가 신청</b><small>명단 · 검색 · 엑셀</small></span></button>
+          <button class="adm-item" data-go="a-pw"><span class="ai">🔒</span><span><b>암호 변경</b><small>선장실 로그인 암호 바꾸기</small></span></button>
         </div>
       </div>
       <div class="pane" id="a-live">
@@ -683,6 +684,14 @@
         <p class="hintline">업로드하면 보호자 메뉴 '우리 아이 사진'에 바로 나타납니다.</p>
       </div>
       <div class="pane" id="a-signups"><button class="adm-back" data-go="">‹ 선장실</button><div id="sg-wrap"><div class="spin">불러오는 중…</div></div></div>
+      <div class="pane" id="a-pw">
+        <button class="adm-back" data-go="">‹ 선장실</button>
+        <p class="desc">선장실 로그인 암호를 바꿔요. 바꾼 뒤에는 <b>새 암호</b>로 로그인합니다.</p>
+        <div class="field"><label>새 암호</label><input id="pw-new" type="password" placeholder="새 암호 (4자 이상)" autocomplete="new-password"></div>
+        <div class="field"><label>새 암호 확인</label><input id="pw-new2" type="password" placeholder="새 암호 다시 입력" autocomplete="new-password"></div>
+        <button class="btn" id="pw-save">암호 바꾸기</button>
+        <p class="hintline">마피아 게임 사회자 암호는 이것과 별개예요.</p>
+      </div>
     </div>
   </div>
 </div>
@@ -868,6 +877,19 @@ async function loadNoticeForm(){
     const{error}=await sb.rpc('songsan_set_notice',{p_pass:adminPass,p_title:'',p_body:''});
     if(error)return toast('실패',1);
     $('#nt-title').value='';$('#nt-body').value='';toast('공지를 내렸습니다');
+  });
+  // 암호 변경
+  $('#pw-save').addEventListener('click',async()=>{
+    const a=$('#pw-new').value.trim(), b=$('#pw-new2').value.trim();
+    if(a.length<4)return toast('새 암호는 4자 이상이에요',1);
+    if(a!==b)return toast('두 암호가 서로 달라요',1);
+    const btn=$('#pw-save');btn.disabled=true;btn.textContent='바꾸는 중…';
+    const{error}=await sb.rpc('songsan_change_pass',{p_old:adminPass,p_new:a});
+    btn.disabled=false;btn.textContent='암호 바꾸기';
+    if(error){toast(error.message==='too_short'?'암호가 너무 짧아요':'변경 실패 — SQL(songsan_change_pass) 확인',1);return;}
+    adminPass=a;sessionStorage.setItem('songsan_admin',a);
+    $('#pw-new').value='';$('#pw-new2').value='';
+    toast('암호를 바꿨어요 🔐');admShow('');
   });
   // 말씀 띄우기
   $('#lv-push').addEventListener('click',async()=>{const verse_ref=$('#lv-ref').value.trim(),verse_body=$('#lv-body').value.trim();if(!verse_body)return toast('말씀 본문을 입력하세요',1);const{error}=await sb.from('songsan_live').update({verse_ref,verse_body,updated_at:new Date().toISOString()}).eq('id','current');if(error){console.error(error);return toast('실패 — SQL 설정 확인',1);}toast('말씀을 띄웠습니다 📢');});
