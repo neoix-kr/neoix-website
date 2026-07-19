@@ -464,7 +464,7 @@ seal:`<svg viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="44" fill
 };
 const SCENES = { prologue:'ship', storm:'storm', gerasa:'chain', jairus:'hourglass', sending:'lighthouse' };
 function sceneHtml(key, assetName, extraCls){
-  return `<div class="scene ${extraCls||''}"><img src="assets/${assetName}.png" alt="" onerror="this.remove()">${IC[key]}</div>`;
+  return `<div class="scene ${extraCls||''}"><img src="assets/${assetName}.webp" alt="" onerror="this.remove()">${IC[key]}</div>`;
 }
 function paintingHtml(key, caption){
   return `<div style="margin-top:14px"><img class="painting" src="${PAINTINGS[key]}" alt=""><p class="painting-cap">${caption}</p></div>`;
@@ -752,14 +752,14 @@ const ROOMS = {
   ]},
   cabin:{ name:'선장실', scene:'cabin', hotspots:[
     {id:'desk', x:6, y:52, w:34, h:40, locked:{needs:'key', lockedText:'책상 서랍이 잠겨 있다. 열쇠가 필요하다.'}, item:'uv', text:'열쇠가 맞았다. 서랍 속 — 보라색 유리의 자외선 등불!', after:'빈 서랍이다.'},
-    {id:'painting', x:64, y:8, w:26, h:32, item:'cross', text:'벽의 그림을 들추자 벽감 속에 나무 십자가가 숨겨져 있다!', after:'그림 뒤엔 이제 아무것도 없다.'},
+    {id:'painting', x:52, y:11, w:27, h:31, item:'cross', text:'벽의 그림을 들추자 벽감 속에 나무 십자가가 숨겨져 있다!', after:'그림 뒤엔 이제 아무것도 없다.'},
     {id:'chart', x:46, y:56, w:28, h:34, text:'낡은 해도들. 항로는 이미 정해져 있다.'},
     {id:'globe', x:80, y:52, w:16, h:26, text:'지구본. 갈릴리 호수는 점 하나다.'},
     {id:'lamp', x:30, y:26, w:12, h:20, text:'평범한 기름 램프다. 자외선은 아니다.'},
   ]},
   crew:{ name:'선원실', scene:'crew', hotspots:[
     {id:'bunk', x:4, y:26, w:38, h:60, item:'hammer', text:'침상 밑을 더듬자 낡은 망치가 손에 잡힌다!', after:'침상 밑은 비었다.'},
-    {id:'cupboard', x:66, y:16, w:28, h:52, item:'flint', text:'찬장 깊숙한 곳, 헝겊에 싸인 부싯돌을 찾았다!', after:'그릇뿐이다.'},
+    {id:'cupboard', x:61, y:17, w:27, h:51, item:'flint', text:'찬장 깊숙한 곳, 헝겊에 싸인 부싯돌을 찾았다!', after:'그릇뿐이다.'},
     {id:'hammock', x:42, y:14, w:24, h:26, text:'해먹이 흔들릴 뿐이다.'},
     {id:'boots', x:46, y:74, w:16, h:20, text:'장화. 냄새 말고는 아무것도 없다.'},
   ]},
@@ -826,7 +826,7 @@ const Explore = {
       inner.innerHTML=`
         <div class="ex-head"><span class="ex-title">믿음호 선내 수색</span><button class="ex-back" onclick="Explore.close()">돌아가기</button></div>
         <div class="ex-scene" style="position:relative">
-          <img class="ex-bg" src="assets/ship-map.png" alt="" onerror="this.remove()">
+          <img class="ex-bg" src="assets/ship-map.webp" alt="" onerror="this.remove()">
           <svg viewBox="0 0 460 300" fill="none" stroke="#2B2416" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
             <path d="M28 120 h404 l-36 118 c-60 26 -272 26 -332 0 Z"/>
             <path d="M28 120 c60 -18 344 -18 404 0" opacity=".4"/>
@@ -848,7 +848,7 @@ const Explore = {
       inner.innerHTML=`
         <div class="ex-head"><span class="ex-title">${room.name}</span><button class="ex-back" onclick="Explore.back()">← 배 전체</button></div>
         <div class="ex-scene">
-          <img class="ex-bg" src="assets/room-${this.room}.png" alt="" onerror="this.remove()">
+          <img class="ex-bg" src="assets/room-${this.room}.webp" alt="" onerror="this.remove()">
           ${SCENES_EX[room.scene]}
           ${room.hotspots.map(h=>`<button class="ex-hs" style="left:${h.x}%;top:${h.y}%;width:${h.w}%;height:${h.h}%" onclick="Explore.tap('${this.room}','${h.id}')">.</button>`).join('')}
         </div>
@@ -1179,6 +1179,7 @@ const Admin = {
       <button class="btn small oxb" onclick="Admin.skip()">이 문제 건너뛰기 (+${PENALTY.reveal}분)</button>`;
     }
     html+=`<button class="btn ghost small" onclick="Admin.reset()">게임 전체 초기화</button>
+      <button class="btn ghost small" onclick="location.href='../'">← 수련회 앱으로 나가기</button>
       <button class="btn small" onclick="document.getElementById('adminModal').classList.remove('show')">닫기</button>`;
     inner.innerHTML=html;
     document.getElementById('adminModal').classList.add('show');
@@ -1478,7 +1479,7 @@ const UI = {
     root=root||document.getElementById('screen-root');
     const total=this.finalMs();
     root.innerHTML=`<div class="screen">
-      <div class="lh-scene"><img src="assets/finish.png" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;z-index:2" onerror="this.remove()">${IC.lighthouse}</div>
+      <div class="lh-scene"><img src="assets/finish.webp" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;z-index:2" onerror="this.remove()">${IC.lighthouse}</div>
       <h1 class="title" style="font-size:34px">등대에 불이 켜졌다</h1>
       <p class="subtitle">${S.teamName} · 항해 완료</p>
       <div class="card cert">
