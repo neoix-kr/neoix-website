@@ -293,6 +293,9 @@ h1.title{font-size:42px;color:var(--parch);letter-spacing:1px;text-align:center;
 #exploreModal{padding:0}
 #exploreInner{width:100vw;max-width:100vw;height:100dvh;max-height:100dvh;border-radius:0;overflow-y:auto;padding:calc(12px + env(safe-area-inset-top)) 16px 18px;display:flex;flex-direction:column}
 #exploreInner .ex-scene{width:100%;flex:0 0 auto}
+#exploreInner .ex-scene.portrait{width:auto;aspect-ratio:762/1024;height:min(74dvh,124vw);max-width:96vw;margin:0 auto;background:#0e1622}
+.ex-scene.portrait .ex-bg{object-fit:cover}
+.ex-scene.portrait .ex-svgfb{display:flex;align-items:center;justify-content:center;height:100%}
 #exploreInner .ex-feedback{margin-top:auto}
 /* 확대(closeup) — 침대 등 크게 보기 → 흔적 → 팝 */
 .ex-scene.closeup{min-height:52dvh;background:#0e1622}
@@ -838,19 +841,19 @@ const ROOMS = {
     {id:'sacks', x:72, y:56, w:24, h:34, text:'곡식 자루뿐이다.'},
     {id:'shadow', x:6, y:10, w:20, h:26, text:'구석의 그림자… 쥐다! 놀란 건 너였다.'},
   ]},
-  wheel:{ name:'조타실', scene:'wheel', hotspots:[
-    {id:'helm', x:22, y:42, w:34, h:46, text:'거대한 조타륜. 지금은 아무도 잡고 있지 않다.'},
-    {id:'binnacle', x:62, y:46, w:20, h:40, text:'나침반이 든 조타 등불함. 바늘은 흔들림 없이 북을 가리킨다.'},
-    {id:'window', x:66, y:12, w:24, h:22, text:'창밖으로 폭풍이 몰아친다. 방향을 잃으면 안 된다.'},
-    {id:'navchest', x:6, y:64, w:32, h:30,
+  wheel:{ name:'조타실', scene:'wheel', portrait:true, hotspots:[
+    {id:'window', x:26, y:10, w:40, h:28, text:'창밖으로 폭풍이 몰아친다. 방향을 잃으면 안 된다.'},
+    {id:'helm', x:18, y:38, w:40, h:40, text:'거대한 조타륜. 지금은 아무도 잡고 있지 않다.'},
+    {id:'binnacle', x:60, y:40, w:26, h:38, text:'나침반이 든 조타 등불함. 바늘은 흔들림 없이 북을 가리킨다.'},
+    {id:'navchest', x:1, y:62, w:30, h:30, trace:{x:16,y:78},
       phys:{ code:'8624', unlocks:'secret',
         prompt:'항해 궤가 <b>네 자리 자물쇠</b>로 잠겨 있다.<br>열쇠 숫자는 배 안이 아니라 <b>지금 이 방(현장)</b> 어딘가에 숨겨진 <b>항해 카드</b>에 적혀 있다.<br>현장을 뒤져 카드를 찾아 숫자를 입력하라.',
         done:'궤가 열리며 낡은 해도 조각이 나온다 — <b>비밀 선창</b>으로 내려가는 길이 그려져 있다!' } },
   ]},
-  secret:{ name:'비밀 선창', scene:'secret', hidden:true, hotspots:[
-    {id:'crates', x:6, y:30, w:20, h:44, text:'먼지 쌓인 상자들. 오래 아무도 오지 않았다.'},
-    {id:'lantern', x:11, y:22, w:12, h:20, text:'홀로 타는 등불. 이 방을 아는 이가 밝혀 두었다.'},
-    {id:'treasure', x:34, y:40, w:36, h:46,
+  secret:{ name:'비밀 선창', scene:'secret', hidden:true, portrait:true, hotspots:[
+    {id:'lantern', x:12, y:12, w:20, h:24, text:'홀로 타는 등불. 이 방을 아는 이가 밝혀 두었다.'},
+    {id:'crates', x:4, y:42, w:24, h:34, text:'먼지 쌓인 상자들. 오래 아무도 오지 않았다.'},
+    {id:'treasure', x:32, y:44, w:44, h:42,
       phys:{ code:'3327', reward:'treasure',
         prompt:'선장의 보물 궤. <b>세 자리 봉인</b>이 걸려 있다.<br>봉인의 숫자는 <b>현장</b>에 숨겨진 <b>선장의 편지</b> 맨 끝에 적혀 있다.<br>편지를 찾아 숫자를 입력하라.',
         done:'⚓ 봉인이 풀렸다! 궤 안에는 선장의 편지와 <b>항해 훈장</b>이 들어 있다.<br>"여기까지 온 너희는 이미 믿음의 항해자다."' } },
@@ -951,7 +954,7 @@ const Explore = {
       const room=ROOMS[this.room];
       inner.innerHTML=`
         <div class="ex-head"><span class="ex-title">${room.name}</span><button class="ex-back" onclick="Explore.back()">← 배 전체</button></div>
-        <div class="ex-scene">
+        <div class="ex-scene${room.portrait?' portrait':''}">
           <img class="ex-bg" src="assets/room-${this.room}.webp" alt="" onerror="this.style.display='none';this.nextElementSibling.classList.add('show')">
           <div class="ex-svgfb">${SCENES_EX[room.scene]}</div>
           ${room.hotspots.map(h=>`<button class="ex-hs" style="left:${h.x}%;top:${h.y}%;width:${h.w}%;height:${h.h}%" onclick="Explore.tap('${this.room}','${h.id}')">.</button>`).join('')}
