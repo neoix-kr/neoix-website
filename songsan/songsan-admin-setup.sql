@@ -1,15 +1,33 @@
 -- ============================================================
 -- 송산 수련회 앱 — 선장실(관리자) 확장 SQL
 -- Supabase SQL Editor(프로젝트 nroddjekdjwnwguwkudl)에서 통째로 실행. 재실행 안전.
--- ⚠ 아래 모든 '__관리자_비밀번호__' 를 2026-07-15 보안 SQL(security-fixes-20260715.sql)에서
---    정한 관리자 비밀번호와 **같은 값**으로 교체한 뒤 실행하세요.
+--
+-- ✅ 비밀번호 교체 불필요 — 아래 함수들은 기존
+--    songsan_admin_signups(=2026-07-15 보안 SQL에서 정한 관리자 비번)을
+--    그대로 재사용해 검증합니다. 그 SQL을 먼저 실행해 둔 상태여야 합니다.
 --
 -- 추가되는 것:
+--   0. songsan_check_admin  기존 관리자 비번 검증 헬퍼
 --   1. songsan_crew         승선 명단 (승선권 만들면 자동 등록, 관리자만 열람)
 --   2. songsan_notice       선장의 공지 (관리자가 쏘면 전 승선자 화면에 표시)
 --   3. songsan_quiz_scores  퀴즈 기록 (학생이 풀면 자동 수신, 관리자만 열람)
 --   4. songsan_delete_post  항해일지(게시판) 글 삭제 RPC
 -- ============================================================
+
+-- 0) 관리자 비번 검증 헬퍼 -------------------------------------
+--    기존 songsan_admin_signups(p_pass)는 비번이 틀리면 예외를 던짐.
+--    그 성질을 이용해 true/false 로 감싼다. → 새 비번을 여기 적을 필요 없음.
+create or replace function public.songsan_check_admin(p_pass text)
+returns boolean
+language plpgsql security definer set search_path = public as $$
+begin
+  perform * from public.songsan_admin_signups(p_pass);
+  return true;
+exception when others then
+  return false;
+end $$;
+revoke all on function public.songsan_check_admin(text) from public;
+grant execute on function public.songsan_check_admin(text) to anon, authenticated;
 
 -- 1) 승선 명단 ------------------------------------------------
 create table if not exists public.songsan_crew (
@@ -35,7 +53,7 @@ create or replace function public.songsan_admin_crew(p_pass text)
 returns setof public.songsan_crew
 language plpgsql security definer set search_path = public as $$
 begin
-  if p_pass <> '__관리자_비밀번호__' then
+  if not public.songsan_check_admin(p_pass) then
     raise exception 'wrong_password';
   end if;
   return query select * from public.songsan_crew order by updated_at desc;
@@ -61,7 +79,7 @@ create or replace function public.songsan_set_notice(p_pass text, p_title text, 
 returns boolean
 language plpgsql security definer set search_path = public as $$
 begin
-  if p_pass <> '__관리자_비밀번호__' then
+  if not public.songsan_check_admin(p_pass) then
     raise exception 'wrong_password';
   end if;
   update public.songsan_notice
@@ -93,7 +111,7 @@ create or replace function public.songsan_admin_quiz(p_pass text)
 returns setof public.songsan_quiz_scores
 language plpgsql security definer set search_path = public as $$
 begin
-  if p_pass <> '__관리자_비밀번호__' then
+  if not public.songsan_check_admin(p_pass) then
     raise exception 'wrong_password';
   end if;
   return query select * from public.songsan_quiz_scores order by created_at desc limit 300;
@@ -107,7 +125,7 @@ create or replace function public.songsan_delete_post(p_id text, p_pass text)
 returns boolean
 language plpgsql security definer set search_path = public as $$
 begin
-  if p_pass <> '__관리자_비밀번호__' then
+  if not public.songsan_check_admin(p_pass) then
     raise exception 'wrong_password';
   end if;
   delete from public.songsan_board where id::text = p_id;
@@ -116,4 +134,4 @@ end $$;
 revoke all on function public.songsan_delete_post(text, text) from public;
 grant execute on function public.songsan_delete_post(text, text) to anon, authenticated;
 
--- 완료. 실행 후 앱을 배포하면 선장실에서 명단·공지·퀴즈·게시판 관리가 활성화됩니다.
+-- 완료. 실행 후 앱을 새로고침하면 선장실에서 명단·공지·퀴즈·게시판 관리가 활성화됩니다.
