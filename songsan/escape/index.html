@@ -282,6 +282,32 @@ h1.title{font-size:42px;color:var(--parch);letter-spacing:1px;text-align:center;
 }
 .ex-scene svg{width:100%;height:auto;display:block}
 .ex-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1;display:block}
+/* 이미지 로드 전 SVG 번쩍임 방지: 폴백 SVG는 기본 숨김, 이미지 실패시에만 표시 */
+.ex-svgfb{visibility:hidden}
+.ex-svgfb.show{visibility:visible}
+.ex-svgfb svg{width:100%;height:auto;display:block}
+.scene-fb{display:none;position:absolute;inset:0;z-index:1}
+.scene-fb.show{display:block}
+.scene-fb svg{width:100%;height:100%}
+/* 전체화면 탐색 */
+#exploreModal{padding:0}
+#exploreInner{width:100vw;max-width:100vw;height:100dvh;max-height:100dvh;border-radius:0;overflow-y:auto;padding:calc(12px + env(safe-area-inset-top)) 16px 18px;display:flex;flex-direction:column}
+#exploreInner .ex-scene{width:100%;flex:0 0 auto}
+#exploreInner .ex-feedback{margin-top:auto}
+/* 확대(closeup) — 침대 등 크게 보기 → 흔적 → 팝 */
+.ex-scene.closeup{min-height:52dvh;background:#0e1622}
+.cu-bg{position:absolute;inset:0;background-repeat:no-repeat;z-index:1;filter:saturate(1.05)}
+.cu-hint{position:absolute;left:0;right:0;bottom:10px;text-align:center;color:var(--parch);font-family:'Gowun Batang',serif;font-size:15px;z-index:4;text-shadow:0 2px 6px rgba(0,0,0,.7)}
+.cu-trace{position:absolute;transform:translate(-50%,-50%);width:74px;height:74px;background:transparent;border:0;z-index:5;cursor:pointer}
+.cu-glow{display:block;width:100%;height:100%;border-radius:50%;background:radial-gradient(circle,rgba(255,244,180,.95),rgba(255,214,80,.35) 42%,transparent 68%);animation:cuPulse 1.25s ease-in-out infinite}
+@keyframes cuPulse{0%,100%{transform:scale(.72);opacity:.65}50%{transform:scale(1.18);opacity:1}}
+.cu-pop{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9;background:radial-gradient(circle at 50% 45%, rgba(20,32,50,.55), rgba(6,10,18,.82))}
+.cu-pop-ic{width:38%;max-width:180px;aspect-ratio:1;animation:cuPop .55s cubic-bezier(.2,1.6,.35,1)}
+.cu-pop-ic .ti{width:100%;height:100%;display:block}
+.cu-pop-ic .ti>img{position:static;width:100%;height:100%;opacity:1}
+.cu-pop-ic .ti>svg{position:absolute;inset:0;width:100%;height:100%}
+.cu-pop-t{margin-top:16px;font-family:'Gowun Batang',serif;font-size:22px;color:var(--brass-lt);text-shadow:0 2px 8px rgba(0,0,0,.6);animation:fadein .5s .28s both}
+@keyframes cuPop{0%{transform:scale(0) rotate(-14deg)}68%{transform:scale(1.22) rotate(4deg)}100%{transform:scale(1) rotate(0)}}
 .ex-hs{z-index:3}
 .ex-room-btn{z-index:3}
 .ex-hs{
@@ -322,8 +348,10 @@ h1.title{font-size:42px;color:var(--parch);letter-spacing:1px;text-align:center;
 .inv-slot.got svg{opacity:1}
 /* 도구 아이콘 이미지 오버레이 (있을 때만) */
 .ti{position:relative;display:inline-block;line-height:0}
-.ti>svg{display:block}
+.ti>svg{display:block;visibility:hidden}
+.ti.svgfb>svg{visibility:visible}
 .ti>img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
+.ti.svgfb>img{display:none}
 .inv-slot .ti>img{opacity:.4}
 .inv-slot.got .ti>img{opacity:1}
 .need-chips{display:flex;gap:10px;justify-content:center;margin-top:12px;flex-wrap:wrap}
@@ -497,7 +525,7 @@ seal:`<svg viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="44" fill
 };
 const SCENES = { prologue:'ship', storm:'storm', gerasa:'chain', jairus:'hourglass', sending:'lighthouse' };
 function sceneHtml(key, assetName, extraCls){
-  return `<div class="scene ${extraCls||''}"><img src="assets/${assetName}.webp" alt="" onerror="this.remove()">${IC[key]}</div>`;
+  return `<div class="scene ${extraCls||''}"><img src="assets/${assetName}.webp" alt="" onerror="this.style.display='none';this.nextElementSibling.classList.add('show')"><span class="scene-fb">${IC[key]}</span></div>`;
 }
 function paintingHtml(key, caption){
   return `<div style="margin-top:14px"><img class="painting" src="${PAINTINGS[key]}" alt=""><p class="painting-cap">${caption}</p></div>`;
@@ -780,7 +808,7 @@ const ITEMS = {
 };
 // 도구 아이콘: assets/tool-<키>.webp 가 있으면 일러스트로 자동 교체, 없으면 위 SVG 유지(onerror 제거)
 Object.keys(ITEMS).forEach(k=>{
-  ITEMS[k].icon = `<span class="ti">${ITEMS[k].icon}<img src="assets/tool-${k}.webp" alt="" onerror="this.remove()"></span>`;
+  ITEMS[k].icon = `<span class="ti">${ITEMS[k].icon}<img src="assets/tool-${k}.webp" alt="" onerror="this.closest('.ti').classList.add('svgfb')"></span>`;
 });
 const ROOMS = {
   deck:{ name:'갑판', scene:'deck', hotspots:[
@@ -898,13 +926,14 @@ const Explore = {
       `<div class="inv-slot ${S.items[k]?'got':''}">${it.icon}<div class="nm">${S.items[k]?it.name:'?'}</div></div>`).join('')}</div>`;
   },
   render(){
+    if(this.view==='closeup' && this.focus){ this.cuScene(); return; }
     const inner=document.getElementById('exploreInner');
     if(this.view==='map'){
       inner.innerHTML=`
         <div class="ex-head"><span class="ex-title">믿음호 선내 수색</span><button class="ex-back" onclick="Explore.close()">돌아가기</button></div>
         <div class="ex-scene" style="position:relative">
-          <img class="ex-bg" src="assets/ship-map.webp" alt="" onerror="this.remove()">
-          <svg viewBox="0 0 460 300" fill="none" stroke="#2B2416" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+          <img class="ex-bg" src="assets/ship-map.webp" alt="" onerror="this.style.display='none';this.nextElementSibling.classList.add('show')">
+          <div class="ex-svgfb"><svg viewBox="0 0 460 300" fill="none" stroke="#2B2416" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
             <path d="M28 120 h404 l-36 118 c-60 26 -272 26 -332 0 Z"/>
             <path d="M28 120 c60 -18 344 -18 404 0" opacity=".4"/>
             <path d="M230 120 V26 M230 26 l34 12 -34 12" stroke-width="4"/>
@@ -912,7 +941,7 @@ const Explore = {
             <path d="M64 168 h332 M230 120 v166" stroke-width="2.5" opacity=".45" stroke-dasharray="6 5"/>
             <path d="M12 262 q14 -9 28 0 t28 0 t28 0 t28 0 t28 0 t28 0 t28 0 t28 0 t28 0 t28 0 t28 0 t28 0 t28 0 t28 0 t28 0 t28 0" stroke-width="2.5" opacity=".4"/>
             <text x="230" y="292" text-anchor="middle" font-size="12" font-family="Gowun Batang" fill="#5C513A" stroke="none">수색할 곳을 고르라 — 도구는 관문을 연다</text>
-          </svg>
+          </svg></div>
           ${MAP_SPOTS.filter(s=>!s.hidden||S.unlocked[s.id]).map(s=>
             `<button class="ex-room-btn${s.hidden?' secret':''}" style="left:${s.x}%;top:${s.y}%" onclick="Explore.goRoom('${s.id}')">${s.hidden?'🔓 ':''}${s.name}</button>`).join('')}
         </div>
@@ -923,13 +952,42 @@ const Explore = {
       inner.innerHTML=`
         <div class="ex-head"><span class="ex-title">${room.name}</span><button class="ex-back" onclick="Explore.back()">← 배 전체</button></div>
         <div class="ex-scene">
-          <img class="ex-bg" src="assets/room-${this.room}.webp" alt="" onerror="this.remove()">
-          ${SCENES_EX[room.scene]}
+          <img class="ex-bg" src="assets/room-${this.room}.webp" alt="" onerror="this.style.display='none';this.nextElementSibling.classList.add('show')">
+          <div class="ex-svgfb">${SCENES_EX[room.scene]}</div>
           ${room.hotspots.map(h=>`<button class="ex-hs" style="left:${h.x}%;top:${h.y}%;width:${h.w}%;height:${h.h}%" onclick="Explore.tap('${this.room}','${h.id}')">.</button>`).join('')}
         </div>
         <div class="ex-feedback" id="exFeedback">눈에 띄는 것을 눌러 뒤져 보라.</div>
         ${this.invStrip()}`;
     }
+  },
+  cuScene(){
+    const {room,hsId}=this.focus; const rm=ROOMS[room];
+    const hs=rm.hotspots.find(h=>h.id===hsId);
+    const cx=Math.round(hs.x+hs.w/2), cy=Math.round(hs.y+hs.h/2);
+    const tx=hs.trace?hs.trace.x:50, ty=hs.trace?hs.trace.y:50;
+    const inner=document.getElementById('exploreInner');
+    inner.innerHTML=`
+      <div class="ex-head"><span class="ex-title">${rm.name}</span><button class="ex-back" onclick="Explore.goRoom('${room}')">← 물러나기</button></div>
+      <div class="ex-scene closeup" id="cuScene">
+        <div class="cu-bg" style="background-image:url(assets/closeup-${room}-${hsId}.webp),url(assets/room-${room}.webp);background-size:cover,240%;background-position:center,${cx}% ${cy}%"></div>
+        <button class="cu-trace" style="left:${tx}%;top:${ty}%" onclick="Explore.reveal('${room}','${hsId}')" aria-label="살펴보기"><span class="cu-glow"></span></button>
+        <div class="cu-hint">빛나는 곳에 무언가 있다 — 눌러 보라</div>
+      </div>
+      <div class="ex-feedback" id="exFeedback">가까이서 보니 뭔가 걸린다…</div>
+      ${this.invStrip()}`;
+  },
+  openCloseup(roomId,hsId){ this.view='closeup'; this.focus={room:roomId,hsId}; this.cuScene(); },
+  reveal(roomId,hsId){
+    const hs=ROOMS[roomId].hotspots.find(h=>h.id===hsId); const k=hs.item;
+    if(!k||S.items[k]) return;
+    S.items[k]=true; S.opened[roomId+'.'+hsId]=true; save(); Sound.good(); logEvent('도구 획득: '+ITEMS[k].name);
+    const sc=document.getElementById('cuScene');
+    if(sc){ const pop=document.createElement('div'); pop.className='cu-pop';
+      pop.innerHTML=`<div class="cu-pop-ic">${ITEMS[k].icon}</div><div class="cu-pop-t">${ITEMS[k].name} 획득!</div>`;
+      sc.appendChild(pop);
+      const t=sc.querySelector('.cu-trace'); if(t)t.style.display='none';
+    }
+    setTimeout(()=>{ this.goRoom(roomId); this.feedback('※ '+(hs.text||(ITEMS[k].name+'을(를) 얻었다.'))); }, 1500);
   },
   tap(roomId,hsId){
     const hs=ROOMS[roomId].hotspots.find(h=>h.id===hsId);
@@ -943,11 +1001,7 @@ const Explore = {
       else { Sound.bad(); this.feedback(hs.locked.lockedText); return; }
     }
     if(hs.item && !S.items[hs.item]){
-      S.items[hs.item]=true; S.opened[okey]=true;
-      logEvent('도구 획득: '+ITEMS[hs.item].name);
-      save(); Sound.good();
-      this.render();
-      this.feedback('※ '+hs.text);
+      this.openCloseup(roomId,hsId); return;
     } else {
       this.feedback((hs.item||hs.locked)?(hs.after||'더 이상 아무것도 없다.'):hs.text);
     }
@@ -1585,7 +1639,7 @@ const UI = {
     root=root||document.getElementById('screen-root');
     const total=this.finalMs();
     root.innerHTML=`<div class="screen">
-      <div class="lh-scene"><img src="assets/finish.webp" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;z-index:2" onerror="this.remove()">${IC.lighthouse}</div>
+      <div class="lh-scene"><img src="assets/finish.webp" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;z-index:2" onerror="this.style.display='none';this.nextElementSibling.classList.add('show')"><span class="scene-fb">${IC.lighthouse}</span></div>
       <h1 class="title" style="font-size:34px">등대에 불이 켜졌다</h1>
       <p class="subtitle">${S.teamName} · 항해 완료</p>
       <div class="card cert">
