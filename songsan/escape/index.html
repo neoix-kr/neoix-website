@@ -293,6 +293,12 @@ h1.title{font-size:42px;color:var(--parch);letter-spacing:1px;text-align:center;
 .inv-slot .nm{font-size:10.5px;font-family:'Gowun Batang',serif;margin-top:3px;letter-spacing:.5px}
 .inv-slot.got{border:1.5px solid var(--brass-dk);background:rgba(194,154,43,.12);color:var(--brass-lt)}
 .inv-slot.got svg{opacity:1}
+/* 도구 아이콘 이미지 오버레이 (있을 때만) */
+.ti{position:relative;display:inline-block;line-height:0}
+.ti>svg{display:block}
+.ti>img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
+.inv-slot .ti>img{opacity:.4}
+.inv-slot.got .ti>img{opacity:1}
 .need-chips{display:flex;gap:10px;justify-content:center;margin-top:12px;flex-wrap:wrap}
 .need-chip{
   display:flex;align-items:center;gap:7px;border-radius:8px;padding:8px 12px;font-size:14px;
@@ -742,6 +748,10 @@ const ITEMS = {
   flint:{name:'부싯돌', icon:`<svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 66 l17 -13 15 8 -6 17 -21 2 Z"/><path d="M56 44 l15 -7 9 11 -11 13 -15 -5 Z"/><path d="M50 30 l5 -11 M58 32 l11 -7 M44 27 l-3 -12"/></svg>`},
   oil:{name:'기름통', icon:`<svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"><path d="M32 44 h30 v36 a6 6 0 0 1 -6 6 H38 a6 6 0 0 1 -6 -6 Z"/><path d="M40 44 v-9 h14 v9 M62 52 l15 -12 7 9 -15 12"/><path d="M40 60 h14" opacity=".6"/></svg>`},
 };
+// 도구 아이콘: assets/tool-<키>.webp 가 있으면 일러스트로 자동 교체, 없으면 위 SVG 유지(onerror 제거)
+Object.keys(ITEMS).forEach(k=>{
+  ITEMS[k].icon = `<span class="ti">${ITEMS[k].icon}<img src="assets/tool-${k}.webp" alt="" onerror="this.remove()"></span>`;
+});
 const ROOMS = {
   deck:{ name:'갑판', scene:'deck', hotspots:[
     {id:'ropes', x:6, y:60, w:26, h:32, item:'key', text:'밧줄 더미를 들추자 작은 놋쇠 열쇠가 굴러 나온다!', after:'밧줄뿐이다.'},
@@ -1227,6 +1237,8 @@ const Game = {
   startVoyage(){
     if(!S.startTs){ S.startTs=Date.now(); logEvent('출항, 타이머 시작'); }
     S.phase='play'; save(); UI.render();
+    // 출항하자마자 배 안을 탐색하며 시작 — 이것저것 뒤져 도구를 찾는다
+    if(!S.exploredOnce){ S.exploredOnce=true; save(); setTimeout(()=>Explore.open(), 350); }
   },
   enterStage(){
     if(STAGES[S.stageIdx].id==='gerasa' && !S.items.cross){
