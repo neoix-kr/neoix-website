@@ -295,12 +295,23 @@ h1.title{font-size:42px;color:var(--parch);letter-spacing:1px;text-align:center;
   border-radius:8px;padding:9px 13px;
 }
 .ex-room-btn:active{background:rgba(138,47,30,.85)}
+.ex-room-btn.secret{background:rgba(120,86,20,.9);border-color:var(--brass);color:#FBEFD2;box-shadow:0 0 0 2px rgba(194,154,43,.35)}
 .ex-feedback{
   min-height:44px;margin-top:10px;background:rgba(233,237,240,.05);border:1px dashed var(--sea-line);
   border-radius:8px;padding:11px 14px;font-family:'Gowun Batang',serif;font-size:15px;color:var(--chalk-dim);
   line-height:1.6;word-break:keep-all;text-align:center;
 }
 .ex-feedback.pulse{animation:fadein .35s}
+.ex-feedback.phys-active{text-align:left;border:1.5px solid var(--brass);background:rgba(194,154,43,.08);color:var(--chalk)}
+.phys-tag{font-size:12px;font-weight:700;letter-spacing:1px;color:var(--brass);margin-bottom:8px}
+.phys-prompt{font-size:14px;line-height:1.75;color:var(--chalk);margin-bottom:12px;word-break:keep-all}
+.phys-prompt b{color:var(--brass-lt)}
+.phys-row{display:flex;gap:8px}
+.phys-row input{flex:1;font-family:inherit;font-size:16px;color:var(--chalk);background:rgba(233,237,240,.07);border:1px solid var(--sea-line);border-radius:8px;padding:11px 13px;letter-spacing:2px;text-align:center}
+.phys-row input:focus{outline:none;border-color:var(--brass)}
+.phys-ok{margin-top:0;width:auto;padding:0 18px;white-space:nowrap}
+.phys-err{color:#F0A0A0;font-size:13px;min-height:16px;margin-top:8px}
+.phys-cancel{margin-top:6px;background:none;border:0;color:var(--chalk-dim);font-family:inherit;font-size:13px;padding:4px 2px}
 .inv-strip{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:12px}
 .inv-slot{
   width:74px;border-radius:8px;border:1.5px dashed rgba(233,237,240,.25);padding:8px 4px 6px;text-align:center;color:var(--chalk-dim);
@@ -799,7 +810,33 @@ const ROOMS = {
     {id:'sacks', x:72, y:56, w:24, h:34, text:'곡식 자루뿐이다.'},
     {id:'shadow', x:6, y:10, w:20, h:26, text:'구석의 그림자… 쥐다! 놀란 건 너였다.'},
   ]},
+  wheel:{ name:'조타실', scene:'wheel', hotspots:[
+    {id:'helm', x:22, y:42, w:34, h:46, text:'거대한 조타륜. 지금은 아무도 잡고 있지 않다.'},
+    {id:'binnacle', x:62, y:46, w:20, h:40, text:'나침반이 든 조타 등불함. 바늘은 흔들림 없이 북을 가리킨다.'},
+    {id:'window', x:66, y:12, w:24, h:22, text:'창밖으로 폭풍이 몰아친다. 방향을 잃으면 안 된다.'},
+    {id:'navchest', x:6, y:64, w:32, h:30,
+      phys:{ code:'8624', unlocks:'secret',
+        prompt:'항해 궤가 <b>네 자리 자물쇠</b>로 잠겨 있다.<br>열쇠 숫자는 배 안이 아니라 <b>지금 이 방(현장)</b> 어딘가에 숨겨진 <b>항해 카드</b>에 적혀 있다.<br>현장을 뒤져 카드를 찾아 숫자를 입력하라.',
+        done:'궤가 열리며 낡은 해도 조각이 나온다 — <b>비밀 선창</b>으로 내려가는 길이 그려져 있다!' } },
+  ]},
+  secret:{ name:'비밀 선창', scene:'secret', hidden:true, hotspots:[
+    {id:'crates', x:6, y:30, w:20, h:44, text:'먼지 쌓인 상자들. 오래 아무도 오지 않았다.'},
+    {id:'lantern', x:11, y:22, w:12, h:20, text:'홀로 타는 등불. 이 방을 아는 이가 밝혀 두었다.'},
+    {id:'treasure', x:34, y:40, w:36, h:46,
+      phys:{ code:'3327', reward:'treasure',
+        prompt:'선장의 보물 궤. <b>세 자리 봉인</b>이 걸려 있다.<br>봉인의 숫자는 <b>현장</b>에 숨겨진 <b>선장의 편지</b> 맨 끝에 적혀 있다.<br>편지를 찾아 숫자를 입력하라.',
+        done:'⚓ 봉인이 풀렸다! 궤 안에는 선장의 편지와 <b>항해 훈장</b>이 들어 있다.<br>"여기까지 온 너희는 이미 믿음의 항해자다."' } },
+  ]},
 };
+// 배 단면 위 장소 버튼 (hidden=숨겨진 장소, 열려야 나타남)
+const MAP_SPOTS = [
+  {id:'deck', name:'갑판', x:15, y:33},
+  {id:'wheel', name:'조타실', x:45, y:19},
+  {id:'cabin', name:'선장실', x:66, y:46},
+  {id:'crew', name:'선원실', x:19, y:62},
+  {id:'hold', name:'화물칸', x:53, y:75},
+  {id:'secret', name:'비밀 선창', x:80, y:67, hidden:true},
+];
 const SCENES_EX = {
 deck:`<svg viewBox="0 0 460 260" fill="none" stroke="#2B2416" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
 <path d="M10 200 h440 M10 200 c30 26 120 40 220 40 s190 -14 220 -40" stroke-width="4"/>
@@ -838,6 +875,17 @@ hold:`<svg viewBox="0 0 460 260" fill="none" stroke="#2B2416" stroke-width="3.5"
 <g transform="translate(392,190)"><path d="M-28 30 c-6 -24 4 -44 16 -50 c4 8 6 14 4 22 c10 -6 18 -4 24 2 c-8 10 -14 12 -22 12 c6 6 8 12 6 14 Z" stroke-width="3"/><path d="M2 -22 c2 -6 8 -8 12 -6" stroke-width="2.5" opacity=".6"/></g>
 <g transform="translate(52,44)"><circle cx="0" cy="0" r="2.8" fill="#2B2416"/><circle cx="12" cy="2" r="2.8" fill="#2B2416"/><path d="M-8 12 q14 8 30 2" stroke-width="2.5" opacity=".5"/></g>
 <text x="230" y="250" text-anchor="middle" font-size="12" font-family="Gowun Batang" fill="#5C513A" stroke="none">화물칸 — 못질된 것은 열리길 기다린다</text></svg>`,
+wheel:`<svg viewBox="0 0 460 260" fill="none" stroke="#2B2416" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
+<path d="M14 14 h432 v232 H14 Z" opacity=".35"/><path d="M14 74 h432" opacity=".25"/>
+<g transform="translate(150,150)"><circle r="52"/><circle r="20"/><g stroke-width="3"><path d="M0 -52 V-72 M0 52 v20 M-52 0 h-20 M52 0 h20 M-37 -37 l-14 -14 M37 -37 l14 -14 M-37 37 l-14 14 M37 37 l14 14"/></g><circle r="7" fill="#2B2416"/></g>
+<g transform="translate(330,150)"><path d="M-30 40 v-40 a30 30 0 0 1 60 0 v40 Z" stroke-width="4"/><circle cy="-2" r="16"/><path d="M0 -16 v6 M0 2 v6 M-16 -2 h6 M12 -2 h6 M-9 5 l3 -4" stroke-width="2.5"/></g>
+<g transform="translate(360,58)"><path d="M-40 -20 h80 v34 h-80 Z" stroke-width="3"/><path d="M0 -20 v34 M-40 -3 h80" stroke-width="2" opacity=".5"/></g>
+<text x="230" y="250" text-anchor="middle" font-size="12" font-family="Gowun Batang" fill="#5C513A" stroke="none">조타실 — 배의 방향을 쥔 곳</text></svg>`,
+secret:`<svg viewBox="0 0 460 260" fill="none" stroke="#2B2416" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
+<path d="M14 14 h432 v232 H14 Z" opacity=".35"/><path d="M14 14 l46 46 M446 14 l-46 46 M14 246 l46 -46 M446 246 l-46 -46" opacity=".25"/>
+<g transform="translate(228,168)"><path d="M-70 -6 h140 v52 h-140 Z" stroke-width="4"/><path d="M-70 -6 q0 -40 70 -40 t70 40" stroke-width="4"/><path d="M-70 16 h140" stroke-width="3"/><path d="M-70 -6 h140" stroke-width="2.5" opacity=".5"/><g stroke-width="3"><path d="M-8 8 h16 v18 h-16 Z"/><circle cy="16" r="3.5" fill="#2B2416"/></g><path d="M-46 -30 v58 M46 -30 v58" stroke-width="2.5" opacity=".55"/></g>
+<g transform="translate(66,86)"><path d="M-12 26 v-20 a12 12 0 0 1 24 0 v20 Z" stroke-width="3"/><path d="M-8 6 h16 M0 6 v-6 M-9 -6 a9 9 0 0 1 18 0" stroke-width="2.5"/><path d="M0 -14 c3 4 3 7 0 10 c-3 -3 -3 -6 0 -10 Z" fill="#2B2416" stroke="none"/></g>
+<text x="230" y="250" text-anchor="middle" font-size="12" font-family="Gowun Batang" fill="#8A6C14" stroke="none">비밀 선창 — 아무나 닿지 못하는 곳</text></svg>`,
 };
 const Explore = {
   view:'map', room:null,
@@ -865,12 +913,10 @@ const Explore = {
             <path d="M12 262 q14 -9 28 0 t28 0 t28 0 t28 0 t28 0 t28 0 t28 0 t28 0 t28 0 t28 0 t28 0 t28 0 t28 0 t28 0 t28 0 t28 0" stroke-width="2.5" opacity=".4"/>
             <text x="230" y="292" text-anchor="middle" font-size="12" font-family="Gowun Batang" fill="#5C513A" stroke="none">수색할 곳을 고르라 — 도구는 관문을 연다</text>
           </svg>
-          <button class="ex-room-btn" style="left:16%;top:34%" onclick="Explore.goRoom('deck')">갑판</button>
-          <button class="ex-room-btn" style="left:60%;top:47%" onclick="Explore.goRoom('cabin')">선장실</button>
-          <button class="ex-room-btn" style="left:20%;top:63%" onclick="Explore.goRoom('crew')">선원실</button>
-          <button class="ex-room-btn" style="left:56%;top:76%" onclick="Explore.goRoom('hold')">화물칸</button>
+          ${MAP_SPOTS.filter(s=>!s.hidden||S.unlocked[s.id]).map(s=>
+            `<button class="ex-room-btn${s.hidden?' secret':''}" style="left:${s.x}%;top:${s.y}%" onclick="Explore.goRoom('${s.id}')">${s.hidden?'🔓 ':''}${s.name}</button>`).join('')}
         </div>
-        <div class="ex-feedback" id="exFeedback">배 안 네 곳을 뒤질 수 있다. 찾은 도구는 자동으로 가방에 들어간다.</div>
+        <div class="ex-feedback" id="exFeedback">배 곳곳을 뒤져 도구를 찾고, 현장에 숨은 것도 찾아 입력하라. 숨겨진 장소는 열려야 드러난다.</div>
         ${this.invStrip()}`;
     } else {
       const room=ROOMS[this.room];
@@ -888,6 +934,10 @@ const Explore = {
   tap(roomId,hsId){
     const hs=ROOMS[roomId].hotspots.find(h=>h.id===hsId);
     const okey=roomId+'.'+hsId;
+    if(hs.phys){
+      if(S.phys[okey]){ this.feedback(hs.phys.done.replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim()); return; }
+      this.physOpen(roomId,hsId); return;
+    }
     if(hs.locked && !S.opened[okey]){
       if(S.items[hs.locked.needs]){ S.opened[okey]=true; }
       else { Sound.bad(); this.feedback(hs.locked.lockedText); return; }
@@ -904,7 +954,32 @@ const Explore = {
   },
   feedback(t){
     const f=document.getElementById('exFeedback');
-    if(f){ f.textContent=t; f.classList.remove('pulse'); void f.offsetWidth; f.classList.add('pulse'); }
+    if(f){ f.classList.remove('phys-active'); f.textContent=t; f.classList.remove('pulse'); void f.offsetWidth; f.classList.add('pulse'); }
+  },
+  toMapRender(){ this.view='map'; this.room=null; this.render(); },
+  physOpen(roomId,hsId){
+    const hs=ROOMS[roomId].hotspots.find(h=>h.id===hsId);
+    const f=document.getElementById('exFeedback'); if(!f) return;
+    f.classList.add('phys-active');
+    f.innerHTML=`<div class="phys-tag">📍 현장 미션 — 패드 밖 현장을 뒤져라</div>
+      <div class="phys-prompt">${hs.phys.prompt}</div>
+      <div class="phys-row"><input id="physInput" inputmode="numeric" autocomplete="off" placeholder="현장에서 찾은 코드" maxlength="8">
+        <button class="btn ink small phys-ok" onclick="Explore.physSubmit('${roomId}','${hsId}')">입력</button></div>
+      <div id="physErr" class="phys-err"></div>
+      <button class="phys-cancel" onclick="Explore.render()">← 나중에</button>`;
+    setTimeout(()=>{const i=document.getElementById('physInput'); if(i){ i.focus(); i.addEventListener('keydown',e=>{if(e.key==='Enter')Explore.physSubmit(roomId,hsId);}); }},60);
+  },
+  physSubmit(roomId,hsId){
+    const hs=ROOMS[roomId].hotspots.find(h=>h.id===hsId);
+    const okey=roomId+'.'+hsId;
+    const inp=document.getElementById('physInput');
+    const v=(inp?inp.value:'').replace(/\s/g,'');
+    if(v!==String(hs.phys.code)){ Sound.bad(); const e=document.getElementById('physErr'); if(e)e.textContent='숫자가 맞지 않는다. 현장을 더 뒤져 보라.'; if(inp){inp.value='';inp.focus();} return; }
+    S.phys[okey]=true;
+    if(hs.phys.unlocks) S.unlocked[hs.phys.unlocks]=true;
+    save(); Sound.good(); logEvent('현장 코드 해결: '+roomId+'.'+hsId);
+    const goMap=!!hs.phys.unlocks;
+    Info.show('봉인 해제 ⚓', `<p class="desc">${hs.phys.done}</p><button class="btn small ink" onclick="Info.close();Explore.${goMap?'toMapRender':'render'}()">계속</button>`, true);
   },
 };
 
@@ -1051,7 +1126,7 @@ function defaultState(){
   return { phase:'lobby', teamName:'', startTs:0, finishTs:0,
     stageIdx:0, puzzleIdx:0, penaltyMin:0,
     hintsUsed:{}, hintTexts:[], wrongStreak:0, cooldownUntil:0, log:[],
-    items:{}, opened:{} };
+    items:{}, opened:{}, unlocked:{}, phys:{} };
 }
 function save(){ try{ localStorage.setItem(LS_KEY, JSON.stringify(S)); }catch(e){} }
 function load(){ try{ const raw=localStorage.getItem(LS_KEY); if(raw){ S=JSON.parse(raw); S.items=S.items||{}; S.opened=S.opened||{}; return true; } }catch(e){} return false; }
