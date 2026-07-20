@@ -237,7 +237,7 @@ h1.title{font-size:42px;color:var(--parch);letter-spacing:1px;text-align:center;
 .permit-orn{color:#9C7A24;font-size:15px;letter-spacing:6px;margin-top:8px}
 .permit-sign{position:relative;margin-top:6px;font-family:'Gowun Batang',serif;font-size:13px;letter-spacing:4px;color:#6A5420}
 .wax-seal{position:absolute;right:18px;bottom:14px;width:60px;height:60px;transform:rotate(-9deg);filter:drop-shadow(0 2px 3px rgba(70,24,16,.4));opacity:.94;pointer-events:none;z-index:2}
-.wax-seal svg{width:100%;height:100%}
+.wax-seal svg,.wax-seal img{width:100%;height:100%;object-fit:contain;display:block}
 .permit-title{font-family:'Gowun Batang',serif;font-size:22px;letter-spacing:8px;color:#3A2E1A;font-weight:700}
 .permit-sub{font-family:'Gowun Batang',serif;font-size:12px;letter-spacing:4px;color:#8A6C14;margin-top:4px}
 .permit-text{font-family:'Gowun Batang',serif;font-size:14.5px;line-height:1.9;color:#4A3D26;margin-top:14px;word-break:keep-all}
@@ -272,6 +272,10 @@ h1.title{font-size:42px;color:var(--parch);letter-spacing:1px;text-align:center;
 .refl-inner{position:relative;overflow:hidden;border-radius:4px;border:1px solid rgba(94,74,26,.4)}
 .refl-img{width:100%;display:block;transform:scaleY(-1);filter:brightness(.42) saturate(.55) contrast(.95)}
 .refl-shimmer{position:absolute;inset:0;background:repeating-linear-gradient(178deg, rgba(160,200,255,.08) 0 3px, transparent 3px 9px), linear-gradient(180deg, rgba(20,50,90,.35), rgba(10,25,50,.15));pointer-events:none}
+/* 물결 코스틱스 오버레이 — 반사면이 '물에 비친' 느낌 */
+.refl-caustics{position:absolute;inset:0;background:url("assets/refl-water-caustics.webp") center/cover;opacity:.28;mix-blend-mode:screen;pointer-events:none;animation:causticDrift 14s ease-in-out infinite alternate}
+@keyframes causticDrift{from{background-position:48% 46%}to{background-position:52% 54%}}
+@media (prefers-reduced-motion:reduce){.refl-caustics{animation:none}}
 .refl-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;transform:rotate(180deg);pointer-events:none}
 .refl-formula{font-family:'Jua';font-size:36px;letter-spacing:5px;color:rgba(185,225,255,.85);text-shadow:0 0 14px rgba(140,205,255,.9)}
 .refl-word{font-family:'Gowun Batang',serif;font-size:12.5px;color:rgba(185,225,255,.5);letter-spacing:2px}
@@ -588,17 +592,6 @@ function paintingHtml(key, caption){
 
 /* ---------------- 퍼즐 전용 아트 ---------------- */
 const ART = {
-signs(){ // P1: 요한복음 여섯 표적 (6장에 2개 - 절 순서 함정)
-  const cards=[
-    {nm:'물 위를 걸어 배에 오신 밤', letter:'믿', icon:`<svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="50" cy="24" r="8"/><path d="M50 32 v22 M50 38 l-14 10 M50 38 l14 10 M50 54 l-10 16 M50 54 l10 16"/><path d="M14 82 q12 -8 24 0 t24 0 t24 0" stroke-width="4" opacity=".7"/></svg>`},
-    {nm:'무덤에서 나흘 만에 나온 사람', letter:'라', icon:IC.tomb},
-    {nm:'물이 포도주가 된 잔치', letter:'표', icon:`<svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"><path d="M34 20 h32 c4 10 6 18 6 26 c0 16 -10 24 -22 24 s-22 -8 -22 -24 c0 -8 2 -16 6 -26 Z"/><path d="M30 34 h40" opacity=".7"/><path d="M50 70 v14 M38 88 h24"/></svg>`},
-    {nm:'오천 명을 먹인 다섯 개의 빵과 두 마리 물고기', letter:'을', icon:`<svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 46 c0 -12 10 -19 22 -19 s22 7 22 19 v4 a4 4 0 0 1 -4 4 H26 a4 4 0 0 1 -4 -4 Z"/><path d="M34 34 l-3 8 M45 32 l-3 8 M56 34 l-3 8" opacity=".7" stroke-width="3.5"/><path d="M28 72 c8 -10 24 -10 32 -4 l10 -7 v20 l-10 -7 c-8 6 -24 6 -32 -2 Z" stroke-width="4"/><circle cx="36" cy="70" r="2" fill="currentColor" stroke="none"/></svg>`},
-    {nm:'서른여덟 해 만에 자리를 들고 걸은 사람', letter:'적', icon:`<svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 56 h60 v12 H20 Z"/><path d="M24 68 v14 M76 68 v14"/><path d="M28 56 c0 -8 6 -12 12 -12 h6 v12" opacity=".8"/></svg>`},
-    {nm:'나면서 못 보던 눈이 떠진 사람', letter:'으', icon:`<svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 52 C 30 30 70 30 86 52 C 70 74 30 74 14 52 Z"/><circle cx="50" cy="52" r="11"/><circle cx="50" cy="52" r="3" fill="currentColor" stroke="none"/><path d="M50 24 v-8 M28 32 l-6 -7 M72 32 l6 -7" opacity=".7"/></svg>`},
-  ];
-  return `<div class="sign-grid">${cards.map(c=>`<div class="sign-card">${c.icon}<div class="nm">${c.nm}</div><span class="letter">${c.letter}</span></div>`).join('')}</div>`;
-},
 chart(){ // P3: 격자 해도 A~H × 1~8 (정답 B7, 함정 D7/H1)
   const cell=44, ox=46, oy=46;
   let g='';
@@ -731,7 +724,7 @@ uvPermit(){
       <div class="permit-line"></div>
       <p class="permit-sign">믿음호 선장</p>
       <p class="permit-text small faded">…이하 여백…</p>
-      <div class="wax-seal"><svg viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="44" fill="#9E3B2C"/><circle cx="50" cy="50" r="44" stroke="#7C2C20" stroke-width="3"/><circle cx="50" cy="50" r="33" fill="none" stroke="#F2D8C8" stroke-width="2" stroke-dasharray="4 5"/><g stroke="#F2D8C8" stroke-width="5" stroke-linecap="round" fill="none"><circle cx="50" cy="33" r="6"/><path d="M50 39 v28 M39 48 h22"/><path d="M32 60 c2 10 9 16 18 16 s16 -6 18 -16 l-6 4 M32 60 l6 4"/></g></svg></div>
+      <div class="wax-seal"><img src="assets/permit-wax-seal.webp" alt="" onerror="this.remove()"></div>
     </div>
     <div class="uv-hidden">
       <span style="left:6%;top:9%">요한복음 二十장 三十一절</span>
@@ -776,6 +769,7 @@ reflRoom(){
     <div class="refl-inner">
       <img class="refl-img" src="${PAINTINGS.repin}" alt="">
       <div class="refl-shimmer"></div>
+      <div class="refl-caustics"></div>
       <div class="refl-overlay">
         <span class="refl-formula">Ⓐ × Ⓑ − Ⓒ × Ⓓ</span>
         <span class="refl-word">뒤집힌 것은 뒤집어 보아야 한다</span>
