@@ -324,12 +324,14 @@ h1.title{font-size:42px;color:var(--parch);letter-spacing:1px;text-align:center;
 /* 확대(closeup) — 침대 등 크게 보기 → 흔적 → 팝 */
 .ex-scene.closeup{aspect-ratio:1;height:min(66dvh,92vw);width:auto;max-width:96vw;margin:0 auto;min-height:0;background:#0e1622;position:relative;overflow:hidden}
 .cu-bg{position:absolute;inset:0;background-repeat:no-repeat;z-index:1;filter:saturate(1.05)}
+.look-bg{z-index:1;transition:background-size .5s ease}
+.look-vig{position:absolute;inset:0;z-index:2;pointer-events:none;background:radial-gradient(ellipse at center, transparent 42%, rgba(6,12,20,.55) 88%)}
 .cu-open{z-index:2;opacity:0;transition:opacity .55s ease}
 .cu-open.show{opacity:1}
 .cu-hint{position:absolute;left:0;right:0;bottom:10px;text-align:center;color:var(--parch);font-family:'Gowun Batang',serif;font-size:15px;z-index:4;text-shadow:0 2px 6px rgba(0,0,0,.7)}
 .cu-trace{position:absolute;transform:translate(-50%,-50%);width:74px;height:74px;background:transparent;border:0;z-index:5;cursor:pointer}
-.cu-glow{display:block;width:100%;height:100%;border-radius:50%;background:radial-gradient(circle,rgba(255,244,180,.95),rgba(255,214,80,.35) 42%,transparent 68%);animation:cuPulse 1.25s ease-in-out infinite}
-@keyframes cuPulse{0%,100%{transform:scale(.72);opacity:.65}50%{transform:scale(1.18);opacity:1}}
+.cu-glow{display:block;width:100%;height:100%;border-radius:50%;background:radial-gradient(circle,rgba(255,238,180,.34),rgba(255,214,110,.12) 40%,transparent 66%);animation:cuPulse 3.6s ease-in-out infinite}
+@keyframes cuPulse{0%,100%{transform:scale(.86);opacity:.4}50%{transform:scale(1.06);opacity:.78}}
 .cu-pop{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9;background:radial-gradient(circle at 50% 45%, rgba(20,32,50,.55), rgba(6,10,18,.82))}
 .cu-pop-ic{width:38%;max-width:180px;aspect-ratio:1;animation:cuPop .55s cubic-bezier(.2,1.6,.35,1)}
 .cu-pop-ic .ti{width:100%;height:100%;display:block}
@@ -340,10 +342,22 @@ h1.title{font-size:42px;color:var(--parch);letter-spacing:1px;text-align:center;
 .ex-hs{z-index:3}
 .ex-room-btn{z-index:3}
 .ex-hs{
-  position:absolute;background:transparent;border:1.5px dashed rgba(158,59,44,.0);border-radius:6px;
+  position:absolute;background:transparent;border:0;border-radius:10px;
   font-family:'Gowun Batang',serif;font-size:0;color:transparent;
+  -webkit-tap-highlight-color:transparent;outline:none;
 }
-.ex-hs:active{border-color:rgba(158,59,44,.6);background:rgba(158,59,44,.08)}
+.ex-hs:focus,.ex-hs:focus-visible{outline:none}
+/* 누르면 빨간 네모가 아니라, 등불빛이 닿은 듯 은은하게만 */
+.ex-hs:active{background:radial-gradient(ellipse at center, rgba(255,226,150,.16), rgba(255,214,110,.05) 55%, transparent 75%)}
+/* 숨은 것: 아주 은은한 숨쉬는 빛 — 있는 줄은 알겠지만 대놓고는 아닌 */
+.ex-hs.subtle::after{
+  content:'';position:absolute;left:50%;top:50%;width:34%;height:34%;min-width:26px;min-height:26px;
+  transform:translate(-50%,-50%);border-radius:50%;pointer-events:none;
+  background:radial-gradient(circle, rgba(255,232,170,.30), rgba(255,214,110,.10) 45%, transparent 70%);
+  animation:hsBreath 4.2s ease-in-out infinite;
+}
+@keyframes hsBreath{0%,100%{opacity:.22;transform:translate(-50%,-50%) scale(.9)}50%{opacity:.5;transform:translate(-50%,-50%) scale(1.08)}}
+@media (prefers-reduced-motion:reduce){.ex-hs.subtle::after{animation:none;opacity:.3}}
 .ex-room-btn{
   position:absolute;font-family:inherit;font-size:15px;letter-spacing:2px;
   background:rgba(43,36,22,.78);color:var(--parch);border:1px solid rgba(255,255,255,.25);
@@ -367,6 +381,8 @@ h1.title{font-size:42px;color:var(--parch);letter-spacing:1px;text-align:center;
 .ex-dots i.sc.on{background:var(--brass-lt)}
 .ex-map-btn{font-family:inherit;font-size:13px;color:var(--parch);background:rgba(233,237,240,.06);border:1px solid var(--sea-line);border-radius:8px;padding:8px 11px}
 .ex-map-btn:active{background:rgba(233,237,240,.12)}
+.amb-btn{font-size:14px;line-height:1}
+.amb-btn.off{opacity:.42}
 .ex-timer{font-size:19px;font-weight:700;color:#FBEFD2;font-variant-numeric:tabular-nums;letter-spacing:1px;border:1.5px solid var(--brass);border-radius:9px;padding:3px 12px;background:linear-gradient(180deg,rgba(194,154,43,.28),rgba(120,86,20,.1))}
 /* 도구 획득 버스트 */
 .cu-burst{position:absolute;top:44%;left:50%;width:20px;height:20px;border-radius:50%;transform:translate(-50%,-50%);
@@ -441,6 +457,17 @@ h1.title{font-size:42px;color:var(--parch);letter-spacing:1px;text-align:center;
 @keyframes glowp{0%,100%{filter:drop-shadow(0 0 4px rgba(228,196,99,.5))}50%{filter:drop-shadow(0 0 22px rgba(228,196,99,.95))}}
 .admin-row{display:flex;align-items:center;gap:8px;margin-top:9px;background:rgba(233,237,240,.05);border:1px solid rgba(233,237,240,.07);border-radius:8px;padding:10px 13px;font-size:15px;color:var(--chalk-dim)}
 .admin-row b{color:var(--chalk);font-weight:400}
+/* 관리자 진행 모드 */
+.admin-sec{margin-top:16px;font-size:13px;letter-spacing:3px;color:var(--brass-lt);border-bottom:1px solid rgba(194,154,43,.28);padding-bottom:6px}
+.admin-note{margin-top:8px;font-family:'Gowun Batang',serif;font-size:13px;line-height:1.6;color:var(--chalk-dim)}
+.admin-jump{display:flex;align-items:center;gap:8px;margin-top:8px}
+.admin-jump .jump-ch{flex:1;text-align:left;font-family:inherit;font-size:14px;color:var(--chalk);background:rgba(233,237,240,.05);border:1px solid rgba(233,237,240,.12);border-radius:8px;padding:9px 12px;cursor:pointer}
+.admin-jump .jump-ch.on{border-color:var(--brass);color:var(--brass-lt);background:rgba(194,154,43,.12)}
+.admin-jump .jump-ch:active{background:rgba(233,237,240,.12)}
+.jump-pz{display:flex;gap:5px}
+.jump-pz button{width:30px;height:30px;font-family:inherit;font-size:13px;color:var(--chalk-dim);background:rgba(233,237,240,.05);border:1px solid rgba(233,237,240,.12);border-radius:7px;cursor:pointer}
+.jump-pz button.on{border-color:var(--brass);color:#241C06;background:var(--brass)}
+.jump-pz button:active{background:rgba(233,237,240,.15)}
 .admin-row .grow{flex:1}
 .admin-mini{font-family:inherit;font-size:14px;border:1px solid var(--sea-line);border-radius:6px;padding:7px 11px;background:transparent;color:var(--chalk)}
 .admin-mini:active{background:rgba(233,237,240,.1)}
@@ -483,6 +510,7 @@ h1.title{font-size:42px;color:var(--parch);letter-spacing:1px;text-align:center;
     <button class="tb-btn tb-explore" onclick="Explore.open()">🧭 수색</button>
     <button class="tb-btn" id="btnSeals" onclick="UI.showSeals()">인장 <span id="sealCount">0</span>/4</button>
     <button class="tb-btn" onclick="UI.showMyHints()">힌트</button>
+    <button class="tb-btn tb-ic amb-btn" onclick="Ambience.toggle()" aria-label="배경음">🔊</button>
     <button class="tb-btn tb-ic" onclick="Admin.openGate()" aria-label="관리자"><svg class="ic" width="16" height="16" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="6"><circle cx="50" cy="50" r="26"/><circle cx="50" cy="50" r="9"/><path d="M50 24 V4 M50 76 v20 M24 50 H4 M76 50 h20 M32 32 L18 18 M68 32 L82 18 M32 68 L18 82 M68 68 L82 82"/></svg></button>
     <span class="tb-timer" id="tbTimer">00:00</span>
   </div>
@@ -861,48 +889,120 @@ Object.keys(ITEMS).forEach(k=>{
 });
 const ROOMS = {
   deck:{ name:'갑판', scene:'deck', hotspots:[
-    {id:'ropes', x:6, y:60, w:26, h:32, item:'key', trace:{x:34,y:44}, text:'밧줄 더미를 들추자 작은 놋쇠 열쇠가 굴러 나온다!', after:'밧줄뿐이다.'},
-    {id:'mast', x:42, y:4, w:16, h:60, text:'돛대가 삐걱인다. 위에는 아무것도 없다.'},
-    {id:'bell', x:66, y:8, w:14, h:20, text:'종을 울리면 온 배가 깨어난다. 참자.'},
-    {id:'barrel', x:60, y:62, w:16, h:30, text:'빗물이 반쯤 찬 물통이다.'},
-    {id:'anchor', x:82, y:56, w:15, h:38, text:'닻은 단단히 걸려 있다.'},
+    {id:'ropes', x:1, y:63, w:17.5, h:32, name:'밧줄 더미', subtle:true, item:'key', trace:{x:34,y:44}, text:'밧줄 더미를 들추자 작은 놋쇠 열쇠가 굴러 나온다!', after:'밧줄뿐이다.'},
+    {id:'mast', x:30, y:0, w:8.5, h:32, name:'돛대', text:'돛대가 삐걱인다. 위에는 아무것도 없다.'},
+    {id:'bell', x:13.2, y:37.5, w:7.2, h:21.5, name:'종', text:'종을 울리면 온 배가 깨어난다. 참자.'},
+    {id:'barrel', x:60, y:61, w:11.75, h:28, name:'물통', text:'빗물이 반쯤 찬 물통이다.'},
+    {id:'anchor', x:72, y:47, w:14, h:41, name:'닻', text:'닻은 단단히 걸려 있다.'},
+    {id:'lantern', x:11, y:5, w:18, h:30, name:'등불', look:true, text:'이 배에 남은 단 하나의 불빛. 심지가 짧아 오래 버티진 못하겠다.'},
+    {id:'sail', x:39, y:3.5, w:18, h:26.5, name:'말린 돛', text:'돛은 단단히 말려 묶여 있다. 이런 바람에 펴면 배가 찢어진다.'},
+    {id:'pulley', x:23.5, y:18, w:7, h:13, name:'도르래', look:true, text:'녹슨 도르래가 바람에 흔들리며 사슬을 긁는다. 걸린 건 없다.'},
+    {id:'rigging', x:4.5, y:0, w:18, h:26, name:'삭구 줄', text:'버팀줄이 빗줄기를 타고 운다. 아직은 한 가닥도 끊기지 않았다.'},
+    {id:'crate', x:33, y:41, w:17, h:14, name:'나무 궤짝', subtle:true, look:true, text:'뚜껑 없는 빈 궤짝이다. 안에는 젖은 톱밥뿐.'},
+    {id:'railing', x:38, y:37.7, w:17.5, h:9.3, name:'뱃전 난간', text:'난간을 붙잡으니 손바닥에 소금기가 배어난다. 아래는 검은 물뿐이다.'},
+    {id:'bucket', x:56, y:41, w:7, h:13, name:'두레박통', look:true, text:'난간에 걸린 작은 두레박. 바닥에 빗물이 조금 고여 있다.'},
+    {id:'chain', x:65, y:44, w:7, h:15, name:'쇠사슬', text:'굵은 사슬이 뱃전을 따라 늘어져 있다. 사람의 힘으로 풀 고리가 아니다.'},
+    {id:'deck', x:33, y:74, w:26, h:25.5, name:'갑판 바닥', text:'비에 젖은 판자가 등불빛을 되비친다. 헐거운 널은 하나도 없다.'},
+    {id:'storm', x:69, y:3, w:19, h:30, name:'폭풍 하늘', text:'번개가 구름을 갈랐다. 저 하늘을 잠재울 자는 배 안에 없다.'},
+    {id:'sea', x:88, y:42, w:11.5, h:25, name:'바다', text:'검은 물결이 뱃전을 때린다. 물 위를 걸을 수 있다면 모를까.'},
   ]},
   cabin:{ name:'선장실', scene:'cabin', hotspots:[
-    {id:'desk', x:6, y:52, w:34, h:40, locked:{needs:'key', lockedText:'책상 서랍이 잠겨 있다. 열쇠가 필요하다.'}, item:'uv', trace:{x:50,y:60}, text:'열쇠가 맞았다. 서랍 속 — 보라색 유리의 자외선 등불!', after:'빈 서랍이다.'},
-    {id:'painting', x:52, y:11, w:27, h:31, item:'cross', trace:{x:72,y:52}, text:'벽의 그림을 들추자 벽감 속에 나무 십자가가 숨겨져 있다!', after:'그림 뒤엔 이제 아무것도 없다.'},
-    {id:'chart', x:46, y:56, w:28, h:34, text:'낡은 해도들. 항로는 이미 정해져 있다.'},
-    {id:'globe', x:80, y:52, w:16, h:26, text:'지구본. 갈릴리 호수는 점 하나다.'},
-    {id:'lamp', x:30, y:26, w:12, h:20, text:'평범한 기름 램프다. 자외선은 아니다.'},
+    {id:'desk', x:9, y:82, w:20, h:17, name:'책상', subtle:true, locked:{needs:'key', lockedText:'책상 서랍이 잠겨 있다. 열쇠가 필요하다.'}, item:'uv', trace:{x:50,y:60}, text:'열쇠가 맞았다. 서랍 속 — 보라색 유리의 자외선 등불!', after:'빈 서랍이다.'},
+    {id:'painting', x:8, y:2, w:15, h:37, name:'액자 그림', subtle:true, item:'cross', trace:{x:72,y:52}, text:'벽의 그림을 들추자 벽감 속에 나무 십자가가 숨겨져 있다!', after:'그림 뒤엔 이제 아무것도 없다.'},
+    {id:'chart', x:14, y:58, w:20, h:21, name:'낡은 해도', text:'낡은 해도들. 항로는 이미 정해져 있다.'},
+    {id:'globe', x:0, y:21, w:8, h:30, name:'지구본', text:'지구본. 갈릴리 호수는 점 하나다.'},
+    {id:'lamp', x:22, y:26, w:8, h:30, name:'기름 램프', text:'평범한 기름 램프다. 자외선은 아니다.'},
+    {id:'wheel', x:11, y:39, w:7, h:12, name:'놋 타륜 장식', look:true, text:'선반 위에 놓인 손바닥만 한 놋 타륜. 진짜 키는 조타실에 있다.'},
+    {id:'chest', x:30, y:39, w:8, h:13, name:'작은 궤짝', look:true, text:'놋 장식이 박힌 작은 궤짝. 뚜껑을 열어 보니 곰팡이 슨 헝겊뿐이다.'},
+    {id:'shelfbooks', x:30, y:18, w:7, h:17, name:'선반의 책', look:true, text:'소금기에 부푼 항해 서적들. 책장을 넘기면 마른 바다 냄새가 난다.'},
+    {id:'curtain', x:35.5, y:18, w:7, h:18, name:'커튼', text:'두껍게 걷어 묶은 커튼. 뒤를 들춰 봐도 벽널뿐이다.'},
+    {id:'bunk', x:6, y:40, w:24, h:19, name:'침상', subtle:true, text:'오래 비어 있던 선장의 침상. 베개가 아직 눌린 자국을 품고 있다.'},
+    {id:'sconce', x:42, y:17, w:7, h:13, name:'벽걸이 등불', look:true, text:'벽에 걸린 등불이 흔들리며 탄다. 배가 흔들려도 이 불은 꺼지지 않았다.'},
+    {id:'door', x:48.5, y:20, w:9, h:48, name:'선실 문', text:'아치형 참나무 문. 바깥에서 잠긴 듯 꿈쩍도 하지 않는다.'},
+    {id:'chair', x:34, y:50, w:14, h:49, name:'선장 의자', text:'등받이 높은 가죽 의자. 앉았던 이의 무게가 아직 가죽에 남아 있다.'},
+    {id:'rug', x:46, y:68, w:19, h:31, name:'카펫', text:'물기를 잔뜩 머금은 붉은 카펫. 들춰 보니 갑판 널만 나온다.'},
+    {id:'window', x:45, y:8, w:53, h:25, name:'선미창', look:true, text:'격자창 너머로 번개가 바다를 하얗게 긋는다. 폭풍은 아직 잦아들 기미가 없다.'},
+    {id:'telescope', x:78, y:45, w:8, h:10, name:'망원경', look:true, text:'놋 망원경이 바다 쪽을 겨누고 있다. 들여다보면 파도와 어둠뿐이다.'},
+    {id:'sideboard', x:64, y:56, w:11, h:16, name:'수납장', text:'벽에 붙박은 목재 수납장. 문짝을 열자 빈 잔과 젖은 밧줄 토막이 굴러 나온다.'},
+    {id:'sofa', x:75, y:62, w:24, h:37, name:'긴 의자', text:'담요와 그물이 뒤엉킨 긴 의자. 누군가 급히 일어난 채로 그대로다.'},
   ]},
   crew:{ name:'선원실', scene:'crew', hotspots:[
-    {id:'bunk', x:4, y:26, w:38, h:60, item:'hammer', trace:{x:54,y:60}, text:'침상 밑을 더듬자 낡은 망치가 손에 잡힌다!', after:'침상 밑은 비었다.'},
-    {id:'cupboard', x:61, y:17, w:27, h:51, item:'flint', trace:{x:36,y:66}, text:'찬장 깊숙한 곳, 헝겊에 싸인 부싯돌을 찾았다!', after:'그릇뿐이다.'},
-    {id:'hammock', x:42, y:14, w:24, h:26, text:'해먹이 흔들릴 뿐이다.'},
-    {id:'boots', x:46, y:74, w:16, h:20, text:'장화. 냄새 말고는 아무것도 없다.'},
+    {id:'bunk', x:4, y:26, w:38, h:60, name:'침상', item:'hammer', trace:{x:54,y:60}, text:'침상 밑을 더듬자 낡은 망치가 손에 잡힌다!', after:'침상 밑은 비었다.'},
+    {id:'cupboard', x:81, y:41, w:13, h:26, name:'찬장', subtle:true, item:'flint', trace:{x:36,y:66}, text:'찬장 깊숙한 곳, 헝겊에 싸인 부싯돌을 찾았다!', after:'그릇뿐이다.'},
+    {id:'hammock', x:45, y:40, w:28, h:17, name:'해먹', text:'해먹이 흔들릴 뿐이다.'},
+    {id:'boots', x:65, y:76, w:14, h:22, name:'장화', text:'장화. 냄새 말고는 아무것도 없다.'},
+    {id:'lantern', x:43, y:15, w:9, h:25, name:'등불', look:true, text:'사슬에 매달린 등불 하나가 이 방의 유일한 빛이다. 심지가 파르르 떨릴 때마다 그림자가 함께 흔들린다.'},
+    {id:'porthole', x:61, y:25, w:10, h:12, name:'현창', look:true, text:'둥근 놋테 현창 너머로 검은 바다가 일렁인다. 유리에 짠 물자국이 말라붙어 있다.'},
+    {id:'shelf', x:81, y:17, w:12, h:22, name:'선반 그릇', look:true, text:'백랍 접시와 주전자가 나란히 엎어져 있다. 마지막 식사 이후로 아무도 손대지 않은 듯하다.'},
+    {id:'chest', x:79, y:65, w:19, h:22, name:'나무 궤짝', look:true, text:'천이 덮인 낡은 궤짝. 뚜껑은 굳게 닫혀 있고, 자물쇠 자리엔 녹만 남았다.'},
+    {id:'ropecoil', x:93, y:24, w:7, h:25, name:'밧줄 타래', text:'벽에 걸린 굵은 밧줄 타래. 손끝에 소금기가 서걱인다.'},
+    {id:'wallrope', x:52, y:32, w:8, h:12, name:'감긴 밧줄', text:'뒷벽 못에 둥글게 감아 걸어둔 밧줄. 누군가 아주 정성스레 감아 두었다.'},
+    {id:'barrel', x:37, y:54, w:10, h:14, name:'물통', look:true, text:'테를 두른 나무 물통과 옆에 처박힌 자루. 바닥에 물때가 검게 앉았다.'},
+    {id:'chain', x:33, y:22, w:7, h:34, name:'쇠사슬', look:true, text:'기둥에 걸린 쇠사슬과 도르래 추. 배가 기울 때마다 낮게 절그럭거린다.'},
+    {id:'beam', x:12, y:0, w:30, h:9, name:'천장 들보', text:'검게 그을린 천장 들보. 파도가 칠 때마다 배 전체가 이 나무에 매달려 삐걱인다.'},
+    {id:'floor', x:33, y:84, w:28, h:15, name:'마루 판자', text:'젖은 마루 판자에 등불빛이 길게 번진다. 밟을 때마다 나무가 앓는 소리를 낸다.'},
+    {id:'curtain', x:0, y:8, w:8, h:30, name:'걸린 천', text:'기둥에 걸어둔 해진 천 조각. 바람 한 점 없는데도 미세하게 흔들린다.'},
+    {id:'smallcrate', x:62, y:57, w:11, h:10, name:'작은 궤짝', look:true, text:'해먹 아래 밀어 넣은 작은 나무 궤짝. 모서리가 닳도록 여러 항해를 건넜다.'},
   ]},
   hold:{ name:'화물칸', scene:'hold', hotspots:[
-    {id:'crate', x:34, y:38, w:34, h:46, locked:{needs:'hammer', lockedText:'궤짝이 단단히 못질되어 있다. 부술 도구가 필요하다.'}, item:'oil', trace:{x:58,y:66}, text:'망치로 궤짝을 뜯어낸다 — 등대용 기름통이 들어 있다!', after:'부서진 궤짝뿐이다.'},
-    {id:'barrels', x:4, y:44, w:26, h:44, text:'포도주 통. 가나의 것은 아니다.'},
-    {id:'net', x:70, y:6, w:26, h:34, text:'그물코마다 소금이 앉았다.'},
-    {id:'sacks', x:72, y:56, w:24, h:34, text:'곡식 자루뿐이다.'},
-    {id:'shadow', x:6, y:10, w:20, h:26, text:'구석의 그림자… 쥐다! 놀란 건 너였다.'},
+    {id:'crate', x:34, y:38, w:34, h:46, name:'못질된 궤짝', locked:{needs:'hammer', lockedText:'궤짝이 단단히 못질되어 있다. 부술 도구가 필요하다.'}, item:'oil', trace:{x:58,y:66}, text:'망치로 궤짝을 뜯어낸다 — 등대용 기름통이 들어 있다!', after:'부서진 궤짝뿐이다.'},
+    {id:'barrels', x:1, y:31, w:23, h:26, name:'포도주 통', text:'포도주 통. 가나의 것은 아니다.'},
+    {id:'net', x:69, y:0, w:30, h:46, name:'어망', text:'그물코마다 소금이 앉았다.'},
+    {id:'sacks', x:60, y:63, w:23, h:31, name:'곡식 자루', text:'곡식 자루뿐이다.'},
+    {id:'shadow', x:70, y:52, w:11, h:11, name:'구석 그림자', text:'구석의 그림자… 쥐다! 놀란 건 너였다.'},
+    {id:'lantern', x:42.5, y:15, w:10, h:19, name:'매달린 등불', look:true, text:'쇠사슬에 매달린 등불 하나가 이 어둠을 통째로 상대하고 있다. 기름은 아직 남았다.'},
+    {id:'chain', x:44, y:4, w:8, h:10, name:'등불 사슬', text:'녹슨 사슬이 들보에 걸려 있다. 배가 기울 때마다 저 불빛도 함께 흔들렸을 것이다.'},
+    {id:'beams', x:26, y:0, w:17, h:10, name:'천장 들보', text:'머리 위를 가로지르는 굵은 들보. 갑판에서 울리는 발소리가 여기까지 내려온다.'},
+    {id:'hullribs', x:0, y:2, w:23, h:22, name:'선체 늑재', text:'활처럼 휜 나무 늑재가 배의 갈비뼈처럼 늘어섰다. 이 뼈대가 바다를 버텨왔다.'},
+    {id:'pillar', x:24, y:10, w:7, h:18, name:'지지 기둥', text:'천장을 떠받친 굵은 기둥. 손톱으로 새긴 듯한 잔금들이 무수히 남아 있다.'},
+    {id:'rope', x:25, y:28, w:8, h:22, name:'감긴 밧줄', text:'기둥에 여러 겹 감긴 밧줄. 아무리 당겨도 풀릴 기미가 없다.'},
+    {id:'openbarrel', x:0, y:57, w:16, h:33, name:'열린 물통', look:true, text:'뚜껑이 열린 물통. 검은 수면에 등불이 흔들리고, 그 아래엔 아무것도 없다.'},
+    {id:'bigcrate', x:38, y:55, w:20, h:26, name:'큰 화물 상자', text:'X자로 살을 댄 큰 화물 상자. 두드려 보니 속이 꽉 차 있다.'},
+    {id:'crateback', x:53, y:24, w:16, h:27, name:'쌓인 판자 상자', text:'판자 상자들이 벽처럼 쌓였다. 뒤쪽은 등불도 닿지 않는다.'},
+    {id:'ropecoil', x:84, y:57, w:15, h:32, name:'밧줄 사리', text:'굵은 밧줄이 사려져 쌓였다. 폭풍이 오면 이것부터 찾게 될 것이다.'},
+    {id:'floor', x:22, y:82, w:34, h:17, name:'바닥 판자', text:'젖은 바닥 판자 위로 등불 빛이 번진다. 발밑에서 물소리가 낮게 울린다.'},
   ]},
   wheel:{ name:'조타실', scene:'wheel', portrait:true, hotspots:[
-    {id:'window', x:26, y:10, w:40, h:28, text:'창밖으로 폭풍이 몰아친다. 방향을 잃으면 안 된다.'},
-    {id:'helm', x:18, y:38, w:40, h:40, text:'거대한 조타륜. 지금은 아무도 잡고 있지 않다.'},
-    {id:'binnacle', x:60, y:40, w:26, h:38, text:'나침반이 든 조타 등불함. 바늘은 흔들림 없이 북을 가리킨다.'},
-    {id:'navchest', x:1, y:62, w:30, h:30, trace:{x:16,y:78},
+    {id:'window', x:26, y:10, w:40, h:28, name:'폭풍 치는 창', text:'창밖으로 폭풍이 몰아친다. 방향을 잃으면 안 된다.'},
+    {id:'helm', x:22, y:34, w:45, h:42, name:'조타륜', text:'거대한 조타륜. 지금은 아무도 잡고 있지 않다.'},
+    {id:'binnacle', x:74, y:45, w:25, h:43, name:'나침반함', text:'나침반이 든 조타 등불함. 바늘은 흔들림 없이 북을 가리킨다.'},
+    {id:'navchest', x:10, y:78, w:32, h:20, name:'항해 궤', subtle:true, trace:{x:16,y:78},
       phys:{ code:'8624', unlocks:'secret',
         prompt:'항해 궤가 <b>네 자리 자물쇠</b>로 잠겨 있다.<br>열쇠 숫자는 배 안이 아니라 <b>지금 이 방(현장)</b> 어딘가에 숨겨진 <b>항해 카드</b>에 적혀 있다.<br>현장을 뒤져 카드를 찾아 숫자를 입력하라.',
         done:'궤가 열리며 낡은 해도 조각이 나온다 — <b>비밀 선창</b>으로 내려가는 길이 그려져 있다!' } },
+    {id:'lantern', x:11, y:14, w:15, h:20, name:'오일 랜턴', look:true, text:'기름 등이 흔들리며 겨우 버틴다. 이 작은 불빛 하나가 조타실을 지키고 있다.'},
+    {id:'curtain', x:0, y:10, w:11, h:28, name:'낡은 커튼', text:'소금기에 삭은 커튼이 늘어져 있다. 걷어 보아도 그 뒤엔 젖은 나무벽뿐이다.'},
+    {id:'bell', x:7, y:37, w:11, h:9, name:'놋종', look:true, text:'당직을 알리던 놋종이다. 천둥소리에 묻혀 아무도 듣지 못할 것이다.'},
+    {id:'rope', x:0, y:46, w:15, h:9, name:'밧줄 뭉치', text:'단단히 사려 놓은 밧줄. 매듭 하나가 사람 목숨을 붙든 적도 있었다.'},
+    {id:'crate', x:0, y:56, w:11, h:9, name:'나무 상자', text:'못질된 보급 상자다. 뚜껑은 꿈쩍도 하지 않는다.'},
+    {id:'chart', x:0, y:66, w:20, h:12, name:'펼쳐진 해도', look:true, text:'빗물에 얼룩진 해도가 펼쳐져 있다. 그려진 해안선은 이미 지나온 바다다.'},
+    {id:'telescope', x:0, y:79, w:10, h:10, name:'황동 망원경', look:true, text:'경통이 긁힌 망원경. 들여다보아도 물보라 말고는 보이는 것이 없다.'},
+    {id:'beam', x:20, y:0, w:45, h:7, name:'천장 들보', text:'굵은 참나무 들보가 파도마다 삐걱인다. 아직은 부러지지 않았다.'},
+    {id:'chain', x:3, y:0, w:10, h:13, name:'쇠사슬', text:'천장에서 늘어진 쇠사슬이 배가 기울 때마다 벽을 때린다.'},
+    {id:'hatch', x:27, y:10, w:15, h:20, name:'판벽 승강구', text:'아래 갑판으로 내려가는 승강구다. 어둠 속에서 물 흐르는 소리가 올라온다.'},
+    {id:'railing', x:66, y:36, w:13, h:8, name:'창턱 난간', text:'창 아래 난간에 손자국이 닳아 있다. 누군가 오래 여기 서서 바다를 보았다.'},
+    {id:'deck', x:55, y:88, w:44, h:11, name:'젖은 갑판', text:'바닷물에 번들거리는 널판. 발밑까지 파도가 들어왔다는 뜻이다.'},
   ]},
   secret:{ name:'비밀 선창', scene:'secret', hidden:true, portrait:true, hotspots:[
-    {id:'lantern', x:12, y:12, w:20, h:24, text:'홀로 타는 등불. 이 방을 아는 이가 밝혀 두었다.'},
-    {id:'crates', x:4, y:42, w:24, h:34, text:'먼지 쌓인 상자들. 오래 아무도 오지 않았다.'},
-    {id:'treasure', x:32, y:44, w:44, h:42,
+    {id:'lantern', x:12, y:12, w:20, h:24, name:'등불', text:'홀로 타는 등불. 이 방을 아는 이가 밝혀 두었다.'},
+    {id:'crates', x:8, y:44, w:28, h:24, name:'먼지 쌓인 상자들', text:'먼지 쌓인 상자들. 오래 아무도 오지 않았다.'},
+    {id:'treasure', x:38, y:35, w:50, h:36, name:'보물 궤', subtle:true,
       phys:{ code:'3327', reward:'treasure',
         prompt:'선장의 보물 궤. <b>세 자리 봉인</b>이 걸려 있다.<br>봉인의 숫자는 <b>현장</b>에 숨겨진 <b>선장의 편지</b> 맨 끝에 적혀 있다.<br>편지를 찾아 숫자를 입력하라.',
         done:'⚓ 봉인이 풀렸다! 궤 안에는 선장의 편지와 <b>항해 훈장</b>이 들어 있다.<br>"여기까지 온 너희는 이미 믿음의 항해자다."' } },
+    {id:'beams', x:33, y:0, w:45, h:9, name:'천장 들보', text:'머리 위를 가로지르는 굵은 들보. 갑판의 무게를 홀로 견디고 있다.'},
+    {id:'hull', x:0, y:8, w:11, h:26, name:'선체 늑재', text:'휘어 붙인 늑재가 벽을 따라 늘어섰다. 이 얇은 판자 하나가 바다를 막고 있다.'},
+    {id:'arch', x:31, y:11, w:25, h:23, name:'둥근 격벽 아치', look:true, text:'어둠 속에 둥근 아치가 떠 있다. 배 안쪽 더 깊은 곳으로 이어지는 듯하다.'},
+    {id:'cobweb', x:60, y:10, w:32, h:24, name:'거미줄', text:'천장에서 늘어진 거미줄이 두껍다. 여기 든 사람은 오래전에 나갔다.'},
+    {id:'rope', x:90, y:36, w:10, h:32, name:'굵은 밧줄', look:true, text:'천장까지 뻗은 굵은 밧줄. 손에 쥐니 아직 팽팽하다.'},
+    {id:'bundle', x:2, y:35, w:16, h:9, name:'천 덮인 뭉치', text:'상자 위에 얹힌 천 뭉치. 안에 든 것은 형태만 짐작될 뿐이다.'},
+    {id:'chain', x:0, y:45, w:8, h:15, name:'벽에 걸린 쇠사슬', text:'벽에 박힌 고리에서 쇠사슬이 늘어졌다. 무엇을 묶어 두었던 걸까.'},
+    {id:'sack', x:0, y:68, w:20, h:10, name:'삼베 자루', text:'바닥에 널브러진 삼베 자루. 손을 대니 곡식 부스러기만 흩어진다.'},
+    {id:'lowchest', x:0, y:79, w:30, h:19, name:'낮은 궤짝', look:true, text:'구석에 놓인 낮은 궤짝. 뚜껑은 이미 오래전에 열려 비어 있다.'},
+    {id:'floor', x:31, y:82, w:38, h:17, name:'바닥 판자', text:'판자 틈으로 스민 물이 등불빛을 되비친다. 발밑 바로 아래가 바다다.'},
+    {id:'chainfloor', x:64, y:71, w:22, h:11, name:'바닥의 쇠사슬', text:'궤 곁에 사슬이 뱀처럼 늘어져 있다. 끝은 어디에도 매여 있지 않다.'},
+    {id:'barrelright', x:88, y:69, w:12, h:14, name:'나무 통', text:'테두리만 겨우 보이는 나무 통. 두드리니 텅 빈 소리가 돌아온다.'},
+    {id:'barrel', x:78, y:85, w:22, h:14, name:'물통', look:true, text:'바닥에 놓인 물통. 남은 물에 등불이 조그맣게 흔들린다.'},
   ]},
 };
 // 배 단면 위 장소 버튼 (hidden=숨겨진 장소, 열려야 나타남)
@@ -967,8 +1067,11 @@ secret:`<svg viewBox="0 0 460 260" fill="none" stroke="#2B2416" stroke-width="3.
 const Explore = {
   view:'map', room:null,
   open(){ if(!S||!S.teamName){ return; } this.view='room'; this.room=this.roomList()[0]; this.render(); document.getElementById('exploreModal').classList.add('show'); },
-  close(){ document.getElementById('exploreModal').classList.remove('show'); },
-  goRoom(id){ this.view='room'; this.room=id; this.render(); },
+  close(){
+    try{ Ambience.setMood('calm'); }catch(e){} document.getElementById('exploreModal').classList.remove('show'); },
+  MOOD:{deck:'storm', wheel:'storm', cabin:'below', crew:'below', hold:'below', secret:'below'},
+  goRoom(id){
+    try{ Ambience.setMood(this.MOOD[id]||'below'); }catch(e){} this.view='room'; this.room=id; this.render(); },
   showMap(){ this.view='map'; this.room=null; this.render(); },
   back(){ this.close(); },
   roomList(){ return MAP_SPOTS.filter(s=>!s.hidden||S.unlocked[s.id]).map(s=>s.id); },
@@ -1009,7 +1112,11 @@ const Explore = {
           <div class="${room.portrait?'ex-stage':'ex-stagefull'}">
             <img class="ex-bg" src="assets/room-${this.room}.webp" alt="" onerror="this.style.display='none';this.nextElementSibling.classList.add('show')">
             <div class="ex-svgfb">${SCENES_EX[room.scene]}</div>
-            ${room.hotspots.map(h=>`<button class="ex-hs" style="left:${h.x}%;top:${h.y}%;width:${h.w}%;height:${h.h}%" onclick="Explore.tap('${this.room}','${h.id}')">.</button>`).join('')}
+            ${room.hotspots.map(h=>{
+              const found=(h.item&&S.items[h.item])||(h.phys&&S.phys[this.room+'.'+h.id]);
+              const sub=(h.subtle&&!found)?' subtle':'';
+              return `<button class="ex-hs${sub}" style="left:${h.x}%;top:${h.y}%;width:${h.w}%;height:${h.h}%" onclick="Explore.tap('${this.room}','${h.id}')" aria-label="${h.name||''}">.</button>`;
+            }).join('')}
           </div>
           ${i>0?`<button class="ex-nav prev" onclick="Explore.roomNav(-1)" aria-label="이전 방"><span>‹</span><em>${ROOMS[list[i-1]].name}</em></button>`:''}
           ${i<list.length-1?`<button class="ex-nav next" onclick="Explore.roomNav(1)" aria-label="다음 방"><span>›</span><em>${ROOMS[list[i+1]].name}</em></button>`:''}
@@ -1017,11 +1124,12 @@ const Explore = {
             <span class="ex-title">${room.name}</span>
             <span class="ex-dots">${list.map((r,k)=>`<i class="${k===i?'on':''}${ROOMS[r].hidden?' sc':''}"></i>`).join('')}</span>
             <span class="ex-timer" id="exTimer">${UI.fmt(UI.elapsedMs())}</span>
+            <button class="ex-map-btn amb-btn" onclick="Ambience.toggle()" aria-label="배경음">🔊</button>
             <button class="ex-map-btn" onclick="Explore.showMap()">🧭 지도</button>
             <button class="ex-back" onclick="Explore.close()">나가기</button>
           </div>
           <div class="ex-hud ex-hud-bottom">
-            <div class="ex-feedback" id="exFeedback">눈에 띄는 것을 눌러 뒤져라 · 양옆 화살표로 옆방 이동</div>
+            <div class="ex-feedback" id="exFeedback">무엇이든 눌러 살펴보라 · 양옆 화살표로 옆방 이동</div>
             ${this.invStrip()}
           </div>
         </div>`;
@@ -1044,7 +1152,7 @@ const Explore = {
           <button class="ex-back" onclick="Explore.goRoom('${room}')">← 물러나기</button>
         </div>
         <div class="ex-hud ex-hud-bottom">
-          <div class="ex-feedback" id="exFeedback"><span id="cuHint">빛나는 곳을 눌러 열어라</span></div>
+          <div class="ex-feedback" id="exFeedback"><span id="cuHint">손끝으로 더듬어 보라</span></div>
           ${this.invStrip()}
         </div>
       </div>`;
@@ -1079,9 +1187,33 @@ const Explore = {
     }
     if(hs.item && !S.items[hs.item]){
       this.openCloseup(roomId,hsId); return;
-    } else {
-      this.feedback((hs.item||hs.locked)?(hs.after||'더 이상 아무것도 없다.'):hs.text);
     }
+    const msg=(hs.item||hs.locked)?(hs.after||'더 이상 아무것도 없다.'):hs.text;
+    // 확대해 볼 가치가 있는 사물은 클로즈업으로 (망원경·해도·나침반 등)
+    if(hs.look){ this.lookAt(roomId,hsId,msg); return; }
+    this.feedback(msg);
+  },
+  /* 사물 클로즈업 — 방 그림을 그 지점만 크게 확대해서 보여준다 (별도 일러스트 불필요) */
+  lookAt(roomId,hsId,msg){
+    const rm=ROOMS[roomId], hs=rm.hotspots.find(h=>h.id===hsId);
+    const cx=Math.round(hs.x+hs.w/2), cy=Math.round(hs.y+hs.h/2);
+    const z=Math.round(Math.min(380, Math.max(210, 100/Math.max(hs.w,hs.h)*72)));
+    this.view='look'; this.lookMsg=msg; this.focus={room:roomId,hsId};
+    Sound.creak();
+    const inner=document.getElementById('exploreInner');
+    inner.innerHTML=`
+      <div class="ex-full">
+        <div class="cu-bg look-bg" style="background-image:url(assets/room-${roomId}.webp);background-size:${z}%;background-position:${cx}% ${cy}%"></div>
+        <div class="look-vig"></div>
+        <div class="ex-hud ex-hud-top">
+          <span class="ex-title">${hs.name||rm.name}</span>
+          <span class="ex-dots" style="flex:1"></span>
+          <button class="ex-back" onclick="Explore.goRoom('${roomId}')">← 물러나기</button>
+        </div>
+        <div class="ex-hud ex-hud-bottom">
+          <div class="ex-feedback">${msg}</div>
+        </div>
+      </div>`;
   },
   feedback(t){
     const f=document.getElementById('exFeedback');
@@ -1289,6 +1421,130 @@ const Sound = {
   fanfare(){ [523,659,784,1046].forEach((f,i)=>this.tone(f,.35,i*.15,'triangle',.3)); this.tone(1318,.8,.6,'triangle',.3); },
 };
 
+/* ---------------- 배경 앰비언스 (항해 · 폭풍) ----------------
+   음원 파일 없이 WebAudio로 생성: 파도 스웰 + 바람 + 선체 삐걱임 + 먼 천둥.
+   장면별 강도(calm/below/storm)로 분위기를 바꾼다. 설정은 localStorage에 저장. */
+const AMB_KEY='faithVoyage_amb';
+const Ambience = {
+  on:false, built:false, nodes:null, timers:[], mood:'calm',
+  enabled(){ return localStorage.getItem(AMB_KEY)!=='off'; },
+  noiseBuf(c){
+    if(this._nb) return this._nb;
+    const len=c.sampleRate*4, b=c.createBuffer(1,len,c.sampleRate), d=b.getChannelData(0);
+    let last=0;
+    for(let i=0;i<len;i++){ const w=Math.random()*2-1; last=(last+.02*w)/1.02; d[i]=last*3.2; } // brown noise
+    this._nb=b; return b;
+  },
+  build(){
+    if(this.built) return true;
+    let c; try{ c=Sound.ac(); }catch(e){ return false; }
+    if(!c) return false;
+    const buf=this.noiseBuf(c);
+    const master=c.createGain(); master.gain.value=0; master.connect(c.destination);
+
+    // 파도 — 저역 브라운 노이즈에 느린 스웰
+    const sea=c.createBufferSource(); sea.buffer=buf; sea.loop=true;
+    const seaF=c.createBiquadFilter(); seaF.type='lowpass'; seaF.frequency.value=340; seaF.Q.value=.6;
+    const seaG=c.createGain(); seaG.gain.value=.5;
+    sea.connect(seaF); seaF.connect(seaG); seaG.connect(master);
+    const swell=c.createOscillator(); swell.type='sine'; swell.frequency.value=.075;
+    const swellA=c.createGain(); swellA.gain.value=.26;
+    swell.connect(swellA); swellA.connect(seaG.gain);
+
+    // 바람 — 고역 밴드패스, 더 느린 흔들림
+    const wind=c.createBufferSource(); wind.buffer=buf; wind.loop=true;
+    const windF=c.createBiquadFilter(); windF.type='bandpass'; windF.frequency.value=760; windF.Q.value=.85;
+    const windG=c.createGain(); windG.gain.value=.10;
+    wind.connect(windF); windF.connect(windG); windG.connect(master);
+    const gust=c.createOscillator(); gust.type='sine'; gust.frequency.value=.043;
+    const gustA=c.createGain(); gustA.gain.value=.075;
+    gust.connect(gustA); gustA.connect(windG.gain);
+
+    try{ sea.start(); wind.start(); swell.start(); gust.start(); }catch(e){}
+    this.nodes={c,master,seaF,seaG,windF,windG};
+    this.built=true;
+    return true;
+  },
+  // 선체 삐걱임 / 먼 천둥을 불규칙하게
+  schedule(){
+    this.clear();
+    const loop=()=>{
+      if(!this.on) return;
+      const stormy=this.mood==='storm';
+      if(Math.random() < (stormy?.5:.34)) this.creak();
+      if(stormy && Math.random()<.3) this.thunder();
+      this.timers.push(setTimeout(loop, 5200+Math.random()*9000));
+    };
+    this.timers.push(setTimeout(loop, 2600+Math.random()*3000));
+  },
+  creak(){ try{
+    const {c,master}=this.nodes, o=c.createOscillator(), g=c.createGain(), f=c.createBiquadFilter();
+    o.type='sawtooth';
+    const base=48+Math.random()*70, t=c.currentTime;
+    o.frequency.setValueAtTime(base,t); o.frequency.exponentialRampToValueAtTime(Math.max(28,base*.45),t+.9);
+    f.type='lowpass'; f.frequency.value=420;
+    o.connect(f); f.connect(g); g.connect(master);
+    g.gain.setValueAtTime(.0001,t); g.gain.linearRampToValueAtTime(.05+Math.random()*.05,t+.16);
+    g.gain.exponentialRampToValueAtTime(.0001,t+1.1);
+    o.start(t); o.stop(t+1.2);
+  }catch(e){} },
+  thunder(){ try{
+    const {c,master}=this.nodes, s=c.createBufferSource(), f=c.createBiquadFilter(), g=c.createGain();
+    s.buffer=this.noiseBuf(c); s.loop=true;
+    f.type='lowpass'; f.frequency.value=150; f.Q.value=.4;
+    s.connect(f); f.connect(g); g.connect(master);
+    const t=c.currentTime, dur=1.6+Math.random()*1.4;
+    g.gain.setValueAtTime(.0001,t); g.gain.linearRampToValueAtTime(.16,t+.22);
+    g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+    s.start(t); s.stop(t+dur+.1);
+  }catch(e){} },
+  // 장면 분위기: calm(로비/갑판 위) · below(선실 안, 먹먹하게) · storm(폭풍/조타실)
+  setMood(m){
+    this.mood=m;
+    if(!this.built||!this.on) return;
+    const {c,seaF,seaG,windF,windG}=this.nodes, t=c.currentTime, R=(p,v)=>p.linearRampToValueAtTime(v,t+1.4);
+    if(m==='storm'){ R(seaF.frequency,620); R(seaG.gain,.78); R(windF.frequency,1050); R(windG.gain,.20); }
+    else if(m==='below'){ R(seaF.frequency,190); R(seaG.gain,.42); R(windF.frequency,420); R(windG.gain,.045); }
+    else { R(seaF.frequency,340); R(seaG.gain,.5); R(windF.frequency,760); R(windG.gain,.10); }
+  },
+  start(){
+    if(!this.enabled()) return;
+    if(!this.build()) return;
+    const {c,master}=this.nodes;
+    if(c.state==='suspended') c.resume().catch(()=>{});
+    this.on=true;
+    master.gain.cancelScheduledValues(c.currentTime);
+    master.gain.linearRampToValueAtTime(.30, c.currentTime+2.2);
+    this.setMood(this.mood); this.schedule(); this.updateBtn();
+  },
+  stop(){
+    this.on=false; this.clear();
+    if(this.built){ const {c,master}=this.nodes;
+      master.gain.cancelScheduledValues(c.currentTime);
+      master.gain.linearRampToValueAtTime(0, c.currentTime+.7); }
+    this.updateBtn();
+  },
+  clear(){ this.timers.forEach(clearTimeout); this.timers=[]; },
+  toggle(){
+    if(this.on){ localStorage.setItem(AMB_KEY,'off'); this.stop(); }
+    else { localStorage.setItem(AMB_KEY,'on'); this.start(); }
+  },
+  updateBtn(){
+    document.querySelectorAll('.amb-btn').forEach(b=>{
+      b.classList.toggle('off',!this.on);
+      b.setAttribute('aria-label', this.on?'배경음 끄기':'배경음 켜기');
+      b.textContent = this.on?'🔊':'🔇';
+    });
+  },
+  // 첫 사용자 입력에서 자동 시작(브라우저 자동재생 정책)
+  arm(){
+    if(this._armed) return; this._armed=true;
+    const go=()=>{ document.removeEventListener('pointerdown',go); document.removeEventListener('keydown',go); Ambience.start(); };
+    document.addEventListener('pointerdown',go,{once:true});
+    document.addEventListener('keydown',go,{once:true});
+  },
+};
+
 /* ---------------- 모스 재생 (82425) ---------------- */
 const Morse = {
   code:['---..','..---','....-','..---','.....'], // 8 2 4 2 5
@@ -1419,6 +1675,18 @@ const Admin = {
       html+=`<div class="admin-row"><span class="grow">이 문제 정답</span><b style="color:#7FD4BC">${Admin.answerOf(pz)}</b></div>
       <button class="btn small oxb" onclick="Admin.skip()">이 문제 건너뛰기 (+${PENALTY.reveal}분)</button>`;
     }
+    // 진행 모드 — 안 풀고도 스토리·관문을 자유롭게 열람
+    html+=`<div class="admin-sec">진행 모드 · 안 풀어도 이동</div>
+      <div class="admin-note">아래를 눌러 어느 챕터·관문으로든 바로 이동합니다. 정답은 위 <b>이 문제 정답</b>에 표시됩니다.</div>`;
+    STAGES.forEach((stg,si)=>{
+      html+=`<div class="admin-jump">
+        <button class="jump-ch${si===S.stageIdx?' on':''}" onclick="Admin.jump(${si},-1)">${stg.chapter} · ${stg.title}</button>
+        <div class="jump-pz">${stg.puzzles.map((p,pi)=>
+          `<button class="${si===S.stageIdx&&pi===S.puzzleIdx&&S.phase==='play'?'on':''}" title="${p.title}" onclick="Admin.jump(${si},${pi})">${pi+1}</button>`).join('')}</div>
+      </div>`;
+    });
+    html+=`<div class="admin-jump"><button class="jump-ch" onclick="Admin.jumpFinish()">🏁 엔딩 화면 보기</button></div>
+      <button class="btn ghost small" onclick="Admin.unlockAll()">🔓 도구·비밀 선창 전체 해금 (탐색용)</button>`;
     html+=`<button class="btn ghost small" onclick="Admin.reset()">게임 전체 초기화</button>
       <button class="btn ghost small" onclick="location.href='../'">← 수련회 앱으로 나가기</button>
       <button class="btn small" onclick="document.getElementById('adminModal').classList.remove('show')">닫기</button>`;
@@ -1433,6 +1701,32 @@ const Admin = {
     return '-';
   },
   pen(d){ S.penaltyMin=Math.max(0,S.penaltyMin+d); save(); UI.updateTopbar(); Admin.open(); },
+  // 진행 모드 — pi가 -1이면 그 챕터의 스토리 화면, 아니면 해당 관문
+  jump(si,pi){
+    if(!S||S.phase==='lobby'){ return; }
+    S.stageIdx=si;
+    if(pi<0){ S.puzzleIdx=0; S.phase='story'; }
+    else { S.puzzleIdx=pi; S.phase='play'; }
+    S.finishTs=null;
+    logEvent('관리자 이동: '+STAGES[si].chapter+(pi<0?' 스토리':' 관문'+(pi+1)));
+    save(); document.getElementById('adminModal').classList.remove('show'); UI.render();
+  },
+  jumpFinish(){
+    if(!S||S.phase==='lobby') return;
+    S.stageIdx=STAGES.length-1; S.puzzleIdx=0;
+    S.finishTs=S.finishTs||Date.now(); S.phase='finish';
+    logEvent('관리자 이동: 엔딩');
+    save(); document.getElementById('adminModal').classList.remove('show'); UI.render();
+  },
+  unlockAll(){
+    if(!S||S.phase==='lobby') return;
+    Object.keys(ITEMS).forEach(k=>S.items[k]=true);
+    S.unlocked=S.unlocked||{}; S.unlocked.secret=true;
+    S.phys=S.phys||{}; S.phys['wheel.navchest']=true; S.phys['secret.treasure']=true;
+    Object.keys(ROOMS).forEach(r=>ROOMS[r].hotspots.forEach(h=>{ if(h.locked) S.opened[r+'.'+h.id]=true; }));
+    logEvent('관리자: 전체 해금');
+    save(); Admin.open(); UI.updateTopbar();
+  },
   skip(){
     S.penaltyMin+=PENALTY.reveal;
     logEvent('관리자 건너뛰기: '+STAGES[S.stageIdx].puzzles[S.puzzleIdx].title);
@@ -1835,6 +2129,7 @@ window.addEventListener('beforeunload',e=>{
 });
 load();
 UI.render();
+Ambience.arm();
 </script>
 </body>
 </html>
