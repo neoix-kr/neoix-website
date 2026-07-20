@@ -1609,7 +1609,7 @@ function tryAdvanceAct(){
 }
 function save(){ try{ localStorage.setItem(LS_KEY, JSON.stringify(S)); }catch(e){} }
 function load(){ try{ const raw=localStorage.getItem(LS_KEY); if(raw){ S=JSON.parse(raw); S.items=S.items||{}; S.opened=S.opened||{}; migrate(); return true; } }catch(e){} return false; }
-function logEvent(msg){ S.log.push({t:Date.now(),msg}); save(); }
+function logEvent(msg){ S.log.push({t:Date.now(),msg}); save(); try{Sync.push(true);}catch(e){} }
 // 팀별 코드 세트 — 옆 팀 어깨너머로 숫자를 봐도 안 통하게
 function teamIdx(){ return (S && typeof S.teamCode==='number') ? S.teamCode : 0; }
 function physCode(hs){
@@ -2085,6 +2085,55 @@ const Info = {
   close(){ document.getElementById('infoModal').classList.remove('show'); }
 };
 
+
+/* ---------------- 진행 현황 동기화 (관리자 대시보드용) ----------------
+   정답은 올리지 않는다. 진행 상황만 보낸다. 실패해도 게임은 그대로 진행된다. */
+const SB_URL='https://nroddjekdjwnwguwkudl.supabase.co';
+const SB_KEY='sb_publishable_Uygr7NmVn1wmqopNrb4FRw_CRWw7Xeg';
+const Sync = {
+  last:0, timer:null, failed:0,
+  payload(){
+    if(!S||!S.teamName) return null;
+    const hu=Object.values(S.hintsUsed||{});
+    return {
+      team_name:  S.teamName,
+      team_code:  S.teamCode||0,
+      act:        S.act||0,
+      solved:     Object.keys(S.solved||{}).length,
+      solved_ids: Object.keys(S.solved||{}),
+      items:      Object.keys(S.items||{}).filter(k=>S.items[k]),
+      ship:       Object.keys(S.ship||{}).filter(k=>S.ship[k]),
+      locks:      Object.keys(S.phys||{}),
+      hints:      hu.reduce((n,a)=>n+a.filter(x=>x!=='reveal').length,0),
+      reveals:    hu.reduce((n,a)=>n+a.filter(x=>x==='reveal').length,0),
+      penalty_min:S.penaltyMin||0,
+      elapsed_ms: UI.elapsedMs?UI.elapsedMs():0,
+      phase:      S.phase||'play',
+      finished:   S.phase==='finish',
+      last_event: (S.log&&S.log.length)?S.log[S.log.length-1].msg:null,
+      updated_at: new Date().toISOString(),
+    };
+  },
+  push(force){
+    const body=this.payload(); if(!body) return;
+    const now=Date.now();
+    if(!force && now-this.last<8000) return;   // 최소 8초 간격
+    this.last=now;
+    fetch(SB_URL+'/rest/v1/escape_progress?on_conflict=team_name',{
+      method:'POST',
+      headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,
+               'Content-Type':'application/json','Prefer':'resolution=merge-duplicates'},
+      body:JSON.stringify(body)
+    }).then(r=>{ this.failed = r.ok?0:this.failed+1; })
+      .catch(()=>{ this.failed++; });
+  },
+  start(){
+    if(this.timer) return;
+    this.timer=setInterval(()=>{ if(S&&S.phase&&S.phase!=='lobby') Sync.push(); }, 15000);
+    document.addEventListener('visibilitychange',()=>{ if(!document.hidden) Sync.push(true); });
+  },
+};
+
 /* ---------------- 게임 흐름 ---------------- */
 const Game = {
   startGate(){ Sound.ac(); Pin.open('게임 시작','관리자 선생님이 비밀번호를 입력하면 시작할 수 있어요.',()=>UI.renderTeamSelect()); },
@@ -2498,6 +2547,7 @@ window.addEventListener('beforeunload',e=>{
 load();
 UI.render();
 Ambience.arm();
+Sync.start();
 </script>
 </body>
 </html>

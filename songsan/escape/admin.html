@@ -86,6 +86,16 @@
 <script src="teach.js"></script>
 <script>
 const PIN='3574', LS_KEY='faithVoyage_v3';
+const SB_URL='https://nroddjekdjwnwguwkudl.supabase.co';
+const SB_KEY='sb_publishable_Uygr7NmVn1wmqopNrb4FRw_CRWw7Xeg';
+let ROWS=[], SYNCED=null, SYNCERR='';
+function fetchTeams(){
+  return fetch(SB_URL+'/rest/v1/escape_progress?select=*&order=solved.desc,elapsed_ms.asc',
+    {headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}})
+    .then(r=>r.ok?r.json():Promise.reject(r.status))
+    .then(j=>{ ROWS=j; SYNCED=new Date(); SYNCERR=''; })
+    .catch(e=>{ SYNCERR='서버 연결 실패 ('+e+')'; });
+}
 
 /* 자물쇠 — index.html의 phys 코드와 반드시 일치해야 한다 */
 const LOCKS=[
@@ -124,55 +134,98 @@ function render(){
     `<button class="${TAB===k?'on':''}" onclick="go('${k}')">${n}</button>`).join('');
   document.getElementById('view').innerHTML=({live:vLive,guide:vGuide,codes:vCodes,prep:vPrep,games:vGames})[TAB]();
 }
-function go(t){ TAB=t; render(); }
+function go(t){ TAB=t; if(t==='live') fetchTeams().then(render); else render(); }
+function refresh(){ fetchTeams().then(render); }
+
+function agoTxt(t){
+  if(!t) return '-';
+  const d=Math.floor((Date.now()-new Date(t))/1000);
+  if(d<20) return '방금'; if(d<60) return d+'초 전';
+  if(d<3600) return Math.floor(d/60)+'분 전';
+  return Math.floor(d/3600)+'시간 전';
+}
+function stale(t){ return !t || (Date.now()-new Date(t))>120000; }
 
 function vLive(){
-  load();
-  if(!S||S.phase==='lobby'){
-    return `<div class="card"><div class="k">현황</div>
-      <p class="note">이 기기에서 진행 중인 게임이 없습니다.<br>
-      관리자 창은 <b>같은 기기의 게임 상태</b>를 읽습니다. 팀 패드에서 이 창을 열면 그 팀 진행이 보입니다.</p></div>`;
-  }
-  const done=solvedN(), pct=Math.round(done/13*100);
-  const hints=Object.values(S.hintsUsed||{}).reduce((n,a)=>n+a.filter(x=>x!=='reveal').length,0);
-  const reveals=Object.values(S.hintsUsed||{}).reduce((n,a)=>n+a.filter(x=>x==='reveal').length,0);
-  const ship=S.ship||{};
   const shipMap={anchor:'닻',sail:'돛',helm:'침로',trim:'하중'};
-  return `
-  <div class="card">
-    <div class="k">${S.teamName||'팀 미지정'} · ${S.act}막 ${ACT_NAMES[S.act]||'-'}${S.phase==='finish'?' · 🏁 완주':''}</div>
-    <div class="stats">
-      <div class="stat"><span>경과</span><b>${fmt(elapsed())}</b></div>
-      <div class="stat"><span>진행</span><b>${done}<i>/13</i></b></div>
-      <div class="stat"><span>벌점</span><b>${S.penaltyMin||0}<i>분</i></b></div>
-      <div class="stat"><span>힌트</span><b>${hints}</b></div>
-      <div class="stat"><span>정답 공개</span><b>${reveals}</b></div>
-      <div class="stat"><span>코드 세트</span><b>${(S.teamCode||0)+1}<i>번</i></b></div>
-    </div>
-    <div class="bar"><i style="width:${pct}%"></i></div>
-  </div>
+  let h=`<div class="card" style="padding:13px 16px">
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+      <span class="k" style="margin:0">전 팀 현황</span>
+      <span class="grow"></span>
+      <span class="note" style="font-size:13px">${SYNCERR?('<span style="color:#D98A7A">'+SYNCERR+'</span>'):('마지막 갱신 '+(SYNCED?SYNCED.toLocaleTimeString('ko-KR'):'-'))}</span>
+      <button onclick="refresh()" style="font-family:inherit;font-size:13px;color:#241C06;background:var(--brass);border:0;border-radius:8px;padding:7px 14px;cursor:pointer">새로고침</button>
+    </div></div>`;
 
-  <div class="card"><div class="k">관문 진행</div>
-    <div style="display:flex;gap:6px;flex-wrap:wrap">
-      ${PZ_ORDER.map(id=>`<span class="pill ${S.solved&&S.solved[id]?'ok':''}" title="${PZ_TITLE[id]}">${id.slice(1)} ${PZ_TITLE[id]}</span>`).join('')}
-    </div>
-  </div>
+  if(SYNCERR && !ROWS.length){
+    h+=`<div class="warn">서버에서 팀 현황을 못 읽었습니다.<br>
+      <b>escape-progress-setup.sql</b>을 Supabase에 실행했는지 확인하세요.
+      아직 실행 전이면 아래 <b>이 기기</b> 현황만 보입니다.</div>`;
+  }
+  if(!ROWS.length && !SYNCERR){
+    h+=`<div class="card"><p class="note">아직 올라온 팀이 없습니다.
+      팀 패드에서 게임을 시작하면 15초 안에 여기 나타납니다.</p></div>`;
+  }
 
-  <div class="card"><div class="k">배 조작 · 자물쇠 · 도구</div>
-    <table>
-      <tr><th style="width:110px">배 조작</th><td>${Object.keys(shipMap).map(k=>
-        `<span class="pill ${ship[k]?'ok':''}">${shipMap[k]}</span>`).join(' ')}</td></tr>
-      <tr><th>연 자물쇠</th><td>${Object.keys(S.phys||{}).length}개 — ${Object.keys(S.phys||{}).join(', ')||'없음'}</td></tr>
-      <tr><th>확보 도구</th><td>${Object.keys(S.items||{}).filter(k=>S.items[k]).join(', ')||'없음'}</td></tr>
-      <tr><th>비밀 선창</th><td>${(S.unlocked||{}).secret?'<b>열림</b>':'잠김'}</td></tr>
-    </table>
-  </div>
+  // 팀 카드 — 한눈에 비교
+  if(ROWS.length){
+    h+=`<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:12px;margin-bottom:12px">`;
+    ROWS.forEach((r,idx)=>{
+      const pct=Math.round((r.solved||0)/13*100);
+      const st=stale(r.updated_at);
+      const rank=r.finished?'🏁':(idx===0?'1위':(idx+1)+'위');
+      h+=`<div class="card" style="margin:0;${st?'opacity:.55':''}">
+        <div style="display:flex;align-items:baseline;gap:8px">
+          <span style="font-size:19px">${r.team_name}</span>
+          <span class="pill ${r.finished?'on':''}">${rank}</span>
+          <span class="grow"></span>
+          <span class="note" style="font-size:12px">${st?'⚠ ':''}${agoTxt(r.updated_at)}</span>
+        </div>
+        <div class="bar" style="margin-top:10px"><i style="width:${pct}%"></i></div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:11px">
+          <div class="stat" style="padding:9px"><span>경과</span><b style="font-size:19px">${fmt(r.elapsed_ms||0)}</b></div>
+          <div class="stat" style="padding:9px"><span>진행</span><b style="font-size:19px">${r.solved||0}<i>/13</i></b></div>
+          <div class="stat" style="padding:9px"><span>막</span><b style="font-size:19px">${r.act||0}</b></div>
+          <div class="stat" style="padding:9px"><span>벌점</span><b style="font-size:19px">${r.penalty_min||0}<i>분</i></b></div>
+        </div>
+        <table style="margin-top:10px">
+          <tr><th style="width:78px">위치</th><td>${ACT_NAMES[r.act]||'-'}</td></tr>
+          <tr><th>배 조작</th><td>${Object.keys(shipMap).map(k=>
+              `<span class="pill ${(r.ship||[]).includes(k)?'ok':''}">${shipMap[k]}</span>`).join(' ')}</td></tr>
+          <tr><th>힌트·정답</th><td>${r.hints||0} · <b>${r.reveals||0}</b></td></tr>
+          <tr><th>자물쇠</th><td>${(r.locks||[]).length}개 / 도구 ${(r.items||[]).length}개</td></tr>
+          <tr><th>최근</th><td class="note" style="color:#E9EDF0">${r.last_event||'-'}</td></tr>
+        </table>
+      </div>`;
+    });
+    h+=`</div>`;
 
-  <div class="card"><div class="k">최근 기록</div>
-    <table>${(S.log||[]).slice(-12).reverse().map(l=>
-      `<tr><td style="width:66px;color:#9AA7B2">${new Date(l.t).toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'})}</td><td>${l.msg}</td></tr>`
-    ).join('')||'<tr><td>없음</td></tr>'}</table>
-  </div>`;
+    // 관문별 진행 비교표
+    h+=`<div class="card"><div class="k">관문별 진행 비교</div>
+      <table><tr><th style="width:110px">팀</th>${PZ_ORDER.map(id=>`<th style="text-align:center" title="${PZ_TITLE[id]}">${id.slice(1)}</th>`).join('')}</tr>
+      ${ROWS.map(r=>`<tr><td>${r.team_name}</td>${PZ_ORDER.map(id=>
+        `<td style="text-align:center">${(r.solved_ids||[]).includes(id)?'<span style="color:var(--good)">●</span>':'<span style="color:#3A4756">○</span>'}</td>`).join('')}</tr>`).join('')}
+      </table>
+      <p class="note" style="margin-top:9px">● 해결 · ○ 미해결. 한 팀만 유독 막힌 관문이 보이면 그쪽에 교사를 보내세요.</p>
+    </div>`;
+  }
+
+  // 이 기기 상세 (팀 패드에서 열었을 때)
+  load();
+  if(S && S.phase && S.phase!=='lobby'){
+    h+=`<div class="card"><div class="k">이 기기 — ${S.teamName||'팀 미지정'} 상세</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        ${PZ_ORDER.map(id=>`<span class="pill ${S.solved&&S.solved[id]?'ok':''}">${id.slice(1)} ${PZ_TITLE[id]}</span>`).join('')}
+      </div>
+      <table style="margin-top:11px">
+        <tr><th style="width:110px">연 자물쇠</th><td>${Object.keys(S.phys||{}).join(', ')||'없음'}</td></tr>
+        <tr><th>확보 도구</th><td>${Object.keys(S.items||{}).filter(k=>S.items[k]).join(', ')||'없음'}</td></tr>
+        <tr><th>비밀 선창</th><td>${(S.unlocked||{}).secret?'<b>열림</b>':'잠김'}</td></tr>
+      </table>
+      <table style="margin-top:11px">${(S.log||[]).slice(-8).reverse().map(l=>
+        `<tr><td style="width:66px;color:#9AA7B2">${new Date(l.t).toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'})}</td><td>${l.msg}</td></tr>`).join('')}</table>
+    </div>`;
+  }
+  return h;
 }
 
 function vGuide(){
@@ -275,7 +328,8 @@ pin.addEventListener('input',()=>{
     document.getElementById('gate').style.display='none';
     document.getElementById('app').style.display='';
     render();
-    setInterval(()=>{ if(TAB==='live') render(); },2000);
+    fetchTeams().then(render);
+    setInterval(()=>{ if(TAB==='live') fetchTeams().then(render); },10000);
   } else {
     document.getElementById('err').textContent='비밀번호가 맞지 않습니다.';
     pin.value='';
