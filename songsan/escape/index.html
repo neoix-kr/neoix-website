@@ -1048,6 +1048,19 @@ const ROOMS = {
     {id:'barrelright', x:88, y:69, w:12, h:14, name:'나무 통', text:'테두리만 겨우 보이는 나무 통. 두드리니 텅 빈 소리가 돌아온다.'},
     {id:'barrel', x:78, y:85, w:22, h:14, name:'물통', look:true, text:'바닥에 놓인 물통. 남은 물에 등불이 조그맣게 흔들린다.'},
   ]},
+  lighthouse:{ name:'등대', scene:'deck', hidden:true, bg:'sending', hotspots:[
+    {id:'tower', x:58, y:8, w:30, h:46, name:'등대 탑', look:true, text:'탑 꼭대기 등명기가 캄캄하다. 저 불을 켜야 항해가 끝난다.'},
+    {id:'lamproom', x:62, y:6, w:20, h:20, name:'등명기', look:true, text:'유리와 놋으로 짜인 등명기. 심지가 말라 있다.'},
+    {id:'door', x:60, y:56, w:16, h:30, name:'등대 철문',
+      phys:{ code:'0901', effect:'advance', label:'등대 철문',
+        prompt:'등대 철문에 <b>네 자리</b>가 걸려 있다. 마지막 신호다.<br><br>① ② <b>패드</b> — 돛대에 게양된 신호기를 코드표와 대조하라. 뒤집힌 것이 있다<br>③ <b>선생님</b> — 파송 인장<br>④ <b>현장</b> — 등대 문 앞 깃발함의 마지막 깃발',
+        done:'철문이 열린다. "열두 제자를 불러 모으사 능력과 권위를 주시고" — 눅 9:1<br><b>이제 탑을 오른다.</b>' } },
+    {id:'flagbox', x:40, y:62, w:16, h:22, name:'깃발함', look:true, text:'접안장 옆 깃발함. 신호기가 몇 장 남아 있다.'},
+    {id:'jetty', x:6, y:64, w:30, h:26, name:'접안장', look:true, text:'배를 대는 돌 부두. 여기서부터는 걸어 올라가야 한다.'},
+    {id:'seaway', x:2, y:36, w:34, h:24, name:'뱃길', text:'지나온 검은 물길. 폭풍은 뒤에 남았다.'},
+    {id:'rocks', x:80, y:60, w:18, h:30, name:'바위', text:'파도에 깎인 바위. 등대가 없으면 배가 여기서 깨진다.'},
+    {id:'skyline', x:10, y:4, w:40, h:22, name:'밤하늘', text:'구름이 걷히고 있다. 이제 빛만 있으면 된다.'},
+  ]}
 };
 // 배 단면 위 장소 버튼 (hidden=숨겨진 장소, 열려야 나타남)
 const MAP_SPOTS = [
@@ -1057,6 +1070,7 @@ const MAP_SPOTS = [
   {id:'crew', name:'선원실', x:19, y:62},
   {id:'hold', name:'화물칸', x:53, y:75},
   {id:'secret', name:'비밀 선창', x:80, y:67, hidden:true},
+  {id:'lighthouse', name:'등대', x:92, y:22, hidden:true},
 ];
 const SCENES_EX = {
 deck:`<svg viewBox="0 0 460 260" fill="none" stroke="#2B2416" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
@@ -1119,7 +1133,7 @@ const Explore = {
     try{ Ambience.setMood(this.MOOD[id]||'below'); }catch(e){} this.view='room'; this.room=id; this.render(); },
   showMap(){ this.view='map'; this.room=null; this.render(); },
   back(){ this.close(); },
-  roomList(){ return MAP_SPOTS.filter(s=>!s.hidden||S.unlocked[s.id]).map(s=>s.id); },
+  roomList(){ return MAP_SPOTS.filter(s=>!s.hidden||S.unlocked[s.id]||(s.id==='lighthouse'&&S.act>=5)).map(s=>s.id); },
   roomNav(dir){ const l=this.roomList(); let i=l.indexOf(this.room); i=Math.max(0,Math.min(l.length-1,i+dir)); this.goRoom(l[i]); },
   invStrip(){
     return `<div class="inv-strip">${Object.entries(ITEMS).map(([k,it])=>
@@ -1153,9 +1167,9 @@ const Explore = {
       const list=this.roomList(); const i=list.indexOf(this.room);
       inner.innerHTML=`
         <div class="ex-full${room.portrait?' portrait':''}">
-          ${room.portrait?`<img class="ex-bg-blur" src="assets/room-${this.room}.webp" alt="" aria-hidden="true">`:''}
+          ${room.portrait?`<img class="ex-bg-blur" src="assets/${room.bg?room.bg:'room-'+this.room}.webp" alt="" aria-hidden="true">`:''}
           <div class="${room.portrait?'ex-stage':'ex-stagefull'}">
-            <img class="ex-bg" src="assets/room-${this.room}.webp" alt="" onerror="this.style.display='none';this.nextElementSibling.classList.add('show')">
+            <img class="ex-bg" src="assets/${room.bg?room.bg:'room-'+this.room}.webp" alt="" onerror="this.style.display='none';this.nextElementSibling.classList.add('show')">
             <div class="ex-svgfb">${SCENES_EX[room.scene]}</div>
             ${room.hotspots.map(h=>{
               const found=(h.item&&S.items[h.item])||(h.phys&&S.phys[this.room+'.'+h.id]);
@@ -1255,7 +1269,7 @@ const Explore = {
     const inner=document.getElementById('exploreInner');
     inner.innerHTML=`
       <div class="ex-full">
-        <div class="cu-bg look-bg" style="background-image:url(assets/room-${roomId}.webp);background-size:${z}%;background-position:${cx}% ${cy}%"></div>
+        <div class="cu-bg look-bg" style="background-image:url(assets/${rm.bg?rm.bg:'room-'+roomId}.webp);background-size:${z}%;background-position:${cx}% ${cy}%"></div>
         <div class="look-vig"></div>
         <div class="ex-hud ex-hud-top">
           <span class="ex-title">${hs.name||rm.name}</span>
@@ -1459,7 +1473,7 @@ const PUZZLE_AT = {
   'wheel.chart':'p3', 'wheel.lantern':'p4', 'wheel.hatch':'p5',
   'hold.sacks':'p6', 'hold.shadow':'p7', 'hold.barrels':'p8',
   'crew.hammock':'p9', 'crew.cupboard':'p10', 'crew.boots':'p11',
-  'deck.sail':'p12', 'deck.bell':'p13',
+  'lighthouse.flagbox':'p12', 'lighthouse.lamproom':'p13',
 };
 // 도구 결합 — 등대에 꽂을 횃대는 손으로 만든다
 const COMBINE = [ { need:['cross','wick'], make:'torch',
@@ -1491,7 +1505,7 @@ const ACTS = [
     tell:'배를 가볍게 하고, 사슬 자물쇠를 끊으라.' },
   { id:4, name:'돌아온 항구',room:'crew',  need:['p9','p10','p11'], needPhys:['crew.chest'],
     tell:'인파 속에서 그 한 사람을 찾고, 선원 명부 궤를 열라.' },
-  { id:5, name:'등대',      room:'deck',   need:['p12','p13'],
+  { id:5, name:'등대',      room:'lighthouse', need:['p12','p13'], needPhys:['lighthouse.door'],
     tell:'신호를 올리고 등대에 불을 켜라.' },
 ];
 
@@ -1872,7 +1886,7 @@ const Admin = {
     <div class="adm-bar"><i style="width:${pct}%"></i></div>
 
     <div class="adm-tabs">
-      ${[['now','현재'],['map','진행'],['guide','해설'],['tools','상태'],['ctl','제어']]
+      ${[['now','현재'],['map','진행'],['guide','해설'],['tools','상태'],['ctl','제어'],['fix','복구']]
         .map(([k,n])=>`<button class="${this.tab===k?'on':''}" onclick="Admin.open('${k}')">${n}</button>`).join('')}
     </div>
     <div class="adm-body">`;
@@ -1929,6 +1943,19 @@ const Admin = {
         <div class="adm-card"><div class="adm-k">최근 기록</div>
         ${(S.log||[]).slice(-8).reverse().map(l=>`<div class="adm-li dim">${l}</div>`).join('')||'<div class="adm-li dim">없음</div>'}</div>`;
     }
+    else if(this.tab==='fix'){
+      h+=`<div class="adm-note">패드가 초기화되거나 진행이 날아갔을 때, 팀이 있던 지점으로 되돌립니다.
+        막을 고르면 그 막까지의 사건·도구·자물쇠가 한꺼번에 복구됩니다.</div>`;
+      ACTS.forEach((a,i)=>{
+        h+=`<div class="admin-jump"><button class="jump-ch${S.act===i?' on':''}" onclick="Admin.restore(${i})">
+          ${i}막 · ${a.name} 까지 복구</button></div>`;
+      });
+      h+=`<div class="adm-card"><div class="adm-k">현재 복구 지점</div>
+        <div class="adm-li"><span>막</span><b>${S.act}막 · ${ACTS[S.act].name}</b></div>
+        <div class="adm-li"><span>해결한 사건</span><b>${solvedCount()}/${TOTAL_PUZZLES}</b></div>
+        <div class="adm-li"><span>연 자물쇠</span><b>${Object.keys(S.phys||{}).length}개</b></div>
+        <div class="adm-li"><span>팀 코드 세트</span><b>${teamIdx()+1}번</b></div></div>`;
+    }
     else {
       h+=`<div class="adm-card"><div class="adm-k">벌점 조정</div>
         <div class="adm-li"><span>현재 ${S.penaltyMin}분</span>
@@ -1964,6 +1991,25 @@ const Admin = {
       save(); Admin.close(); Game.openPuzzle(pz.id); return;
     }
     save(); Admin.close(); UI.render();
+  },
+  // 진행 복구 — 지정한 막까지의 사건·도구·자물쇠를 한꺼번에 되돌린다
+  restore(actIdx){
+    if(!S||S.phase==='lobby') return;
+    for(let i=0;i<actIdx;i++){
+      (ACTS[i].need||[]).forEach(id=>{ S.solved[id]=true; });
+      (ACTS[i].needItems||[]).forEach(k=>{ S.items[k]=true; });
+      (ACTS[i].needPhys||[]).forEach(k=>{
+        S.phys[k]=true;
+        const [r,h]=k.split('.'); const hs=ROOMS[r]&&ROOMS[r].hotspots.find(x=>x.id===h);
+        if(hs&&hs.phys){ if(hs.phys.unlocks) S.unlocked[hs.phys.unlocks]=true;
+                         if(hs.phys.grantItem) S.items[hs.phys.grantItem]=true; }
+      });
+    }
+    S.act=actIdx; S.openPz=null; S.phase='play'; S.finishTs=null;
+    if(!S.startTs) S.startTs=Date.now();
+    tryCombine();
+    logEvent('관리자 진행 복구: '+actIdx+'막');
+    save(); Admin.open('fix'); UI.render();
   },
   jumpFinish(){
     if(!S||S.phase==='lobby') return;
@@ -2069,7 +2115,7 @@ const Game = {
     if(el){ el.classList.remove('shake'); void el.offsetWidth; el.classList.add('shake'); }
     const fb=document.getElementById('fb');
     if(S.wrongStreak>=5){
-      S.cooldownUntil=Date.now()+15000; S.wrongStreak=0; save();
+      S.cooldownUntil=Date.now()+30000; S.wrongStreak=0; save();
       if(fb) fb.textContent='연속 오답. 15초간 잠긴다. 단서를 다시 정리하라.';
       UI.lockAnswer(15);
     }else{
