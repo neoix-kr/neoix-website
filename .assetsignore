@@ -31,3 +31,4 @@ pray-app
 *.png
 *.apk
 ChatGPT*
+.github

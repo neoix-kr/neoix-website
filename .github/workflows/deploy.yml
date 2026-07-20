@@ -1,0 +1,52 @@
+name: Deploy to Cloudflare
+
+# main에 push하면 자동 배포된다.
+# 수동 실행도 가능(Actions 탭 → Run workflow).
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# 배포가 겹치지 않게 — 나중 것이 이기고 진행 중인 것은 취소
+concurrency:
+  group: deploy-cloudflare
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # 배포 전 점검 — 사이트의 핵심 경로가 체크아웃에 실제로 있는지 확인한다.
+      # 로컬에서만 있던 폴더가 빠진 채 배포되어 사이트가 404가 되는 사고를 막는다.
+      - name: 필수 경로 확인
+        run: |
+          missing=0
+          for p in index.html songsan/index.html songsan/escape/index.html \
+                   songsan/escape/admin.html songsan/escape/print.html \
+                   travel/index.html ogx/index.html admin/index.html; do
+            if [ ! -f "$p" ]; then echo "::error::누락: $p"; missing=1; fi
+          done
+          [ "$missing" = "0" ] || { echo "필수 파일이 없어 배포를 중단합니다."; exit 1; }
+          echo "확인 완료 — 배포할 파일 $(git ls-files | wc -l)개"
+
+      - name: Cloudflare 배포
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+      - name: 배포 확인
+        run: |
+          sleep 15
+          for u in https://neoix.kr/ https://neoix.kr/songsan/escape/; do
+            code=$(curl -s -o /dev/null -w '%{http_code}' -m 20 "$u")
+            echo "$u → $code"
+            [ "$code" = "200" ] || echo "::warning::$u 응답 $code"
+          done
