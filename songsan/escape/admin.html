@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>믿음의 항해 — 관리자 창</title>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Jua&display=swap" rel="stylesheet">
+<style>
+  :root{--sea:#0B1826;--sea2:#122A42;--line:rgba(233,237,240,.12);
+    --chalk:#E9EDF0;--dim:#9AA7B2;--brass:#C29A2B;--brass-lt:#E4C463;--good:#7FD4BC;--bad:#D98A7A}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Jua',sans-serif;background:linear-gradient(180deg,#0B1826,#122A42 60%,#16324E);
+    color:var(--chalk);min-height:100vh;padding:18px}
+  .wrap{max-width:1180px;margin:0 auto}
+  header{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:16px}
+  h1{font-size:26px;letter-spacing:2px}
+  .sub{font-family:'Gowun Batang',serif;font-size:14px;color:var(--dim)}
+  .grow{flex:1}
+  .tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+  .tabs button{font-family:inherit;font-size:15px;color:var(--dim);background:rgba(233,237,240,.05);
+    border:1px solid var(--line);border-radius:9px;padding:10px 18px;cursor:pointer}
+  .tabs button.on{color:#241C06;background:var(--brass);border-color:var(--brass)}
+  .card{background:rgba(233,237,240,.05);border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin-bottom:12px}
+  .k{font-size:13px;letter-spacing:2px;color:var(--brass-lt);margin-bottom:10px}
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px}
+  .stat{background:rgba(233,237,240,.05);border:1px solid var(--line);border-radius:11px;padding:13px;text-align:center}
+  .stat span{display:block;font-family:'Gowun Batang',serif;font-size:12px;color:var(--dim)}
+  .stat b{display:block;margin-top:5px;font-size:25px;color:var(--brass-lt);font-weight:400}
+  .stat b i{font-style:normal;font-size:13px;color:var(--dim)}
+  .bar{height:7px;border-radius:4px;background:rgba(233,237,240,.1);margin-top:12px;overflow:hidden}
+  .bar i{display:block;height:100%;background:linear-gradient(90deg,#8A6C14,var(--brass-lt))}
+  table{width:100%;border-collapse:collapse;font-family:'Gowun Batang',serif;font-size:14px}
+  th,td{border-bottom:1px solid var(--line);padding:9px 8px;text-align:left;vertical-align:top}
+  th{font-family:'Jua';font-weight:400;color:var(--brass-lt);font-size:13px;letter-spacing:1px}
+  td b{color:var(--brass-lt);font-weight:400}
+  .pill{display:inline-block;font-size:12px;padding:3px 9px;border-radius:20px;border:1px solid var(--line);color:var(--dim)}
+  .pill.on{background:var(--brass);border-color:var(--brass);color:#241C06}
+  .pill.ok{border-color:rgba(127,212,188,.5);color:var(--good)}
+  .g{margin-top:13px;font-family:'Gowun Batang',serif;font-size:15px;line-height:1.8}
+  .g em{display:block;font-family:'Jua';font-style:normal;font-size:12px;letter-spacing:2px;color:var(--brass-lt);margin-bottom:3px}
+  .g.word{border-top:1px dashed var(--line);padding-top:11px;color:var(--brass-lt)}
+  details{border:1px solid var(--line);border-radius:10px;margin-bottom:9px;background:rgba(233,237,240,.04)}
+  summary{padding:12px 15px;cursor:pointer;font-size:16px;list-style:none}
+  summary::-webkit-details-marker{display:none}
+  summary::before{content:'▸ ';color:var(--brass)}
+  details[open] summary::before{content:'▾ '}
+  details .body{padding:0 15px 15px}
+  .note{font-family:'Gowun Batang',serif;font-size:14px;line-height:1.7;color:var(--dim)}
+  .warn{background:rgba(181,80,63,.14);border:1px solid rgba(181,80,63,.5);border-radius:10px;padding:13px 15px;
+    font-family:'Gowun Batang',serif;font-size:14px;line-height:1.7;margin-top:12px}
+  .warn b{color:#E4A091}
+  a.btn{display:inline-block;font-family:inherit;font-size:15px;text-decoration:none;color:#241C06;
+    background:var(--brass);border-radius:9px;padding:10px 18px;margin-right:8px;margin-top:6px}
+  a.btn.ghost{background:transparent;color:var(--chalk);border:1px solid var(--line)}
+  .gate{max-width:400px;margin:14vh auto;text-align:center}
+  .gate input{width:100%;font-family:'Jua';font-size:30px;letter-spacing:12px;text-align:center;
+    background:rgba(233,237,240,.07);border:1px solid var(--line);border-radius:11px;padding:15px;color:var(--chalk);margin-top:16px}
+  .gate input:focus{outline:none;border-color:var(--brass)}
+  .err{color:var(--bad);font-family:'Gowun Batang',serif;font-size:14px;margin-top:10px;min-height:20px}
+  .live{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--dim)}
+  .live i{width:7px;height:7px;border-radius:50%;background:var(--good);animation:blink 1.6s infinite}
+  @keyframes blink{50%{opacity:.25}}
+</style>
+</head>
+<body>
+
+<div id="gate" class="gate">
+  <h1>관리자 창</h1>
+  <p class="sub" style="margin-top:8px">믿음의 항해 · 인솔 교사용</p>
+  <input id="pin" type="password" inputmode="numeric" maxlength="4" placeholder="····" autocomplete="off">
+  <div class="err" id="err"></div>
+</div>
+
+<div class="wrap" id="app" style="display:none">
+  <header>
+    <h1>관리자 창</h1>
+    <span class="sub">믿음의 항해 · 인솔 교사용</span>
+    <span class="grow"></span>
+    <span class="live"><i></i><span id="liveTxt">이 기기의 게임 상태를 2초마다 읽는 중</span></span>
+  </header>
+
+  <div class="tabs" id="tabs"></div>
+  <div id="view"></div>
+</div>
+
+<script src="teach.js"></script>
+<script>
+const PIN='3574', LS_KEY='faithVoyage_v3';
+
+/* 자물쇠 — index.html의 phys 코드와 반드시 일치해야 한다 */
+const LOCKS=[
+  {name:'승선 명부함', room:'갑판',   code:'2031', verse:'요 20:31',
+   parts:[['성경','2'],['성경','0'],['현장','3'],['패드','1']]},
+  {name:'출항 명령서', room:'선장실', code:'0822', verse:'눅 8:22',
+   parts:[['교사','0'],['패드','8'],['현장','2'],['현장','2']]},
+  {name:'사슬 자물쇠', room:'화물칸', code:'0829', verse:'눅 8:29',
+   parts:[['패드','0'],['패드','8'],['교사','2'],['현장','9']]},
+  {name:'선원 명부 궤',room:'선원실', code:'0854', verse:'눅 8:54',
+   parts:[['패드','0'],['패드','8'],['현장','5'],['성경','4']]},
+  {name:'등대 철문',  room:'등대',   code:'0901', verse:'눅 9:1',
+   parts:[['패드','0'],['패드','9'],['교사','0'],['현장','1']]},
+];
+const TEAM_LOCKS=[
+  {name:'조타실 항해궤', codes:['8624','5137','7412']},
+  {name:'비밀선창 보물궤',codes:['3327','6085','2914']},
+];
+const TEAMS=['베드로호','야고보호','요한호'];
+const ACT_NAMES=['부두','출항','폭풍','무덤 섬','돌아온 항구','등대'];
+const PZ_ORDER=['p1','p2','p3','p4','p5','p6','p7','p8','p9','p10','p11','p12','p13'];
+const PZ_TITLE={p1:'보이지 않는 잉크',p2:'도둑이 남긴 쪽지',p3:'항해사의 해도',p4:'폭풍 속 무전',
+  p5:'물에 젖은 항해일지',p6:'이천의 비밀',p7:'네 개의 다이얼',p8:'거꾸로 쓰인 편지',
+  p9:'군중 속의 손',p10:'레핀의 방',p11:'소녀를 깨운 말',p12:'파송의 신호기',p13:'등대 점화'};
+
+let TAB='live', S=null;
+function load(){ try{ const r=localStorage.getItem(LS_KEY); S=r?JSON.parse(r):null; }catch(e){ S=null; } }
+function fmt(ms){ const t=Math.max(0,Math.floor(ms/1000)); return String(Math.floor(t/60)).padStart(2,'0')+':'+String(t%60).padStart(2,'0'); }
+function elapsed(){ if(!S||!S.startTs) return 0; return (S.finishTs||Date.now())-S.startTs+(S.penaltyMin||0)*60000; }
+function solvedN(){ return S&&S.solved?Object.keys(S.solved).length:0; }
+
+const TABS=[['live','현황'],['guide','관문 해설'],['codes','코드표'],['prep','준비물'],['games','미니게임']];
+
+function render(){
+  document.getElementById('tabs').innerHTML=TABS.map(([k,n])=>
+    `<button class="${TAB===k?'on':''}" onclick="go('${k}')">${n}</button>`).join('');
+  document.getElementById('view').innerHTML=({live:vLive,guide:vGuide,codes:vCodes,prep:vPrep,games:vGames})[TAB]();
+}
+function go(t){ TAB=t; render(); }
+
+function vLive(){
+  load();
+  if(!S||S.phase==='lobby'){
+    return `<div class="card"><div class="k">현황</div>
+      <p class="note">이 기기에서 진행 중인 게임이 없습니다.<br>
+      관리자 창은 <b>같은 기기의 게임 상태</b>를 읽습니다. 팀 패드에서 이 창을 열면 그 팀 진행이 보입니다.</p></div>`;
+  }
+  const done=solvedN(), pct=Math.round(done/13*100);
+  const hints=Object.values(S.hintsUsed||{}).reduce((n,a)=>n+a.filter(x=>x!=='reveal').length,0);
+  const reveals=Object.values(S.hintsUsed||{}).reduce((n,a)=>n+a.filter(x=>x==='reveal').length,0);
+  const ship=S.ship||{};
+  const shipMap={anchor:'닻',sail:'돛',helm:'침로',trim:'하중'};
+  return `
+  <div class="card">
+    <div class="k">${S.teamName||'팀 미지정'} · ${S.act}막 ${ACT_NAMES[S.act]||'-'}${S.phase==='finish'?' · 🏁 완주':''}</div>
+    <div class="stats">
+      <div class="stat"><span>경과</span><b>${fmt(elapsed())}</b></div>
+      <div class="stat"><span>진행</span><b>${done}<i>/13</i></b></div>
+      <div class="stat"><span>벌점</span><b>${S.penaltyMin||0}<i>분</i></b></div>
+      <div class="stat"><span>힌트</span><b>${hints}</b></div>
+      <div class="stat"><span>정답 공개</span><b>${reveals}</b></div>
+      <div class="stat"><span>코드 세트</span><b>${(S.teamCode||0)+1}<i>번</i></b></div>
+    </div>
+    <div class="bar"><i style="width:${pct}%"></i></div>
+  </div>
+
+  <div class="card"><div class="k">관문 진행</div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap">
+      ${PZ_ORDER.map(id=>`<span class="pill ${S.solved&&S.solved[id]?'ok':''}" title="${PZ_TITLE[id]}">${id.slice(1)} ${PZ_TITLE[id]}</span>`).join('')}
+    </div>
+  </div>
+
+  <div class="card"><div class="k">배 조작 · 자물쇠 · 도구</div>
+    <table>
+      <tr><th style="width:110px">배 조작</th><td>${Object.keys(shipMap).map(k=>
+        `<span class="pill ${ship[k]?'ok':''}">${shipMap[k]}</span>`).join(' ')}</td></tr>
+      <tr><th>연 자물쇠</th><td>${Object.keys(S.phys||{}).length}개 — ${Object.keys(S.phys||{}).join(', ')||'없음'}</td></tr>
+      <tr><th>확보 도구</th><td>${Object.keys(S.items||{}).filter(k=>S.items[k]).join(', ')||'없음'}</td></tr>
+      <tr><th>비밀 선창</th><td>${(S.unlocked||{}).secret?'<b>열림</b>':'잠김'}</td></tr>
+    </table>
+  </div>
+
+  <div class="card"><div class="k">최근 기록</div>
+    <table>${(S.log||[]).slice(-12).reverse().map(l=>
+      `<tr><td style="width:66px;color:#9AA7B2">${new Date(l.t).toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'})}</td><td>${l.msg}</td></tr>`
+    ).join('')||'<tr><td>없음</td></tr>'}</table>
+  </div>`;
+}
+
+function vGuide(){
+  return `<div class="card"><div class="k">인솔 교사용 관문 해설</div>
+    <p class="note">학생이 “왜 그게 답이에요?”라고 물을 때 바로 답할 수 있게 정리했습니다.
+    정답은 <b>말해주지 말고</b> ‘막힐 때’의 단계대로 밀어주세요.</p></div>
+    ${PZ_ORDER.map(id=>{
+      const t=(typeof TEACH!=='undefined')&&TEACH[id];
+      if(!t) return '';
+      const solved=S&&S.solved&&S.solved[id];
+      return `<details${solved?'':''}>
+        <summary>${id.slice(1)}. ${PZ_TITLE[id]} ${solved?'<span class="pill ok" style="margin-left:6px">해결</span>':''}</summary>
+        <div class="body">
+          <div class="g"><em>핵심</em>${t.core}</div>
+          <div class="g"><em>정답과 근거</em>${t.answer}</div>
+          <div class="g"><em>막힐 때</em>${t.stuck}</div>
+          <div class="g word"><em>말씀 연결</em>${t.word}</div>
+        </div></details>`;
+    }).join('')}`;
+}
+
+function vCodes(){
+  return `<div class="warn"><b>학생에게 보이지 않게 하세요.</b> 이 화면에 모든 정답 코드가 있습니다.</div>
+  <div class="card"><div class="k">네 자리 자물쇠 — 전 팀 공통 (성경 주소)</div>
+    <table>
+      <tr><th>자물쇠</th><th>방</th><th>코드</th><th>본문</th><th>① ② ③ ④ 출처</th></tr>
+      ${LOCKS.map(l=>`<tr><td>${l.name}</td><td>${l.room}</td>
+        <td><b style="font-size:19px">${l.code}</b></td><td>${l.verse}</td>
+        <td>${l.parts.map(([src,d])=>`<span class="pill">${src} ${d}</span>`).join(' ')}</td></tr>`).join('')}
+    </table>
+    <p class="note" style="margin-top:10px">네 자리가 한 곳에 없습니다. 네 명이 흩어져야 채워집니다.</p>
+  </div>
+  <div class="card"><div class="k">팀별로 다른 코드 — 현장 카드</div>
+    <table>
+      <tr><th>자물쇠</th>${TEAMS.map(t=>`<th>${t}</th>`).join('')}</tr>
+      ${TEAM_LOCKS.map(l=>`<tr><td>${l.name}</td>${l.codes.map(c=>`<td><b style="font-size:18px">${c}</b></td>`).join('')}</tr>`).join('')}
+    </table>
+    <p class="note" style="margin-top:10px">이 둘만 팀마다 다릅니다(어깨너머 차단). 성경 주소 자물쇠는 전 팀 공통이어야 합니다.</p>
+  </div>
+  <div class="card"><div class="k">그 밖</div>
+    <table>
+      <tr><th style="width:150px">모스 신호</th><td><b>82425</b> — 눅 8:24-25 · <code>−−−·· ··−−− ····− ··−−− ·····</code></td></tr>
+      <tr><th>최종 문장</th><td><b>예수를바라보자</b> → 히브리서 12장 2절 → 빈칸 <b>온전</b></td></tr>
+      <tr><th>관리자 PIN</th><td><b>3574</b></td></tr>
+    </table>
+  </div>`;
+}
+
+function vPrep(){
+  const rows=[
+    ['승선 표찰 (팀별)','강당 입구 신발장·의자 등받이·게시판 뒤','2031의 ③ = 3'],
+    ['출항 명령서','강대상 아래','0822의 ③④ = 22'],
+    ['항해 카드 (팀별)','성가대석 악보꽂이 / 강단 계단 화분','항해궤 전체 4자리'],
+    ['무덤 굴 지도','화물 상자 3개 중 가장 무거운 것 밑','0829의 ④ = 9'],
+    ['선원 명부','선원실 담당 교사가 소지','0854의 ③ = 5'],
+    ['깃발함 카드','등대(무대) 앞 상자','0901의 ④ = 1'],
+    ['보물 편지 (팀별)','비밀 선창 담당 교사가 소지','보물궤 전체 4자리'],
+    ['성경 임무 카드 4장','팀에게 처음부터 지급','성경에서 찾는 숫자'],
+    ['교사 인장 카드 3장','미니게임 교사 ①②③이 소지','이겨야 받는 숫자'],
+    ['군중 12인 포스터','선원실 구역 벽 (A2 확대)','p9 — 패드엔 답만 입력'],
+    ['레핀 인쇄물 + 손거울','선원실 구역 벽 (A3 확대)','p10 — 상하반전 계산식'],
+    ['거울글씨 편지 + 손거울','화물칸 담당 교사가 소지','p8'],
+  ];
+  return `<div class="card"><div class="k">현장 배치표</div>
+    <table><tr><th>인쇄물</th><th>배치 장소</th><th>주는 값</th></tr>
+    ${rows.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td><td><b>${r[2]}</b></td></tr>`).join('')}</table>
+    <a class="btn" href="print.html" target="_blank">🖨 인쇄물 열기</a>
+    <a class="btn ghost" href="REDESIGN-v2.md" target="_blank">설계서</a>
+  </div>
+  <div class="warn"><b>인쇄 전 확인</b> — 성경 임무 카드에 교사 확인용 정답이 적혀 있습니다.
+    학생용으로 줄 때는 그 줄을 잘라내거나 가리세요.</div>`;
+}
+
+function vGames(){
+  const g=[
+    ['① 매듭 시험','강당 뒤편','60초 안에 옭매듭·8자매듭 중 2개를 밧줄로 완성. 교사 시범 1회 후 시작. 팀에서 <b>2명까지</b> 손댈 수 있다. 실패 시 즉시 재도전','돛 허가 인장 <b>0</b>','1~2분'],
+    ['② 폭풍 신호수','복도 끝(조명 낮춤)','손전등으로 5자리 모스를 <b>정확히 3회</b> 송신. <b>팀에서 1명만</b> 올 수 있다(몰려오면 무효). 소리로 알려주기 금지. 4회째 요청 시 2분 페널티','82425 입력 자격','2~3분'],
+    ['③ 군대의 사슬','별실 또는 복도 반대편','팀원 <b>4명 전원</b> 팔에 리본을 채운다. 한 명씩 교사와 가위바위보, 이기면 자기 리본 해제. 지면 맨 뒤로. <b>4명 전부</b> 풀려야 클리어','상륙 허가 인장 <b>2</b>','2~3분'],
+  ];
+  return `<div class="card"><div class="k">선생님 미니게임</div>
+    <table><tr><th>게임</th><th>장소</th><th>규칙</th><th>보상</th><th>소요</th></tr>
+    ${g.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td><td class="note" style="color:#E9EDF0">${r[2]}</td><td>${r[3]}</td><td>${r[4]}</td></tr>`).join('')}</table>
+  </div>
+  <div class="card"><div class="k">교사 배치 — 6명 (최소 5명)</div>
+    <table>
+      <tr><th style="width:220px">미니게임 스테이션 ①②③</th><td>3명 · 각 1명 상주. 대기 2팀 초과 시 “단체전 약식 판정” 권한</td></tr>
+      <tr><th>총괄 · 타이머 · 힌트 관리</th><td>1명 · 팀별 통과 코드 수기 체크리스트 병행(패드 소실 대비)</td></tr>
+      <tr><th>성경 도우미 겸 안전</th><td>1명 · 계단참 상주. <b>쪽수만</b> 알려주고 내용 힌트 금지</td></tr>
+      <tr><th>폐회 교사 (등대 · 짐 검사)</th><td>1명 · 5막 진행</td></tr>
+    </table>
+    <p class="note" style="margin-top:10px">클리어한 팀 학생이 다음 팀의 등대지기를 맡으면 1명을 아낍니다.</p>
+  </div>`;
+}
+
+/* PIN 게이트 */
+const pin=document.getElementById('pin');
+pin.addEventListener('input',()=>{
+  if(pin.value.length<4) return;
+  if(pin.value===PIN){
+    document.getElementById('gate').style.display='none';
+    document.getElementById('app').style.display='';
+    render();
+    setInterval(()=>{ if(TAB==='live') render(); },2000);
+  } else {
+    document.getElementById('err').textContent='비밀번호가 맞지 않습니다.';
+    pin.value='';
+  }
+});
+pin.focus();
+</script>
+</body>
+</html>
