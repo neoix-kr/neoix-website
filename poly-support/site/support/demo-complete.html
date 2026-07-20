@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>결제 데모 완료</title>
+</head>
+<body style="font-family:sans-serif; display:flex; align-items:center; justify-content:center; height:100vh; margin:0; color:#333;">
+<p>데모 결제 흐름이 확인됐어요. 돌아가는 중…</p>
+<script>
+  // 이니시스 결제창(iframe/리다이렉트)에서 same-origin이므로 top 이동 가능
+  try { window.top.location.replace('/support/?paid=demo'); }
+  catch (e) { window.location.replace('/support/?paid=demo'); }
+</script>
+</body>
+</html>

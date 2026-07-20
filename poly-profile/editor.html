@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>내 페이지 편집 — POLY Profile</title>
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{--ink:#191a17;--gray:#82847d;--faint:#b3b5ad;--bg:#f4f3ef;--card:#fff;--soft:#eceae4;--lime:#c9f232;--lime-ink:#161a05;--red:#e8412e;--green:#17953f;--sh:0 12px 32px rgba(30,30,24,.07),0 2px 6px rgba(30,30,24,.04);}
+html{background:var(--bg);}
+body{font-family:'Pretendard Variable',Pretendard,sans-serif;background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;line-height:1.5;word-break:keep-all;}
+.num{font-variant-numeric:tabular-nums;}
+a{text-decoration:none;color:inherit;}
+button{font-family:inherit;cursor:pointer;border:none;background:none;}
+/* topbar */
+.top{position:sticky;top:0;z-index:40;background:rgba(244,243,239,.92);backdrop-filter:blur(10px);border-bottom:1px solid rgba(0,0,0,.05);}
+.top .in{max-width:640px;margin:0 auto;padding:0 18px;height:60px;display:flex;align-items:center;justify-content:space-between;gap:10px;}
+.logo{display:flex;align-items:center;gap:7px;font-size:15px;font-weight:900;}
+.logo i{font-style:normal;background:var(--ink);color:var(--lime);font-size:10px;font-weight:900;padding:3px 7px;border-radius:6px;letter-spacing:.08em;}
+.top .acts{display:flex;gap:8px;}
+.tbtn{height:40px;padding:0 16px;border-radius:20px;font-size:13px;font-weight:750;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;transition:transform .12s;}
+.tbtn:active{transform:scale(.96);}
+.tbtn.ghost{background:var(--soft);color:var(--ink);}
+.tbtn.lime{background:var(--lime);color:var(--lime-ink);}
+.wrap{max-width:640px;margin:0 auto;padding:22px 18px 100px;}
+/* url bar */
+.urlbar{display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--ink);border-radius:16px;padding:13px 17px;}
+.urlbar .u{color:rgba(255,255,255,.55);font-size:14.5px;font-weight:700;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.urlbar .u b{color:var(--lime);font-weight:900;}
+.urlbar a{flex:0 0 auto;background:var(--lime);color:var(--lime-ink);font-size:11.5px;font-weight:900;border-radius:9px;padding:6px 11px;}
+/* verify status */
+.vstat{display:flex;align-items:center;gap:11px;background:var(--card);border-radius:18px;box-shadow:var(--sh);padding:14px 16px;margin-top:12px;}
+.vstat .b{font-size:13.5px;font-weight:750;}
+.vstat .s{font-size:11.5px;color:var(--gray);}
+.vstat .tag{margin-left:auto;font-size:11px;font-weight:800;padding:4px 10px;border-radius:8px;flex:0 0 auto;}
+.tag.ok{background:#e7f6ec;color:var(--green);}
+.tag.wait{background:#fff4d6;color:#8a6400;}
+.tag.none{background:var(--soft);color:var(--gray);}
+label.upl{color:var(--ink);font-size:11.5px;font-weight:700;text-decoration:underline;cursor:pointer;flex:0 0 auto;}
+/* stats mini */
+.mstats{display:flex;gap:10px;margin-top:12px;}
+.ms{flex:1;background:var(--card);border-radius:18px;box-shadow:var(--sh);padding:14px 16px;}
+.ms b{display:block;font-size:20px;font-weight:800;}
+.ms span{font-size:11px;color:var(--gray);font-weight:600;}
+/* sections */
+h2.sec{font-size:15px;font-weight:800;margin:28px 4px 10px;display:flex;align-items:center;gap:7px;}
+h2.sec::before{content:"";width:7px;height:7px;border-radius:2.5px;background:var(--lime);outline:1.5px solid rgba(25,26,23,.2);}
+.card{background:var(--card);border-radius:22px;box-shadow:var(--sh);padding:20px 18px;}
+.f{margin-top:13px;}
+.f:first-child{margin-top:0;}
+.f label{display:block;font-size:12px;font-weight:700;color:var(--gray);margin-bottom:6px;}
+.f input,.f textarea,.f select{width:100%;background:var(--soft);border:none;border-radius:12px;padding:13px 14px;font-size:14px;font-family:inherit;color:var(--ink);}
+.f textarea{resize:vertical;min-height:64px;}
+.f input:focus,.f textarea:focus,.f select:focus{outline:2px solid rgba(25,26,23,.22);}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
+/* photo */
+.pho{display:flex;align-items:center;gap:14px;}
+.pho .pv{width:74px;height:92px;border-radius:12px;background:var(--soft);overflow:hidden;flex:0 0 auto;}
+.pho .pv img{width:100%;height:100%;object-fit:cover;}
+.pho .tbtn{border:1px solid #d8d5cc;}
+/* block cards */
+.blk{background:var(--card);border-radius:22px;box-shadow:var(--sh);margin-top:12px;overflow:hidden;}
+.blk .hd{display:flex;align-items:center;gap:9px;padding:15px 16px;border-bottom:1px solid var(--soft);}
+.blk .hd b{font-size:14.5px;font-weight:800;}
+.blk .hd .ctl{margin-left:auto;display:flex;gap:4px;}
+.blk .hd .ctl button{width:32px;height:30px;border-radius:9px;background:var(--soft);font-size:13px;color:var(--gray);}
+.blk .hd .ctl button.hide-on{background:var(--ink);color:#fff;}
+.blk.off .bd{opacity:.4;pointer-events:none;}
+.blk .bd{padding:14px 16px 16px;}
+.item{background:var(--soft);border-radius:14px;padding:12px;margin-top:10px;position:relative;}
+.item:first-child{margin-top:0;}
+.item input,.item select{background:#fff;}
+.item .rm{position:absolute;top:8px;right:8px;width:26px;height:26px;border-radius:8px;background:#fff;color:var(--red);font-size:12px;font-weight:800;}
+.add{width:100%;margin-top:12px;padding:12px 0;border:1.5px dashed #cfccc2;border-radius:13px;color:var(--gray);font-size:13px;font-weight:750;}
+.gal-item{display:flex;gap:10px;align-items:center;}
+.gal-item .th{width:52px;height:52px;border-radius:10px;background:#fff;overflow:hidden;flex:0 0 auto;display:flex;align-items:center;justify-content:center;font-size:18px;}
+.gal-item .th img{width:100%;height:100%;object-fit:cover;}
+.gal-item .fs{flex:1;min-width:0;display:grid;gap:6px;}
+/* save bar */
+.savebar{position:fixed;left:0;right:0;bottom:0;z-index:50;background:rgba(244,243,239,.94);backdrop-filter:blur(10px);border-top:1px solid rgba(0,0,0,.06);}
+.savebar .in{max-width:640px;margin:0 auto;padding:12px 18px;display:flex;gap:10px;}
+.savebar .tbtn{flex:1;height:50px;font-size:15px;justify-content:center;border-radius:25px;}
+.savebar .tbtn.ink{background:var(--ink);color:#fff;}
+#toast{position:fixed;left:50%;bottom:86px;transform:translate(-50%,120px);background:rgba(25,26,23,.94);color:#fff;font-size:13px;font-weight:600;padding:12px 19px;border-radius:24px;transition:transform .25s;z-index:90;max-width:88%;text-align:center;}
+#toast.on{transform:translate(-50%,0);}
+.loading{text-align:center;padding:80px 0;color:var(--gray);font-size:14px;}
+</style>
+</head>
+<body>
+<div class="top"><div class="in">
+  <a class="logo" href="./"><i>POLY</i>내 페이지 편집</a>
+  <div class="acts">
+    <a class="tbtn ghost" id="btnView" target="_blank">미리보기</a>
+    <button class="tbtn lime" id="btnShare">공유</button>
+  </div>
+</div></div>
+
+<div class="wrap" id="app"><div class="loading">불러오는 중…</div></div>
+
+<div class="savebar"><div class="in">
+  <button class="tbtn ink" id="btnSave">저장하기</button>
+</div></div>
+<div id="toast"></div>
+
+<script type="module">
+import { supabase, getSession, myProfile, uploadTo, publicUrl, BLOCK_NAMES, $, $$, esc } from './shared.js';
+
+let prof = null;
+let toastTimer;
+const toast = m => { const t=$('#toast'); t.textContent=m; t.classList.add('on'); clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove('on'),2400); };
+
+const s = await getSession();
+if (!s) { location.href = './onboard.html'; throw new Error('redirect: no session'); }
+prof = await myProfile();
+if (!prof) { location.href = './onboard.html'; throw new Error('redirect: no profile'); }
+
+$('#btnView').href = `./p.html?u=${prof.slug}`;
+$('#btnShare').onclick = async () => {
+  const url = location.origin + location.pathname.replace('editor.html','') + 'p.html?u=' + prof.slug;
+  if (navigator.share) { try { await navigator.share({ title: prof.name, url }); } catch {} }
+  else { await navigator.clipboard.writeText(url); toast('링크를 복사했습니다'); }
+};
+
+// ── 상태 (편집 중 데이터) ──
+const st = {
+  name: prof.name, title: prof.title, party: prof.party, party_color: prof.party_color,
+  district: prof.district, motto: prof.motto, motto_sub: prof.motto_sub, photo_url: prof.photo_url,
+  sns: prof.sns || {}, donate: prof.donate || {}, stats: prof.stats || {},
+  blocks: Array.isArray(prof.blocks) && prof.blocks.length ? prof.blocks : [],
+};
+
+async function loadMeta(){
+  // 인증 상태
+  const { data: vers } = await supabase.from('poly_verifications').select('*').eq('profile_id', prof.id).order('created_at',{ascending:false});
+  let vtag, vtxt;
+  if (prof.verified) { vtag='<span class="tag ok">인증됨 ✓</span>'; vtxt='공식 인증마크가 표시됩니다'; }
+  else if ((vers||[]).some(v=>v.status==='pending')) { vtag='<span class="tag wait">검수 중</span>'; vtxt='서류 확인 중입니다 (1영업일)'; }
+  else { vtag='<span class="tag none">미인증</span>'; vtxt='신분증·당선증을 올리면 인증마크를 받아요'; }
+  $('#vstat').innerHTML = `
+    <div><div class="b">정치인 인증</div><div class="s">${vtxt}</div></div>
+    ${vtag}
+    <label class="upl">서류 올리기<input type="file" hidden accept="image/*,.pdf" id="vupl"></label>`;
+  $('#vupl').onchange = async (e) => {
+    if (!e.target.files.length) return;
+    try {
+      const path = await uploadTo('poly-docs', e.target.files[0], 'doc');
+      await supabase.from('poly_verifications').insert({ profile_id: prof.id, doc_type: 'other', doc_path: path });
+      toast('서류가 접수됐습니다. 검수 후 인증마크가 달립니다'); loadMeta();
+    } catch(err){ toast('업로드 실패: '+err.message); }
+  };
+  // 통계
+  const cnt = async (kind) => (await supabase.from('poly_events').select('id',{count:'exact',head:true}).eq('profile_id',prof.id).eq('kind',kind)).count || 0;
+  const [v,c,g] = await Promise.all([cnt('view'), cnt('click'),
+    (async()=> (await supabase.from('poly_guestbook').select('id',{count:'exact',head:true}).eq('profile_id',prof.id)).count || 0)()]);
+  $('#mstats').innerHTML = `
+    <div class="ms num"><b>${v.toLocaleString()}</b><span>누적 방문</span></div>
+    <div class="ms num"><b>${c.toLocaleString()}</b><span>버튼 클릭</span></div>
+    <div class="ms num"><b>${g.toLocaleString()}</b><span>방명록</span></div>`;
+}
+
+function blockOf(type){ let b = st.blocks.find(b=>b.type===type); if(!b){ b={type,hidden:true,data:{items:[]}}; st.blocks.push(b);} b.data=b.data||{}; b.data.items=b.data.items||[]; return b; }
+
+function render(){
+  const sns = st.sns, dn = st.donate, stt = st.stats;
+  const pl = blockOf('pledges'), cp = blockOf('complaints'), gl = blockOf('gallery'), gb = blockOf('guestbook');
+  $('#app').innerHTML = `
+  <div class="urlbar"><span class="u num">polyx.kr/<b>${esc(prof.slug)}</b></span><a href="./p.html?u=${esc(prof.slug)}" target="_blank">내 페이지 →</a></div>
+  <div class="vstat" id="vstat"></div>
+  <div class="mstats" id="mstats"></div>
+
+  <h2 class="sec">기본 정보</h2>
+  <div class="card">
+    <div class="pho">
+      <div class="pv" id="phoPv">${st.photo_url?`<img src="${esc(st.photo_url)}">`:''}</div>
+      <div>
+        <label class="tbtn ghost" style="cursor:pointer;">프로필 사진 올리기<input type="file" hidden accept="image/*" id="phoIn"></label>
+        <div style="font-size:11px;color:var(--faint);margin-top:7px;">밝은 배경의 상반신 사진이 가장 잘 어울립니다</div>
+      </div>
+    </div>
+    <div class="grid2" style="margin-top:14px;">
+      <div class="f"><label>이름</label><input data-k="name" value="${esc(st.name)}"></div>
+      <div class="f"><label>정당</label><input data-k="party" value="${esc(st.party)}"></div>
+    </div>
+    <div class="grid2">
+      <div class="f"><label>직책</label><input data-k="title" value="${esc(st.title)}" placeholder="고양특례시의회 의원"></div>
+      <div class="f"><label>당색</label><input data-k="party_color" type="color" value="${esc(st.party_color||'#e8412e')}" style="height:46px;padding:6px;"></div>
+    </div>
+    <div class="f"><label>지역구 (동 단위)</label><input data-k="district" value="${esc(st.district)}" placeholder="화정1동 화정2동 행신3동"></div>
+    <div class="f"><label>좌우명 (큰 문구)</label><input data-k="motto" value="${esc(st.motto)}"></div>
+    <div class="f"><label>좌우명 설명 (작은 문구)</label><input data-k="motto_sub" value="${esc(st.motto_sub)}"></div>
+  </div>
+
+  <h2 class="sec">핵심 지표 3개</h2>
+  <div class="card"><div class="grid3">
+    ${[1,2,3].map(i=>`
+      <div class="f"><label>지표 ${i}</label>
+        <input data-stat="s${i}_num" value="${esc(stt['s'+i+'_num']||'')}" placeholder="67%">
+        <input data-stat="s${i}_label" value="${esc(stt['s'+i+'_label']||'')}" placeholder="공약 이행률" style="margin-top:6px;font-size:12px;">
+      </div>`).join('')}
+  </div></div>
+
+  <h2 class="sec">SNS 연결</h2>
+  <div class="card">
+    ${['youtube','instagram','facebook','blog','kakao'].map(k=>`
+      <div class="f"><label>${{youtube:'유튜브',instagram:'인스타그램',facebook:'페이스북',blog:'네이버 블로그',kakao:'카카오채널'}[k]}</label>
+      <input data-sns="${k}" value="${esc(sns[k]||'')}" placeholder="https://"></div>`).join('')}
+  </div>
+
+  <h2 class="sec">후원회 연결</h2>
+  <div class="card">
+    <div class="f"><label>후원회 사이트 주소</label><input data-dn="site_url" value="${esc(dn.site_url||'')}" placeholder="https://"></div>
+    <div class="grid2">
+      <div class="f"><label>문자 수신 번호</label><input data-dn="sms_phone" value="${esc(dn.sms_phone||'')}" placeholder="01000000000"></div>
+      <div class="f"><label>문자 기본 문구</label><input data-dn="sms_body" value="${esc(dn.sms_body||'')}" placeholder="후원 계좌 안내 부탁드립니다"></div>
+    </div>
+  </div>
+
+  <h2 class="sec">블록</h2>
+  ${blockCard(pl, `
+    <div class="f"><label>요약 (예: 완료 5 · 추진 중 6 · 준비 1 — 6월 30일 기준)</label><input data-bl="pledges" data-k2="summary" value="${esc(pl.data.summary||'')}"></div>
+    <div id="plItems">${pl.data.items.map((it,i)=>plItem(it,i)).join('')}</div>
+    <button class="add" data-add="pledges">+ 공약 추가</button>`)}
+  ${blockCard(cp, `
+    <div id="cpItems">${cp.data.items.map((it,i)=>cpItem(it,i)).join('')}</div>
+    <button class="add" data-add="complaints">+ 민원 추가</button>`)}
+  ${blockCard(gl, `
+    <div id="glItems">${gl.data.items.map((it,i)=>glItem(it,i)).join('')}</div>
+    <label class="add" style="display:block;text-align:center;cursor:pointer;">+ 활동 사진 추가<input type="file" hidden accept="image/*" id="glAdd"></label>`)}
+  ${blockCard(gb, `<div style="font-size:13px;color:var(--gray);">방문자가 남긴 방명록이 자동으로 표시됩니다. 부적절한 글은 공개 페이지에서 삭제할 수 있어요.</div>`)}
+  `;
+  bind(); loadMeta();
+}
+function blockCard(b, inner){
+  return `<div class="blk ${b.hidden?'off':''}" data-type="${b.type}">
+    <div class="hd"><b>${BLOCK_NAMES[b.type]}</b>
+      <div class="ctl">
+        <button data-mv="-1" title="위로">↑</button>
+        <button data-mv="1" title="아래로">↓</button>
+        <button data-hide class="${b.hidden?'hide-on':''}">${b.hidden?'숨김됨':'숨김'}</button>
+      </div>
+    </div>
+    <div class="bd">${inner}</div>
+  </div>`;
+}
+const plItem = (it,i)=>`<div class="item" data-i="${i}">
+  <button class="rm" data-rm="pledges">✕</button>
+  <div class="f"><label>공약명</label><input data-it="pledges" data-k2="title" value="${esc(it.title||'')}"></div>
+  <div class="grid3" style="margin-top:8px;">
+    <div class="f" style="margin:0;"><label>진행률 %</label><input data-it="pledges" data-k2="percent" type="number" min="0" max="100" value="${esc(it.percent??'')}"></div>
+    <div class="f" style="margin:0;"><label>상태</label><select data-it="pledges" data-k2="status">
+      <option value="ing" ${it.status==='ing'?'selected':''}>추진 중</option>
+      <option value="done" ${it.status==='done'?'selected':''}>완료</option>
+      <option value="ready" ${it.status==='ready'?'selected':''}>준비</option></select></div>
+    <div class="f" style="margin:0;"><label>비고</label><input data-it="pledges" data-k2="memo" value="${esc(it.memo||'')}"></div>
+  </div></div>`;
+const cpItem = (it,i)=>`<div class="item" data-i="${i}">
+  <button class="rm" data-rm="complaints">✕</button>
+  <div class="f"><label>민원명</label><input data-it="complaints" data-k2="title" value="${esc(it.title||'')}"></div>
+  <div class="grid2" style="margin-top:8px;">
+    <div class="f" style="margin:0;"><label>설명 (예: 128명 동참 · 협의 중 · 12일째)</label><input data-it="complaints" data-k2="meta" value="${esc(it.meta||'')}"></div>
+    <div class="f" style="margin:0;"><label>상태</label><select data-it="complaints" data-k2="status">
+      <option value="ing" ${it.status==='ing'?'selected':''}>진행 중</option>
+      <option value="ok" ${it.status==='ok'?'selected':''}>해결</option></select></div>
+  </div></div>`;
+const glItem = (it,i)=>`<div class="item gal-item" data-i="${i}">
+  <span class="th">${it.photo_path?`<img src="${esc(publicUrl('poly-photos',it.photo_path))}">`:'🖼️'}</span>
+  <span class="fs">
+    <input data-it="gallery" data-k2="caption" value="${esc(it.caption||'')}" placeholder="캡션 (예: 본회의 5분 발언)">
+    <input data-it="gallery" data-k2="date" value="${esc(it.date||'')}" placeholder="날짜 (예: 6월 26일)">
+  </span>
+  <button class="rm" data-rm="gallery" style="position:static;">✕</button></div>`;
+
+function bind(){
+  $$('#app [data-k]').forEach(el=>el.oninput=()=>st[el.dataset.k]=el.value);
+  $$('#app [data-stat]').forEach(el=>el.oninput=()=>st.stats[el.dataset.stat]=el.value);
+  $$('#app [data-sns]').forEach(el=>el.oninput=()=>st.sns[el.dataset.sns]=el.value.trim());
+  $$('#app [data-dn]').forEach(el=>el.oninput=()=>st.donate[el.dataset.dn]=el.value.trim());
+  $$('#app [data-bl]').forEach(el=>el.oninput=()=>blockOf(el.dataset.bl).data[el.dataset.k2]=el.value);
+  $$('#app [data-it]').forEach(el=>{
+    el.oninput=()=>{ const item=el.closest('.item'); blockOf(el.dataset.it).data.items[+item.dataset.i][el.dataset.k2]= el.type==='number'? +el.value : el.value; };
+    if(el.tagName==='SELECT') el.onchange=el.oninput;
+  });
+  $$('#app [data-rm]').forEach(el=>el.onclick=()=>{ const i=+el.closest('.item').dataset.i; blockOf(el.dataset.rm).data.items.splice(i,1); render(); });
+  $$('#app [data-add]').forEach(el=>el.onclick=()=>{ const t=el.dataset.add; blockOf(t).data.items.push(t==='pledges'?{title:'',percent:0,status:'ing',memo:''}:{title:'',meta:'',status:'ing'}); render(); });
+  $$('#app .blk').forEach(card=>{
+    const type=card.dataset.type;
+    card.querySelectorAll('[data-mv]').forEach(btn=>btn.onclick=()=>{
+      const arr=st.blocks, i=arr.findIndex(b=>b.type===type), j=i+ +btn.dataset.mv;
+      if(j<0||j>=arr.length)return; [arr[i],arr[j]]=[arr[j],arr[i]]; render();
+    });
+    card.querySelector('[data-hide]').onclick=()=>{ const b=blockOf(type); b.hidden=!b.hidden; render(); };
+  });
+  const phoIn=$('#phoIn'); if(phoIn) phoIn.onchange=async(e)=>{
+    if(!e.target.files.length)return;
+    try{ const path=await uploadTo('poly-photos',e.target.files[0],'profile'); st.photo_url=publicUrl('poly-photos',path); $('#phoPv').innerHTML=`<img src="${st.photo_url}">`; toast('사진 업로드 완료 — 저장을 눌러 반영하세요'); }
+    catch(err){ toast('업로드 실패: '+err.message); }
+  };
+  const glAdd=$('#glAdd'); if(glAdd) glAdd.onchange=async(e)=>{
+    if(!e.target.files.length)return;
+    try{ const path=await uploadTo('poly-photos',e.target.files[0],'gallery'); blockOf('gallery').data.items.push({photo_path:path,caption:'',date:''}); render(); }
+    catch(err){ toast('업로드 실패: '+err.message); }
+  };
+}
+
+$('#btnSave').onclick = async ()=>{
+  const btn=$('#btnSave'); btn.disabled=true; btn.textContent='저장 중…';
+  const { error } = await supabase.from('poly_pages').update({
+    name: st.name, title: st.title, party: st.party, party_color: st.party_color,
+    district: st.district, motto: st.motto, motto_sub: st.motto_sub, photo_url: st.photo_url,
+    sns: st.sns, donate: st.donate, stats: st.stats, blocks: st.blocks,
+  }).eq('id', prof.id);
+  btn.disabled=false; btn.textContent='저장하기';
+  if (error) return toast('저장 실패: '+error.message);
+  toast('저장됐습니다 ✓');
+};
+
+render();
+if (new URLSearchParams(location.search).get('new')) toast('프로필이 생성됐습니다! 내용을 채우고 저장하세요');
+</script>
+</body>
+</html>

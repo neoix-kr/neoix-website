@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>카드뉴스 - 조국 평택을 출마 선언</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #0a0a0a;
+    font-family: 'Pretendard', -apple-system, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 40px;
+    padding: 40px 0;
+  }
+  .page-label {
+    color: #555;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    margin-bottom: -28px;
+  }
+
+  /* ── 공통 카드 ── */
+  .card {
+    position: relative;
+    width: 1080px;
+    height: 1350px;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .card img.bg {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .grad-bottom {
+    position: absolute;
+    bottom: 0; left: 0;
+    width: 100%;
+    height: 60%;
+    background: linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,0.5) 35%, rgba(0,0,0,0.85) 65%, rgba(0,0,0,0.97) 100%);
+    z-index: 1;
+  }
+  .grad-full {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: linear-gradient(180deg, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.7) 100%);
+    z-index: 1;
+  }
+  .content {
+    position: absolute;
+    bottom: 0; left: 0;
+    width: 100%;
+    padding: 60px 70px;
+    z-index: 2;
+  }
+  .page-num {
+    position: absolute;
+    top: 40px;
+    right: 50px;
+    z-index: 3;
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(8px);
+    color: #fff;
+    font-size: 20px;
+    font-weight: 600;
+    padding: 8px 18px;
+    border-radius: 20px;
+  }
+
+  /* ── 표지 (1장) ── */
+  .card.cover .date {
+    position: absolute;
+    top: 44px; left: 70px;
+    font-size: 22px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.5);
+    letter-spacing: 2px;
+    z-index: 3;
+  }
+  .category {
+    display: inline-block;
+    font-size: 20px;
+    font-weight: 700;
+    color: #fff;
+    background: #E53935;
+    padding: 8px 22px;
+    border-radius: 4px;
+    margin-bottom: 28px;
+    letter-spacing: 1px;
+  }
+  .title-big {
+    font-size: 78px;
+    font-weight: 800;
+    color: #fff;
+    line-height: 1.22;
+    margin-bottom: 24px;
+    text-shadow: 0 4px 30px rgba(0,0,0,0.6);
+    word-break: keep-all;
+  }
+  .subtitle {
+    font-size: 30px;
+    font-weight: 400;
+    color: rgba(255,255,255,0.72);
+    line-height: 1.5;
+    word-break: keep-all;
+  }
+
+  /* ── 내지 공통 ── */
+  .card.inner {
+    background: #111113;
+  }
+  .card.inner .top-section {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 480px;
+    z-index: 0;
+  }
+  .card.inner .top-section img.bg {
+    height: 100%;
+  }
+  .card.inner .top-grad {
+    position: absolute;
+    bottom: 0; left: 0;
+    width: 100%;
+    height: 200px;
+    background: linear-gradient(to bottom, rgba(17,17,19,0) 0%, #111113 100%);
+    z-index: 1;
+  }
+  .inner-content {
+    position: absolute;
+    top: 400px; left: 0;
+    width: 100%;
+    padding: 60px 70px;
+    z-index: 2;
+  }
+  .inner-label {
+    font-size: 22px;
+    font-weight: 700;
+    color: #E53935;
+    letter-spacing: 2px;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+  }
+  .inner-title {
+    font-size: 52px;
+    font-weight: 800;
+    color: #fff;
+    line-height: 1.3;
+    margin-bottom: 36px;
+    word-break: keep-all;
+  }
+  .inner-body {
+    font-size: 30px;
+    font-weight: 400;
+    color: rgba(255,255,255,0.75);
+    line-height: 1.7;
+    word-break: keep-all;
+  }
+  .inner-body strong {
+    color: #fff;
+    font-weight: 700;
+  }
+  .inner-body .highlight {
+    color: #E53935;
+    font-weight: 700;
+  }
+
+  /* ── 텍스트 전용 카드 ── */
+  .card.text-only {
+    background: #111113;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .text-center-wrap {
+    padding: 80px 70px;
+    z-index: 2;
+  }
+  .quote-mark {
+    font-size: 120px;
+    color: #E53935;
+    font-weight: 900;
+    line-height: 0.6;
+    margin-bottom: 20px;
+  }
+  .quote-text {
+    font-size: 48px;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.45;
+    margin-bottom: 36px;
+    word-break: keep-all;
+  }
+  .quote-author {
+    font-size: 26px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.5);
+  }
+
+  /* ── 리스트 카드 ── */
+  .list-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 24px;
+    margin-bottom: 40px;
+  }
+  .list-num {
+    flex-shrink: 0;
+    width: 56px;
+    height: 56px;
+    background: #E53935;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    font-weight: 800;
+    color: #fff;
+    margin-top: 4px;
+  }
+  .list-text {
+    flex: 1;
+  }
+  .list-text h3 {
+    font-size: 34px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 8px;
+    word-break: keep-all;
+  }
+  .list-text p {
+    font-size: 26px;
+    font-weight: 400;
+    color: rgba(255,255,255,0.6);
+    line-height: 1.5;
+    word-break: keep-all;
+  }
+
+  /* ── 후보 카드 ── */
+  .candidates {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+  .cand-card {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 36px 30px;
+    text-align: center;
+  }
+  .cand-icon {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    margin: 0 auto 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    font-weight: 800;
+    color: #fff;
+  }
+  .cand-card:nth-child(1) .cand-icon { background: #1565C0; }
+  .cand-card:nth-child(2) .cand-icon { background: #E53935; }
+  .cand-card:nth-child(3) .cand-icon { background: #6A1B9A; }
+  .cand-card:nth-child(4) .cand-icon { background: #E53935; }
+  .cand-name {
+    font-size: 32px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 8px;
+  }
+  .cand-party {
+    font-size: 22px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.5);
+    margin-bottom: 6px;
+  }
+  .cand-desc {
+    font-size: 20px;
+    color: rgba(255,255,255,0.4);
+  }
+
+  /* ── 마무리 카드 ── */
+  .card.ending {
+    background: linear-gradient(160deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+  .ending-wrap {
+    padding: 80px 70px;
+  }
+  .ending-date {
+    font-size: 120px;
+    font-weight: 900;
+    color: #fff;
+    line-height: 1;
+    margin-bottom: 16px;
+  }
+  .ending-date span {
+    color: #E53935;
+  }
+  .ending-sub {
+    font-size: 36px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.7);
+    margin-bottom: 60px;
+  }
+  .ending-body {
+    font-size: 30px;
+    font-weight: 400;
+    color: rgba(255,255,255,0.55);
+    line-height: 1.7;
+    word-break: keep-all;
+  }
+  .ending-body strong {
+    color: #fff;
+    font-weight: 700;
+  }
+  .ending-source {
+    margin-top: 60px;
+    font-size: 20px;
+    color: rgba(255,255,255,0.25);
+  }
+</style>
+</head>
+<body>
+
+<!-- ========== 1장: 표지 ========== -->
+<div class="page-label">1 / 6</div>
+<div class="card cover">
+  <img class="bg" src="https://img.newspim.com/news/2026/04/14/260414113400948_w.jpg" alt="조국 대표 출마 선언">
+  <div class="grad-bottom"></div>
+  <span class="date">2026.04.14</span>
+  <span class="page-num">1/6</span>
+  <div class="content">
+    <div class="category">정치</div>
+    <h1 class="title-big">조국, 평택을<br>재보선 출마 선언</h1>
+    <p class="subtitle">"'국힘 제로' 실현하겠다"…6·3 재보선 최대 격전지</p>
+  </div>
+</div>
+
+<!-- ========== 2장: 배경 ========== -->
+<div class="page-label">2 / 6</div>
+<div class="card inner">
+  <div class="top-section">
+    <img class="bg" src="https://img.asiatoday.co.kr/file/2026y/04m/14d/2026041401000838700041941.jpg" alt="기자회견">
+    <div class="top-grad"></div>
+  </div>
+  <span class="page-num">2/6</span>
+  <div class="inner-content">
+    <div class="inner-label">배경</div>
+    <h2 class="inner-title">왜 평택을에서<br>재선거가 열리나?</h2>
+    <div class="inner-body">
+      더불어민주당 소속 <strong>이병진 전 의원</strong>이
+      공직선거법 위반으로 대법원에서
+      <strong>당선무효형</strong>(벌금 700만 원)을
+      확정받아 의원직을 상실.<br><br>
+      이에 따라 <strong>6월 3일</strong> 지방선거와 함께
+      국회의원 재선거가 치러지게 됨.
+    </div>
+  </div>
+</div>
+
+<!-- ========== 3장: 핵심 발언 ========== -->
+<div class="page-label">3 / 6</div>
+<div class="card text-only">
+  <span class="page-num">3/6</span>
+  <div class="text-center-wrap">
+    <div class="quote-mark">"</div>
+    <div class="quote-text">
+      극우 내란 정치세력을<br>
+      심판하고<br>
+      국민의힘을 제로로<br>
+      만드는 것이<br>
+      최상위 목표입니다
+    </div>
+    <div class="quote-author">— 조국 조국혁신당 대표, 출마 기자회견에서</div>
+  </div>
+</div>
+
+<!-- ========== 4장: 3대 공약 ========== -->
+<div class="page-label">4 / 6</div>
+<div class="card text-only">
+  <span class="page-num">4/6</span>
+  <div class="text-center-wrap" style="width:100%;">
+    <div class="inner-label">핵심 공약</div>
+    <h2 class="inner-title" style="margin-bottom:50px;">조국 대표의 3가지 약속</h2>
+    <div class="list-item">
+      <div class="list-num">1</div>
+      <div class="list-text">
+        <h3>국민의힘 제로</h3>
+        <p>극우 내란 정치세력 심판, 책임정치 실현</p>
+      </div>
+    </div>
+    <div class="list-item">
+      <div class="list-num">2</div>
+      <div class="list-text">
+        <h3>삶의 질 1위 도시, 평택</h3>
+        <p>평택을 대한민국 삶의 질 최고 도시로 건설</p>
+      </div>
+    </div>
+    <div class="list-item">
+      <div class="list-num">3</div>
+      <div class="list-text">
+        <h3>평택의 목소리를 키우는 큰 정치</h3>
+        <p>중앙정치에서 평택 지역 위상 강화</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 5장: 경쟁 후보 ========== -->
+<div class="page-label">5 / 6</div>
+<div class="card text-only">
+  <span class="page-num">5/6</span>
+  <div class="text-center-wrap" style="width:100%;">
+    <div class="inner-label">격전지</div>
+    <h2 class="inner-title" style="margin-bottom:50px;">평택을 주요 후보</h2>
+    <div class="candidates">
+      <div class="cand-card">
+        <div class="cand-icon">조</div>
+        <div class="cand-name">조국</div>
+        <div class="cand-party">조국혁신당</div>
+        <div class="cand-desc">당 대표</div>
+      </div>
+      <div class="cand-card">
+        <div class="cand-icon">유</div>
+        <div class="cand-name">유의동</div>
+        <div class="cand-party">국민의힘</div>
+        <div class="cand-desc">전 의원 · 3선</div>
+      </div>
+      <div class="cand-card">
+        <div class="cand-icon">황</div>
+        <div class="cand-name">황교안</div>
+        <div class="cand-party">자유와혁신</div>
+        <div class="cand-desc">전 국무총리</div>
+      </div>
+      <div class="cand-card">
+        <div class="cand-icon">김</div>
+        <div class="cand-name">김재연</div>
+        <div class="cand-party">진보당</div>
+        <div class="cand-desc">상임대표</div>
+      </div>
+    </div>
+    <div class="inner-body" style="margin-top:44px; text-align:center; font-size:26px;">
+      19~21대 총선 국민의힘 연승 지역<br>
+      <strong style="color:#E53935;">"험지 중 험지"</strong>로 평가
+    </div>
+  </div>
+</div>
+
+<!-- ========== 6장: 마무리 ========== -->
+<div class="page-label">6 / 6</div>
+<div class="card ending">
+  <span class="page-num">6/6</span>
+  <div class="ending-wrap">
+    <div class="ending-date">6<span>.</span>3</div>
+    <div class="ending-sub">재보궐선거</div>
+    <div class="ending-body">
+      조국 대표의 출마로<br>
+      <strong>평택을</strong>이 6·3 재보선<br>
+      <strong>최대 격전지</strong>로 부상.<br><br>
+      여야 및 제3지대 후보들의<br>
+      치열한 경쟁이 예상됩니다.
+    </div>
+    <div class="ending-source">출처: 파이낸셜뉴스 · 아시아투데이 · 뉴스핌 | 2026.04.14</div>
+  </div>
+</div>
+
+</body>
+</html>

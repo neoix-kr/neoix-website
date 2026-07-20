@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>김민준 — 시안 A</title>
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{--ink:#191919;--sub:#767676;--faint:#9e9e9e;--line:rgba(0,0,0,.07);--fill:#f2f3f5;--band:#f7f8fa;--accent:#3182f6;--green:#1b8a4c;}
+html{background:#e8eaed;}
+body{font-family:'Pretendard Variable',sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased;line-height:1.5;}
+.num{font-variant-numeric:tabular-nums;}
+.phone{max-width:430px;margin:0 auto;background:#fff;min-height:100vh;}
+.pad{padding:0 20px;}
+.band{height:8px;background:var(--band);}
+/* header */
+.hd{padding:28px 20px 24px;}
+.chip{display:inline-block;background:var(--fill);color:var(--ink);font-size:12px;font-weight:600;padding:5px 10px;border-radius:8px;}
+.prow{display:flex;align-items:center;justify-content:space-between;margin-top:14px;}
+h1{font-size:28px;font-weight:800;letter-spacing:-.02em;line-height:1.25;}
+.org{font-size:13px;color:var(--sub);margin-top:3px;}
+.avatar{width:56px;height:56px;border-radius:50%;background:var(--fill);overflow:hidden;flex:0 0 auto;}
+.avatar svg{width:100%;height:100%;display:block;}
+.motto{margin-top:18px;font-size:16px;font-weight:600;letter-spacing:-.01em;}
+.motto small{display:block;font-size:13px;color:var(--sub);font-weight:400;margin-top:3px;}
+.sns{display:flex;gap:8px;margin-top:18px;}
+.sns a{width:42px;height:42px;border-radius:12px;background:var(--fill);display:flex;align-items:center;justify-content:center;color:var(--sub);transition:background .15s;}
+.sns a:active{transform:scale(.96);}
+.sns a svg{width:18px;height:18px;}
+/* stats */
+.stats{display:flex;border-top:1px solid var(--line);margin-top:22px;padding-top:18px;}
+.stat{flex:1;}
+.stat b{display:block;font-size:20px;font-weight:800;letter-spacing:-.01em;}
+.stat span{font-size:12px;color:var(--sub);}
+/* cta */
+.cta-wrap{padding:20px 20px 24px;}
+.cta{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;height:52px;background:var(--accent);color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:700;font-family:inherit;cursor:pointer;transition:transform .12s ease-out;}
+.cta:active{transform:scale(.98);}
+.cta-cap{text-align:center;font-size:12px;color:var(--faint);margin-top:10px;}
+/* sections */
+.sec{padding:24px 20px;}
+.sec-t{display:flex;align-items:baseline;justify-content:space-between;}
+.sec-t h2{font-size:20px;font-weight:700;letter-spacing:-.02em;}
+.sec-t a{font-size:13px;color:var(--sub);text-decoration:none;}
+.sum{display:flex;align-items:baseline;gap:10px;margin-top:14px;}
+.sum b{font-size:32px;font-weight:800;letter-spacing:-.02em;}
+.sum span{font-size:13px;color:var(--sub);}
+.asof{font-size:12px;color:var(--faint);margin-top:2px;}
+.row{padding:16px 0;border-bottom:1px solid var(--line);}
+.row:last-child{border-bottom:none;padding-bottom:4px;}
+.row .t{display:flex;justify-content:space-between;align-items:baseline;gap:12px;}
+.row .t h3{font-size:15px;font-weight:600;letter-spacing:-.01em;}
+.row .t .v{font-size:14px;font-weight:700;color:var(--sub);flex:0 0 auto;}
+.row .t .v.on{color:var(--accent);}
+.row .t .v.ok{color:var(--green);}
+.bar{height:4px;background:var(--fill);border-radius:2px;margin-top:10px;overflow:hidden;}
+.bar i{display:block;height:100%;background:var(--accent);border-radius:2px;}
+.bar.ok i{background:var(--green);}
+.row .m{font-size:13px;color:var(--sub);margin-top:8px;}
+/* civ rows */
+.civ .m{margin-top:3px;}
+/* gallery */
+.gal{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:16px;}
+.gal figure{margin:0;}
+.gal .ph{aspect-ratio:1;border-radius:12px;background:var(--fill);display:flex;align-items:center;justify-content:center;color:#c9ccd1;}
+.gal .ph svg{width:22px;height:22px;}
+.gal figcaption{font-size:11px;color:var(--sub);margin-top:6px;line-height:1.35;}
+/* guestbook */
+.gb .row .t h3{font-size:13px;color:var(--sub);font-weight:600;}
+.gb .row .t .v{font-size:12px;font-weight:400;color:var(--faint);}
+.gb .row p{font-size:14.5px;margin-top:5px;letter-spacing:-.005em;}
+.gb-in{display:flex;gap:8px;margin-top:16px;}
+.gb-in input{flex:1;min-width:0;border:none;background:var(--fill);border-radius:12px;padding:14px 14px;font-size:14px;font-family:inherit;color:var(--ink);}
+.gb-in input::placeholder{color:var(--faint);}
+.gb-in input:focus{outline:2px solid var(--accent);outline-offset:0;}
+.gb-in button{flex:0 0 auto;background:var(--ink);color:#fff;border:none;border-radius:12px;padding:0 16px;font-size:14px;font-weight:600;font-family:inherit;white-space:nowrap;cursor:pointer;}
+.gb-in button:active{transform:scale(.97);}
+.foot{padding:28px 20px 36px;font-size:12px;color:var(--faint);}
+</style>
+</head>
+<body>
+<div class="phone">
+
+  <header class="hd">
+    <span class="chip">고양특례시의회 의원 · 제3선거구</span>
+    <div class="prow">
+      <div>
+        <h1>김민준</h1>
+        <div class="org">국민통합당 · 행정안전위원회</div>
+      </div>
+      <div class="avatar"><svg viewBox="0 0 56 56"><rect width="56" height="56" fill="#e6e8eb"/><circle cx="28" cy="22" r="9.5" fill="#c2c7cd"/><path d="M8 56c0-11.5 9-18.5 20-18.5S48 44.5 48 56" fill="#c2c7cd"/></svg></div>
+    </div>
+    <p class="motto">약속은 기록으로, 기록은 결과로.<small>임기 중 모든 약속의 진행 상황을 이 페이지에 공개합니다.</small></p>
+    <div class="sns">
+      <a href="#" aria-label="유튜브"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"><rect x="2.5" y="5" width="19" height="14" rx="4"/><path d="M10 9.2v5.6l5-2.8-5-2.8z" fill="currentColor" stroke="none"/></svg></a>
+      <a href="#" aria-label="인스타그램"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1.1" fill="currentColor" stroke="none"/></svg></a>
+      <a href="#" aria-label="페이스북"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round" stroke-linecap="round"><path d="M14.5 8.5V7c0-.9.6-1.5 1.5-1.5h1.5V2.7h-2.6c-2.4 0-3.9 1.7-3.9 4v1.8H8.5V12H11v9h3.5v-9h2.6l.4-3.5h-3z"/></svg></a>
+      <a href="#" aria-label="블로그"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></a>
+      <a href="#" aria-label="카카오채널"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-8.5 8.3c-.8 0-1.6-.1-2.4-.3L6 21l.8-3.2A8.2 8.2 0 0 1 4 11.5 8.4 8.4 0 0 1 12.5 3.2 8.4 8.4 0 0 1 21 11.5z"/></svg></a>
+    </div>
+    <div class="stats num">
+      <div class="stat"><b>67%</b><span>공약 이행률</span></div>
+      <div class="stat"><b>213건</b><span>민원 해결</span></div>
+      <div class="stat"><b>1.8일</b><span>평균 첫 답변</span></div>
+    </div>
+  </header>
+
+  <div class="cta-wrap">
+    <button class="cta">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      민원 접수하기
+    </button>
+    <div class="cta-cap num">접수 즉시 처리 현황이 공개됩니다 · 평균 첫 답변 1.8일</div>
+  </div>
+
+  <div class="band"></div>
+
+  <section class="sec">
+    <div class="sec-t"><h2>공약 이행 현황</h2><a href="#">전체 12건</a></div>
+    <div class="sum num"><b>67%</b><span>완료 5 · 추진 중 6 · 준비 1</span></div>
+    <div class="asof num">2026년 6월 30일 기준 · 매월 갱신</div>
+    <div style="margin-top:8px;">
+      <div class="row">
+        <div class="t"><h3>대곡역 환승주차장 확충</h3><span class="v ok">완료</span></div>
+        <div class="bar ok"><i style="width:100%"></i></div>
+        <div class="m num">512면 증설, 2026년 3월 개장</div>
+      </div>
+      <div class="row">
+        <div class="t"><h3>초등 통학로 스마트 횡단보도</h3><span class="v on num">72%</span></div>
+        <div class="bar"><i style="width:72%"></i></div>
+        <div class="m num">관내 14곳 중 10곳 설치</div>
+      </div>
+      <div class="row">
+        <div class="t"><h3>청년 창업지원센터 유치</h3><span class="v on num">45%</span></div>
+        <div class="bar"><i style="width:45%"></i></div>
+        <div class="m">부지 확정, 예산 심의 단계</div>
+      </div>
+      <div class="row">
+        <div class="t"><h3>공공 심야약국 지정 확대</h3><span class="v num">8%</span></div>
+        <div class="bar"><i style="width:8%"></i></div>
+        <div class="m">조례 개정안 발의 준비 중</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="band"></div>
+
+  <section class="sec">
+    <div class="sec-t"><h2>해결 중인 민원</h2><a href="#">전체 보기</a></div>
+    <div style="margin-top:8px;">
+      <div class="row civ">
+        <div class="t"><h3>화정동 이면도로 불법주정차 단속</h3><span class="v on">진행 중</span></div>
+        <div class="m num">128명 동참 · 시청 교통과 협의 중 · 12일째</div>
+      </div>
+      <div class="row civ">
+        <div class="t"><h3>행신동 공원 야간 조명 확충</h3><span class="v on">진행 중</span></div>
+        <div class="m num">86명 동참 · 예산 반영 요청 완료 · 8일째</div>
+      </div>
+      <div class="row civ">
+        <div class="t"><h3>마두역 승강기 고장 반복</h3><span class="v ok">해결</span></div>
+        <div class="m num">213명 동참 · 전면 교체 완료 · 6월 21일</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="band"></div>
+
+  <section class="sec">
+    <div class="sec-t"><h2>활동</h2><a href="#">더 보기</a></div>
+    <div class="gal">
+      <figure><div class="ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="2"/><path d="m21 15-4.5-4.5L7 20"/></svg></div><figcaption>본회의 5분 발언<br>6월 26일</figcaption></figure>
+      <figure><div class="ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="2"/><path d="m21 15-4.5-4.5L7 20"/></svg></div><figcaption>주민 간담회<br>6월 24일</figcaption></figure>
+      <figure><div class="ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="2"/><path d="m21 15-4.5-4.5L7 20"/></svg></div><figcaption>통학로 현장 점검<br>6월 19일</figcaption></figure>
+      <figure><div class="ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="2"/><path d="m21 15-4.5-4.5L7 20"/></svg></div><figcaption>행정사무감사<br>6월 12일</figcaption></figure>
+      <figure><div class="ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="2"/><path d="m21 15-4.5-4.5L7 20"/></svg></div><figcaption>전통시장 방문<br>6월 8일</figcaption></figure>
+      <figure><div class="ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="2"/><path d="m21 15-4.5-4.5L7 20"/></svg></div><figcaption>정책 토론회<br>6월 3일</figcaption></figure>
+    </div>
+  </section>
+
+  <div class="band"></div>
+
+  <section class="sec gb">
+    <div class="sec-t"><h2>방명록</h2><a href="#" class="num">1,024개</a></div>
+    <div style="margin-top:8px;">
+      <div class="row">
+        <div class="t"><h3>행신동 주민</h3><span class="v">2시간 전</span></div>
+        <p>공원 조명 건 진행 상황을 계속 올려주셔서 감사합니다.</p>
+      </div>
+      <div class="row">
+        <div class="t"><h3>학부모 김**</h3><span class="v">어제</span></div>
+        <p>스마트 횡단보도가 생기고 아이 등굣길이 한결 안심됩니다.</p>
+      </div>
+    </div>
+    <div class="gb-in"><input placeholder="응원과 의견을 남겨주세요"/><button>남기기</button></div>
+  </section>
+
+  <footer class="foot">김민준 의원실 · 고양특례시의회<br>운영 POLY</footer>
+</div>
+</body>
+</html>

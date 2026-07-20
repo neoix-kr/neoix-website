@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>POLY Profile</title>
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --ink:#1b1c1e;--gray:#83888f;--faint:#b2b6bc;
+  --bg:#f2f1ef;--card:#ffffff;--soft:#f4f4f3;
+  --party:#e8412e;--party-soft:#fdeae7;--green:#1fae54;--green-soft:#e7f6ec;
+  --sh:0 14px 36px rgba(28,26,22,.07),0 2px 6px rgba(28,26,22,.04);
+  --sh-btn:0 6px 18px rgba(28,26,22,.1),0 1px 3px rgba(28,26,22,.06);
+}
+html{background:var(--bg);}
+body{font-family:'Pretendard Variable',Pretendard,sans-serif;background:linear-gradient(180deg,#f6f2ee 0%,var(--bg) 340px);color:var(--ink);-webkit-font-smoothing:antialiased;line-height:1.5;word-break:keep-all;}
+.num{font-variant-numeric:tabular-nums;}
+a{text-decoration:none;color:inherit;}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit;}
+.wrap{max-width:430px;margin:0 auto;padding:14px 16px 44px;}
+.center{padding:120px 24px;text-align:center;color:var(--gray);font-size:14.5px;line-height:1.8;}
+.center b{display:block;font-size:20px;color:var(--ink);margin-bottom:8px;}
+/* sns */
+.snsrow{display:flex;justify-content:center;gap:10px;padding:4px 0 14px;}
+.snsrow a{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:transform .12s;box-shadow:0 4px 12px rgba(28,26,22,.12);}
+.snsrow a:active{transform:scale(.92);}
+.snsrow a svg{width:20px;height:20px;}
+.s-yt{background:#ff0000;color:#fff;}
+.s-ig{background:radial-gradient(circle at 30% 110%,#fdf497 0%,#fd5949 45%,#d6249f 60%,#285AEB 90%);color:#fff;}
+.s-fb{background:#1877f2;color:#fff;}
+.s-bl{background:#03c75a;color:#fff;font-size:17px;font-weight:900;font-style:italic;}
+.s-kk{background:#fee500;color:#191600;}
+/* profile card */
+.pcard{background:var(--card);border-radius:34px;box-shadow:var(--sh);padding:12px;}
+.photo{position:relative;border-radius:24px;overflow:hidden;height:480px;background:#e8e9ea;}
+.photo img{position:relative;z-index:1;width:100%;height:100%;object-fit:cover;object-position:center 6%;}
+.photo::after{content:"";position:absolute;z-index:2;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.06) 0%,rgba(0,0,0,0) 22%,rgba(0,0,0,0) 52%,rgba(12,10,9,.62) 100%);}
+.photo .chip{position:absolute;z-index:3;top:14px;left:14px;background:var(--party);color:#fff;font-size:11.5px;font-weight:800;padding:7px 12px;border-radius:9px;}
+.photo .share{position:absolute;z-index:3;top:12px;right:12px;width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.22);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;color:#fff;}
+.photo .share svg{width:15px;height:15px;}
+.photo .id{position:absolute;z-index:3;left:20px;right:20px;bottom:18px;color:#fff;}
+.photo .id .role{font-size:12.5px;font-weight:700;color:rgba(255,255,255,.85);line-height:1.55;}
+.photo .id h1{font-size:38px;font-weight:800;letter-spacing:-.025em;line-height:1.12;margin-top:3px;display:flex;align-items:center;gap:9px;}
+.seal{width:24px;height:24px;flex:0 0 auto;margin-top:4px;}
+.seal-btn{display:inline-flex;align-items:center;padding:0;transition:transform .12s;}
+.seal-btn:active{transform:scale(.9);}
+.quote{padding:20px 12px 4px;}
+.quote p{font-size:19.5px;font-weight:750;letter-spacing:-.015em;line-height:1.45;}
+.quote small{display:block;font-size:12.5px;color:var(--gray);margin-top:6px;font-weight:500;}
+.stats{display:flex;margin:18px 12px 0;border-top:1px solid var(--soft);padding-top:16px;}
+.stat{flex:1;}
+.stat+.stat{padding-left:16px;border-left:1px solid var(--soft);}
+.stat b{display:block;font-size:22px;font-weight:800;letter-spacing:-.02em;}
+.stat span{font-size:11.5px;color:var(--gray);font-weight:500;}
+.ctas{display:grid;grid-template-columns:1.25fr 1fr;gap:9px;padding:18px 12px 10px;}
+.pill{height:53px;border-radius:27px;font-size:15px;font-weight:750;display:flex;align-items:center;justify-content:center;gap:7px;white-space:nowrap;min-width:0;transition:transform .12s;letter-spacing:-.01em;}
+.pill:active{transform:scale(.97);}
+.pill.red{background:var(--party);color:#fff;box-shadow:0 8px 20px color-mix(in srgb,var(--party) 25%,transparent);}
+.pill.white{background:var(--card);color:var(--ink);box-shadow:var(--sh-btn);}
+.cta-cap{text-align:center;font-size:11.5px;color:var(--faint);padding:0 12px 14px;}
+/* sections */
+.card{background:var(--card);border-radius:26px;box-shadow:var(--sh);padding:22px 20px;margin-top:14px;}
+.sec-t{display:flex;align-items:center;justify-content:space-between;}
+.sec-t h2{font-size:16.5px;font-weight:800;letter-spacing:-.01em;display:flex;align-items:center;gap:8px;}
+.sec-t h2::before{content:"";width:7px;height:7px;border-radius:2.5px;background:var(--party);}
+.sec-t span{font-size:12.5px;color:var(--faint);font-weight:600;}
+.sum{margin-top:6px;font-size:12.5px;color:var(--gray);}
+.row{padding:14px 0;border-bottom:1px solid var(--soft);}
+.row:last-child{border-bottom:none;padding-bottom:4px;}
+.row .t{display:flex;justify-content:space-between;align-items:baseline;gap:12px;}
+.row .t h3{font-size:14.5px;font-weight:650;letter-spacing:-.01em;}
+.row .t .v{font-size:12px;font-weight:800;flex:0 0 auto;padding:3px 9px;border-radius:8px;}
+.row .t .v.ok{color:var(--green);background:var(--green-soft);}
+.row .t .v.on{color:var(--party);background:var(--party-soft);}
+.row .t .v.rd{color:var(--gray);background:var(--soft);}
+.bar{height:6px;background:var(--soft);border-radius:4px;margin-top:9px;overflow:hidden;}
+.bar i{display:block;height:100%;border-radius:4px;background:var(--party);}
+.bar.ok i{background:var(--green);}
+.row .m{font-size:12.5px;color:var(--gray);margin-top:7px;}
+/* gallery */
+.gal-card{padding-left:0;padding-right:0;}
+.gal-card .sec-t{padding:0 20px;}
+.gal{display:flex;gap:12px;overflow-x:auto;padding:16px 20px 4px;scrollbar-width:none;scroll-behavior:smooth;}
+.gal::-webkit-scrollbar{display:none;}
+.gal figure{flex:0 0 132px;margin:0;}
+.gal .ph{height:132px;border-radius:20px;background:var(--soft);overflow:hidden;}
+.gal .ph img{width:100%;height:100%;object-fit:cover;}
+.gal figcaption{font-size:12px;font-weight:600;margin-top:9px;padding-left:3px;line-height:1.35;}
+.gal figcaption small{display:block;color:var(--faint);font-weight:500;font-size:10.5px;margin-top:1px;}
+.gal-nav{display:flex;gap:8px;padding:14px 20px 0;}
+.gal-nav button{width:42px;height:42px;border-radius:50%;background:var(--card);box-shadow:var(--sh-btn);font-size:15px;display:flex;align-items:center;justify-content:center;}
+/* guestbook */
+.gb .msg{padding:13px 0;border-bottom:1px solid var(--soft);}
+.gb .msg:last-of-type{border-bottom:none;}
+.gb .who{font-size:12.5px;font-weight:700;}
+.gb .who small{color:var(--faint);font-weight:500;margin-left:7px;}
+.gb p{font-size:14px;color:#494b50;margin-top:3px;line-height:1.6;}
+.gb-in{display:flex;gap:8px;margin-top:16px;}
+.gb-in input{background:var(--soft);border:none;border-radius:24px;padding:14px 17px;font-size:13.5px;font-family:inherit;color:var(--ink);}
+.gb-in .nm{width:92px;flex:0 0 auto;}
+.gb-in .bd{flex:1;min-width:0;}
+.gb-in button{flex:0 0 auto;background:var(--ink);color:#fff;border-radius:24px;padding:0 17px;font-size:13.5px;font-weight:700;white-space:nowrap;}
+/* made with */
+.madewith{display:flex;align-items:center;gap:13px;background:var(--ink);border-radius:24px;padding:17px 19px;margin-top:22px;color:#fff;transition:transform .12s;}
+.madewith:active{transform:scale(.98);}
+.mw-logo{flex:0 0 auto;background:#c9f232;color:#161a05;font-size:12px;font-weight:900;letter-spacing:.06em;padding:7px 11px;border-radius:9px;}
+.mw-tx b{display:block;font-size:14.5px;font-weight:750;}
+.mw-tx span{display:block;font-size:11.5px;color:rgba(255,255,255,.55);margin-top:1px;}
+.mw-ar{margin-left:auto;font-size:17px;color:#c9f232;}
+.foot{text-align:center;padding:22px 0 0;font-size:11.5px;color:var(--faint);line-height:1.8;}
+/* sheets */
+.dim{position:fixed;inset:0;background:rgba(20,18,16,.44);opacity:0;pointer-events:none;transition:opacity .22s;z-index:60;}
+.dim.on{opacity:1;pointer-events:auto;}
+.vsheet{position:fixed;left:50%;transform:translate(-50%,105%);bottom:0;width:100%;max-width:430px;background:#fff;border-radius:26px 26px 0 0;z-index:70;transition:transform .28s cubic-bezier(.32,.72,.33,1);padding:14px 22px 30px;}
+.vsheet.on{transform:translate(-50%,0);}
+.vsheet .grab{width:36px;height:4px;border-radius:2px;background:#e5e5e3;margin:0 auto 18px;}
+.vhead{display:flex;align-items:center;gap:12px;}
+.vhead .vic{width:46px;height:46px;border-radius:50%;background:var(--green-soft);display:flex;align-items:center;justify-content:center;flex:0 0 auto;}
+.vhead b{display:block;font-size:17px;font-weight:800;}
+.vhead span{display:block;font-size:12.5px;color:var(--gray);margin-top:1px;}
+.vnote{font-size:11.5px;color:var(--faint);line-height:1.7;margin-top:14px;}
+.vclose{width:100%;height:52px;border-radius:26px;background:var(--ink);color:#fff;font-size:15px;font-weight:700;margin-top:18px;}
+.dbtns{display:flex;flex-direction:column;gap:9px;margin-top:20px;}
+.dbtn{height:56px;border-radius:28px;display:flex;align-items:center;justify-content:center;gap:9px;font-size:15px;font-weight:750;transition:transform .12s;}
+.dbtn:active{transform:scale(.98);}
+.dbtn.site{background:var(--party);color:#fff;}
+.dbtn.sms{background:var(--soft);color:var(--ink);}
+#toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,90px);background:rgba(25,26,23,.94);color:#fff;font-size:13px;font-weight:600;padding:12px 19px;border-radius:24px;transition:transform .25s;z-index:90;max-width:88%;text-align:center;}
+#toast.on{transform:translate(-50%,0);}
+</style>
+</head>
+<body>
+<div class="wrap" id="app">
+  <div class="center">불러오는 중…</div>
+</div>
+<div class="dim" id="dim"></div>
+<div id="toast"></div>
+
+<script type="module">
+import { supabase, profileBySlug, publicUrl, $, $$, esc } from './shared.js';
+
+const slug = new URLSearchParams(location.search).get('u') || '';
+let prof = null;
+let toastTimer;
+const toast = m => { const t=$('#toast'); t.textContent=m; t.classList.add('on'); clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove('on'),2400); };
+const track = (kind,label)=>{ try{ supabase.rpc('poly_track',{p_slug:slug,p_kind:kind,p_label:label||''}); }catch{} };
+
+const SNS_ICONS = {
+  youtube: ['s-yt','<svg viewBox="0 0 24 24" fill="currentColor"><path d="M23 7.5s-.2-1.6-.9-2.3c-.9-.9-1.9-.9-2.3-1C16.6 4 12 4 12 4s-4.6 0-7.8.2c-.4.1-1.4.1-2.3 1-.7.7-.9 2.3-.9 2.3S.8 9.4.8 11.3v1.7c0 1.9.2 3.8.2 3.8s.2 1.6.9 2.3c.9.9 2 .9 2.5 1 1.8.2 7.6.2 7.6.2s4.6 0 7.8-.2c.4-.1 1.4-.1 2.3-1 .7-.7.9-2.3.9-2.3s.2-1.9.2-3.8v-1.7c0-1.9-.2-3.8-.2-3.8zM9.8 15.3V8.7l6.2 3.3-6.2 3.3z"/></svg>'],
+  instagram: ['s-ig','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5.5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.4" cy="6.6" r="1.2" fill="currentColor" stroke="none"/></svg>'],
+  facebook: ['s-fb','<svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 8.5V7c0-.8.5-1 .9-1H17V2.2L14.2 2c-3.1 0-3.8 2.3-3.8 3.8v2.7H8v3.6h2.4V22H14v-9.9h2.7l.3-3.6H14z"/></svg>'],
+  blog: ['s-bl','b'],
+  kakao: ['s-kk','<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3C6.5 3 2 6.5 2 10.8c0 2.8 1.9 5.2 4.7 6.6l-1 3.7c-.1.3.3.6.6.4l4.4-2.9c.4 0 .9.1 1.3.1 5.5 0 10-3.5 10-7.9S17.5 3 12 3z"/></svg>'],
+};
+const SEAL = '<svg class="seal" viewBox="0 0 24 24"><path d="M12 1.7 14.6 4l3.4-.4 1 3.3 3 1.6-1.3 3.2 1.3 3.2-3 1.6-1 3.3-3.4-.4-2.6 2.3-2.6-2.3-3.4.4-1-3.3-3-1.6L3.3 15 2 11.7l3-1.6 1-3.3 3.4.4z" fill="#21ba58"/><path d="m8.6 12.1 2.2 2.2 4.6-4.6" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const stTag = s => s==='done'||s==='ok' ? '<span class="v ok">'+(s==='done'?'완료':'해결')+'</span>'
+  : s==='ready' ? '<span class="v rd">준비</span>' : null;
+
+async function main(){
+  if (!slug) return notFound();
+  prof = await profileBySlug(slug);
+  if (!prof) return notFound();
+  document.title = `${prof.name} — ${prof.title || 'POLY Profile'}`;
+  render();
+  track('view');
+  loadGuestbook();
+}
+function notFound(){
+  $('#app').innerHTML = `<div class="center"><b>프로필을 찾을 수 없습니다</b>주소를 확인하시거나, 나만의 프로필을 만들어보세요.<div style="margin-top:22px;"><a href="./" style="font-weight:800;text-decoration:underline;">POLY Profile 시작하기 →</a></div></div>`;
+}
+
+function render(){
+  document.documentElement.style.setProperty('--party', prof.party_color || '#e8412e');
+  document.documentElement.style.setProperty('--party-soft', 'color-mix(in srgb, '+(prof.party_color||'#e8412e')+' 12%, white)');
+  const sns = prof.sns||{}, stt = prof.stats||{}, dn = prof.donate||{};
+  const blocks = (Array.isArray(prof.blocks)?prof.blocks:[]).filter(b=>!b.hidden);
+  const snsHtml = ['youtube','instagram','facebook','blog','kakao'].filter(k=>sns[k]).map(k=>
+    `<a class="${SNS_ICONS[k][0]}" href="${esc(sns[k])}" target="_blank" rel="noopener" data-tr="${k}">${SNS_ICONS[k][1]}</a>`).join('');
+  const statsHtml = [1,2,3].filter(i=>stt['s'+i+'_num']).map(i=>
+    `<div class="stat"><b>${esc(stt['s'+i+'_num'])}</b><span>${esc(stt['s'+i+'_label']||'')}</span></div>`).join('');
+
+  $('#app').innerHTML = `
+  ${snsHtml?`<nav class="snsrow">${snsHtml}</nav>`:''}
+  <div class="pcard">
+    <div class="photo">
+      ${prof.photo_url?`<img src="${esc(prof.photo_url)}" alt="${esc(prof.name)}">`:''}
+      ${prof.party?`<span class="chip">${esc(prof.party)}</span>`:''}
+      <button class="share" id="btnShare" aria-label="공유"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7"/><path d="M16 6l-4-4-4 4"/><path d="M12 2v13"/></svg></button>
+      <div class="id">
+        <div class="role">${esc(prof.title)}${prof.district?' · '+esc(prof.district):''}</div>
+        <h1>${esc(prof.name)}${prof.verified?`<button class="seal-btn" id="btnSeal" aria-label="본인 인증 정보">${SEAL}</button>`:''}</h1>
+      </div>
+    </div>
+    ${prof.motto?`<div class="quote"><p>${esc(prof.motto)}</p>${prof.motto_sub?`<small>${esc(prof.motto_sub)}</small>`:''}</div>`:''}
+    ${statsHtml?`<div class="stats num">${statsHtml}</div>`:''}
+    <div class="ctas">
+      <button class="pill red" id="btnComplaint">민원 접수하기</button>
+      <button class="pill white" id="btnDonate">후원하기</button>
+    </div>
+    <div class="cta-cap num">접수 즉시 처리 현황 공개 · 후원금 10만원까지 전액 세액공제</div>
+  </div>
+  ${blocks.map(renderBlock).join('')}
+  <a class="madewith" href="./">
+    <span class="mw-logo">POLY</span>
+    <span class="mw-tx"><b>나만의 정치 프로필 만들기</b><span>공약·민원·후원까지, 링크 하나로</span></span>
+    <span class="mw-ar">→</span>
+  </a>
+  <div class="foot">${esc(prof.name)}${prof.title?' · '+esc(prof.title):''} · Made with POLY</div>
+
+  <!-- 인증 시트 -->
+  <div class="vsheet" id="sheetV">
+    <div class="grab"></div>
+    <div class="vhead"><span class="vic">${SEAL.replace('class="seal"','width="24" height="24"')}</span>
+      <div><b>본인 인증 완료</b><span>의원 신분증·당선증으로 본인이 확인된 공식 프로필입니다</span></div></div>
+    <p class="vnote">인증마크는 정치인 본인이 제출한 서류를 POLY 운영팀이 대조 확인한 경우에만 부여되며, 신분 변동 확인 시 즉시 회수됩니다.</p>
+    <button class="vclose" data-close>확인</button>
+  </div>
+  <!-- 후원 시트 -->
+  <div class="vsheet" id="sheetD">
+    <div class="grab"></div>
+    <div class="vhead"><span class="vic" style="background:var(--party-soft);"><svg viewBox="0 0 24 24" fill="none" stroke="${esc(prof.party_color||'#e8412e')}" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><path d="M19 14c1.5-1.5 3-3.2 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.8 0-3 .5-4.5 2C10.5 3.5 9.3 3 7.5 3A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4 3 5.5l7 7z"/></svg></span>
+      <div><b>${esc(prof.name)} 후원회</b><span>10만원까지 전액 세액공제</span></div></div>
+    <div class="dbtns">
+      ${dn.site_url?`<a class="dbtn site" href="${esc(dn.site_url)}" target="_blank" rel="noopener" data-tr="donate_site">후원회 사이트에서 후원하기</a>`:''}
+      ${dn.sms_phone?`<a class="dbtn sms" href="sms:${esc(dn.sms_phone)}?body=${encodeURIComponent(dn.sms_body||prof.name+' 후원회 후원 계좌 안내 부탁드립니다')}" data-tr="donate_sms">문자로 후원 계좌 안내 받기</a>`:''}
+      ${!dn.site_url&&!dn.sms_phone?'<div style="font-size:13px;color:var(--gray);text-align:center;padding:10px 0;">후원 채널이 아직 등록되지 않았습니다</div>':''}
+    </div>
+    <p class="vnote">개인은 하나의 후원회에 연간 500만원까지 후원할 수 있으며, 법인·단체는 후원할 수 없습니다.</p>
+    <button class="vclose" data-close>닫기</button>
+  </div>`;
+  bind(blocks);
+}
+
+function renderBlock(b){
+  const d = b.data||{}; const items = d.items||[];
+  if (b.type==='pledges'){
+    if(!items.length) return '';
+    return `<div class="card"><div class="sec-t"><h2>공약 진행도</h2><span class="num">전체 ${items.length}건</span></div>
+    ${d.summary?`<div class="sum num">${esc(d.summary)}</div>`:''}
+    <div style="margin-top:4px;">${items.map(it=>`
+      <div class="row"><div class="t"><h3>${esc(it.title)}</h3>${stTag(it.status)||`<span class="v on num">${Math.min(100,+it.percent||0)}%</span>`}</div>
+      <div class="bar ${it.status==='done'?'ok':''}"><i style="width:${it.status==='done'?100:Math.min(100,+it.percent||0)}%"></i></div>
+      ${it.memo?`<div class="m num">${esc(it.memo)}</div>`:''}</div>`).join('')}</div></div>`;
+  }
+  if (b.type==='complaints'){
+    if(!items.length) return '';
+    return `<div class="card"><div class="sec-t"><h2>해결 중인 민원</h2><span class="num">${items.length}건</span></div>
+    <div style="margin-top:8px;">${items.map(it=>`
+      <div class="row"><div class="t"><h3>${esc(it.title)}</h3>${it.status==='ok'?'<span class="v ok">해결</span>':'<span class="v on">진행 중</span>'}</div>
+      ${it.meta?`<div class="m num">${esc(it.meta)}</div>`:''}</div>`).join('')}</div></div>`;
+  }
+  if (b.type==='gallery'){
+    if(!items.length) return '';
+    return `<div class="card gal-card"><div class="sec-t"><h2>활동</h2></div>
+    <div class="gal" id="gal">${items.map(it=>`
+      <figure><div class="ph">${it.photo_path?`<img src="${esc(publicUrl('poly-photos',it.photo_path))}" alt="">`:''}</div>
+      <figcaption>${esc(it.caption||'')}${it.date?`<small>${esc(it.date)}</small>`:''}</figcaption></figure>`).join('')}</div>
+    <div class="gal-nav"><button data-gal="-1">←</button><button data-gal="1">→</button></div></div>`;
+  }
+  if (b.type==='guestbook'){
+    return `<div class="card gb"><div class="sec-t"><h2>방명록</h2><span class="num" id="gbCount"></span></div>
+    <div id="gbList" style="margin-top:8px;"><div style="font-size:13px;color:var(--faint);padding:8px 0;">불러오는 중…</div></div>
+    <div class="gb-in"><input class="nm" id="gbName" placeholder="이름" maxlength="20"><input class="bd" id="gbBody" placeholder="응원과 의견을 남겨주세요" maxlength="300"><button id="gbSend">남기기</button></div></div>`;
+  }
+  return '';
+}
+
+function bind(blocks){
+  $$('#app [data-tr]').forEach(el=>el.addEventListener('click',()=>track('click',el.dataset.tr)));
+  const open = id => { $('#dim').classList.add('on'); $('#'+id).classList.add('on'); };
+  const close = () => { $('#dim').classList.remove('on'); $$('.vsheet').forEach(s=>s.classList.remove('on')); };
+  $('#dim').onclick = close;
+  $$('[data-close]').forEach(b=>b.onclick=close);
+  if ($('#btnSeal')) $('#btnSeal').onclick = ()=>{ open('sheetV'); track('click','seal'); };
+  $('#btnDonate').onclick = ()=>{ open('sheetD'); track('click','donate'); };
+  $('#btnComplaint').onclick = ()=>{
+    track('click','complaint');
+    const gb = $('#gbBody');
+    if (gb) { gb.scrollIntoView({behavior:'smooth',block:'center'}); gb.placeholder='민원·불편사항을 남겨주세요 (담당자가 확인합니다)'; setTimeout(()=>gb.focus(),450); }
+    else toast('민원 접수 채널 준비 중입니다');
+  };
+  $('#btnShare').onclick = async ()=>{
+    track('click','share');
+    const url = location.href;
+    if (navigator.share) { try { await navigator.share({ title: prof.name, url }); } catch {} }
+    else { await navigator.clipboard.writeText(url); toast('링크를 복사했습니다'); }
+  };
+  $$('#app [data-gal]').forEach(b=>b.onclick=()=>$('#gal').scrollBy({left:155*+b.dataset.gal}));
+  if ($('#gbSend')) $('#gbSend').onclick = sendGb;
+}
+
+async function loadGuestbook(){
+  if (!$('#gbList')) return;
+  const { data, count } = await supabase.from('poly_guestbook')
+    .select('*',{count:'exact'}).eq('profile_id',prof.id).order('created_at',{ascending:false}).limit(5);
+  $('#gbCount').textContent = (count||0).toLocaleString()+'개';
+  $('#gbList').innerHTML = (data&&data.length) ? data.map(g=>`
+    <div class="msg"><div class="who">${esc(g.author)}<small>${timeAgo(g.created_at)}</small></div><p>${esc(g.body)}</p></div>`).join('')
+    : '<div style="font-size:13px;color:var(--faint);padding:8px 0;">첫 응원을 남겨주세요</div>';
+}
+async function sendGb(){
+  const name = $('#gbName').value.trim(), body = $('#gbBody').value.trim();
+  if (!name || !body) return toast('이름과 내용을 입력해주세요');
+  const btn = $('#gbSend'); btn.disabled = true;
+  const { error } = await supabase.from('poly_guestbook').insert({ profile_id: prof.id, author: name, body });
+  btn.disabled = false;
+  if (error) return toast('등록 실패: '+error.message);
+  $('#gbBody').value=''; toast('남겨주셔서 감사합니다'); track('click','guestbook'); loadGuestbook();
+}
+function timeAgo(ts){
+  const s = (Date.now()-new Date(ts).getTime())/1000;
+  if (s<60) return '방금'; if (s<3600) return Math.floor(s/60)+'분 전';
+  if (s<86400) return Math.floor(s/3600)+'시간 전'; if (s<86400*30) return Math.floor(s/86400)+'일 전';
+  return new Date(ts).toLocaleDateString('ko-KR');
+}
+main();
+</script>
+</body>
+</html>

@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>김수진 — 고양특례시의회 의원</title>
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --ink:#1b1c1e;--gray:#83888f;--faint:#b2b6bc;
+  --bg:#f2f1ef;--card:#ffffff;--soft:#f4f4f3;
+  --red:#e8412e;--red-soft:#fdeae7;--green:#1fae54;--green-soft:#e7f6ec;--amber:#e9a13b;
+  --sh:0 14px 36px rgba(28,26,22,.07),0 2px 6px rgba(28,26,22,.04);
+  --sh-btn:0 6px 18px rgba(28,26,22,.1),0 1px 3px rgba(28,26,22,.06);
+}
+html{background:var(--bg);}
+body{font-family:'Pretendard Variable',Pretendard,sans-serif;background:linear-gradient(180deg,#f6f2ee 0%,var(--bg) 340px);color:var(--ink);-webkit-font-smoothing:antialiased;line-height:1.5;word-break:keep-all;}
+.num{font-variant-numeric:tabular-nums;}
+button{font-family:inherit;cursor:pointer;border:none;background:none;}
+.wrap{max-width:430px;margin:0 auto;padding:14px 16px 44px;}
+/* sns brand row (사진 아래) */
+.snsrow{display:flex;justify-content:center;gap:10px;padding:18px 0 2px;}
+.snsrow a{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:transform .12s;box-shadow:0 4px 12px rgba(28,26,22,.12);}
+.snsrow a:active{transform:scale(.92);}
+.snsrow a svg{width:20px;height:20px;}
+.s-yt{background:#ff0000;color:#fff;}
+.s-ig{background:radial-gradient(circle at 30% 110%,#fdf497 0%,#fd5949 45%,#d6249f 60%,#285AEB 90%);color:#fff;}
+.s-fb{background:#1877f2;color:#fff;}
+.s-bl{background:#03c75a;color:#fff;font-size:17px;font-weight:900;font-style:italic;}
+.s-kk{background:#fee500;color:#191600;}
+
+/* ───────── profile card ───────── */
+.pcard{background:var(--card);border-radius:34px;box-shadow:var(--sh);padding:12px;}
+.photo{position:relative;border-radius:24px;overflow:hidden;height:480px;background:#e8e9ea;}
+.photo img{position:relative;z-index:1;width:100%;height:100%;object-fit:cover;object-position:center 6%;}
+.photo::after{content:"";position:absolute;z-index:2;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.06) 0%,rgba(0,0,0,0) 22%,rgba(0,0,0,0) 52%,rgba(12,10,9,.62) 100%);}
+.photo .chip{position:absolute;z-index:3;top:14px;left:14px;background:var(--red);color:#fff;font-size:11.5px;font-weight:800;padding:7px 12px;border-radius:9px;letter-spacing:.02em;}
+.photo .share{position:absolute;z-index:3;top:12px;right:12px;width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.22);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;color:#fff;}
+.photo .share svg{width:15px;height:15px;}
+.photo .id{position:absolute;z-index:3;left:20px;right:20px;bottom:18px;color:#fff;}
+.photo .id .role{font-size:12.5px;font-weight:700;color:rgba(255,255,255,.85);letter-spacing:.01em;line-height:1.55;}
+.seal-btn{display:inline-flex;align-items:center;padding:0;transition:transform .12s;}
+.seal-btn:active{transform:scale(.9);}
+.photo .id h1{font-size:38px;font-weight:800;letter-spacing:-.025em;line-height:1.12;margin-top:3px;display:flex;align-items:center;gap:9px;}
+.seal{width:24px;height:24px;flex:0 0 auto;margin-top:4px;}
+/* quote */
+.quote{padding:20px 12px 4px;}
+.quote p{font-size:19.5px;font-weight:750;letter-spacing:-.015em;line-height:1.45;}
+.quote p em{font-style:normal;color:var(--red);}
+.quote small{display:block;font-size:12.5px;color:var(--gray);margin-top:6px;font-weight:500;}
+/* stats */
+.stats{display:flex;margin:18px 12px 0;border-top:1px solid var(--soft);padding-top:16px;}
+.stat{flex:1;position:relative;}
+.stat+.stat{padding-left:16px;border-left:1px solid var(--soft);}
+.stat b{display:block;font-size:22px;font-weight:800;letter-spacing:-.02em;}
+.stat b small{font-size:12px;font-weight:700;color:var(--gray);margin-left:1px;}
+.stat span{font-size:11.5px;color:var(--gray);font-weight:500;}
+.stat .up{display:inline-block;font-size:10px;font-weight:800;color:var(--green);background:var(--green-soft);border-radius:5px;padding:1px 5px;margin-left:4px;vertical-align:2px;}
+/* cta */
+.ctas{display:grid;grid-template-columns:1.25fr 1fr;gap:9px;padding:18px 12px 10px;}
+.pill{height:53px;border-radius:27px;font-size:15px;font-weight:750;display:flex;align-items:center;justify-content:center;gap:7px;white-space:nowrap;min-width:0;transition:transform .12s;letter-spacing:-.01em;}
+.pill:active{transform:scale(.97);}
+.pill.red{background:var(--red);color:#fff;box-shadow:0 8px 20px rgba(232,65,46,.25);}
+.pill.white{background:var(--card);color:var(--ink);box-shadow:var(--sh-btn);}
+.cta-cap{text-align:center;font-size:11.5px;color:var(--faint);padding:0 12px 14px;}
+
+/* ───────── section cards ───────── */
+.card{background:var(--card);border-radius:26px;box-shadow:var(--sh);padding:22px 20px;margin-top:14px;}
+.sec-t{display:flex;align-items:center;justify-content:space-between;}
+.sec-t h2{font-size:16.5px;font-weight:800;letter-spacing:-.01em;display:flex;align-items:center;gap:8px;}
+.sec-t h2::before{content:"";width:7px;height:7px;border-radius:2.5px;background:var(--red);}
+.sec-t a{font-size:12.5px;color:var(--faint);text-decoration:none;font-weight:600;}
+/* 공약: 세그먼트 요약 */
+.sum{margin-top:14px;}
+.sum .n{display:flex;align-items:baseline;gap:10px;}
+.sum .n b{font-size:30px;font-weight:800;letter-spacing:-.02em;}
+.sum .n span{font-size:12px;color:var(--gray);}
+.seg{display:flex;gap:3px;height:8px;margin-top:10px;border-radius:5px;overflow:hidden;}
+.seg i{height:100%;}
+.legend{display:flex;gap:14px;margin-top:8px;font-size:11px;color:var(--gray);font-weight:600;}
+.legend b{width:7px;height:7px;border-radius:2px;display:inline-block;margin-right:4px;vertical-align:0;}
+.row{padding:14px 0;border-bottom:1px solid var(--soft);}
+.row:last-child{border-bottom:none;padding-bottom:4px;}
+.row .t{display:flex;justify-content:space-between;align-items:baseline;gap:12px;}
+.row .t h3{font-size:14.5px;font-weight:650;letter-spacing:-.01em;}
+.row .t .v{font-size:12px;font-weight:800;flex:0 0 auto;padding:3px 9px;border-radius:8px;}
+.row .t .v.ok{color:var(--green);background:var(--green-soft);}
+.row .t .v.on{color:var(--red);background:var(--red-soft);}
+.row .t .v.rd{color:var(--gray);background:var(--soft);}
+.bar{height:6px;background:var(--soft);border-radius:4px;margin-top:9px;overflow:hidden;}
+.bar i{display:block;height:100%;border-radius:4px;background:var(--red);}
+.bar.ok i{background:var(--green);}
+.row .m{font-size:12.5px;color:var(--gray);margin-top:7px;}
+/* 후원 row */
+.srow{display:flex;align-items:center;gap:13px;background:var(--card);border-radius:24px;box-shadow:var(--sh);padding:17px 18px;margin-top:14px;text-align:left;width:100%;}
+.srow .ic{width:42px;height:42px;border-radius:14px;background:var(--red-soft);display:flex;align-items:center;justify-content:center;color:var(--red);flex:0 0 auto;}
+.srow .ic svg{width:18px;height:18px;}
+.srow b{display:block;font-size:14.5px;font-weight:750;letter-spacing:-.01em;}
+.srow span{display:block;font-size:12px;color:var(--gray);margin-top:1px;}
+.srow .ar{margin-left:auto;color:var(--faint);font-size:17px;}
+/* carousel */
+.gal-card{padding-left:0;padding-right:0;}
+.gal-card .sec-t{padding:0 20px;}
+.gal{display:flex;gap:12px;overflow-x:auto;padding:16px 20px 4px;scrollbar-width:none;scroll-behavior:smooth;}
+.gal::-webkit-scrollbar{display:none;}
+.gal figure{flex:0 0 132px;margin:0;}
+.gal .ph{height:132px;border-radius:20px;display:flex;align-items:center;justify-content:center;color:#b9b3a8;}
+.gal figure:nth-child(1) .ph{background:#efe9df;}
+.gal figure:nth-child(2) .ph{background:#e7ecea;}
+.gal figure:nth-child(3) .ph{background:#eceaf0;}
+.gal figure:nth-child(4) .ph{background:#f0e9e7;}
+.gal .ph svg{width:20px;height:20px;}
+.gal figcaption{font-size:12px;color:var(--ink);font-weight:600;margin-top:9px;padding-left:3px;line-height:1.35;}
+.gal figcaption small{display:block;color:var(--faint);font-weight:500;font-size:10.5px;margin-top:1px;}
+.gal-nav{display:flex;gap:8px;padding:14px 20px 0;}
+.gal-nav button{width:42px;height:42px;border-radius:50%;background:var(--card);box-shadow:var(--sh-btn);color:var(--ink);font-size:15px;display:flex;align-items:center;justify-content:center;}
+.gal-nav button:active{transform:scale(.94);}
+/* guestbook */
+.gb p.q{font-size:14.5px;color:#3f4247;line-height:1.7;margin-top:14px;}
+.gb .au{display:flex;align-items:center;gap:10px;margin-top:14px;}
+.gb .au .av{width:36px;height:36px;border-radius:50%;background:var(--soft);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:var(--gray);flex:0 0 auto;}
+.gb .au b{display:block;font-size:13px;font-weight:700;}
+.gb .au span{font-size:11.5px;color:var(--faint);}
+.gb-in{display:flex;gap:8px;margin-top:18px;}
+.gb-in input{flex:1;min-width:0;background:var(--soft);border:none;border-radius:24px;padding:14px 17px;font-size:13.5px;font-family:inherit;color:var(--ink);}
+.gb-in input::placeholder{color:var(--faint);}
+.gb-in input:focus{outline:2px solid rgba(232,65,46,.35);}
+.gb-in button{flex:0 0 auto;background:var(--ink);color:#fff;border-radius:24px;padding:0 19px;font-size:13.5px;font-weight:700;white-space:nowrap;}
+.foot{text-align:center;padding:22px 0 0;font-size:11.5px;color:var(--faint);line-height:1.8;}
+/* made with poly */
+.madewith{display:flex;align-items:center;gap:13px;background:var(--ink);border-radius:24px;padding:17px 19px;margin-top:22px;text-decoration:none;color:#fff;transition:transform .12s;}
+.madewith:active{transform:scale(.98);}
+.mw-logo{flex:0 0 auto;background:#c9f232;color:#161a05;font-size:12px;font-weight:900;letter-spacing:.06em;padding:7px 11px;border-radius:9px;}
+.mw-tx b{display:block;font-size:14.5px;font-weight:750;letter-spacing:-.01em;}
+.mw-tx span{display:block;font-size:11.5px;color:rgba(255,255,255,.55);margin-top:1px;}
+.mw-ar{margin-left:auto;font-size:17px;color:#c9f232;}
+/* ───────── verify sheet ───────── */
+.dim{position:fixed;inset:0;background:rgba(20,18,16,.44);opacity:0;pointer-events:none;transition:opacity .22s;z-index:60;}
+.dim.on{opacity:1;pointer-events:auto;}
+.vsheet{position:fixed;left:50%;transform:translate(-50%,105%);bottom:0;width:100%;max-width:430px;background:#fff;border-radius:26px 26px 0 0;z-index:70;transition:transform .28s cubic-bezier(.32,.72,.33,1);padding:14px 22px 30px;}
+.vsheet.on{transform:translate(-50%,0);}
+.vsheet .grab{width:36px;height:4px;border-radius:2px;background:#e5e5e3;margin:0 auto 18px;}
+.vsheet .vhead{display:flex;align-items:center;gap:12px;}
+.vsheet .vhead .vic{width:46px;height:46px;border-radius:50%;background:var(--green-soft);display:flex;align-items:center;justify-content:center;flex:0 0 auto;}
+.vsheet .vhead .vic svg{width:24px;height:24px;}
+.vsheet .vhead b{display:block;font-size:17px;font-weight:800;letter-spacing:-.01em;}
+.vsheet .vhead span{display:block;font-size:12.5px;color:var(--gray);margin-top:1px;}
+.vrows{margin-top:18px;background:var(--soft);border-radius:16px;padding:4px 16px;}
+.vrow{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid rgba(0,0,0,.05);font-size:13.5px;}
+.vrow:last-child{border-bottom:none;}
+.vrow span{color:var(--gray);font-weight:500;}
+.vrow b{font-weight:700;}
+.vnote{font-size:11.5px;color:var(--faint);line-height:1.7;margin-top:14px;}
+.vclose{width:100%;height:52px;border-radius:26px;background:var(--ink);color:#fff;font-size:15px;font-weight:700;margin-top:18px;}
+.vclose:active{transform:scale(.98);}
+.vup{display:flex;align-items:center;justify-content:center;gap:7px;width:100%;padding:14px 0 2px;font-size:13px;font-weight:700;color:var(--gray);cursor:pointer;}
+.vup svg{width:15px;height:15px;}
+.vup.done{color:var(--green);}
+/* donation sheet */
+.dbtns{display:flex;flex-direction:column;gap:9px;margin-top:20px;}
+.dbtn{height:56px;border-radius:28px;display:flex;align-items:center;justify-content:center;gap:9px;font-size:15px;font-weight:750;text-decoration:none;transition:transform .12s;}
+.dbtn:active{transform:scale(.98);}
+.dbtn.site{background:var(--red);color:#fff;}
+.dbtn.sms{background:var(--soft);color:var(--ink);}
+.dbtn svg{width:18px;height:18px;flex:0 0 auto;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- 프로필 카드 : 사진 위 이름 오버레이 -->
+  <div class="pcard">
+    <div class="photo">
+      <img src="./photo.jpg?v=2" alt="김수진" onerror="this.style.display='none'">
+      <span class="chip">국민의힘</span>
+      <button class="share" aria-label="공유"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7"/><path d="M16 6l-4-4-4 4"/><path d="M12 2v13"/></svg></button>
+      <div class="id">
+        <div class="role">고양특례시의회 의원 · 화정1동 화정2동 행신3동</div>
+        <h1>김수진
+          <button class="seal-btn" onclick="openVerify()" aria-label="본인 인증 정보">
+            <svg class="seal" viewBox="0 0 24 24"><path d="M12 1.7 14.6 4l3.4-.4 1 3.3 3 1.6-1.3 3.2 1.3 3.2-3 1.6-1 3.3-3.4-.4-2.6 2.3-2.6-2.3-3.4.4-1-3.3-3-1.6L3.3 15 2 11.7l3-1.6 1-3.3 3.4.4z" fill="#21ba58"/><path d="m8.6 12.1 2.2 2.2 4.6-4.6" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </h1>
+      </div>
+    </div>
+
+    <nav class="snsrow">
+      <a class="s-yt" href="#" aria-label="유튜브"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M23 7.5s-.2-1.6-.9-2.3c-.9-.9-1.9-.9-2.3-1C16.6 4 12 4 12 4s-4.6 0-7.8.2c-.4.1-1.4.1-2.3 1-.7.7-.9 2.3-.9 2.3S.8 9.4.8 11.3v1.7c0 1.9.2 3.8.2 3.8s.2 1.6.9 2.3c.9.9 2 .9 2.5 1 1.8.2 7.6.2 7.6.2s4.6 0 7.8-.2c.4-.1 1.4-.1 2.3-1 .7-.7.9-2.3.9-2.3s.2-1.9.2-3.8v-1.7c0-1.9-.2-3.8-.2-3.8zM9.8 15.3V8.7l6.2 3.3-6.2 3.3z"/></svg></a>
+      <a class="s-ig" href="#" aria-label="인스타그램"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5.5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.4" cy="6.6" r="1.2" fill="currentColor" stroke="none"/></svg></a>
+      <a class="s-fb" href="#" aria-label="페이스북"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 8.5V7c0-.8.5-1 .9-1H17V2.2L14.2 2c-3.1 0-3.8 2.3-3.8 3.8v2.7H8v3.6h2.4V22H14v-9.9h2.7l.3-3.6H14z"/></svg></a>
+      <a class="s-bl" href="#" aria-label="네이버 블로그">b</a>
+      <a class="s-kk" href="#" aria-label="카카오채널"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3C6.5 3 2 6.5 2 10.8c0 2.8 1.9 5.2 4.7 6.6l-1 3.7c-.1.3.3.6.6.4l4.4-2.9c.4 0 .9.1 1.3.1 5.5 0 10-3.5 10-7.9S17.5 3 12 3z"/></svg></a>
+    </nav>
+
+    <div class="quote">
+      <p>"약속은 <em>기록</em>으로,<br>기록은 <em>결과</em>로 증명합니다."</p>
+      <small>임기 중 모든 약속의 진행 상황을 이 페이지에 공개합니다 · 매주 갱신</small>
+    </div>
+
+    <div class="stats num">
+      <div class="stat"><b>67<small>%</small></b><span>공약 이행률</span><span class="up">▲4%p</span></div>
+      <div class="stat"><b>213<small>건</small></b><span>민원 해결</span></div>
+      <div class="stat"><b>1.8<small>일</small></b><span>평균 첫 답변</span></div>
+    </div>
+
+    <div class="ctas">
+      <button class="pill red">민원 접수하기</button>
+      <button class="pill white" onclick="openDon()">후원하기</button>
+    </div>
+    <div class="cta-cap num">접수 즉시 처리 현황 공개 · 후원금 10만원까지 전액 세액공제</div>
+  </div>
+
+  <!-- 공약 -->
+  <div class="card">
+    <div class="sec-t"><h2>공약 진행도</h2><a href="#">전체 12건</a></div>
+    <div class="sum">
+      <div class="n num"><b>67%</b><span>2026년 6월 30일 기준 · 매월 갱신</span></div>
+      <div class="seg">
+        <i style="flex:5;background:var(--green)"></i>
+        <i style="flex:6;background:var(--red)"></i>
+        <i style="flex:1;background:#dddbd6"></i>
+      </div>
+      <div class="legend num">
+        <span><b style="background:var(--green)"></b>완료 5</span>
+        <span><b style="background:var(--red)"></b>추진 중 6</span>
+        <span><b style="background:#dddbd6"></b>준비 1</span>
+      </div>
+    </div>
+    <div style="margin-top:6px;">
+      <div class="row">
+        <div class="t"><h3>대곡역 환승주차장 확충</h3><span class="v ok">완료</span></div>
+        <div class="bar ok"><i style="width:100%"></i></div>
+        <div class="m num">512면 증설 · 2026년 3월 개장</div>
+      </div>
+      <div class="row">
+        <div class="t"><h3>초등 통학로 스마트 횡단보도</h3><span class="v on num">72%</span></div>
+        <div class="bar"><i style="width:72%"></i></div>
+        <div class="m num">관내 14곳 중 10곳 설치</div>
+      </div>
+      <div class="row">
+        <div class="t"><h3>청년 창업지원센터 유치</h3><span class="v on num">45%</span></div>
+        <div class="bar"><i style="width:45%"></i></div>
+        <div class="m">부지 확정 · 예산 심의 단계</div>
+      </div>
+      <div class="row">
+        <div class="t"><h3>공공 심야약국 지정 확대</h3><span class="v rd">준비</span></div>
+        <div class="bar"><i style="width:8%;background:#cfccc6"></i></div>
+        <div class="m">조례 개정안 발의 준비 중</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 민원 -->
+  <div class="card">
+    <div class="sec-t"><h2>해결 중인 민원</h2><a href="#">전체 보기</a></div>
+    <div style="margin-top:8px;">
+      <div class="row">
+        <div class="t"><h3>화정동 이면도로 불법주정차 단속</h3><span class="v on">진행 중</span></div>
+        <div class="m num">128명 동참 · 시청 교통과 협의 중 · 12일째</div>
+      </div>
+      <div class="row">
+        <div class="t"><h3>행신동 공원 야간 조명 확충</h3><span class="v on">진행 중</span></div>
+        <div class="m num">86명 동참 · 예산 반영 요청 완료 · 8일째</div>
+      </div>
+      <div class="row">
+        <div class="t"><h3>마두역 승강기 고장 반복</h3><span class="v ok">해결</span></div>
+        <div class="m num">213명 동참 · 전면 교체 완료 · 6월 21일</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 후원 -->
+  <button class="srow" onclick="openDon()">
+    <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.5-1.5 3-3.2 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.8 0-3 .5-4.5 2C10.5 3.5 9.3 3 7.5 3A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4 3 5.5l7 7z"/></svg></span>
+    <span><b>김수진 후원회 후원하기</b><span class="num">1,284명 참여 · 10만원까지 전액 세액공제</span></span>
+    <span class="ar">›</span>
+  </button>
+
+  <!-- 활동 -->
+  <div class="card gal-card">
+    <div class="sec-t"><h2>활동</h2><a href="#">더 보기</a></div>
+    <div class="gal" id="gal">
+      <figure><div class="ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="9" cy="9" r="2"/><path d="m21 15-4.5-4.5L7 20"/></svg></div><figcaption>본회의 5분 발언<small>6월 26일</small></figcaption></figure>
+      <figure><div class="ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="9" cy="9" r="2"/><path d="m21 15-4.5-4.5L7 20"/></svg></div><figcaption>주민 간담회<small>6월 24일</small></figcaption></figure>
+      <figure><div class="ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="9" cy="9" r="2"/><path d="m21 15-4.5-4.5L7 20"/></svg></div><figcaption>통학로 현장 점검<small>6월 19일</small></figcaption></figure>
+      <figure><div class="ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="9" cy="9" r="2"/><path d="m21 15-4.5-4.5L7 20"/></svg></div><figcaption>정책 토론회<small>6월 12일</small></figcaption></figure>
+    </div>
+    <div class="gal-nav">
+      <button onclick="document.getElementById('gal').scrollBy({left:-155})" aria-label="이전">←</button>
+      <button onclick="document.getElementById('gal').scrollBy({left:155})" aria-label="다음">→</button>
+    </div>
+  </div>
+
+  <!-- 방명록 -->
+  <div class="card gb">
+    <div class="sec-t"><h2>방명록</h2><a href="#" class="num">1,024개</a></div>
+    <p class="q">공원 조명 건 진행 상황을 계속 올려주셔서 감사합니다. 이렇게 과정을 보여주는 의원은 처음이에요.</p>
+    <div class="au">
+      <span class="av">행</span>
+      <div><b>행신동 주민</b><span>2시간 전</span></div>
+    </div>
+    <div class="gb-in"><input placeholder="응원과 의견을 남겨주세요"/><button>남기기</button></div>
+  </div>
+
+  <!-- POLY 유도 -->
+  <a class="madewith" href="../landing/">
+    <span class="mw-logo">POLY</span>
+    <span class="mw-tx"><b>나만의 정치 프로필 만들기</b><span>공약·민원·후원까지, 링크 하나로</span></span>
+    <span class="mw-ar">→</span>
+  </a>
+
+  <div class="foot">김수진 의원실 · 고양특례시의회 · Made with POLY</div>
+</div>
+
+<div class="dim" id="dim" onclick="closeSheets()"></div>
+
+<!-- 후원 시트 -->
+<div class="vsheet" id="donsheet">
+  <div class="grab"></div>
+  <div class="vhead">
+    <span class="vic" style="background:var(--red-soft);"><svg viewBox="0 0 24 24" fill="none" stroke="#e8412e" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><path d="M19 14c1.5-1.5 3-3.2 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.8 0-3 .5-4.5 2C10.5 3.5 9.3 3 7.5 3A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4 3 5.5l7 7z"/></svg></span>
+    <div><b>김수진 후원회</b><span>선관위 등록 후원회 · 10만원까지 전액 세액공제</span></div>
+  </div>
+  <div class="dbtns">
+    <a class="dbtn site" href="https://give.kimsujin.kr" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"/><path d="M2.5 12h19M12 2.5c2.7 2.6 4 5.9 4 9.5s-1.3 6.9-4 9.5c-2.7-2.6-4-5.9-4-9.5s1.3-6.9 4-9.5z"/></svg>
+      후원회 사이트에서 후원하기
+    </a>
+    <a class="dbtn sms" href="sms:0310000000?body=%EA%B9%80%EC%88%98%EC%A7%84%20%ED%9B%84%EC%9B%90%ED%9A%8C%20%ED%9B%84%EC%9B%90%20%EA%B3%84%EC%A2%8C%20%EC%95%88%EB%82%B4%20%EB%B6%80%ED%83%81%EB%93%9C%EB%A6%BD%EB%8B%88%EB%8B%A4">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      문자로 후원 계좌 안내 받기
+    </a>
+  </div>
+  <p class="vnote">후원회 사이트에서 카드·계좌이체로 바로 후원하거나, 문자 버튼을 누르면 후원회 사무실로 계좌 안내 요청 문자가 자동 작성됩니다. 개인은 연간 500만원까지 후원할 수 있으며 법인·단체는 후원할 수 없습니다.</p>
+  <button class="vclose" onclick="closeSheets()">닫기</button>
+</div>
+<div class="vsheet" id="vsheet">
+  <div class="grab"></div>
+  <div class="vhead">
+    <span class="vic"><svg viewBox="0 0 24 24"><path d="M12 1.7 14.6 4l3.4-.4 1 3.3 3 1.6-1.3 3.2 1.3 3.2-3 1.6-1 3.3-3.4-.4-2.6 2.3-2.6-2.3-3.4.4-1-3.3-3-1.6L3.3 15 2 11.7l3-1.6 1-3.3 3.4.4z" fill="#21ba58"/><path d="m8.6 12.1 2.2 2.2 4.6-4.6" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+    <div><b>본인 인증 완료</b><span>의원 신분증으로 본인이 확인된 공식 프로필입니다</span></div>
+  </div>
+  <div class="vrows">
+    <div class="vrow"><span>인증 수단</span><b>의원 신분증 사진</b></div>
+    <div class="vrow"><span>확인일</span><b class="num">2026년 6월 12일</b></div>
+    <div class="vrow"><span>검수</span><b>POLY 운영팀</b></div>
+    <div class="vrow"><span>다음 갱신</span><b class="num">2027년 6월 (연 1회)</b></div>
+  </div>
+  <p class="vnote">인증마크는 의원 본인이 의원 신분증 사진을 업로드하고 POLY 운영팀이 대조 확인한 경우에만 부여됩니다. 신분 변동(임기 만료·사퇴 등) 확인 시 즉시 회수됩니다.</p>
+  <label class="vup" id="vup">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5"/><path d="M12 3v12"/></svg>
+    <span id="vupTx">의원이신가요? 신분증 다시 업로드 (의원 전용)</span>
+    <input type="file" accept="image/*" hidden onchange="upDone(this)">
+  </label>
+  <button class="vclose" onclick="closeVerify()">확인</button>
+</div>
+
+<script>
+function openVerify(){document.getElementById('dim').classList.add('on');document.getElementById('vsheet').classList.add('on');}
+function openDon(){document.getElementById('dim').classList.add('on');document.getElementById('donsheet').classList.add('on');}
+function closeSheets(){document.getElementById('dim').classList.remove('on');document.getElementById('vsheet').classList.remove('on');document.getElementById('donsheet').classList.remove('on');}
+function closeVerify(){closeSheets();}
+function upDone(inp){
+  if(!inp.files||!inp.files.length)return;
+  document.getElementById('vup').classList.add('done');
+  document.getElementById('vupTx').textContent='신분증 업로드 완료 · 검수 대기 중 (1영업일 이내)';
+}
+</script>
+</body>
+</html>

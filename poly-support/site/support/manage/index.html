@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>회계책임자 · 폴리 서포트</title>
+<meta name="description" content="후원회 회계책임자를 위한 모금 대시보드·후원자 명단·정치자금영수증 발급 관리">
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+:root{
+  /* 폴리 중립 보라(바이올렛) — 정당색(파랑·빨강) 회피 */
+  --brand:#7c3aed; --brand-dark:#6d28d9; --brand-2:#a586ee; --brand-bg:#f4f1fd; --brand-bg2:#ede7fb;
+  --ink:#17151f; --ink-2:#3a3547; --ink-3:#5b5568; --ink-4:#928ca0;
+  --hair:rgba(23,21,31,.08); --hair-2:rgba(23,21,31,.05);
+  --bg:#ffffff; --bg-2:#faf9fc; --bg-3:#f4f2f8;
+  --ok:#0ea36a; --ok-bg:#e7f7ef; --warn:#e8590c; --warn-bg:#fff2e8; --danger:#e03131; --danger-bg:#fdecec;
+  --shadow:0 1px 2px rgba(23,21,31,.04), 0 8px 24px rgba(23,21,31,.05);
+  --shadow-lg:0 12px 40px rgba(109,40,217,.10);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,system-ui,sans-serif;color:var(--ink);background:var(--bg-2);line-height:1.5;-webkit-font-smoothing:antialiased;letter-spacing:-.01em}
+button{font-family:inherit;cursor:pointer;border:none}
+.num{font-variant-numeric:tabular-nums;font-feature-settings:"tnum"}
+.wrap{max-width:1080px;margin:0 auto;padding:0 22px}
+
+/* header */
+header{background:rgba(255,255,255,.85);backdrop-filter:saturate(180%) blur(12px);border-bottom:1px solid var(--hair);position:sticky;top:0;z-index:20}
+.hbar{display:flex;align-items:center;justify-content:space-between;height:60px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:16px}
+.brand .dot{width:26px;height:26px;border-radius:8px;background:linear-gradient(135deg,var(--brand),var(--brand-dark));display:grid;place-items:center;color:#fff;font-size:13px;font-weight:800;box-shadow:0 3px 8px rgba(109,40,217,.35)}
+.brand small{font-weight:700;font-size:12px;color:var(--ink-4);letter-spacing:0}
+.huser{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink-3)}
+.huser .who{display:flex;align-items:center;gap:7px;background:var(--bg-3);padding:6px 10px 6px 8px;border-radius:20px;font-weight:600}
+.huser .who .av{width:20px;height:20px;border-radius:50%;background:var(--brand);color:#fff;display:grid;place-items:center;font-size:10px;font-weight:800}
+.huser button{background:transparent;color:var(--ink-4);font-size:13px;font-weight:600;padding:6px 8px;border-radius:8px}
+.huser button:hover{background:var(--bg-3);color:var(--ink-2)}
+
+/* login */
+.login{min-height:calc(100vh - 60px);display:grid;place-items:center;padding:40px 20px}
+.login-card{width:100%;max-width:388px;background:#fff;border:1px solid var(--hair);border-radius:20px;padding:34px 30px;box-shadow:var(--shadow-lg)}
+.login-card .lock{width:44px;height:44px;border-radius:13px;background:var(--brand-bg);display:grid;place-items:center;margin-bottom:16px}
+.login-card h1{font-size:20px;letter-spacing:-.03em}
+.login-card p.sub{margin-top:8px;color:var(--ink-3);font-size:13.5px;line-height:1.65}
+.field{margin-top:14px}
+.field label{display:block;font-size:12.5px;font-weight:700;color:var(--ink-3);margin-bottom:6px}
+.field input{width:100%;height:46px;border:1px solid var(--hair);border-radius:12px;padding:0 14px;font-size:15px;font-family:inherit;background:#fff;transition:border-color .15s}
+.field input:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-bg)}
+.btn{width:100%;height:48px;border-radius:13px;font-size:15px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px;transition:background .15s,transform .05s}
+.btn:active{transform:translateY(1px)}
+.btn-pri{background:var(--brand);color:#fff;margin-top:16px}
+.btn-pri:hover{background:var(--brand-dark)}
+.btn-kakao{background:#FEE500;color:#191600;margin-top:10px}
+.hr-or{display:flex;align-items:center;gap:10px;margin:18px 0 4px;color:var(--ink-4);font-size:12px}
+.hr-or::before,.hr-or::after{content:"";flex:1;height:1px;background:var(--hair)}
+.msg{margin-top:12px;font-size:13px;padding:10px 12px;border-radius:10px;display:none}
+.msg.err{display:block;background:var(--danger-bg);color:var(--danger)}
+.msg.ok{display:block;background:var(--ok-bg);color:var(--ok)}
+.switch{margin-top:16px;text-align:center;font-size:13px;color:var(--ink-4)}
+.switch a{color:var(--brand-dark);font-weight:700;text-decoration:none;cursor:pointer}
+.trust-row{display:flex;gap:14px;justify-content:center;margin-top:22px;flex-wrap:wrap}
+.trust-row span{display:flex;align-items:center;gap:5px;font-size:11.5px;color:var(--ink-4);font-weight:600}
+
+/* app */
+.app{display:none;padding:26px 0 72px}
+.app.on{display:block}
+.cbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:20px}
+.cbar .cav{width:44px;height:44px;border-radius:13px;background:linear-gradient(135deg,var(--brand-2),var(--brand-dark));color:#fff;display:grid;place-items:center;font-size:17px;font-weight:800;box-shadow:0 4px 12px rgba(109,40,217,.28)}
+.cbar h2{font-size:20px;letter-spacing:-.03em;line-height:1.2}
+.cbar .meta{font-size:12.5px;color:var(--ink-4);font-weight:600;margin-top:2px;display:flex;align-items:center;gap:6px}
+.cbar .meta .pos{color:var(--brand-dark);background:var(--brand-bg);padding:2px 8px;border-radius:6px;font-weight:700}
+.cpick{margin-left:auto}
+.cpick select{height:40px;border:1px solid var(--hair);border-radius:11px;padding:0 14px;font-size:14px;font-family:inherit;background:#fff;color:var(--ink-2);font-weight:600}
+
+/* tabs */
+.tabs{display:inline-flex;gap:3px;background:var(--bg-3);border-radius:13px;padding:4px;margin-bottom:22px}
+.tabs button{padding:9px 18px;border-radius:10px;font-size:14px;font-weight:700;color:var(--ink-4);background:transparent;transition:.15s}
+.tabs button.on{background:#fff;color:var(--brand-dark);box-shadow:0 1px 3px rgba(23,21,31,.1)}
+.pane{display:none;animation:fade .25s ease}.pane.on{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+/* kpi */
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:14px}
+@media(max-width:720px){.kpis{grid-template-columns:1fr}}
+.kpi{background:#fff;border:1px solid var(--hair);border-radius:16px;padding:18px 20px;box-shadow:var(--shadow)}
+.kpi .k{font-size:12.5px;font-weight:700;color:var(--ink-4);display:flex;align-items:center;gap:6px}
+.kpi .v{font-size:26px;font-weight:800;letter-spacing:-.035em;margin-top:10px;line-height:1}
+.kpi .v small{font-size:15px;font-weight:700;color:var(--ink-3);margin-left:1px}
+.kpi .s{font-size:12px;color:var(--ink-4);margin-top:8px;font-weight:500}
+.kpi .s b{color:var(--ok);font-weight:700}
+.kpi.hero{background:linear-gradient(135deg,var(--brand-dark),#5b21b6);border:none;color:#fff;box-shadow:var(--shadow-lg)}
+.kpi.hero .k{color:rgba(255,255,255,.75)}
+.kpi.hero .v small{color:rgba(255,255,255,.8)}
+.kpi.hero .s{color:rgba(255,255,255,.72)}
+
+/* grid panels */
+.grid2{display:grid;grid-template-columns:1.55fr 1fr;gap:14px;margin-bottom:14px}
+@media(max-width:820px){.grid2{grid-template-columns:1fr}}
+.panel{background:#fff;border:1px solid var(--hair);border-radius:16px;box-shadow:var(--shadow)}
+.panel-h{display:flex;align-items:center;gap:10px;padding:16px 20px;flex-wrap:wrap}
+.panel-h h3{font-size:14.5px;letter-spacing:-.02em}
+.panel-h .cnt{font-size:12px;color:var(--ink-4);font-weight:600}
+.panel-h .eyebrow{font-size:11px;font-weight:800;color:var(--brand-dark);background:var(--brand-bg);padding:3px 8px;border-radius:6px;letter-spacing:.02em}
+.panel-h .sp{margin-left:auto;display:flex;gap:8px;align-items:center}
+.panel-b{padding:4px 20px 20px}
+
+/* chart */
+.chart{width:100%;height:210px;display:block}
+.chart .gl{stroke:var(--hair-2);stroke-width:1}
+.chart .bar{fill:url(#barGrad);transition:.3s}
+.chart .bar.dim{fill:var(--bg-3)}
+.chart .lbl{fill:var(--ink-4);font-size:10.5px;font-weight:600}
+.chart .val{fill:var(--brand-dark);font-size:10px;font-weight:700}
+.chart-legend{display:flex;gap:16px;padding:0 20px 16px;font-size:12px;color:var(--ink-4)}
+.chart-legend b{color:var(--ink-2);font-weight:700}
+
+/* ring / donut */
+.ring-wrap{display:flex;flex-direction:column;align-items:center;padding:8px 20px 22px;text-align:center}
+.ring{position:relative;width:150px;height:150px}
+.ring svg{transform:rotate(-90deg)}
+.ring .ctr{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.ring .ctr .p{font-size:30px;font-weight:800;letter-spacing:-.04em;line-height:1}
+.ring .ctr .t{font-size:11.5px;color:var(--ink-4);font-weight:700;margin-top:3px}
+.ring-sub{margin-top:14px;font-size:13px;color:var(--ink-3);line-height:1.6}
+.ring-sub b{color:var(--ink);font-weight:800}
+.donut-row{display:flex;align-items:center;gap:20px;padding:8px 20px 22px}
+.donut{position:relative;width:118px;height:118px;flex:none}
+.donut svg{transform:rotate(-90deg)}
+.donut .ctr{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.donut .ctr .p{font-size:24px;font-weight:800;letter-spacing:-.03em}
+.donut .ctr .t{font-size:10.5px;color:var(--ink-4);font-weight:700}
+.legend{flex:1;display:flex;flex-direction:column;gap:10px}
+.legend .li{display:flex;align-items:center;gap:9px;font-size:13px}
+.legend .li .sw{width:10px;height:10px;border-radius:3px;flex:none}
+.legend .li .nm{color:var(--ink-3);font-weight:600}
+.legend .li .ct{margin-left:auto;font-weight:800;color:var(--ink)}
+
+/* alert */
+.alert{display:flex;gap:11px;align-items:flex-start;padding:14px 16px;border-radius:13px;font-size:13.5px;line-height:1.5;margin-bottom:14px}
+.alert .ico{width:22px;height:22px;flex:none;display:grid;place-items:center}
+.alert.warn{background:var(--warn-bg);color:#b34700;border:1px solid rgba(232,89,12,.16)}
+.alert.ok{background:var(--ok-bg);color:#0a7a50;border:1px solid rgba(14,163,106,.16)}
+.alert b{font-weight:800}
+
+/* table */
+.tbl-scroll{overflow-x:auto;border-top:1px solid var(--hair)}
+table{width:100%;border-collapse:collapse;font-size:13.5px;min-width:660px}
+th,td{text-align:left;padding:13px 20px;border-bottom:1px solid var(--hair-2);white-space:nowrap}
+th{font-size:11.5px;font-weight:700;color:var(--ink-4);background:var(--bg-2);position:sticky;top:0}
+td.r{text-align:right;font-weight:700}
+tbody tr{transition:background .12s}
+tbody tr:hover{background:var(--bg-2)}
+tr:last-child td{border-bottom:none}
+.who-cell{display:flex;align-items:center;gap:9px}
+.who-cell .av{width:28px;height:28px;border-radius:8px;background:var(--brand-bg);color:var(--brand-dark);display:grid;place-items:center;font-size:12px;font-weight:800;flex:none}
+.who-cell .av.anon{background:var(--bg-3);color:var(--ink-4)}
+.tag{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;padding:3px 9px;border-radius:7px}
+.tag.ok{background:var(--ok-bg);color:var(--ok)}
+.tag.wait{background:var(--warn-bg);color:var(--warn)}
+.tag.gray{background:var(--bg-3);color:var(--ink-4)}
+.tag.pub{background:var(--brand-bg);color:var(--brand-dark)}
+.dday{font-weight:800;font-size:13px}
+.dday.hot{color:var(--danger)}
+.dday.soft{color:var(--ink-3)}
+.search{height:38px;border:1px solid var(--hair);border-radius:10px;padding:0 12px;font-size:13.5px;font-family:inherit;width:210px;transition:.15s}
+.search:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-bg)}
+.mini{height:38px;border-radius:10px;padding:0 14px;font-size:13px;font-weight:700;background:#fff;color:var(--ink-2);border:1px solid var(--hair);display:inline-flex;align-items:center;gap:6px;transition:.15s}
+.mini:hover{background:var(--bg-2)}
+.mini.pri{background:var(--brand);color:#fff;border-color:var(--brand)}
+.mini.pri:hover{background:var(--brand-dark)}
+.mini.sm{height:32px;padding:0 12px;font-size:12.5px}
+.empty{padding:52px 24px;text-align:center;color:var(--ink-4);font-size:14px;line-height:1.6}
+.empty .big{font-size:15.5px;font-weight:700;color:var(--ink-3);margin-bottom:6px}
+.foot-note{font-size:12.5px;color:var(--ink-4);margin-top:14px;line-height:1.65;display:flex;gap:8px;align-items:flex-start}
+.foot-note svg{flex:none;margin-top:1px}
+.demo-flag{display:inline-block;margin-left:8px;font-size:10.5px;font-weight:800;color:var(--warn);background:var(--warn-bg);padding:3px 9px;border-radius:7px}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap hbar">
+    <div class="brand"><span class="dot">P</span>폴리 서포트<small>회계책임자</small><span id="demoFlag" class="demo-flag" style="display:none">데모</span></div>
+    <div class="huser" id="huser" style="display:none">
+      <span class="who"><span class="av" id="uAv">회</span><span id="uEmail"></span></span>
+      <button id="btnLogout">로그아웃</button>
+    </div>
+  </div>
+</header>
+
+<!-- 로그인 -->
+<div class="login" id="loginView">
+  <div class="login-card">
+    <div class="lock">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="11" rx="2.5"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+    </div>
+    <h1>회계책임자 로그인</h1>
+    <p class="sub">후원회에 배정된 NEOIX 통합계정으로 로그인하세요. 담당 후원회의 모금 현황·후원자 명단·정치자금영수증만 안전하게 열람됩니다.</p>
+    <button class="btn btn-kakao" id="btnKakao">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="#191600"><path d="M12 3C6.48 3 2 6.58 2 11c0 2.86 1.9 5.36 4.76 6.76-.2.72-.73 2.63-.84 3.04-.13.5.18.5.39.36.16-.1 2.6-1.77 3.66-2.49.66.1 1.34.15 2.03.15 5.52 0 10-3.58 10-8S17.52 3 12 3z"/></svg>
+      카카오로 시작하기
+    </button>
+    <div class="hr-or">또는 이메일</div>
+    <div class="field"><label>이메일</label><input id="email" type="email" placeholder="name@example.com" autocomplete="username"></div>
+    <div class="field"><label>비밀번호</label><input id="pw" type="password" placeholder="••••••••" autocomplete="current-password"></div>
+    <button class="btn btn-pri" id="btnEmail">로그인</button>
+    <div class="msg" id="loginMsg"></div>
+    <div class="switch">계정이 없으신가요? <a id="goSignup">회원가입</a> · <a href="?demo=1">데모 둘러보기</a></div>
+    <div class="trust-row">
+      <span>🔒 후원회별 접근 격리</span>
+      <span>📋 선관위 보고 양식</span>
+      <span>🧾 30일 교부 관리</span>
+    </div>
+  </div>
+</div>
+
+<!-- 앱 -->
+<main class="app" id="appView">
+  <div class="wrap">
+    <div class="cbar">
+      <div class="cav" id="cAv">홍</div>
+      <div>
+        <h2 id="cName">—</h2>
+        <div class="meta"><span class="pos" id="cPos"></span><span id="cDist"></span></div>
+      </div>
+      <div class="cpick" id="cPickWrap" style="display:none"><select id="cPick"></select></div>
+    </div>
+
+    <div class="tabs">
+      <button data-tab="dash" class="on">대시보드</button>
+      <button data-tab="roster">후원자 명단</button>
+      <button data-tab="receipt">영수증 발급</button>
+    </div>
+
+    <!-- 대시보드 -->
+    <section class="pane on" id="pane-dash">
+      <div class="kpis">
+        <div class="kpi hero">
+          <div class="k">올해 누적 모금액</div>
+          <div class="v num" id="mYear">—</div>
+          <div class="s" id="mYearSub"></div>
+        </div>
+        <div class="kpi">
+          <div class="k">이번 달 모금</div>
+          <div class="v num" id="mMonth">—</div>
+          <div class="s" id="mMonthSub"></div>
+        </div>
+        <div class="kpi">
+          <div class="k">후원 건수 · 후원자</div>
+          <div class="v num" id="mCnt">—</div>
+          <div class="s" id="mCntSub"></div>
+        </div>
+      </div>
+
+      <div class="grid2">
+        <div class="panel">
+          <div class="panel-h"><span class="eyebrow">추이</span><h3>월별 모금 현황</h3><span class="cnt" id="trendYear"></span></div>
+          <div class="panel-b" style="padding-bottom:8px"><svg class="chart" id="trendChart" viewBox="0 0 720 210" preserveAspectRatio="none"></svg></div>
+          <div class="chart-legend"><span>연 최고 <b id="trendMax">—</b></span><span>월 평균 <b id="trendAvg">—</b></span></div>
+        </div>
+        <div class="panel">
+          <div class="panel-h"><span class="eyebrow">한도</span><h3>연간 모금 한도</h3></div>
+          <div class="ring-wrap">
+            <div class="ring">
+              <svg width="150" height="150" viewBox="0 0 150 150">
+                <circle cx="75" cy="75" r="62" fill="none" stroke="var(--bg-3)" stroke-width="15"/>
+                <circle id="ringArc" cx="75" cy="75" r="62" fill="none" stroke="var(--brand)" stroke-width="15" stroke-linecap="round" stroke-dasharray="389.6" stroke-dashoffset="389.6"/>
+              </svg>
+              <div class="ctr"><div class="p num" id="ringPct">0%</div><div class="t">소진</div></div>
+            </div>
+            <div class="ring-sub">남은 한도 <b class="num" id="ringRemain">—</b><br><span id="ringLimit" style="color:var(--ink-4);font-size:12px"></span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid2">
+        <div class="panel">
+          <div class="panel-h"><span class="eyebrow">영수증</span><h3>정치자금영수증 교부 현황</h3></div>
+          <div class="donut-row">
+            <div class="donut">
+              <svg width="118" height="118" viewBox="0 0 118 118">
+                <circle cx="59" cy="59" r="48" fill="none" stroke="var(--bg-3)" stroke-width="13"/>
+                <circle id="dnArc" cx="59" cy="59" r="48" fill="none" stroke="var(--ok)" stroke-width="13" stroke-linecap="round" stroke-dasharray="301.6" stroke-dashoffset="301.6"/>
+              </svg>
+              <div class="ctr"><div class="p num" id="dnPct">0%</div><div class="t">교부완료</div></div>
+            </div>
+            <div class="legend">
+              <div class="li"><span class="sw" style="background:var(--ok)"></span><span class="nm">발급 완료</span><span class="ct num" id="lgDone">0</span></div>
+              <div class="li"><span class="sw" style="background:var(--warn)"></span><span class="nm">발급 대기</span><span class="ct num" id="lgWait">0</span></div>
+              <div class="li"><span class="sw" style="background:var(--danger)"></span><span class="nm">기한 임박(D-7)</span><span class="ct num" id="lgHot">0</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-h"><span class="eyebrow">알림</span><h3>지금 챙길 일</h3></div>
+          <div class="panel-b" id="todoBox"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 명단 -->
+    <section class="pane" id="pane-roster">
+      <div class="panel">
+        <div class="panel-h">
+          <h3>후원자 명단</h3><span class="cnt" id="rCnt"></span>
+          <div class="sp">
+            <input class="search" id="rSearch" placeholder="이름·연락처 검색">
+            <button class="mini pri" id="rCsv">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
+              엑셀(CSV) 내려받기
+            </button>
+          </div>
+        </div>
+        <div class="tbl-scroll">
+          <table id="rTable">
+            <thead><tr>
+              <th>후원일</th><th>후원자</th><th>연락처</th><th class="r">금액</th><th>연 누적</th>
+              <th>실명확인</th><th>공개대상</th><th>영수증</th>
+            </tr></thead>
+            <tbody id="rBody"></tbody>
+          </table>
+        </div>
+        <div class="empty" id="rEmpty" style="display:none"><div class="big">아직 후원 내역이 없어요</div>후원이 들어오면 명단이 쌓이고, 연 300만 원 초과 후원자는 자동으로 <b>공개대상</b>으로 표시됩니다.</div>
+      </div>
+      <div class="foot-note">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#928ca0" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg>
+        내려받은 CSV는 선관위 회계보고 <b>수입부·기부자 명단</b> 양식으로 그대로 정리됩니다. 연 300만 원 초과분은 공개대상 열로 구분돼요.
+      </div>
+    </section>
+
+    <!-- 영수증 -->
+    <section class="pane" id="pane-receipt">
+      <div class="panel">
+        <div class="panel-h">
+          <h3>발급 대기</h3><span class="cnt" id="rcCnt"></span>
+          <div class="sp"><button class="mini pri" id="rcAll">전체 일괄 발급</button></div>
+        </div>
+        <div class="tbl-scroll">
+          <table id="rcTable">
+            <thead><tr>
+              <th>후원일</th><th>후원자</th><th class="r">금액</th><th>교부기한</th><th>상태</th><th></th>
+            </tr></thead>
+            <tbody id="rcBody"></tbody>
+          </table>
+        </div>
+        <div class="empty" id="rcEmpty" style="display:none"><div class="big">발급 대기 중인 영수증이 없어요</div>정치자금영수증은 기부일부터 <b>30일</b> 안에 교부해야 해요. 대상이 생기면 마감 임박순으로 정렬됩니다.</div>
+      </div>
+      <div class="foot-note">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#928ca0" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg>
+        영수증 PDF 생성·발급번호 채번은 결제 백엔드(Edge Function) 연동 후 자동화됩니다. 지금은 교부 처리(교부일 기록)까지 동작해요.
+      </div>
+    </section>
+  </div>
+</main>
+
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+const SUPABASE_URL='https://nroddjekdjwnwguwkudl.supabase.co';
+const SUPABASE_ANON='sb_publishable_Uygr7NmVn1wmqopNrb4FRw_CRWw7Xeg';
+const sb=createClient(SUPABASE_URL,SUPABASE_ANON);
+
+const DEMO=new URLSearchParams(location.search).get('demo')==='1';
+const $=id=>document.getElementById(id);
+const won=n=>(n||0).toLocaleString('ko-KR')+'원';
+const wonC=n=>(n||0).toLocaleString('ko-KR');
+const comp=n=>{ n=n||0; if(n>=1e8)return (n/1e8).toFixed(n%1e8?1:0)+'억'; if(n>=1e4)return Math.round(n/1e4)+'만'; return wonC(n); };
+const fmtDate=s=>{const d=new Date(s);return `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`;};
+const PUBLIC_THRESHOLD=3000000;
+const MONTHS=['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
+
+let committees=[], current=null, rows=[];
+
+/* ── 인증 ── */
+async function boot(){
+  if(DEMO){$('demoFlag').style.display='inline-block';return enterDemo();}
+  const {data}=await sb.auth.getSession();
+  renderAuth(data.session);
+  sb.auth.onAuthStateChange((_e,s)=>renderAuth(s));
+}
+function renderAuth(session){
+  if(session){
+    $('loginView').style.display='none';$('appView').classList.add('on');$('huser').style.display='flex';
+    const nm=session.user.email||session.user.user_metadata?.name||'로그인됨';
+    $('uEmail').textContent=nm; $('uAv').textContent=(nm[0]||'회').toUpperCase();
+    loadCommittees(session.user.id);
+  }else{
+    $('loginView').style.display='grid';$('appView').classList.remove('on');$('huser').style.display='none';
+  }
+}
+$('btnKakao').onclick=()=>sb.auth.signInWithOAuth({provider:'kakao',options:{redirectTo:location.href}});
+$('btnEmail').onclick=async()=>{const email=$('email').value.trim(),pw=$('pw').value;if(!email||!pw)return showMsg('이메일과 비밀번호를 입력해 주세요','err');const {error}=await sb.auth.signInWithPassword({email,password:pw});if(error)showMsg('로그인 실패: '+error.message,'err');};
+$('goSignup').onclick=async()=>{const email=$('email').value.trim(),pw=$('pw').value;if(!email||!pw)return showMsg('이메일과 비밀번호를 입력한 뒤 회원가입을 눌러 주세요','err');const {error}=await sb.auth.signUp({email,password:pw});if(error)showMsg('가입 실패: '+error.message,'err');else showMsg('가입 확인 메일을 보냈어요. 인증 후 로그인하세요.','ok');};
+$('btnLogout').onclick=()=>sb.auth.signOut({scope:'local'});
+function showMsg(t,cls){const m=$('loginMsg');m.textContent=t;m.className='msg '+cls;}
+
+/* ── 후원회 로드 ── */
+async function loadCommittees(uid){
+  const {data:mgr,error}=await sb.from('committee_managers').select('committee_id, committees(id, politician, position, district, annual_limit)').eq('user_id',uid);
+  if(error||!mgr||!mgr.length){committees=[];return noCommittee();}
+  committees=mgr.map(m=>m.committees).filter(Boolean);
+  buildPicker(); selectCommittee(committees[0]);
+}
+function noCommittee(){
+  $('cName').textContent='담당 후원회가 없습니다';$('cAv').textContent='—';
+  document.querySelector('.tabs').style.display='none';
+  $('pane-dash').innerHTML='<div class="panel"><div class="empty"><div class="big">아직 담당 후원회가 연결되지 않았어요</div>후원회 개설이 승인되고 회계책임자로 배정되면 이 계정으로 관리가 열립니다.<br>문의: support@polyx.kr</div></div>';
+}
+function buildPicker(){
+  if(committees.length<=1){$('cPickWrap').style.display='none';return;}
+  $('cPickWrap').style.display='block';
+  const sel=$('cPick');sel.innerHTML=committees.map((c,i)=>`<option value="${i}">${c.politician} · ${c.district}</option>`).join('');
+  sel.onchange=()=>selectCommittee(committees[sel.value]);
+}
+async function selectCommittee(c){
+  current=c;
+  $('cAv').textContent=c.politician[0];
+  $('cName').textContent=`${c.politician} 후원회`;
+  $('cPos').textContent=c.position; $('cDist').textContent=c.district;
+  const {data}=await sb.from('donations').select('id, amount, created_at, is_anonymous, pay_status, receipt_id, donors(name, phone, verified)').eq('committee_id',c.id).eq('pay_status','paid').order('created_at',{ascending:false});
+  rows=(data||[]).map(mapRow); renderAll();
+}
+const mapRow=d=>({id:d.id,amount:d.amount,date:d.created_at,name:d.is_anonymous?'익명 후원자':(d.donors?.name||'—'),phone:d.is_anonymous?'—':(d.donors?.phone||'—'),verified:!!d.donors?.verified,receipted:!!d.receipt_id,anon:d.is_anonymous});
+
+/* ── 데모 ── */
+function enterDemo(){
+  $('loginView').style.display='none';$('appView').classList.add('on');
+  committees=[{id:'demo',politician:'홍길동',position:'국회의원',district:'○○시 ○○구',annual_limit:150000000}];
+  current=committees[0];
+  $('cAv').textContent='홍';$('cName').textContent='홍길동 후원회';$('cPos').textContent='국회의원';$('cDist').textContent='○○시 ○○구';
+  const names=['김후원','이지원','박정성','최마음','정성실','한결같','오래도','서포터','문금미','강한후','조용한','윤슬기','배려심','신뢰도','공정한'];
+  const now=new Date(); rows=[];
+  for(let i=0;i<47;i++){
+    const amt=[30000,50000,50000,100000,100000,100000,200000,300000,500000,1000000,3200000][i%11];
+    const mAgo=Math.floor(i/5); const dt=new Date(now.getFullYear(),now.getMonth()-mAgo,Math.max(1,28-(i%26)));
+    if(dt.getFullYear()!==now.getFullYear())continue;
+    rows.push({id:'d'+i,amount:amt,date:dt.toISOString(),name:i%11===0?'익명 후원자':names[i%names.length],phone:i%11===0?'—':'010-****-'+String(1000+i*7).slice(-4),verified:i%11!==0&&i%8!==0,receipted:i%5!==0&&mAgo>0,anon:i%11===0});
+  }
+  renderAll();
+}
+
+/* ── 렌더 ── */
+const yearOf=s=>new Date(s).getFullYear();
+function renderAll(){renderDash();renderRoster();renderReceipt();}
+
+function renderDash(){
+  const Y=new Date().getFullYear(),M=new Date().getMonth();
+  const yr=rows.filter(r=>yearOf(r.date)===Y);
+  const yearSum=yr.reduce((a,r)=>a+r.amount,0);
+  const monthSum=yr.filter(r=>new Date(r.date).getMonth()===M).reduce((a,r)=>a+r.amount,0);
+  const lastMonth=yr.filter(r=>new Date(r.date).getMonth()===M-1).reduce((a,r)=>a+r.amount,0);
+  const donors=new Set(yr.filter(r=>!r.anon).map(r=>r.name)).size;
+  const limit=current?.annual_limit||150000000;
+  const pct=Math.min(100,Math.round(yearSum/limit*100));
+
+  $('mYear').innerHTML=wonC(yearSum)+'<small>원</small>';
+  $('mYearSub').textContent=`한도 ${comp(limit)}원 대비 ${pct}% 모금`;
+  $('mMonth').innerHTML=wonC(monthSum)+'<small>원</small>';
+  const diff=monthSum-lastMonth;
+  $('mMonthSub').innerHTML=lastMonth?`전월 대비 <b style="color:${diff>=0?'var(--ok)':'var(--danger)'}">${diff>=0?'▲':'▼'} ${comp(Math.abs(diff))}원</b>`:`${M+1}월 모금액`;
+  $('mCnt').innerHTML=yr.length+'<small>건</small>';
+  $('mCntSub').textContent=`후원자 ${donors}명 · 익명 ${yr.filter(r=>r.anon).length}건`;
+
+  // 월별 차트
+  const byMonth=Array(12).fill(0); yr.forEach(r=>byMonth[new Date(r.date).getMonth()]+=r.amount);
+  const max=Math.max(...byMonth,1);
+  $('trendYear').textContent=`${Y}년`;
+  $('trendMax').textContent=comp(max)+'원';
+  $('trendAvg').textContent=comp(Math.round(yearSum/(M+1)))+'원';
+  drawTrend(byMonth,max,M);
+
+  // 한도 링
+  const C=2*Math.PI*62;
+  const arc=$('ringArc'); arc.style.strokeDasharray=C; arc.style.strokeDashoffset=C*(1-pct/100);
+  arc.style.stroke=pct>=90?'var(--danger)':pct>=75?'var(--warn)':'var(--brand)';
+  arc.style.transition='stroke-dashoffset .8s cubic-bezier(.4,0,.2,1)';
+  $('ringPct').textContent=pct+'%'; $('ringPct').style.color=pct>=90?'var(--danger)':'var(--ink)';
+  $('ringRemain').textContent=won(Math.max(0,limit-yearSum));
+  $('ringLimit').textContent=`연 한도 ${wonC(limit)}원`;
+
+  // 영수증 도넛
+  const needsReceipt=yr.filter(r=>!(r.anon&&r.amount<=100000));
+  const done=needsReceipt.filter(r=>r.receipted).length;
+  const wait=needsReceipt.length-done;
+  const hot=needsReceipt.filter(r=>!r.receipted&&daysLeft(r)<=7).length;
+  const dpct=needsReceipt.length?Math.round(done/needsReceipt.length*100):100;
+  const DC=2*Math.PI*48;
+  const dn=$('dnArc'); dn.style.strokeDasharray=DC; dn.style.strokeDashoffset=DC*(1-dpct/100);
+  dn.style.transition='stroke-dashoffset .8s cubic-bezier(.4,0,.2,1)';
+  $('dnPct').textContent=dpct+'%';
+  $('lgDone').textContent=done; $('lgWait').textContent=wait; $('lgHot').textContent=hot;
+
+  // 할 일
+  const todos=[];
+  if(hot) todos.push({t:'warn',ic:'⏰',h:`영수증 ${hot}건 교부기한 임박`,s:'기부일+30일까지 7일 이내예요. 영수증 발급 탭에서 처리하세요.'});
+  const unverif=yr.filter(r=>!r.anon&&!r.verified).length;
+  if(unverif) todos.push({t:'warn',ic:'🪪',h:`실명 미확인 ${unverif}건`,s:'실명확인이 안 된 후원은 회계보고 전 확인이 필요해요.'});
+  if(pct>=90) todos.push({t:'warn',ic:'📊',h:'연 한도 90% 초과',s:`남은 한도 ${won(Math.max(0,limit-yearSum))}. 초과 모금은 자동 차단됩니다.`});
+  if(!todos.length) todos.push({t:'ok',ic:'✅',h:'모두 정상이에요',s:'교부 기한·실명확인·한도 모두 문제 없습니다. 회계보고 준비가 잘 돼 있어요.'});
+  $('todoBox').innerHTML=todos.map(x=>`<div class="alert ${x.t}"><span class="ico">${x.ic}</span><div><b>${x.h}</b><br>${x.s}</div></div>`).join('');
+}
+
+function drawTrend(data,max,curM){
+  const W=720,H=210,padB=26,padT=20,n=12,gap=14;
+  const bw=(W-gap*(n-1))/n;
+  let svg=`<defs><linearGradient id="barGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8b5cf6"/><stop offset="1" stop-color="#7c3aed"/></linearGradient></defs>`;
+  // 가로 그리드
+  for(let g=0;g<=3;g++){const y=padT+(H-padT-padB)*g/3;svg+=`<line class="gl" x1="0" y1="${y}" x2="${W}" y2="${y}"/>`;}
+  data.forEach((v,i)=>{
+    const h=Math.max(2,(v/max)*(H-padT-padB));
+    const x=i*(bw+gap),y=H-padB-h;
+    const isC=i===curM;
+    svg+=`<rect class="bar ${v?'':'dim'}" x="${x}" y="${y}" width="${bw}" height="${h}" rx="5"${isC?' style="fill:var(--brand-dark)"':''}><title>${MONTHS[i]} ${won(v)}</title></rect>`;
+    if(v&&h>28)svg+=`<text class="val" x="${x+bw/2}" y="${y-6}" text-anchor="middle">${comp(v)}</text>`;
+    svg+=`<text class="lbl" x="${x+bw/2}" y="${H-8}" text-anchor="middle"${isC?' style="fill:var(--brand-dark);font-weight:800"':''}>${i+1}</text>`;
+  });
+  $('trendChart').innerHTML=svg;
+}
+
+function annualByName(){const Y=new Date().getFullYear(),m={};rows.filter(r=>!r.anon&&yearOf(r.date)===Y).forEach(r=>{m[r.name]=(m[r.name]||0)+r.amount;});return m;}
+function renderRoster(){
+  const q=($('rSearch').value||'').trim(),ann=annualByName();
+  const list=rows.filter(r=>!q||r.name.includes(q)||r.phone.includes(q));
+  $('rCnt').textContent=`총 ${rows.length}건 · ${list.length} 표시`;
+  $('rEmpty').style.display=rows.length?'none':'block';
+  $('rTable').style.display=rows.length?'table':'none';
+  $('rBody').innerHTML=list.map(r=>{
+    const a=r.anon?0:(ann[r.name]||0),pub=!r.anon&&a>PUBLIC_THRESHOLD;
+    return `<tr>
+      <td class="num">${fmtDate(r.date)}</td>
+      <td><div class="who-cell"><span class="av ${r.anon?'anon':''}">${r.anon?'?':r.name[0]}</span>${r.name}</div></td>
+      <td class="num">${r.phone}</td>
+      <td class="r num">${won(r.amount)}</td>
+      <td class="num" style="color:var(--ink-3)">${r.anon?'—':won(a)}</td>
+      <td>${r.anon?'<span class="tag gray">해당없음</span>':(r.verified?'<span class="tag ok">확인</span>':'<span class="tag wait">미확인</span>')}</td>
+      <td>${pub?'<span class="tag pub">공개대상</span>':'<span class="tag gray">—</span>'}</td>
+      <td>${r.receipted?'<span class="tag ok">발급완료</span>':'<span class="tag wait">대기</span>'}</td>
+    </tr>`;
+  }).join('');
+}
+$('rSearch').oninput=renderRoster;
+$('rCsv').onclick=()=>{
+  const ann=annualByName();
+  const head=['후원일','후원자','연락처','금액','연누적','실명확인','공개대상','영수증'];
+  const lines=rows.map(r=>{const a=r.anon?0:(ann[r.name]||0);return [fmtDate(r.date),r.name,r.phone,r.amount,a,r.anon?'해당없음':(r.verified?'확인':'미확인'),(!r.anon&&a>PUBLIC_THRESHOLD)?'공개대상':'',r.receipted?'발급완료':'대기'].join(',');});
+  const csv='﻿'+[head.join(','),...lines].join('\n');
+  const url=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
+  const a=document.createElement('a');a.href=url;a.download=`후원자명단_${current?.politician||''}_${new Date().getFullYear()}.csv`;a.click();URL.revokeObjectURL(url);
+};
+
+const pending=()=>rows.filter(r=>!r.receipted&&!(r.anon&&r.amount<=100000));
+const daysLeft=r=>{const d=new Date(r.date);d.setDate(d.getDate()+30);return Math.ceil((d-new Date())/86400000);};
+function renderReceipt(){
+  const list=pending().slice().sort((a,b)=>daysLeft(a)-daysLeft(b));
+  $('rcCnt').textContent=`${list.length}건`;
+  $('rcEmpty').style.display=list.length?'none':'block';
+  $('rcTable').style.display=list.length?'table':'none';
+  $('rcBody').innerHTML=list.map(r=>{
+    const dl=daysLeft(r),hot=dl<=7;
+    return `<tr>
+      <td class="num">${fmtDate(r.date)}</td>
+      <td><div class="who-cell"><span class="av ${r.anon?'anon':''}">${r.anon?'?':r.name[0]}</span>${r.name}</div></td>
+      <td class="r num">${won(r.amount)}</td>
+      <td><span class="dday ${dl<0?'hot':hot?'hot':'soft'}">${dl<0?'기한초과':'D-'+dl}</span></td>
+      <td><span class="tag wait">미교부</span></td>
+      <td class="r"><button class="mini pri sm" data-issue="${r.id}">발급</button></td>
+    </tr>`;
+  }).join('');
+  $('rcBody').querySelectorAll('[data-issue]').forEach(b=>b.onclick=()=>issue(b.dataset.issue));
+}
+async function issue(id){const r=rows.find(x=>x.id===id);if(!r)return;/* TODO(Phase2/4): Edge Function 'issue-receipt' 로 PDF·채번 */ r.receipted=true;renderAll();}
+$('rcAll').onclick=()=>{pending().forEach(r=>r.receipted=true);renderAll();};
+
+document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('.tabs button').forEach(x=>x.classList.remove('on'));
+  document.querySelectorAll('.pane').forEach(p=>p.classList.remove('on'));
+  b.classList.add('on');$('pane-'+b.dataset.tab).classList.add('on');
+});
+boot();
+</script>
+</body>
+</html>

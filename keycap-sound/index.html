@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="theme-color" content="#eaf6f2" />
+<title>딸칵 · Keycap</title>
+<style>
+  :root {
+    --txt: #3a4654;
+    --dim: #8aa0a8;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; -webkit-user-select: none; user-select: none; }
+  html, body {
+    margin: 0; height: 100%; overflow: hidden;
+    background: radial-gradient(130% 90% at 50% 18%, #f3fbf8 0%, #e3f1ee 55%, #d4e8e6 100%);
+    color: var(--txt);
+    font-family: -apple-system, BlinkMacSystemFont, "Pretendard", system-ui, sans-serif;
+    touch-action: manipulation;
+  }
+  .app {
+    height: 100%;
+    display: flex; flex-direction: column; align-items: center;
+    padding: calc(env(safe-area-inset-top) + 24px) 20px calc(env(safe-area-inset-bottom) + 24px);
+  }
+
+  .count { text-align: center; }
+  .count .n { font-size: 38px; font-weight: 800; letter-spacing: -1px; font-variant-numeric: tabular-nums; color: #44535f; }
+  .count .l { font-size: 13px; color: var(--dim); margin-top: 2px; }
+
+  .stage {
+    flex: 1; width: 100%; position: relative;
+    display: flex; align-items: center; justify-content: center;
+    perspective: 800px;
+  }
+  /* confetti layer */
+  .confetti { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
+  .confetti i { position: absolute; display: block; opacity: .9; }
+
+  .cap {
+    --press: 0;
+    position: relative; z-index: 2;
+    width: 230px; height: 234px;
+    cursor: pointer;
+    transform: translateY(calc(var(--press) * 16px));
+    transition: transform .05s ease-out;
+  }
+  /* mint base / housing */
+  .base {
+    position: absolute; left: 50%; bottom: -4px; transform: translateX(-50%);
+    width: 234px; height: 92px; border-radius: 30px;
+    background: linear-gradient(180deg, #bfe9d8 0%, #9bd7c2 60%, #84c9b3 100%);
+    box-shadow: 0 26px 44px rgba(70,140,120,.4), inset 0 -8px 0 rgba(0,0,0,.08), inset 0 3px 0 rgba(255,255,255,.55);
+  }
+  .base::after {
+    content: "NEOIX"; position: absolute; left: 18px; bottom: 9px;
+    font-size: 9px; font-weight: 800; letter-spacing: 1px; color: rgba(60,110,95,.55);
+  }
+  /* translucent glass keycap */
+  .top {
+    position: absolute; left: 0; right: 0; top: 0; height: 196px;
+    border-radius: 34px;
+    background: linear-gradient(180deg, rgba(255,255,255,.62) 0%, rgba(196,232,240,.32) 38%, rgba(120,196,224,.42) 100%);
+    border: 1px solid rgba(255,255,255,.7);
+    box-shadow:
+      0 30px 36px rgba(60,130,160,.34),
+      inset 0 3px 8px rgba(255,255,255,.9),
+      inset 0 -22px 30px rgba(70,150,190,.4),
+      inset 0 0 0 1px rgba(255,255,255,.25);
+    backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px);
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+    transition: box-shadow .05s, filter .05s;
+  }
+  .cap.down .top {
+    box-shadow:
+      0 10px 16px rgba(60,130,160,.4),
+      inset 0 3px 8px rgba(255,255,255,.8),
+      inset 0 -14px 22px rgba(70,150,190,.5);
+    filter: brightness(1.05);
+  }
+  .top::before { /* glossy top sheen */
+    content: ""; position: absolute; top: 7px; left: 12px; right: 12px; height: 40%;
+    border-radius: 26px 26px 50px 50px;
+    background: linear-gradient(180deg, rgba(255,255,255,.78), rgba(255,255,255,0));
+    pointer-events: none;
+  }
+
+  /* pixel art */
+  .pixel { position: relative; z-index: 2; display: grid; gap: 2px; transform: rotate(-2deg) translateY(-2px); filter: drop-shadow(0 4px 5px rgba(40,90,110,.3)); }
+  .pixel b { display: block; border-radius: 2px; box-shadow: inset 0 1px 0 rgba(255,255,255,.5), inset 0 -1px 0 rgba(0,0,0,.08); }
+
+  .ring { position: absolute; inset: 0; border-radius: 34px; pointer-events: none; border: 2px solid rgba(255,255,255,.85); opacity: 0; }
+  .cap.pulse .ring { animation: ring .42s ease-out; }
+  @keyframes ring { 0%{transform:scale(1);opacity:.85} 100%{transform:scale(1.32);opacity:0} }
+
+  .hint { font-size: 13px; color: var(--dim); margin-bottom: 14px; }
+
+  .switches { display: flex; gap: 6px; background: rgba(255,255,255,.55); padding: 5px; border-radius: 16px; box-shadow: 0 6px 16px rgba(90,150,135,.18), inset 0 1px 0 rgba(255,255,255,.8); }
+  .sw { border: none; background: transparent; color: var(--dim); padding: 10px 14px; border-radius: 12px; font-size: 13px; font-weight: 700; cursor: pointer; transition: .15s; }
+  .sw.active { background: #fff; color: #44535f; box-shadow: 0 2px 6px rgba(90,150,135,.22); }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="count"><div class="n" id="count">0</div><div class="l">번 눌렀어요</div></div>
+
+  <div class="stage">
+    <div class="confetti" id="confetti"></div>
+    <div class="cap" id="cap">
+      <div class="base"></div>
+      <div class="top">
+        <div class="pixel" id="pixel"></div>
+        <span class="ring"></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="hint">키캡을 눌러보세요</div>
+  <div class="switches" id="switches">
+    <button class="sw active" data-sw="blue">청축</button>
+    <button class="sw" data-sw="brown">갈축</button>
+    <button class="sw" data-sw="red">적축</button>
+    <button class="sw" data-sw="topre">토프레</button>
+  </div>
+</div>
+
+<script>
+// ---------- pixel art (pastel plus/diamond, like the artisan keycap) ----------
+const PAT = [
+  "0001000",
+  "0011100",
+  "0112110",
+  "1123211",
+  "0112110",
+  "0011100",
+  "0001000",
+];
+const PAL = ["#ff9ec0","#ffd166","#a0e57a","#7fd6e0","#c4a6ff","#ff9e7d","#8ecbff"];
+const pixel = document.getElementById("pixel");
+const cell = 14;
+pixel.style.gridTemplateColumns = `repeat(${PAT[0].length}, ${cell}px)`;
+PAT.forEach((row, r) => {
+  [...row].forEach((v, c) => {
+    const b = document.createElement("b");
+    b.style.width = b.style.height = cell + "px";
+    if (v !== "0") {
+      // varied pastel mosaic, deterministic
+      b.style.background = PAL[(r * 3 + c * 2 + (+v) * 2) % PAL.length];
+    } else {
+      b.style.visibility = "hidden";
+    }
+    pixel.appendChild(b);
+  });
+});
+
+// ---------- confetti decorations ----------
+(function () {
+  const wrap = document.getElementById("confetti");
+  const colors = ["#ff9ec0","#ffd166","#a0e57a","#7fd6e0","#c4a6ff","#ff9e7d","#8ecbff"];
+  const shapes = ["circle","square","tri","spark","ring"];
+  const N = 26;
+  // deterministic pseudo-random
+  let seed = 7;
+  const rng = () => (seed = (seed * 1103515245 + 12345) & 0x7fffffff) / 0x7fffffff;
+  for (let i = 0; i < N; i++) {
+    const el = document.createElement("i");
+    const ang = rng() * Math.PI * 2;
+    const rad = 120 + rng() * 150;
+    const x = 50 + Math.cos(ang) * rad / 4;
+    const y = 50 + Math.sin(ang) * rad / 4;
+    const s = 6 + rng() * 10;
+    const col = colors[(i * 3) % colors.length];
+    const shape = shapes[i % shapes.length];
+    el.style.left = x + "%"; el.style.top = y + "%";
+    el.style.transform = `rotate(${rng() * 360}deg)`;
+    if (shape === "circle") { el.style.width = el.style.height = s + "px"; el.style.background = col; el.style.borderRadius = "50%"; }
+    else if (shape === "square") { el.style.width = el.style.height = s + "px"; el.style.background = col; el.style.borderRadius = "3px"; }
+    else if (shape === "ring") { el.style.width = el.style.height = s + "px"; el.style.border = `2.5px solid ${col}`; el.style.borderRadius = "50%"; }
+    else if (shape === "tri") { el.style.width = "0"; el.style.height = "0"; el.style.borderLeft = `${s/1.6}px solid transparent`; el.style.borderRight = `${s/1.6}px solid transparent`; el.style.borderBottom = `${s}px solid ${col}`; }
+    else { el.textContent = "✦"; el.style.color = col; el.style.fontSize = (s + 4) + "px"; el.style.lineHeight = "1"; }
+    wrap.appendChild(el);
+  }
+})();
+
+// ---------- Web Audio ----------
+const AC = window.AudioContext || window.webkitAudioContext;
+let ctx = null;
+function ensure() { if (!ctx) ctx = new AC(); if (ctx.state === "suspended") ctx.resume(); return ctx; }
+// unlock audio on the very first user gesture (iOS/Chrome autoplay policy)
+let unlocked = false;
+function unlock() {
+  if (unlocked) return;
+  const c = ensure();
+  const b = c.createBuffer(1, 1, c.sampleRate);
+  const s = c.createBufferSource(); s.buffer = b; s.connect(c.destination); s.start(0);
+  unlocked = true;
+}
+["pointerdown", "touchstart", "mousedown", "keydown"].forEach(ev =>
+  window.addEventListener(ev, unlock, { once: false, passive: true }));
+let currentSwitch = "blue";
+
+function noiseBuffer(c, dur) {
+  const len = Math.floor(c.sampleRate * dur);
+  const buf = c.createBuffer(1, len, c.sampleRate);
+  const d = buf.getChannelData(0);
+  for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+  return buf;
+}
+function playClick(o) {
+  const c = ensure(); const t = c.currentTime;
+  const out = c.createGain(); out.gain.value = o.gain; out.connect(c.destination);
+  const src = c.createBufferSource(); src.buffer = noiseBuffer(c, o.noiseDur);
+  const bp = c.createBiquadFilter(); bp.type = "bandpass"; bp.frequency.value = o.freq; bp.Q.value = o.q;
+  const ng = c.createGain(); ng.gain.setValueAtTime(o.noiseGain, t); ng.gain.exponentialRampToValueAtTime(0.0001, t + o.noiseDur);
+  src.connect(bp); bp.connect(ng); ng.connect(out); src.start(t); src.stop(t + o.noiseDur);
+  if (o.toneFreq) {
+    const osc = c.createOscillator(); osc.type = o.toneType || "sine";
+    osc.frequency.setValueAtTime(o.toneFreq, t); osc.frequency.exponentialRampToValueAtTime(o.toneFreq * 0.6, t + o.toneDur);
+    const og = c.createGain(); og.gain.setValueAtTime(o.toneGain, t); og.gain.exponentialRampToValueAtTime(0.0001, t + o.toneDur);
+    osc.connect(og); og.connect(out); osc.start(t); osc.stop(t + o.toneDur);
+  }
+}
+const rnd = (b, s) => b * (1 + (Math.random() * 2 - 1) * s);
+function soundDown() {
+  switch (currentSwitch) {
+    case "blue":
+      playClick({ gain: 1, noiseDur: 0.02, noiseGain: 0.9, freq: rnd(2600,0.1), q: 1.0, toneFreq: rnd(420,0.05), toneType: "triangle", toneGain: 0.25, toneDur: 0.05 });
+      setTimeout(() => playClick({ gain: 0.7, noiseDur: 0.012, noiseGain: 0.6, freq: rnd(3400,0.1), q: 1.4 }), 9); break;
+    case "brown":
+      playClick({ gain: 1, noiseDur: 0.018, noiseGain: 0.55, freq: rnd(1900,0.12), q: 0.8, toneFreq: rnd(300,0.06), toneGain: 0.3, toneDur: 0.06 }); break;
+    case "red":
+      playClick({ gain: 1, noiseDur: 0.016, noiseGain: 0.4, freq: rnd(1500,0.1), q: 0.7, toneFreq: rnd(260,0.05), toneGain: 0.28, toneDur: 0.055 }); break;
+    case "topre":
+      playClick({ gain: 1, noiseDur: 0.022, noiseGain: 0.35, freq: rnd(900,0.12), q: 0.6, toneFreq: rnd(180,0.06), toneGain: 0.55, toneDur: 0.09 }); break;
+  }
+}
+function soundUp() {
+  if (currentSwitch === "blue") playClick({ gain: 0.5, noiseDur: 0.01, noiseGain: 0.4, freq: rnd(3000,0.1), q: 1.2 });
+  else playClick({ gain: 0.32, noiseDur: 0.012, noiseGain: 0.22, freq: rnd(1200,0.1), q: 0.6, toneFreq: rnd(220,0.05), toneGain: 0.1, toneDur: 0.03 });
+}
+
+// ---------- interaction ----------
+const cap = document.getElementById("cap");
+const countEl = document.getElementById("count");
+let count = +(localStorage.getItem("kc_count") || 0);
+countEl.textContent = count.toLocaleString();
+
+let active = false;
+function down() {
+  if (active) return; active = true;
+  cap.classList.add("down"); cap.style.setProperty("--press", "1");
+  cap.classList.remove("pulse"); void cap.offsetWidth; cap.classList.add("pulse");
+  if (navigator.vibrate) navigator.vibrate(8);
+  soundDown();
+  count++; countEl.textContent = count.toLocaleString(); localStorage.setItem("kc_count", count);
+}
+function up() {
+  if (!active) return; active = false;
+  cap.classList.remove("down"); cap.style.setProperty("--press", "0");
+  soundUp();
+}
+if (window.PointerEvent) {
+  cap.addEventListener("pointerdown", e => { e.preventDefault(); try { cap.setPointerCapture(e.pointerId); } catch (_) {} down(); });
+  cap.addEventListener("pointerup", up);
+  cap.addEventListener("pointercancel", up);
+} else {
+  // older browsers: mouse + touch fallback
+  cap.addEventListener("mousedown", e => { e.preventDefault(); down(); });
+  cap.addEventListener("touchstart", e => { e.preventDefault(); down(); }, { passive: false });
+  cap.addEventListener("touchend", up);
+}
+// release no matter where the pointer/mouse goes up — prevents "stuck pressed"
+window.addEventListener("pointerup", up);
+window.addEventListener("mouseup", up);
+
+window.addEventListener("keydown", e => { if (e.code === "Space" && !e.repeat) { e.preventDefault(); down(); } });
+window.addEventListener("keyup", e => { if (e.code === "Space") up(); });
+
+document.getElementById("switches").addEventListener("click", e => {
+  const b = e.target.closest(".sw"); if (!b) return;
+  document.querySelectorAll(".sw").forEach(x => x.classList.remove("active"));
+  b.classList.add("active"); currentSwitch = b.dataset.sw; ensure(); soundDown();
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,1345 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>찬양 PPT — OGX 찬양팀</title>
+  <meta name="description" content="찬양 제목과 가사를 입력하면 검은 배경에 흰 고딕체로 자동 조판된 PPT를 만들어요." />
+
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css"
+  />
+
+  <script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
+
+  <style>
+    :root {
+      /* ----- 토스 컬러 토큰 ----- */
+      --bg: #ffffff;
+      --surface: #ffffff;
+      --surface-2: #f9fafb;
+      --surface-3: #f2f4f6;
+      --border: #e5e8eb;
+      --border-strong: #d1d6db;
+      --text: #191f28;
+      --text-secondary: #4e5968;
+      --text-caption: #8b95a1;
+      --text-disabled: #b0b8c1;
+      --blue: #3182f6;
+      --blue-strong: #0064ff;
+      --blue-soft: #e8f2fe;
+      --success: #16c098;
+      --warning: #ffc100;
+      --danger: #f04452;
+      --danger-soft: #fde8ea;
+
+      --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.04), 0 8px 24px rgba(0, 0, 0, 0.04);
+      --shadow-card-hover: 0 1px 3px rgba(0, 0, 0, 0.06), 0 12px 32px rgba(0, 0, 0, 0.08);
+      --shadow-button: 0 2px 6px rgba(49, 130, 246, 0.18);
+      --shadow-button-hover: 0 6px 16px rgba(49, 130, 246, 0.28);
+      --shadow-segment: 0 1px 2px rgba(0, 0, 0, 0.04), 0 2px 6px rgba(0, 0, 0, 0.04);
+      --shadow-modal: 0 24px 64px rgba(0, 0, 0, 0.18);
+
+      --radius: 20px;
+      --radius-sm: 12px;
+      --radius-pill: 999px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont,
+        system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo",
+        "Noto Sans KR", "Malgun Gothic", sans-serif;
+      font-feature-settings: "ss03", "ss04", "tnum";
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      line-height: 1.6;
+      font-size: 15px;
+      letter-spacing: -0.003em;
+    }
+
+    body {
+      min-height: 100vh;
+      padding: 96px 24px 120px;
+    }
+
+    /* ---------- 상단 네비 ---------- */
+    .topnav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 64px;
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: saturate(180%) blur(14px);
+      -webkit-backdrop-filter: saturate(180%) blur(14px);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 28px;
+      gap: 24px;
+      z-index: 100;
+    }
+    .topnav .brand {
+      display: inline-flex;
+      align-items: baseline;
+      gap: 10px;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .brand-logo {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, var(--blue) 0%, var(--blue-strong) 100%);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      align-self: center;
+    }
+    .brand-name {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.02em;
+    }
+    .brand-page {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-caption);
+      letter-spacing: -0.01em;
+    }
+    .topnav-right {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .topnav-link {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-decoration: none;
+      padding: 8px 14px;
+      border-radius: var(--radius-pill);
+      transition: color 0.15s ease, background 0.15s ease;
+      letter-spacing: -0.005em;
+    }
+    .topnav-link:hover {
+      color: var(--blue-strong);
+      background: var(--blue-soft);
+    }
+    @media (max-width: 640px) {
+      .topnav { gap: 12px; padding: 0 16px; }
+      .brand-name { font-size: 15px; }
+      .brand-page { display: none; }
+      .topnav-link { padding: 6px 10px; font-size: 13px; }
+    }
+
+    /* ---------- 컨테이너 / 히어로 ---------- */
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .hero {
+      margin-bottom: 32px;
+      padding: 12px 4px 0;
+    }
+    .hero h1 {
+      font-size: 36px;
+      font-weight: 700;
+      letter-spacing: -0.025em;
+      line-height: 1.25;
+      margin-bottom: 10px;
+      color: var(--text);
+    }
+    .hero .lead {
+      font-size: 17px;
+      color: var(--text-secondary);
+      max-width: 620px;
+      font-weight: 500;
+      letter-spacing: -0.012em;
+      line-height: 1.5;
+    }
+
+    /* ---------- 카드 ---------- */
+    .card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 28px;
+      box-shadow: var(--shadow-card);
+      transition: box-shadow 0.2s ease;
+    }
+    .card + .card { margin-top: 20px; }
+    .card:hover { box-shadow: var(--shadow-card-hover); }
+    .card-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+    .card-title {
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: -0.015em;
+      color: var(--text);
+    }
+    .card-hint {
+      font-size: 13px;
+      color: var(--text-caption);
+      font-weight: 500;
+      letter-spacing: -0.005em;
+    }
+
+    /* ---------- 메인 그리드 ---------- */
+    .main-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+      gap: 20px;
+      align-items: start;
+    }
+    @media (max-width: 960px) {
+      .main-grid { grid-template-columns: 1fr; }
+      body { padding: 88px 16px 120px; }
+      .card { padding: 22px; }
+      .hero h1 { font-size: 28px; }
+      .hero .lead { font-size: 15px; }
+    }
+
+    /* ---------- 폼 필드 ---------- */
+    .field { margin-bottom: 16px; }
+    .field:last-child { margin-bottom: 0; }
+    .field-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+      letter-spacing: -0.005em;
+    }
+
+    .input, .textarea {
+      width: 100%;
+      background: var(--surface-3);
+      border: 2px solid transparent;
+      border-radius: var(--radius-sm);
+      color: var(--text);
+      padding: 14px 16px;
+      font-size: 15px;
+      font-family: inherit;
+      line-height: 1.6;
+      letter-spacing: -0.005em;
+      transition: border-color 0.15s ease, background 0.15s ease;
+    }
+    .input::placeholder, .textarea::placeholder { color: var(--text-disabled); }
+    .input:focus, .textarea:focus {
+      outline: none;
+      border-color: var(--blue);
+      background: var(--surface);
+    }
+    .textarea {
+      min-height: 280px;
+      resize: vertical;
+      line-height: 1.7;
+      font-size: 15px;
+    }
+
+    /* ---------- 옵션 행 (줄 수 세그먼트 + 토글) ---------- */
+    .option-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 16px;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+    @media (max-width: 540px) {
+      .option-row { grid-template-columns: 1fr; gap: 12px; }
+    }
+
+    /* 세그먼트 */
+    .segmented {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 4px;
+      padding: 4px;
+      background: var(--surface-3);
+      border-radius: var(--radius-sm);
+    }
+    .segmented input { display: none; }
+    .segmented label {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 12px;
+      border-radius: 9px;
+      cursor: pointer;
+      transition: background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-secondary);
+      letter-spacing: -0.01em;
+    }
+    .segmented label:hover { color: var(--text); }
+    .segmented label.is-active {
+      background: var(--surface);
+      color: var(--text);
+      box-shadow: var(--shadow-segment);
+    }
+
+    /* 토글 */
+    .toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      user-select: none;
+      padding: 10px 4px 10px 4px;
+    }
+    .toggle input { display: none; }
+    .toggle-track {
+      width: 46px;
+      height: 26px;
+      background: var(--border-strong);
+      border-radius: 13px;
+      position: relative;
+      transition: background 0.2s ease;
+      flex-shrink: 0;
+    }
+    .toggle-track::after {
+      content: "";
+      position: absolute;
+      width: 22px;
+      height: 22px;
+      background: #fff;
+      border-radius: 50%;
+      top: 2px;
+      left: 2px;
+      transition: transform 0.2s ease;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+    }
+    .toggle input:checked + .toggle-track { background: var(--blue); }
+    .toggle input:checked + .toggle-track::after { transform: translateX(20px); }
+    .toggle-text {
+      font-size: 14px;
+      color: var(--text-secondary);
+      font-weight: 600;
+      letter-spacing: -0.005em;
+    }
+
+    /* ---------- 버튼 ---------- */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 14px 22px;
+      border-radius: var(--radius-sm);
+      font-size: 15px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      border: none;
+      transition: background 0.15s ease, color 0.15s ease, box-shadow 0.2s ease, transform 0.1s ease;
+      white-space: nowrap;
+      letter-spacing: -0.01em;
+    }
+    .btn:active:not(:disabled) { transform: scale(0.98); }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--blue) 0%, var(--blue-strong) 100%);
+      color: #fff;
+      box-shadow: var(--shadow-button);
+    }
+    .btn-primary:hover:not(:disabled) { box-shadow: var(--shadow-button-hover); }
+    .btn-primary:disabled {
+      background: var(--surface-3);
+      color: var(--text-disabled);
+      box-shadow: none;
+      cursor: not-allowed;
+    }
+    .btn-primary.is-block { width: 100%; }
+
+    .btn-ghost {
+      background: var(--surface-3);
+      color: var(--text-secondary);
+    }
+    .btn-ghost:hover:not(:disabled) {
+      background: var(--blue-soft);
+      color: var(--blue-strong);
+    }
+    .btn-ghost:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* 아이콘 버튼 */
+    .btn-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      background: var(--surface-3);
+      border: none;
+      color: var(--text-secondary);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s ease, color 0.15s ease, transform 0.1s ease;
+    }
+    .btn-icon:hover { background: var(--blue-soft); color: var(--blue-strong); }
+    .btn-icon:active { transform: scale(0.94); }
+    .btn-icon svg { width: 16px; height: 16px; }
+    .btn-icon.is-danger:hover { background: var(--danger-soft); color: var(--danger); }
+
+    /* ---------- 찬양 목록 ---------- */
+    .song-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      list-style: none;
+      min-height: 80px;
+    }
+
+    .empty-state {
+      text-align: center;
+      color: var(--text-caption);
+      font-size: 14px;
+      padding: 36px 16px;
+      background: var(--surface-2);
+      border-radius: var(--radius-sm);
+      font-weight: 500;
+      letter-spacing: -0.005em;
+    }
+
+    .song-item {
+      background: var(--surface-2);
+      border-radius: var(--radius-sm);
+      padding: 14px 16px;
+      transition: background 0.15s ease, box-shadow 0.15s ease;
+    }
+    .song-item:hover { background: var(--surface-3); }
+    .song-item.sortable-ghost { opacity: 0.4; }
+    .song-item.sortable-drag {
+      background: var(--surface);
+      box-shadow: var(--shadow-card-hover);
+    }
+
+    .song-head {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .drag-handle {
+      color: var(--text-disabled);
+      cursor: grab;
+      padding: 4px;
+      font-size: 16px;
+      line-height: 1;
+      user-select: none;
+      display: inline-flex;
+      align-items: center;
+      transition: color 0.15s ease;
+    }
+    .drag-handle:hover { color: var(--text-secondary); }
+    .drag-handle:active { cursor: grabbing; }
+
+    .song-index {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 26px;
+      height: 26px;
+      padding: 0 8px;
+      background: var(--blue-soft);
+      border-radius: var(--radius-pill);
+      font-size: 12px;
+      color: var(--blue-strong);
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -0.01em;
+    }
+
+    .song-title {
+      flex: 1;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.01em;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .song-actions {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .song-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 10px;
+      padding-left: 38px;
+    }
+
+    .meta-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--text-secondary);
+      background: var(--surface);
+      padding: 5px 10px;
+      border-radius: var(--radius-pill);
+      font-weight: 600;
+      letter-spacing: -0.005em;
+    }
+    .meta-chip.is-accent {
+      background: var(--blue-soft);
+      color: var(--blue-strong);
+    }
+    .meta-chip-key { color: var(--text-caption); font-weight: 500; }
+    .meta-chip-val { color: var(--text); font-weight: 700; }
+
+    /* ---------- CTA 영역 ---------- */
+    .cta-bar {
+      margin-top: 20px;
+      padding-top: 18px;
+      border-top: 1px solid var(--border);
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: center;
+    }
+    .cta-info {
+      font-size: 14px;
+      color: var(--text-secondary);
+      font-weight: 500;
+      letter-spacing: -0.005em;
+    }
+    .cta-info strong {
+      color: var(--text);
+      font-weight: 700;
+    }
+    @media (max-width: 540px) {
+      .cta-bar { grid-template-columns: 1fr; }
+      .cta-bar .btn { width: 100%; }
+    }
+
+    /* ---------- 미리보기 ---------- */
+    .preview-card { position: sticky; top: 84px; }
+
+    .preview-slide {
+      aspect-ratio: 16 / 9;
+      background: #000;
+      border-radius: var(--radius-sm);
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 32px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    }
+
+    .preview-lyrics {
+      text-align: center;
+      font-weight: 700;
+      font-size: clamp(18px, 2.4vw, 30px);
+      line-height: 1.55;
+      letter-spacing: -0.01em;
+      white-space: pre-line;
+      color: #fff;
+      font-family: "Pretendard Variable", Pretendard, sans-serif;
+    }
+
+    .preview-title {
+      position: absolute;
+      top: 14px;
+      right: 18px;
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.55);
+      font-weight: 500;
+      letter-spacing: 0.02em;
+    }
+
+    .empty-preview {
+      color: rgba(255, 255, 255, 0.4);
+      font-size: 14px;
+      text-align: center;
+      font-weight: 500;
+      line-height: 1.6;
+    }
+
+    .preview-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 16px;
+      gap: 12px;
+    }
+    .preview-nav .pager {
+      font-size: 14px;
+      color: var(--text-secondary);
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -0.01em;
+    }
+    .preview-nav .pager .sep { color: var(--text-disabled); margin: 0 4px; }
+    .nav-btn {
+      padding: 10px 16px;
+      border-radius: 10px;
+      background: var(--surface-3);
+      color: var(--text-secondary);
+      border: none;
+      font-size: 14px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      transition: background 0.15s ease, color 0.15s ease, transform 0.1s ease;
+      letter-spacing: -0.005em;
+    }
+    .nav-btn:hover:not(:disabled) {
+      background: var(--blue-soft);
+      color: var(--blue-strong);
+    }
+    .nav-btn:active:not(:disabled) { transform: scale(0.96); }
+    .nav-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* ---------- 모달 ---------- */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(25, 31, 40, 0.45);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 200;
+      padding: 16px;
+      opacity: 0;
+      transition: opacity 0.18s ease;
+    }
+    .modal-backdrop.open {
+      display: flex;
+      opacity: 1;
+    }
+    .modal {
+      background: var(--surface);
+      border-radius: var(--radius);
+      width: 100%;
+      max-width: 560px;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 28px;
+      box-shadow: var(--shadow-modal);
+    }
+    .modal h3 {
+      font-size: 19px;
+      font-weight: 700;
+      margin-bottom: 20px;
+      color: var(--text);
+      letter-spacing: -0.02em;
+    }
+    .modal-actions {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+      margin-top: 24px;
+    }
+
+    /* ---------- 토스트 ---------- */
+    .toast {
+      position: fixed;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%) translateY(120%);
+      background: var(--text);
+      color: #fff;
+      padding: 14px 22px;
+      border-radius: var(--radius-pill);
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: -0.005em;
+      opacity: 0;
+      pointer-events: none;
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+      z-index: 300;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.22);
+      max-width: calc(100% - 32px);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* ---------- 푸터 ---------- */
+    .footer {
+      margin-top: 64px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+      font-size: 13px;
+      color: var(--text-caption);
+      text-align: center;
+      font-weight: 500;
+    }
+  </style>
+</head>
+<body>
+  <nav class="topnav">
+    <a class="brand" href="index.html">
+      <span class="brand-logo">O</span>
+      <span class="brand-name">OGX 찬양팀</span>
+      <span class="brand-page">· 찬양 PPT</span>
+    </a>
+    <div class="topnav-right">
+      <a class="topnav-link" href="../auto-accompaniment/index.html">다른 도구 →</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <section class="hero">
+      <h1>찬양 PPT 생성기</h1>
+      <p class="lead">예배 순서대로 찬양을 추가하면 검은 배경 PPT를 만들어요.</p>
+    </section>
+
+    <div class="main-grid">
+      <!-- LEFT: 입력 + 목록 -->
+      <div>
+        <section class="card">
+          <div class="card-head">
+            <h2 class="card-title">찬양 추가</h2>
+            <span class="card-hint">빈 줄로 절/후렴 구분</span>
+          </div>
+
+          <div class="field">
+            <label class="field-label" for="songTitle">찬양 제목</label>
+            <input id="songTitle" class="input" placeholder="예) 주 품에" autocomplete="off" />
+          </div>
+
+          <div class="field">
+            <label class="field-label" for="songLyrics">가사</label>
+            <textarea
+              id="songLyrics"
+              class="textarea"
+              placeholder="가사를 붙여넣어 주세요.&#10;&#10;한 절이 끝나면 빈 줄 하나를 넣으면&#10;절 단위로 슬라이드가 나눠져요."
+            ></textarea>
+          </div>
+
+          <div class="option-row">
+            <div>
+              <span class="field-label">한 슬라이드 줄 수</span>
+              <div class="segmented" id="linesSegment">
+                <label data-lines="2">
+                  <input type="radio" name="lines" value="2" />
+                  2줄
+                </label>
+                <label class="is-active" data-lines="4">
+                  <input type="radio" name="lines" value="4" checked />
+                  4줄
+                </label>
+              </div>
+            </div>
+            <div>
+              <span class="field-label">우상단 제목 표시</span>
+              <label class="toggle">
+                <input type="checkbox" id="showTitle" checked />
+                <span class="toggle-track"></span>
+                <span class="toggle-text" id="showTitleText">표시</span>
+              </label>
+            </div>
+          </div>
+
+          <button id="addBtn" class="btn btn-primary is-block" style="margin-top: 8px;">
+            찬양 추가
+          </button>
+        </section>
+
+        <section class="card">
+          <div class="card-head">
+            <h2 class="card-title">찬양 순서</h2>
+            <span class="card-hint" id="songCount">0곡</span>
+          </div>
+
+          <ul id="songList" class="song-list"></ul>
+
+          <div class="cta-bar">
+            <div class="cta-info">
+              총 <strong id="slideCount">0</strong>장의 슬라이드
+            </div>
+            <button id="downloadBtn" class="btn btn-primary" disabled>
+              PPT 다운로드
+            </button>
+          </div>
+        </section>
+      </div>
+
+      <!-- RIGHT: 미리보기 -->
+      <div>
+        <section class="card preview-card">
+          <div class="card-head">
+            <h2 class="card-title">미리보기</h2>
+            <span class="card-hint" id="previewInfo">슬라이드 위치</span>
+          </div>
+
+          <div id="previewContainer">
+            <div class="preview-slide">
+              <div class="empty-preview">
+                찬양을 추가하면<br />미리보기가 여기에 표시돼요.
+              </div>
+            </div>
+          </div>
+
+          <div class="preview-nav" id="previewNav" style="display: none;">
+            <button class="nav-btn" id="prevBtn">← 이전</button>
+            <span class="pager">
+              <span id="currentSlide">1</span>
+              <span class="sep">/</span>
+              <span id="totalSlides">1</span>
+            </span>
+            <button class="nav-btn" id="nextBtn">다음 →</button>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <footer class="footer">
+      OGX 찬양팀 · 찬양 PPT 생성기
+    </footer>
+  </div>
+
+  <!-- 편집 모달 -->
+  <div class="modal-backdrop" id="editModal">
+    <div class="modal">
+      <h3>찬양 편집</h3>
+      <div class="field">
+        <label class="field-label" for="editTitle">찬양 제목</label>
+        <input id="editTitle" class="input" />
+      </div>
+      <div class="field">
+        <label class="field-label" for="editLyrics">가사</label>
+        <textarea id="editLyrics" class="textarea"></textarea>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" id="editCancel">취소</button>
+        <button class="btn btn-primary" id="editSave">저장</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ============================================
+    // 상태
+    // ============================================
+    /** @typedef {{ id: string, title: string, lyrics: string, linesPerSlide: 2|4, showTitle: boolean }} Song */
+    /** @type {Song[]} */
+    let songs = [];
+    let currentPreviewIndex = 0;
+    let editingSongId = null;
+
+    // 입력 폼 상태
+    let formLinesPerSlide = 4;
+    let formShowTitle = true;
+
+    const STORAGE_KEY = "ogx.praise-ppt.songs";
+
+    // ============================================
+    // DOM
+    // ============================================
+    const $ = (id) => document.getElementById(id);
+    const titleInput = $("songTitle");
+    const lyricsInput = $("songLyrics");
+    const linesSegment = $("linesSegment");
+    const showTitleCheckbox = $("showTitle");
+    const showTitleText = $("showTitleText");
+    const addBtn = $("addBtn");
+    const songList = $("songList");
+    const songCountEl = $("songCount");
+    const slideCountEl = $("slideCount");
+    const downloadBtn = $("downloadBtn");
+    const previewContainer = $("previewContainer");
+    const previewNav = $("previewNav");
+    const prevBtn = $("prevBtn");
+    const nextBtn = $("nextBtn");
+    const currentSlideEl = $("currentSlide");
+    const totalSlidesEl = $("totalSlides");
+    const previewInfo = $("previewInfo");
+    const toast = $("toast");
+
+    // 편집 모달
+    const editModal = $("editModal");
+    const editTitle = $("editTitle");
+    const editLyrics = $("editLyrics");
+    const editCancel = $("editCancel");
+    const editSave = $("editSave");
+
+    // ============================================
+    // 유틸
+    // ============================================
+    function uid() {
+      return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+    }
+
+    function showToast(msg) {
+      toast.textContent = msg;
+      toast.classList.add("show");
+      clearTimeout(showToast._t);
+      showToast._t = setTimeout(() => toast.classList.remove("show"), 2000);
+    }
+
+    function save() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(songs));
+      } catch (e) {
+        // 무시
+      }
+    }
+
+    function load() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) songs = JSON.parse(raw);
+      } catch (e) {
+        songs = [];
+      }
+    }
+
+    function escapeHtml(s) {
+      return String(s)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+    }
+
+    // ============================================
+    // 가사 → 슬라이드 분할
+    // 빈 줄은 절 구분으로 인식, 각 절 안에서 linesPerSlide 만큼씩 묶음
+    // ============================================
+    function splitLyricsToSlides(lyrics, linesPerSlide) {
+      if (!lyrics.trim()) return [];
+      const blocks = lyrics
+        .replace(/\r\n/g, "\n")
+        .split(/\n\s*\n+/)
+        .map((b) => b.split("\n").map((l) => l.trim()).filter(Boolean))
+        .filter((b) => b.length > 0);
+
+      const slides = [];
+      for (const block of blocks) {
+        for (let i = 0; i < block.length; i += linesPerSlide) {
+          slides.push(block.slice(i, i + linesPerSlide));
+        }
+      }
+      return slides;
+    }
+
+    function totalSlideCount() {
+      return songs.reduce(
+        (sum, s) => sum + splitLyricsToSlides(s.lyrics, s.linesPerSlide).length,
+        0
+      );
+    }
+
+    function flattenSlides() {
+      const all = [];
+      for (const song of songs) {
+        const slides = splitLyricsToSlides(song.lyrics, song.linesPerSlide);
+        for (const lines of slides) {
+          all.push({
+            songId: song.id,
+            title: song.title,
+            showTitle: song.showTitle,
+            lines,
+          });
+        }
+      }
+      return all;
+    }
+
+    // ============================================
+    // 렌더링
+    // ============================================
+    function renderSongList() {
+      songList.innerHTML = "";
+
+      if (songs.length === 0) {
+        const empty = document.createElement("li");
+        empty.className = "empty-state";
+        empty.textContent = "추가된 찬양이 없어요. 첫 곡을 추가해보세요.";
+        songList.appendChild(empty);
+      } else {
+        songs.forEach((song, idx) => {
+          const slideCount = splitLyricsToSlides(song.lyrics, song.linesPerSlide).length;
+          const li = document.createElement("li");
+          li.className = "song-item";
+          li.dataset.id = song.id;
+          li.innerHTML = `
+            <div class="song-head">
+              <span class="drag-handle" title="드래그해서 순서 변경" aria-label="드래그 핸들">
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+                  <circle cx="5" cy="3" r="1.4"/><circle cx="11" cy="3" r="1.4"/>
+                  <circle cx="5" cy="8" r="1.4"/><circle cx="11" cy="8" r="1.4"/>
+                  <circle cx="5" cy="13" r="1.4"/><circle cx="11" cy="13" r="1.4"/>
+                </svg>
+              </span>
+              <span class="song-index">${idx + 1}</span>
+              <span class="song-title"></span>
+              <div class="song-actions">
+                <button class="btn-icon" data-action="edit" title="편집" aria-label="편집">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 20h9"/>
+                    <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/>
+                  </svg>
+                </button>
+                <button class="btn-icon is-danger" data-action="remove" title="삭제" aria-label="삭제">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="3 6 5 6 21 6"/>
+                    <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                    <path d="M10 11v6M14 11v6"/>
+                    <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+            <div class="song-meta">
+              <span class="meta-chip is-accent">
+                <span class="meta-chip-val">슬라이드 ${slideCount}장</span>
+              </span>
+              <span class="meta-chip">
+                <span class="meta-chip-key">줄 수</span>
+                <span class="meta-chip-val">${song.linesPerSlide}줄</span>
+              </span>
+              ${song.showTitle ? `
+                <span class="meta-chip">
+                  <span class="meta-chip-val">제목 표시</span>
+                </span>
+              ` : ""}
+            </div>
+          `;
+          li.querySelector(".song-title").textContent = song.title || "(제목 없음)";
+          songList.appendChild(li);
+        });
+      }
+
+      songCountEl.textContent = `${songs.length}곡`;
+      slideCountEl.textContent = totalSlideCount();
+      downloadBtn.disabled = songs.length === 0 || totalSlideCount() === 0;
+    }
+
+    function renderPreview() {
+      const slides = flattenSlides();
+
+      if (slides.length === 0) {
+        previewContainer.innerHTML = `
+          <div class="preview-slide">
+            <div class="empty-preview">
+              찬양을 추가하면<br />미리보기가 여기에 표시돼요.
+            </div>
+          </div>
+        `;
+        previewNav.style.display = "none";
+        previewInfo.textContent = "슬라이드 위치";
+        return;
+      }
+
+      if (currentPreviewIndex >= slides.length) {
+        currentPreviewIndex = slides.length - 1;
+      }
+      if (currentPreviewIndex < 0) currentPreviewIndex = 0;
+
+      const slide = slides[currentPreviewIndex];
+      const titleHtml = slide.showTitle && slide.title
+        ? `<div class="preview-title">${escapeHtml(slide.title)}</div>`
+        : "";
+
+      previewContainer.innerHTML = `
+        <div class="preview-slide">
+          ${titleHtml}
+          <div class="preview-lyrics">${escapeHtml(slide.lines.join("\n"))}</div>
+        </div>
+      `;
+
+      previewNav.style.display = "flex";
+      currentSlideEl.textContent = currentPreviewIndex + 1;
+      totalSlidesEl.textContent = slides.length;
+      previewInfo.textContent = slide.title || "슬라이드 위치";
+
+      prevBtn.disabled = currentPreviewIndex === 0;
+      nextBtn.disabled = currentPreviewIndex === slides.length - 1;
+    }
+
+    function renderAll() {
+      renderSongList();
+      renderPreview();
+      save();
+    }
+
+    // ============================================
+    // 이벤트
+    // ============================================
+
+    // 줄 수 세그먼트
+    linesSegment.querySelectorAll("label").forEach((label) => {
+      label.addEventListener("click", () => {
+        linesSegment.querySelectorAll("label").forEach((l) => l.classList.remove("is-active"));
+        label.classList.add("is-active");
+        const input = label.querySelector("input");
+        if (input) input.checked = true;
+        formLinesPerSlide = Number(label.dataset.lines) === 2 ? 2 : 4;
+      });
+    });
+
+    // 제목 표시 토글
+    showTitleCheckbox.addEventListener("change", (e) => {
+      formShowTitle = e.target.checked;
+      showTitleText.textContent = e.target.checked ? "표시" : "숨김";
+    });
+
+    // 찬양 추가
+    addBtn.addEventListener("click", () => {
+      const title = titleInput.value.trim();
+      const lyrics = lyricsInput.value.trim();
+      if (!title) {
+        titleInput.focus();
+        showToast("찬양 제목을 입력해주세요");
+        return;
+      }
+      if (!lyrics) {
+        lyricsInput.focus();
+        showToast("가사를 입력해주세요");
+        return;
+      }
+
+      songs.push({
+        id: uid(),
+        title,
+        lyrics,
+        linesPerSlide: formLinesPerSlide,
+        showTitle: formShowTitle,
+      });
+
+      titleInput.value = "";
+      lyricsInput.value = "";
+      titleInput.focus();
+      renderAll();
+      showToast(`"${title}" 추가됐어요`);
+    });
+
+    // Enter 키로 제목 입력 후 가사 textarea로 이동
+    titleInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        lyricsInput.focus();
+      }
+    });
+
+    // 찬양 목록 위임 이벤트
+    songList.addEventListener("click", (e) => {
+      const target = e.target;
+      if (!(target instanceof HTMLElement)) return;
+      const btn = target.closest("[data-action]");
+      if (!btn) return;
+      const li = target.closest(".song-item");
+      if (!li) return;
+      const id = li.dataset.id;
+      const song = songs.find((s) => s.id === id);
+      if (!song) return;
+
+      const action = btn.dataset.action;
+      if (action === "remove") {
+        if (confirm(`"${song.title}" 찬양을 삭제할까요?`)) {
+          songs = songs.filter((s) => s.id !== id);
+          renderAll();
+          showToast("삭제했어요");
+        }
+      } else if (action === "edit") {
+        openEditModal(song);
+      }
+    });
+
+    // 미리보기 네비
+    prevBtn.addEventListener("click", () => {
+      currentPreviewIndex = Math.max(0, currentPreviewIndex - 1);
+      renderPreview();
+    });
+    nextBtn.addEventListener("click", () => {
+      const total = flattenSlides().length;
+      currentPreviewIndex = Math.min(total - 1, currentPreviewIndex + 1);
+      renderPreview();
+    });
+
+    // 키보드 네비
+    document.addEventListener("keydown", (e) => {
+      if (editModal.classList.contains("open")) return;
+      if (document.activeElement && ["INPUT", "TEXTAREA", "SELECT"].includes(document.activeElement.tagName)) return;
+      if (e.key === "ArrowLeft") prevBtn.click();
+      if (e.key === "ArrowRight") nextBtn.click();
+    });
+
+    // 편집 모달
+    function openEditModal(song) {
+      editingSongId = song.id;
+      editTitle.value = song.title;
+      editLyrics.value = song.lyrics;
+      editModal.classList.add("open");
+      setTimeout(() => editTitle.focus(), 50);
+    }
+
+    function closeEditModal() {
+      editingSongId = null;
+      editModal.classList.remove("open");
+    }
+
+    editCancel.addEventListener("click", closeEditModal);
+    editModal.addEventListener("click", (e) => {
+      if (e.target === editModal) closeEditModal();
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && editModal.classList.contains("open")) {
+        closeEditModal();
+      }
+    });
+    editSave.addEventListener("click", () => {
+      if (!editingSongId) return;
+      const song = songs.find((s) => s.id === editingSongId);
+      if (!song) return;
+      const newTitle = editTitle.value.trim();
+      const newLyrics = editLyrics.value.trim();
+      if (!newTitle) {
+        editTitle.focus();
+        showToast("제목을 입력해주세요");
+        return;
+      }
+      if (!newLyrics) {
+        editLyrics.focus();
+        showToast("가사를 입력해주세요");
+        return;
+      }
+      song.title = newTitle;
+      song.lyrics = newLyrics;
+      closeEditModal();
+      renderAll();
+      showToast("수정했어요");
+    });
+
+    // 드래그앤드롭 순서 변경
+    Sortable.create(songList, {
+      handle: ".drag-handle",
+      animation: 180,
+      ghostClass: "sortable-ghost",
+      dragClass: "sortable-drag",
+      filter: ".empty-state",
+      onEnd: () => {
+        const ids = Array.from(songList.querySelectorAll(".song-item")).map((li) => li.dataset.id);
+        if (ids.length === 0) return;
+        songs.sort((a, b) => ids.indexOf(a.id) - ids.indexOf(b.id));
+        renderAll();
+      },
+    });
+
+    // ============================================
+    // PPT 생성
+    // ============================================
+    downloadBtn.addEventListener("click", async () => {
+      if (songs.length === 0) return;
+      downloadBtn.disabled = true;
+      const originalText = downloadBtn.textContent;
+      downloadBtn.textContent = "생성 중...";
+
+      try {
+        const pptx = new PptxGenJS();
+        pptx.layout = "LAYOUT_WIDE"; // 13.333 x 7.5 inch (16:9)
+        pptx.title = songs.map((s) => s.title).join(" / ");
+        pptx.company = "OGX 찬양팀";
+
+        const SLIDE_W = 13.333;
+        const SLIDE_H = 7.5;
+
+        for (const song of songs) {
+          const lines2 = splitLyricsToSlides(song.lyrics, song.linesPerSlide);
+          for (const lines of lines2) {
+            const slide = pptx.addSlide();
+            slide.background = { color: "000000" };
+
+            const lineCount = lines.length;
+            const fontSize = lineCount <= 2 ? 54 : lineCount <= 4 ? 40 : 34;
+
+            slide.addText(
+              lines.map((l, i) => ({
+                text: (i > 0 ? "\n" : "") + l,
+                options: {},
+              })),
+              {
+                x: 0.5,
+                y: 0,
+                w: SLIDE_W - 1,
+                h: SLIDE_H,
+                align: "center",
+                valign: "middle",
+                color: "FFFFFF",
+                fontFace: "Pretendard",
+                fontSize,
+                bold: true,
+                paraSpaceAfter: 8,
+                lineSpacingMultiple: 1.35,
+                fit: "shrink",
+              }
+            );
+
+            if (song.showTitle && song.title) {
+              slide.addText(song.title, {
+                x: SLIDE_W - 4.2,
+                y: 0.18,
+                w: 4,
+                h: 0.45,
+                align: "right",
+                valign: "top",
+                color: "8A8A8A",
+                fontFace: "Pretendard",
+                fontSize: 14,
+                bold: false,
+              });
+            }
+          }
+        }
+
+        const filename = `${songs[0].title || "찬양"}${
+          songs.length > 1 ? ` 외 ${songs.length - 1}곡` : ""
+        } - 찬양PPT.pptx`;
+        await pptx.writeFile({ fileName: filename });
+        showToast("PPT를 다운로드했어요");
+      } catch (err) {
+        console.error(err);
+        alert("PPT 생성 중 오류가 발생했어요:\n" + (err && err.message ? err.message : err));
+      } finally {
+        downloadBtn.textContent = originalText;
+        downloadBtn.disabled = songs.length === 0;
+      }
+    });
+
+    // ============================================
+    // 초기화
+    // ============================================
+    load();
+    renderAll();
+  </script>
+</body>
+</html>

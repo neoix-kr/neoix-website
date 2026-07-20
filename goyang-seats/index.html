@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>고양시 선거구별 후보 현황</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" />
+<link
+  href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"
+  rel="stylesheet"
+/>
+<style>
+  :root {
+    --bg: #f5f4f0;
+    --panel: #ffffff;
+    --border: #e6e4dd;
+    --border-strong: #d4d2ca;
+    --text: #18181b;
+    --text-2: #3f3f46;
+    --muted: #71717a;
+    --dem: #004ea2;
+    --dem-soft: #e7f0fa;
+    --ppp: #e61e2b;
+    --ppp-soft: #fdeaec;
+    --radius: 16px;
+    --shadow: 0 1px 2px rgba(0,0,0,.04), 0 8px 24px rgba(0,0,0,.05);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    font-family: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    padding: 0 16px 80px;
+  }
+  .wrap { max-width: 920px; margin: 0 auto; }
+
+  /* Header */
+  header { padding: 48px 4px 28px; }
+  .eyebrow {
+    display: inline-block; font-size: 13px; font-weight: 700; letter-spacing: .04em;
+    color: var(--muted); background: var(--panel); border: 1px solid var(--border);
+    padding: 6px 12px; border-radius: 999px; margin-bottom: 16px;
+  }
+  h1 { font-size: clamp(28px, 6vw, 42px); font-weight: 800; letter-spacing: -.02em; line-height: 1.15; }
+  .sub { margin-top: 10px; color: var(--muted); font-size: 15px; }
+  .note {
+    margin-top: 16px; font-size: 13px; color: var(--text-2);
+    background: #fff8ed; border: 1px solid #f3e3c3; border-radius: 12px;
+    padding: 10px 14px; display: flex; gap: 8px; align-items: flex-start;
+  }
+  .note b { color: #b7791f; }
+
+  /* Stat cards */
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 24px; }
+  .stat {
+    background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 18px 16px; box-shadow: var(--shadow);
+  }
+  .stat .label { font-size: 12.5px; color: var(--muted); font-weight: 600; }
+  .stat .num { font-size: 32px; font-weight: 800; letter-spacing: -.02em; margin-top: 4px; }
+  .stat .unit { font-size: 14px; font-weight: 600; color: var(--muted); margin-left: 2px; }
+  .stat.dem { border-color: var(--dem); }
+  .stat.dem .num { color: var(--dem); }
+  .stat.ppp { border-color: var(--ppp); }
+  .stat.ppp .num { color: var(--ppp); }
+
+  /* Party bar */
+  .section-title { font-size: 18px; font-weight: 800; margin: 38px 4px 14px; letter-spacing: -.01em; }
+  .partybar-card {
+    background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 22px; box-shadow: var(--shadow);
+  }
+  .legend { display: flex; gap: 18px; margin-bottom: 14px; flex-wrap: wrap; }
+  .legend span { display: flex; align-items: center; gap: 7px; font-size: 14px; font-weight: 600; }
+  .dot { width: 12px; height: 12px; border-radius: 4px; }
+  .dot.dem { background: var(--dem); }
+  .dot.ppp { background: var(--ppp); }
+  .bar { display: flex; height: 44px; border-radius: 12px; overflow: hidden; font-weight: 800; }
+  .bar .seg { display: flex; align-items: center; justify-content: center; color: #fff; font-size: 15px; transition: width .6s ease; }
+  .bar .seg.dem { background: var(--dem); }
+  .bar .seg.ppp { background: var(--ppp); }
+
+  /* Hemicycle */
+  .st-sub { font-weight: 600; color: var(--muted); font-size: 14px; }
+  .hemi-card { background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); padding: 26px 20px 20px; box-shadow: var(--shadow); }
+  .hemi-card svg { display: block; width: 100%; height: auto; max-width: 580px; margin: 0 auto; overflow: visible; }
+  .seat { transform-box: fill-box; transform-origin: center; animation: pop .5s cubic-bezier(.34,1.56,.64,1) both; animation-delay: calc(var(--i) * 13ms); }
+  @keyframes pop { from { opacity: 0; transform: scale(0); } to { opacity: 1; transform: scale(1); } }
+  .hemi-num { font-size: 60px; font-weight: 800; fill: var(--text); letter-spacing: -.03em; }
+  .hemi-unit { font-size: 17px; font-weight: 700; fill: var(--muted); }
+  .hemi-legend { display: flex; justify-content: center; gap: 24px; margin-top: 6px; flex-wrap: wrap; }
+  .hemi-legend span { display: flex; align-items: center; gap: 8px; font-size: 14.5px; font-weight: 700; }
+
+  /* Toggle */
+  .toggle { display: inline-flex; background: var(--panel); border: 1px solid var(--border); border-radius: 999px; padding: 4px; margin: 38px 4px 0; box-shadow: var(--shadow); }
+  .toggle button {
+    border: none; background: transparent; font-family: inherit; font-size: 14px; font-weight: 700;
+    color: var(--muted); padding: 9px 18px; border-radius: 999px; cursor: pointer; transition: .2s;
+  }
+  .toggle button.active { background: var(--text); color: #fff; }
+
+  /* Table */
+  .panel { background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; margin-top: 16px; }
+  table { width: 100%; border-collapse: collapse; }
+  th, td { padding: 13px 16px; text-align: center; font-size: 14.5px; }
+  thead th { background: #faf9f6; color: var(--muted); font-weight: 700; font-size: 13px; border-bottom: 1px solid var(--border); }
+  tbody td { border-bottom: 1px solid var(--border); }
+  tbody tr:last-child td { border-bottom: none; }
+  .gu { font-weight: 800; font-size: 15px; }
+  .cnt-dem { color: var(--dem); font-weight: 700; }
+  .cnt-ppp { color: var(--ppp); font-weight: 700; }
+  .mini { display: inline-flex; height: 8px; width: 84px; border-radius: 6px; overflow: hidden; vertical-align: middle; background: #eee; }
+  .mini i { height: 100%; display: block; }
+  .mini i.dem { background: var(--dem); }
+  .mini i.ppp { background: var(--ppp); }
+  tr.multi td.gu::after { content: "복수"; font-size: 10px; font-weight: 800; color: #fff; background: var(--text); padding: 2px 6px; border-radius: 6px; margin-left: 6px; vertical-align: middle; }
+  tfoot td { font-weight: 800; background: #faf9f6; border-top: 2px solid var(--border-strong); font-size: 15px; }
+
+  /* Candidate cards */
+  .cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-top: 16px; }
+  .gucard { background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; box-shadow: var(--shadow); }
+  .gucard h3 { font-size: 16px; font-weight: 800; display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
+  .gucard h3 .chip { font-size: 11px; font-weight: 700; color: var(--muted); background: #f1f0ec; padding: 3px 8px; border-radius: 999px; margin-left: auto; }
+  .cand { display: flex; align-items: flex-start; gap: 10px; padding: 9px 0; border-top: 1px dashed var(--border); }
+  .cand:first-of-type { border-top: none; }
+  .pbadge { flex-shrink: 0; font-size: 11px; font-weight: 800; color: #fff; padding: 3px 8px; border-radius: 7px; margin-top: 2px; }
+  .pbadge.dem { background: var(--dem); }
+  .pbadge.ppp { background: var(--ppp); }
+  .cand .info { min-width: 0; }
+  .cand .nm { font-weight: 700; font-size: 15px; }
+  .cand .nm .age { color: var(--muted); font-weight: 600; font-size: 13px; margin-left: 5px; }
+  .cand .job { color: var(--text-2); font-size: 13px; margin-top: 1px; }
+
+  .hidden { display: none; }
+  footer { text-align: center; color: var(--muted); font-size: 12.5px; margin-top: 48px; }
+
+  @media (max-width: 720px) {
+    .stats { grid-template-columns: repeat(2, 1fr); }
+    .cards { grid-template-columns: 1fr; }
+    th, td { padding: 11px 8px; font-size: 13px; }
+    .mini { width: 56px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <span class="eyebrow">고양시 · 시의원 선거</span>
+    <h1>고양시 선거구별 후보 현황</h1>
+    <p class="sub">13개 선거구 · 후보 30명 · 정당별 공천 현황</p>
+    <div class="note">
+      <span>ℹ️</span>
+      <span><b>안내</b> — 본 자료는 확정 의석이 아닌 <b>정당별 공천 후보 수</b> 기준입니다. (민 = 더불어민주당, 국 = 국민의힘)</span>
+    </div>
+  </header>
+
+  <!-- Stat cards -->
+  <div class="stats">
+    <div class="stat"><div class="label">선거구</div><div class="num">13<span class="unit">곳</span></div></div>
+    <div class="stat"><div class="label">총 후보</div><div class="num">30<span class="unit">명</span></div></div>
+    <div class="stat dem"><div class="label">더불어민주당</div><div class="num">16<span class="unit">명</span></div></div>
+    <div class="stat ppp"><div class="label">국민의힘</div><div class="num">14<span class="unit">명</span></div></div>
+  </div>
+
+  <!-- Hemicycle -->
+  <div class="section-title">의석 배치도 <span class="st-sub">· 후보 30명 기준</span></div>
+  <div class="hemi-card">
+    <svg id="hemicycle" viewBox="0 0 640 262" role="img" aria-label="고양시 선거구 후보 의석 배치도"></svg>
+    <div class="hemi-legend">
+      <span><i class="dot dem"></i> 더불어민주당 16</span>
+      <span><i class="dot ppp"></i> 국민의힘 14</span>
+    </div>
+  </div>
+
+  <!-- Party bar -->
+  <div class="section-title">정당별 후보 비율</div>
+  <div class="partybar-card">
+    <div class="legend">
+      <span><i class="dot dem"></i> 더불어민주당 16명 (53.3%)</span>
+      <span><i class="dot ppp"></i> 국민의힘 14명 (46.7%)</span>
+    </div>
+    <div class="bar">
+      <div class="seg dem" style="width:53.3%">민주당 16</div>
+      <div class="seg ppp" style="width:46.7%">국민의힘 14</div>
+    </div>
+  </div>
+
+  <!-- Toggle -->
+  <div class="toggle">
+    <button id="btn-table" class="active" onclick="showView('table')">요약 표</button>
+    <button id="btn-cards" onclick="showView('cards')">상세 후보</button>
+  </div>
+
+  <!-- Table view -->
+  <div id="view-table" class="panel">
+    <table>
+      <thead>
+        <tr><th>선거구</th><th>민주당</th><th>국민의힘</th><th>구성</th><th>계</th></tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+      <tfoot>
+        <tr><td>합계</td><td class="cnt-dem">16</td><td class="cnt-ppp">14</td><td>—</td><td>30</td></tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <!-- Cards view -->
+  <div id="view-cards" class="cards hidden"></div>
+
+  <footer>고양시 시의원 선거구별 후보 현황 · 자동 생성 페이지</footer>
+</div>
+
+<script>
+  const data = [
+    { gu: "가", cands: [
+      { p:"dem", nm:"김보경", age:61, job:"정당인" },
+      { p:"ppp", nm:"오영숙", age:60, job:"보람요양원 대표" },
+    ]},
+    { gu: "나", cands: [
+      { p:"dem", nm:"문재호", age:53, job:"제9대 고양시의회 의원" },
+      { p:"dem", nm:"이종덕", age:63, job:"제9대 고양시의회 의원" },
+      { p:"ppp", nm:"황선경", age:51, job:"직장인" },
+    ]},
+    { gu: "다", cands: [
+      { p:"dem", nm:"김효금", age:63, job:"정당인" },
+      { p:"ppp", nm:"안중돈", age:53, job:"제9대 고양시의회 의원" },
+    ]},
+    { gu: "라", cands: [
+      { p:"dem", nm:"이해림", age:59, job:"제9대 고양시의회 의원" },
+      { p:"ppp", nm:"장예선", age:53, job:"제9대 고양시의회 의원" },
+    ]},
+    { gu: "마", cands: [
+      { p:"dem", nm:"차지현", age:57, job:"정당인" },
+      { p:"dem", nm:"송금희", age:57, job:"이코리아투어 여행사 대표" },
+      { p:"ppp", nm:"이종진", age:44, job:"주식회사 비엠테크 이사" },
+    ]},
+    { gu: "바", cands: [
+      { p:"dem", nm:"신지연", age:44, job:"삼성공인중개사사무소 소속 공인중개사" },
+      { p:"dem", nm:"김윤재", age:33, job:"개인사업" },
+      { p:"ppp", nm:"원종범", age:50, job:"제9대 고양시의회 의원" },
+    ]},
+    { gu: "사", cands: [
+      { p:"dem", nm:"공소자", age:61, job:"고양시의회 의원" },
+      { p:"ppp", nm:"고덕희", age:66, job:"고양시의회 의원" },
+    ]},
+    { gu: "아", cands: [
+      { p:"dem", nm:"장윤정", age:56, job:"정당인" },
+      { p:"ppp", nm:"김보래", age:31, job:"청담코어디자인 셀린점 원장" },
+      { p:"ppp", nm:"손동숙", age:54, job:"고양시의회 의원" },
+    ]},
+    { gu: "자", cands: [
+      { p:"dem", nm:"신인선", age:59, job:"고양시의회 의원" },
+      { p:"ppp", nm:"이홍규", age:59, job:"정당인" },
+    ]},
+    { gu: "차", cands: [
+      { p:"dem", nm:"김미수", age:62, job:"고양시의회 의원" },
+      { p:"ppp", nm:"길종성", age:64, job:"독도홍보관 관장" },
+    ]},
+    { gu: "카", cands: [
+      { p:"dem", nm:"최성원", age:35, job:"고양시의회 의원" },
+      { p:"ppp", nm:"전희정", age:58, job:"무직" },
+    ]},
+    { gu: "타", cands: [
+      { p:"dem", nm:"김정희", age:52, job:"드림팜대표" },
+      { p:"ppp", nm:"오우람", age:37, job:"5FTSL 대표" },
+    ]},
+    { gu: "파", cands: [
+      { p:"dem", nm:"김학영", age:62, job:"고양시의회 의원" },
+      { p:"ppp", nm:"김수진", age:57, job:"고양시의회 의원" },
+    ]},
+  ];
+
+  // Build table
+  const tbody = document.getElementById("tbody");
+  data.forEach(d => {
+    const dem = d.cands.filter(c => c.p === "dem").length;
+    const ppp = d.cands.filter(c => c.p === "ppp").length;
+    const total = dem + ppp;
+    const multi = total > 2;
+    const demPct = (dem / total) * 100;
+    const tr = document.createElement("tr");
+    if (multi) tr.className = "multi";
+    tr.innerHTML = `
+      <td class="gu">${d.gu}</td>
+      <td class="cnt-dem">${dem}</td>
+      <td class="cnt-ppp">${ppp}</td>
+      <td><span class="mini"><i class="dem" style="width:${demPct}%"></i><i class="ppp" style="width:${100-demPct}%"></i></span></td>
+      <td><b>${total}</b></td>`;
+    tbody.appendChild(tr);
+  });
+
+  // Build cards
+  const cardsEl = document.getElementById("view-cards");
+  const partyName = { dem: "민주", ppp: "국힘" };
+  data.forEach(d => {
+    const card = document.createElement("div");
+    card.className = "gucard";
+    const rows = d.cands.map(c => `
+      <div class="cand">
+        <span class="pbadge ${c.p}">${partyName[c.p]}</span>
+        <div class="info">
+          <div class="nm">${c.nm}<span class="age">만 ${c.age}세</span></div>
+          <div class="job">${c.job}</div>
+        </div>
+      </div>`).join("");
+    card.innerHTML = `<h3>${d.gu}선거구 <span class="chip">${d.cands.length}명</span></h3>${rows}`;
+    cardsEl.appendChild(card);
+  });
+
+  // Hemicycle seat diagram
+  (function buildHemicycle() {
+    const svg = document.getElementById("hemicycle");
+    const allCands = data.flatMap(d => d.cands);
+    const total = allCands.length;            // 30
+    const demCount = allCands.filter(c => c.p === "dem").length; // 16
+    const cx = 320, cy = 240, dotR = 10;
+    const rows = [
+      { r: 90,  n: 5 },
+      { r: 130, n: 7 },
+      { r: 170, n: 8 },
+      { r: 210, n: 10 },
+    ];
+    const dots = [];
+    rows.forEach(row => {
+      for (let j = 0; j < row.n; j++) {
+        const deg = row.n === 1 ? 90 : 180 - (180 * j) / (row.n - 1);
+        const rad = (deg * Math.PI) / 180;
+        dots.push({ x: cx + row.r * Math.cos(rad), y: cy - row.r * Math.sin(rad), deg, r: row.r });
+      }
+    });
+    // left (180°) -> right (0°); tie-break inner-to-outer
+    dots.sort((a, b) => (b.deg - a.deg) || (a.r - b.r));
+    const NS = "http://www.w3.org/2000/svg";
+    dots.forEach((d, i) => {
+      const c = document.createElementNS(NS, "circle");
+      c.setAttribute("cx", d.x.toFixed(1));
+      c.setAttribute("cy", d.y.toFixed(1));
+      c.setAttribute("r", dotR);
+      c.setAttribute("fill", i < demCount ? "#004ea2" : "#e61e2b");
+      c.setAttribute("class", "seat");
+      c.style.setProperty("--i", i);
+      svg.appendChild(c);
+    });
+    const num = document.createElementNS(NS, "text");
+    num.setAttribute("x", cx); num.setAttribute("y", cy - 14);
+    num.setAttribute("text-anchor", "middle"); num.setAttribute("class", "hemi-num");
+    num.textContent = total;
+    svg.appendChild(num);
+    const unit = document.createElementNS(NS, "text");
+    unit.setAttribute("x", cx); unit.setAttribute("y", cy + 8);
+    unit.setAttribute("text-anchor", "middle"); unit.setAttribute("class", "hemi-unit");
+    unit.textContent = "후보";
+    svg.appendChild(unit);
+  })();
+
+  // Toggle views
+  function showView(v) {
+    const isTable = v === "table";
+    document.getElementById("view-table").classList.toggle("hidden", !isTable);
+    document.getElementById("view-cards").classList.toggle("hidden", isTable);
+    document.getElementById("btn-table").classList.toggle("active", isTable);
+    document.getElementById("btn-cards").classList.toggle("active", !isTable);
+  }
+</script>
+</body>
+</html>

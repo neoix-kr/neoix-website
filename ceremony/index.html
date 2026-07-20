@@ -1,0 +1,1556 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>개소식 운영</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" />
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #f5f4f0;
+    --panel: #ffffff;
+    --panel-2: #efeee9;
+    --border: #e6e4dd;
+    --border-strong: #d4d2ca;
+    --text: #18181b;
+    --text-2: #3f3f46;
+    --muted: #71717a;
+    --accent: #d94e2a;
+    --accent-soft: #fbe9e3;
+    --gold: #b8860b;
+    --gold-soft: #fff8e1;
+    --primary: #18181b;
+    --success: #15803d;
+    --danger: #b91c1c;
+    --danger-soft: #fee2e2;
+    --shadow-md: 0 1px 2px rgba(15,18,28,0.04), 0 2px 6px rgba(15,18,28,0.06);
+    --shadow-lg: 0 8px 24px rgba(15,18,28,0.1), 0 24px 48px rgba(15,18,28,0.08);
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body {
+    font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont,
+      "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif;
+    background: var(--bg); color: var(--text);
+    font-size: 14px; line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    letter-spacing: -0.01em;
+  }
+  button { font-family: inherit; cursor: pointer; }
+  input, textarea, select { font-family: inherit; font-size: 14px; color: var(--text); }
+  .hidden { display: none !important; }
+
+  /* ────── CONTROL PANEL ────── */
+  .ctrl {
+    display: grid;
+    grid-template-rows: 56px 1fr 80px;
+    height: 100vh;
+  }
+  .ctrl-top {
+    background: var(--panel);
+    border-bottom: 1px solid var(--border);
+    padding: 0 18px;
+    display: flex; align-items: center; gap: 14px;
+  }
+  .ctrl-top .brand {
+    font-weight: 800;
+    font-size: 15px;
+    letter-spacing: -0.025em;
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .ctrl-top .brand-mark {
+    width: 24px; height: 24px;
+    background: var(--text); color: #fff;
+    border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 13px;
+    position: relative;
+  }
+  .ctrl-top .brand-mark::after {
+    content: ""; position: absolute;
+    right: -2px; bottom: -2px;
+    width: 7px; height: 7px;
+    background: var(--accent); border-radius: 2px;
+    border: 2px solid var(--panel);
+  }
+  .event-title-input {
+    flex: 1;
+    background: transparent;
+    border: 1px solid transparent;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 14.5px; font-weight: 600;
+    color: var(--text);
+    max-width: 380px;
+    transition: all 0.12s;
+  }
+  .event-title-input:hover { background: var(--panel-2); }
+  .event-title-input:focus { border-color: var(--border-strong); background: #fff; outline: none; }
+
+  .ctrl-top .top-actions { display: flex; gap: 6px; margin-left: auto; }
+  .ctrl-top .presenter-status {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 12px; font-weight: 600;
+    background: var(--panel-2);
+    color: var(--muted);
+  }
+  .ctrl-top .presenter-status.live {
+    background: #ecfdf5; color: var(--success);
+  }
+  .ctrl-top .presenter-status .dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: currentColor;
+  }
+  .ctrl-top .presenter-status.live .dot {
+    animation: pulse 1.5s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  /* Body grid */
+  .ctrl-body {
+    display: grid;
+    grid-template-columns: 240px 1fr 280px;
+    min-height: 0;
+    overflow: hidden;
+  }
+  .slides-pane, .vip-pane {
+    background: var(--panel);
+    border-right: 1px solid var(--border);
+    display: flex; flex-direction: column;
+    min-height: 0;
+  }
+  .vip-pane { border-right: none; border-left: 1px solid var(--border); }
+  .pane-head {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    flex-shrink: 0;
+  }
+  .pane-head h3 {
+    margin: 0; font-size: 12px; font-weight: 700;
+    color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.06em;
+  }
+  .pane-head .count {
+    background: var(--panel-2); color: var(--text-2);
+    padding: 1px 7px; border-radius: 999px;
+    font-size: 11px; font-weight: 600;
+  }
+  .pane-scroll {
+    flex: 1; overflow-y: auto;
+    padding: 8px;
+  }
+
+  /* Slide thumbnails */
+  .slide-thumb {
+    background: #fff;
+    border: 2px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+    margin-bottom: 6px;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.12s;
+  }
+  .slide-thumb:hover { border-color: var(--border-strong); }
+  .slide-thumb.active {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(217,78,42,0.12);
+  }
+  .slide-thumb .thumb-num {
+    position: absolute;
+    top: 4px; left: 6px;
+    background: rgba(15,18,28,0.7);
+    color: #fff;
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-size: 10px; font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    z-index: 2;
+  }
+  .slide-thumb .thumb-del {
+    position: absolute;
+    top: 4px; right: 4px;
+    width: 18px; height: 18px;
+    border-radius: 4px;
+    border: none;
+    background: rgba(255,255,255,0.9);
+    color: var(--danger);
+    opacity: 0;
+    transition: opacity 0.12s;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    z-index: 2;
+  }
+  .slide-thumb:hover .thumb-del { opacity: 1; }
+  .slide-thumb-preview {
+    width: 100%;
+    aspect-ratio: 16/9;
+    background: #1a2842;
+    color: #fff;
+    padding: 8px;
+    font-size: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    overflow: hidden;
+  }
+  .slide-thumb-preview.kind-title { background: linear-gradient(135deg, #0a1428 0%, #1a2842 100%); }
+  .slide-thumb-preview.kind-program { background: #1a2842; }
+  .slide-thumb-preview.kind-vips { background: #2a1f3d; }
+  .slide-thumb-preview.kind-text { background: #1a2842; }
+  .slide-thumb-preview.kind-image {
+    background: #000;
+    background-size: cover;
+    background-position: center;
+  }
+  .slide-thumb-preview .mini-title {
+    font-weight: 700; font-size: 9px;
+    line-height: 1.2;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+  }
+  .add-slide {
+    margin-top: 8px;
+    padding: 8px;
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  .add-slide button {
+    padding: 7px 10px;
+    background: var(--panel-2);
+    border: 1px dashed var(--border-strong);
+    border-radius: 6px;
+    font-size: 12px; font-weight: 600;
+    color: var(--text-2);
+    text-align: left;
+    transition: all 0.12s;
+  }
+  .add-slide button:hover {
+    background: #fff; border-color: var(--accent); color: var(--accent);
+  }
+
+  /* Center: preview + editor */
+  .editor-pane {
+    background: var(--bg);
+    display: flex; flex-direction: column;
+    min-height: 0; overflow: hidden;
+  }
+  .preview-wrap {
+    padding: 16px 24px;
+    flex-shrink: 0;
+    border-bottom: 1px solid var(--border);
+    background: var(--panel);
+  }
+  .preview-wrap .preview-head {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .preview-wrap .preview-head .label {
+    font-size: 11px; font-weight: 700;
+    color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.06em;
+  }
+  .preview-wrap .nav-btns { display: flex; gap: 4px; align-items: center; }
+  .preview-wrap .nav-btns .pos {
+    font-size: 12.5px; color: var(--muted);
+    margin: 0 8px; font-variant-numeric: tabular-nums;
+  }
+  .mini-stage {
+    width: 100%;
+    max-width: 720px;
+    aspect-ratio: 16/9;
+    background: #0a1428;
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+    margin: 0 auto;
+    position: relative;
+  }
+
+  .editor-scroll {
+    flex: 1; overflow-y: auto;
+    padding: 16px 24px 24px;
+  }
+  .editor-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 16px 18px;
+    max-width: 720px; margin: 0 auto;
+  }
+  .editor-card h4 {
+    margin: 0 0 12px;
+    font-size: 13px; font-weight: 700;
+    color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.06em;
+  }
+  .editor-card label {
+    display: block;
+    margin-bottom: 12px;
+    font-size: 12.5px; font-weight: 600;
+    color: var(--text-2);
+  }
+  .editor-card label > span {
+    display: block;
+    margin-bottom: 4px;
+  }
+  .input, .textarea, .select {
+    width: 100%;
+    padding: 8px 11px;
+    border: 1px solid var(--border-strong);
+    border-radius: 6px;
+    background: #fff;
+    outline: none;
+    transition: all 0.12s;
+    font-size: 13.5px;
+  }
+  .input:focus, .textarea:focus, .select:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(217,78,42,0.12);
+  }
+  .textarea { min-height: 80px; resize: vertical; }
+
+  /* Program editor */
+  .prog-list { list-style: none; margin: 0; padding: 0; }
+  .prog-item {
+    display: flex; align-items: center; gap: 8px;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .prog-item:last-child { border-bottom: none; }
+  .prog-item .num {
+    width: 22px; height: 22px;
+    border-radius: 4px;
+    background: var(--panel-2);
+    color: var(--text-2);
+    font-size: 11px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    font-variant-numeric: tabular-nums;
+  }
+  .prog-item.active .num {
+    background: var(--gold); color: #fff;
+  }
+  .prog-item input { flex: 1; border: none; background: transparent; padding: 4px; }
+  .prog-item input:focus { background: var(--panel-2); }
+  .prog-item .actions { display: flex; gap: 2px; }
+  .prog-item button {
+    width: 24px; height: 24px;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    color: var(--muted);
+    cursor: pointer;
+  }
+  .prog-item button:hover { background: var(--panel-2); color: var(--text); }
+  .prog-item .mark-active {
+    color: var(--gold);
+  }
+  .prog-item.active .mark-active {
+    background: var(--gold-soft);
+  }
+
+  /* VIP panel */
+  .vip-list { list-style: none; margin: 0; padding: 0; }
+  .vip-card {
+    display: flex; gap: 10px;
+    padding: 8px;
+    margin-bottom: 6px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: #fff;
+    position: relative;
+  }
+  .vip-card:hover { border-color: var(--border-strong); }
+  .vip-photo {
+    width: 42px; height: 56px;
+    flex-shrink: 0;
+    background: var(--panel-2);
+    border-radius: 4px;
+    overflow: hidden;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--muted);
+    border: 1px dashed var(--border-strong);
+    background-size: cover; background-position: center;
+  }
+  .vip-photo.has-photo { border-style: solid; border-color: var(--border); }
+  .vip-photo svg { width: 18px; height: 18px; }
+  .vip-info { flex: 1; min-width: 0; }
+  .vip-info input {
+    width: 100%;
+    border: none;
+    background: transparent;
+    font-size: 13px;
+    padding: 2px 4px;
+    border-radius: 4px;
+  }
+  .vip-info input:focus { background: var(--panel-2); outline: none; }
+  .vip-info .vip-name { font-weight: 700; }
+  .vip-info .vip-affil { font-size: 11.5px; color: var(--muted); }
+  .vip-del {
+    position: absolute;
+    top: 4px; right: 4px;
+    width: 20px; height: 20px;
+    border: none; border-radius: 4px;
+    background: transparent;
+    color: var(--muted);
+    opacity: 0; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .vip-card:hover .vip-del { opacity: 1; }
+  .vip-del:hover { background: var(--danger-soft); color: var(--danger); }
+  .add-vip {
+    padding: 8px;
+    width: 100%;
+    background: var(--panel-2);
+    border: 1px dashed var(--border-strong);
+    border-radius: 6px;
+    font-size: 12px; font-weight: 600;
+    color: var(--text-2);
+    margin-top: 4px;
+  }
+  .add-vip:hover { background: #fff; border-color: var(--accent); color: var(--accent); }
+
+  /* Bottom bar */
+  .audio-bar {
+    background: #0f1419;
+    color: #fff;
+    padding: 12px 18px;
+    display: flex; align-items: center; gap: 10px;
+    overflow-x: auto;
+    flex-shrink: 0;
+  }
+  .audio-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 10px 14px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 6px;
+    color: #fff;
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.12s;
+    white-space: nowrap;
+    position: relative;
+  }
+  .audio-btn:hover {
+    background: rgba(255,255,255,0.12);
+    border-color: rgba(255,255,255,0.2);
+  }
+  .audio-btn.playing {
+    background: var(--gold);
+    border-color: var(--gold);
+    color: #1a1206;
+  }
+  .audio-btn.playing::after {
+    content: "";
+    position: absolute;
+    left: 8px; right: 8px; bottom: 4px;
+    height: 2px;
+    background: rgba(0,0,0,0.3);
+    border-radius: 1px;
+    overflow: hidden;
+  }
+  .audio-btn .ic {
+    width: 18px; height: 18px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px;
+  }
+  .audio-btn.playing .ic { background: rgba(0,0,0,0.18); }
+  .audio-btn.no-file {
+    opacity: 0.55;
+  }
+  .audio-btn.no-file::before {
+    content: "🎵 업로드 필요";
+    position: absolute; left: 0; right: 0; top: -22px;
+    text-align: center;
+    font-size: 10px;
+    color: var(--muted);
+    pointer-events: none;
+  }
+  .audio-sep {
+    width: 1px;
+    height: 28px;
+    background: rgba(255,255,255,0.15);
+    margin: 0 4px;
+  }
+  .audio-bar .stop-btn {
+    background: #b91c1c;
+    border-color: #b91c1c;
+    color: #fff;
+    margin-left: auto;
+  }
+  .audio-bar .stop-btn:hover { background: #991b1b; }
+  .audio-bar .blank-btn {
+    background: #18181b;
+    border-color: rgba(255,255,255,0.2);
+  }
+
+  /* Buttons */
+  .btn {
+    padding: 6px 12px;
+    border: 1px solid var(--border-strong);
+    background: #fff;
+    border-radius: 6px;
+    color: var(--text);
+    font-size: 13px; font-weight: 500;
+    transition: all 0.12s;
+    display: inline-flex; align-items: center; gap: 5px;
+    line-height: 1;
+  }
+  .btn:hover { background: var(--panel-2); }
+  .btn svg { width: 13px; height: 13px; }
+  .btn-primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .btn-primary:hover { background: #b9421f; border-color: #b9421f; }
+  .btn-dark { background: var(--text); color: #fff; border-color: var(--text); }
+  .btn-dark:hover { background: #000; }
+  .btn-sm { padding: 4px 8px; font-size: 12px; }
+  .btn-icon {
+    width: 26px; height: 26px;
+    padding: 0;
+    background: transparent;
+    border: 1px solid transparent;
+    color: var(--muted);
+    border-radius: 4px;
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+  .btn-icon:hover { background: var(--panel-2); color: var(--text); }
+  .btn-icon svg { width: 14px; height: 14px; }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 100px; left: 50%;
+    transform: translateX(-50%) translateY(8px);
+    padding: 10px 18px;
+    background: var(--text); color: #fff;
+    border-radius: 999px;
+    font-size: 13px; font-weight: 500;
+    box-shadow: var(--shadow-lg);
+    z-index: 300;
+    opacity: 0;
+    transition: opacity 0.18s, transform 0.18s;
+    pointer-events: none; white-space: nowrap;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* ────── PRESENTER VIEW ────── */
+  body.presenter {
+    background: #000;
+    color: #fff;
+    cursor: none;
+    overflow: hidden;
+  }
+  body.presenter:hover { cursor: default; }
+  .stage {
+    width: 100vw; height: 100vh;
+    background: linear-gradient(180deg, #0a1428 0%, #050a14 100%);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .stage.blank {
+    background: #000;
+  }
+  .stage.blank > * { display: none; }
+  .slide {
+    width: 100%; height: 100%;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 6vh 8vw;
+    text-align: center;
+  }
+  .slide-title-text {
+    font-size: 8vw;
+    font-weight: 900;
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+    margin: 0;
+    background: linear-gradient(180deg, #fff 0%, #d4d4d8 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .slide-title-sub {
+    font-size: 3vw;
+    font-weight: 500;
+    color: #d4a544;
+    margin-top: 3vh;
+    letter-spacing: 0.02em;
+  }
+  .slide-title-date {
+    font-size: 1.8vw;
+    color: rgba(255,255,255,0.5);
+    margin-top: 5vh;
+    font-family: ui-monospace, SFMono-Regular, monospace;
+  }
+  /* Program slide */
+  .slide-program-title {
+    font-size: 4vw;
+    font-weight: 800;
+    margin: 0 0 6vh;
+    letter-spacing: -0.02em;
+    color: #fff;
+  }
+  .slide-program-list {
+    list-style: none;
+    padding: 0; margin: 0;
+    width: 100%;
+    max-width: 70vw;
+  }
+  .slide-program-list li {
+    display: flex;
+    align-items: center;
+    gap: 3vw;
+    padding: 1.5vh 0;
+    font-size: 3vw;
+    font-weight: 500;
+    color: rgba(255,255,255,0.45);
+    transition: all 0.3s;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .slide-program-list li:last-child { border-bottom: none; }
+  .slide-program-list li.active {
+    color: #d4a544;
+    font-weight: 800;
+    transform: scale(1.04);
+  }
+  .slide-program-list li .pnum {
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    font-weight: 700;
+    font-size: 2.2vw;
+    color: rgba(255,255,255,0.3);
+    min-width: 4vw;
+    text-align: right;
+  }
+  .slide-program-list li.active .pnum { color: #d4a544; }
+  /* VIPs */
+  .slide-vips-title {
+    font-size: 4vw;
+    font-weight: 800;
+    margin: 0 0 5vh;
+    letter-spacing: -0.02em;
+  }
+  .vip-grid {
+    display: grid;
+    gap: 4vh 4vw;
+    width: 100%;
+    max-width: 80vw;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    justify-items: center;
+  }
+  .vip-grid.cols-1 { grid-template-columns: 1fr; }
+  .vip-grid.cols-2 { grid-template-columns: repeat(2, 1fr); }
+  .vip-grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
+  .vip-grid.cols-4 { grid-template-columns: repeat(4, 1fr); }
+  .vip-cell {
+    display: flex; flex-direction: column;
+    align-items: center;
+    gap: 1.5vh;
+    text-align: center;
+  }
+  .vip-cell .photo {
+    width: 18vh; height: 24vh;
+    border-radius: 1vh;
+    overflow: hidden;
+    background: rgba(255,255,255,0.06);
+    background-size: cover; background-position: center;
+    display: flex; align-items: center; justify-content: center;
+    color: rgba(255,255,255,0.4);
+    border: 2px solid rgba(255,255,255,0.1);
+  }
+  .vip-cell .vip-affil-big {
+    font-size: 1.8vw;
+    color: #d4a544;
+    font-weight: 600;
+  }
+  .vip-cell .vip-name-big {
+    font-size: 3vw;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+  }
+  /* Text slide */
+  .slide-text-title {
+    font-size: 4.5vw;
+    font-weight: 800;
+    margin: 0 0 4vh;
+    letter-spacing: -0.02em;
+  }
+  .slide-text-body {
+    font-size: 2.4vw;
+    font-weight: 400;
+    line-height: 1.5;
+    color: rgba(255,255,255,0.85);
+    max-width: 80vw;
+    white-space: pre-wrap;
+  }
+  /* Image slide */
+  .slide-image {
+    width: 100%; height: 100%;
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: #000;
+  }
+  /* Audio overlay */
+  .audio-overlay {
+    position: absolute;
+    bottom: 4vh;
+    right: 4vh;
+    background: rgba(212, 165, 68, 0.15);
+    border: 1px solid rgba(212, 165, 68, 0.4);
+    color: #d4a544;
+    padding: 1.2vh 2vw;
+    border-radius: 99px;
+    font-size: 1.5vw;
+    font-weight: 700;
+    display: none;
+    align-items: center;
+    gap: 1vw;
+  }
+  .audio-overlay.on { display: inline-flex; }
+  .audio-overlay::before {
+    content: "♬";
+    font-size: 2vw;
+    animation: pulse 1.5s infinite;
+  }
+
+  /* Watermark - shows event title bottom-left, small */
+  .stage-watermark {
+    position: absolute;
+    bottom: 3vh; left: 4vh;
+    color: rgba(255,255,255,0.2);
+    font-size: 1.2vw;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+    pointer-events: none;
+  }
+
+  @media (max-width: 1100px) {
+    .ctrl-body { grid-template-columns: 200px 1fr 240px; }
+  }
+  @media (max-width: 900px) {
+    .ctrl-body { grid-template-columns: 1fr; grid-template-rows: auto auto auto; overflow-y: auto; }
+    .slides-pane, .vip-pane { border: none; border-bottom: 1px solid var(--border); }
+  }
+</style>
+</head>
+<body>
+
+<!-- ========== CONTROL PANEL ========== -->
+<div class="ctrl" id="ctrl">
+  <div class="ctrl-top">
+    <div class="brand">
+      <div class="brand-mark">개</div>
+      개소식 운영
+    </div>
+    <input type="text" class="event-title-input" id="eventTitleInput" placeholder="행사명을 입력하세요 (예: 심홍순 후보 캠프 개소식)" />
+    <div class="top-actions">
+      <button class="presenter-status" id="presenterStatus" title="발표 화면 상태">
+        <span class="dot"></span>
+        <span class="lbl">발표 화면 없음</span>
+      </button>
+      <button class="btn btn-primary btn-sm" id="openPresenterBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        발표 화면 열기
+      </button>
+    </div>
+  </div>
+
+  <div class="ctrl-body">
+    <!-- LEFT: slides -->
+    <div class="slides-pane">
+      <div class="pane-head">
+        <h3>슬라이드</h3>
+        <span class="count" id="slideCount">0</span>
+      </div>
+      <div class="pane-scroll" id="slideList"></div>
+      <div class="add-slide">
+        <button data-add="title">＋ 타이틀</button>
+        <button data-add="program">＋ 식순</button>
+        <button data-add="vips">＋ 내빈 소개</button>
+        <button data-add="text">＋ 자유 텍스트</button>
+        <button data-add="image">＋ 이미지</button>
+      </div>
+    </div>
+
+    <!-- CENTER: preview + editor -->
+    <div class="editor-pane">
+      <div class="preview-wrap">
+        <div class="preview-head">
+          <div class="label">현재 슬라이드 미리보기</div>
+          <div class="nav-btns">
+            <button class="btn btn-sm" id="prevBtn" title="이전 (←)">◀</button>
+            <span class="pos" id="slidePos">0 / 0</span>
+            <button class="btn btn-sm" id="nextBtn" title="다음 (→)">▶</button>
+          </div>
+        </div>
+        <div class="mini-stage" id="miniStage"></div>
+      </div>
+      <div class="editor-scroll" id="editorScroll"></div>
+    </div>
+
+    <!-- RIGHT: VIPs -->
+    <div class="vip-pane">
+      <div class="pane-head">
+        <h3>내빈 명단</h3>
+        <span class="count" id="vipCount">0</span>
+      </div>
+      <div class="pane-scroll">
+        <ul class="vip-list" id="vipList"></ul>
+        <button class="add-vip" id="addVipBtn">＋ 내빈 추가</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOTTOM: audio buttons -->
+  <div class="audio-bar" id="audioBar">
+    <button class="audio-btn" data-track="salute"><span class="ic">🇰🇷</span>국기에 대한 경례</button>
+    <button class="audio-btn" data-track="anthem"><span class="ic">♬</span>애국가</button>
+    <button class="audio-btn" data-track="silence_patriot"><span class="ic">🕊</span>순국선열에 대한 묵념</button>
+    <button class="audio-btn" data-track="silence"><span class="ic">🤫</span>묵념</button>
+    <button class="audio-btn" data-track="applause"><span class="ic">👏</span>박수</button>
+    <div class="audio-sep"></div>
+    <button class="audio-btn blank-btn" id="blankBtn" title="B 키로 토글"><span class="ic">⬛</span>검은 화면 (B)</button>
+    <button class="audio-btn stop-btn" id="stopBtn"><span class="ic">⏹</span>오디오 정지</button>
+  </div>
+</div>
+
+<!-- ========== PRESENTER VIEW ========== -->
+<div id="presenter-root" class="hidden">
+  <div class="stage" id="stage"></div>
+  <audio id="presenterAudio"></audio>
+</div>
+
+<!-- File picker for audio (hidden) -->
+<input type="file" id="audioFileInput" accept="audio/*" style="display:none" />
+<input type="file" id="vipPhotoInput" accept="image/*" style="display:none" />
+<input type="file" id="slideImageInput" accept="image/*" style="display:none" />
+
+<div class="toast" id="toast"></div>
+
+<audio id="ctrlAudio"></audio>
+
+<script>
+  // ─── Mode detection ───
+  const PRESENTER = new URLSearchParams(location.search).has("present");
+  if (PRESENTER) {
+    document.body.classList.add("presenter");
+    document.getElementById("ctrl").classList.add("hidden");
+    document.getElementById("presenter-root").classList.remove("hidden");
+  } else {
+    document.getElementById("presenter-root").classList.add("hidden");
+  }
+
+  // ─── State ───
+  const STORAGE_KEY = "ceremony-state-v1";
+  const CHANNEL_NAME = "ceremony-channel";
+  const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+
+  const DEFAULT_PROGRAM = [
+    "개회 선언",
+    "국민의례 — 국기에 대한 경례",
+    "국민의례 — 애국가 제창",
+    "국민의례 — 순국선열에 대한 묵념",
+    "내빈 소개",
+    "환영사",
+    "축사",
+    "후보자 인사",
+    "기념 촬영",
+    "폐회",
+  ];
+
+  function defaultState() {
+    return {
+      title: "",
+      currentSlide: 0,
+      blank: false,
+      slides: [
+        { id: uid(), type: "title", title: "", subtitle: "", date: new Date().toLocaleDateString("ko-KR") },
+        { id: uid(), type: "program", title: "식순", items: DEFAULT_PROGRAM.map(t => ({ id: uid(), text: t })), activeId: null },
+        { id: uid(), type: "vips", title: "내빈 소개", columns: 3 },
+        { id: uid(), type: "text", title: "환영합니다", body: "함께해 주신 모든 분들께 감사드립니다." },
+      ],
+      vips: [],
+      audioTracks: {
+        salute: { name: "국기에 대한 경례", src: "" },
+        anthem: { name: "애국가", src: "" },
+        silence_patriot: { name: "순국선열에 대한 묵념", src: "" },
+        silence: { name: "묵념", src: "" },
+        applause: { name: "박수", src: "" },
+      },
+      audio: { track: null, playing: false },
+    };
+  }
+
+  function loadState() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return defaultState();
+      const parsed = JSON.parse(raw);
+      const def = defaultState();
+      return { ...def, ...parsed, audioTracks: { ...def.audioTracks, ...(parsed.audioTracks || {}) } };
+    } catch (e) {
+      console.error(e);
+      return defaultState();
+    }
+  }
+  let state = loadState();
+
+  function saveState() {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+    catch (e) { toast("저장 실패: 오디오/이미지 파일이 너무 큽니다"); }
+  }
+
+  // ─── Channel ───
+  const channel = new BroadcastChannel(CHANNEL_NAME);
+  function broadcast(msg) { channel.postMessage(msg); }
+  function broadcastState() { broadcast({ type: "state", state }); }
+
+  channel.onmessage = ({ data }) => {
+    if (PRESENTER) {
+      if (data.type === "state") {
+        state = data.state;
+        renderPresenter();
+      } else if (data.type === "play") {
+        playAudioPresenter(data.track);
+      } else if (data.type === "stop") {
+        stopAudioPresenter();
+      } else if (data.type === "blank") {
+        state.blank = data.blank;
+        document.getElementById("stage").classList.toggle("blank", state.blank);
+      } else if (data.type === "request-state") {
+        // Control panel asking presenter to confirm
+        broadcast({ type: "presenter-alive" });
+      }
+    } else {
+      // Control
+      if (data.type === "presenter-alive") {
+        setPresenterStatus(true);
+        broadcastState();
+      } else if (data.type === "presenter-closed") {
+        setPresenterStatus(false);
+      }
+    }
+  };
+
+  // ─── Toast ───
+  let toastTimer;
+  function toast(msg) {
+    const el = document.getElementById("toast");
+    if (!el) return;
+    el.textContent = msg;
+    el.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => el.classList.remove("show"), 2200);
+  }
+
+  // ─── Helpers ───
+  const escapeHtml = (s) => String(s || "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+  const cls = (...c) => c.filter(Boolean).join(" ");
+
+  function readAsDataURL(file) {
+    return new Promise((res, rej) => {
+      const r = new FileReader();
+      r.onload = () => res(r.result);
+      r.onerror = rej;
+      r.readAsDataURL(file);
+    });
+  }
+
+  // ═══════════════════════════════════════════════════
+  //  PRESENTER MODE
+  // ═══════════════════════════════════════════════════
+  if (PRESENTER) {
+    document.title = "발표 화면";
+
+    // Announce presence
+    broadcast({ type: "presenter-alive" });
+    broadcast({ type: "request-state" });
+
+    window.addEventListener("beforeunload", () => {
+      broadcast({ type: "presenter-closed" });
+    });
+
+    // Auto-fullscreen on first click
+    document.addEventListener("click", () => {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen?.();
+      }
+    }, { once: true });
+
+    renderPresenter();
+  }
+
+  function renderPresenter() {
+    const stage = document.getElementById("stage");
+    if (!stage) return;
+    stage.classList.toggle("blank", state.blank);
+    document.title = state.title ? `${state.title} — 발표` : "발표 화면";
+    if (state.blank) return;
+    const slide = state.slides[state.currentSlide];
+    if (!slide) { stage.innerHTML = "<div class='slide'></div>"; return; }
+    stage.innerHTML = renderSlideHTML(slide, /*forPresenter*/true);
+    stage.insertAdjacentHTML("beforeend", `<div class="stage-watermark">${escapeHtml(state.title || "")}</div>`);
+  }
+
+  function playAudioPresenter(trackKey) {
+    const audio = document.getElementById("presenterAudio");
+    const t = state.audioTracks[trackKey];
+    if (!t || !t.src) return;
+    audio.src = t.src;
+    audio.play().catch(() => {});
+    audio.onended = () => {
+      broadcast({ type: "audio-ended", track: trackKey });
+    };
+    const stage = document.getElementById("stage");
+    let overlay = stage.querySelector(".audio-overlay");
+    if (!overlay) {
+      overlay = document.createElement("div");
+      overlay.className = "audio-overlay";
+      stage.appendChild(overlay);
+    }
+    overlay.textContent = t.name;
+    overlay.classList.add("on");
+  }
+  function stopAudioPresenter() {
+    const audio = document.getElementById("presenterAudio");
+    audio.pause(); audio.currentTime = 0;
+    document.querySelector(".audio-overlay")?.classList.remove("on");
+  }
+
+  // ═══════════════════════════════════════════════════
+  //  SLIDE RENDERING (shared)
+  // ═══════════════════════════════════════════════════
+  function renderSlideHTML(slide, forPresenter) {
+    if (!slide) return "";
+    if (slide.type === "title") return renderTitleSlide(slide);
+    if (slide.type === "program") return renderProgramSlide(slide);
+    if (slide.type === "vips") return renderVipsSlide(slide);
+    if (slide.type === "text") return renderTextSlide(slide);
+    if (slide.type === "image") return renderImageSlide(slide);
+    return "";
+  }
+  function renderTitleSlide(s) {
+    return `
+      <div class="slide">
+        <h1 class="slide-title-text">${escapeHtml(s.title || state.title || "행사명")}</h1>
+        ${s.subtitle ? `<div class="slide-title-sub">${escapeHtml(s.subtitle)}</div>` : ""}
+        ${s.date ? `<div class="slide-title-date">${escapeHtml(s.date)}</div>` : ""}
+      </div>`;
+  }
+  function renderProgramSlide(s) {
+    return `
+      <div class="slide">
+        <h2 class="slide-program-title">${escapeHtml(s.title || "식순")}</h2>
+        <ol class="slide-program-list">
+          ${(s.items || []).map((it, i) => `
+            <li class="${it.id === s.activeId ? "active" : ""}">
+              <span class="pnum">${String(i + 1).padStart(2, "0")}</span>
+              <span>${escapeHtml(it.text)}</span>
+            </li>`).join("")}
+        </ol>
+      </div>`;
+  }
+  function renderVipsSlide(s) {
+    const cols = s.columns || 3;
+    return `
+      <div class="slide">
+        <h2 class="slide-vips-title">${escapeHtml(s.title || "내빈 소개")}</h2>
+        <div class="vip-grid cols-${cols}">
+          ${state.vips.length === 0
+            ? '<div style="color:rgba(255,255,255,0.5);font-size:2vw">내빈을 추가해주세요</div>'
+            : state.vips.map(v => `
+              <div class="vip-cell">
+                <div class="photo" style="${v.photo ? `background-image:url(${v.photo})` : ""}">${!v.photo ? "👤" : ""}</div>
+                <div class="vip-affil-big">${escapeHtml(v.affiliation || "")}</div>
+                <div class="vip-name-big">${escapeHtml(v.name || "")}</div>
+              </div>`).join("")}
+        </div>
+      </div>`;
+  }
+  function renderTextSlide(s) {
+    return `
+      <div class="slide">
+        ${s.title ? `<h2 class="slide-text-title">${escapeHtml(s.title)}</h2>` : ""}
+        ${s.body ? `<div class="slide-text-body">${escapeHtml(s.body)}</div>` : ""}
+      </div>`;
+  }
+  function renderImageSlide(s) {
+    return `<div class="slide-image" style="${s.src ? `background-image:url(${s.src})` : ""}"></div>`;
+  }
+
+  // ═══════════════════════════════════════════════════
+  //  CONTROL MODE
+  // ═══════════════════════════════════════════════════
+  if (!PRESENTER) {
+
+    // ── Render entry ──
+    function render() {
+      renderEventTitle();
+      renderSlideList();
+      renderMiniStage();
+      renderEditor();
+      renderVipList();
+      renderSlidePos();
+      renderAudioBar();
+      saveState();
+      broadcastState();
+    }
+
+    // ── Event title ──
+    function renderEventTitle() {
+      document.getElementById("eventTitleInput").value = state.title;
+    }
+    document.getElementById("eventTitleInput").addEventListener("input", (e) => {
+      state.title = e.target.value;
+      saveState(); broadcastState();
+      // Also re-render mini stage if title slide is active
+      renderMiniStage();
+    });
+
+    // ── Slide list ──
+    function renderSlideList() {
+      const list = document.getElementById("slideList");
+      document.getElementById("slideCount").textContent = state.slides.length;
+      if (state.slides.length === 0) {
+        list.innerHTML = '<div style="padding:20px;text-align:center;color:var(--muted);font-size:12px">슬라이드가 없습니다</div>';
+        return;
+      }
+      list.innerHTML = state.slides.map((s, i) => {
+        const isActive = i === state.currentSlide;
+        return `
+          <div class="slide-thumb ${isActive ? "active" : ""}" data-i="${i}">
+            <div class="thumb-num">${i + 1}</div>
+            <button class="thumb-del" data-del="${i}" title="삭제">✕</button>
+            <div class="slide-thumb-preview kind-${s.type}" ${s.type === "image" && s.src ? `style="background-image:url(${s.src})"` : ""}>
+              <div class="mini-title">${escapeHtml(thumbLabel(s))}</div>
+            </div>
+          </div>`;
+      }).join("");
+      list.querySelectorAll(".slide-thumb").forEach(el => {
+        el.onclick = (e) => {
+          if (e.target.closest(".thumb-del")) return;
+          state.currentSlide = parseInt(el.dataset.i);
+          render();
+        };
+      });
+      list.querySelectorAll(".thumb-del").forEach(el => {
+        el.onclick = (e) => {
+          e.stopPropagation();
+          const i = parseInt(el.dataset.del);
+          if (state.slides.length === 1) return toast("최소 한 장은 있어야 합니다");
+          if (!confirm("이 슬라이드를 삭제할까요?")) return;
+          state.slides.splice(i, 1);
+          if (state.currentSlide >= state.slides.length) state.currentSlide = state.slides.length - 1;
+          render();
+        };
+      });
+    }
+
+    function thumbLabel(s) {
+      if (s.type === "title") return s.title || state.title || "타이틀";
+      if (s.type === "program") return s.title || "식순";
+      if (s.type === "vips") return s.title || "내빈 소개";
+      if (s.type === "text") return s.title || s.body?.slice(0, 30) || "텍스트";
+      if (s.type === "image") return s.title || "이미지";
+      return "";
+    }
+
+    // Add slide
+    document.querySelectorAll(".add-slide button").forEach(b => {
+      b.onclick = () => {
+        const type = b.dataset.add;
+        const newSlide = newSlideOfType(type);
+        state.slides.push(newSlide);
+        state.currentSlide = state.slides.length - 1;
+        render();
+      };
+    });
+    function newSlideOfType(type) {
+      const id = uid();
+      if (type === "title") return { id, type, title: "", subtitle: "", date: new Date().toLocaleDateString("ko-KR") };
+      if (type === "program") return { id, type, title: "식순", items: DEFAULT_PROGRAM.map(t => ({ id: uid(), text: t })), activeId: null };
+      if (type === "vips") return { id, type, title: "내빈 소개", columns: 3 };
+      if (type === "text") return { id, type, title: "", body: "" };
+      if (type === "image") return { id, type, title: "", src: "" };
+    }
+
+    // ── Mini stage ──
+    function renderMiniStage() {
+      const stage = document.getElementById("miniStage");
+      const slide = state.slides[state.currentSlide];
+      if (!slide) { stage.innerHTML = ""; return; }
+      // We reuse the same renderSlideHTML; scale it via transform
+      stage.innerHTML = renderSlideHTML(slide, false);
+      // The slide CSS uses vw/vh which here scales to mini-stage (since vw refers to viewport).
+      // Better to use a transform-scale wrapper. We'll do simple approach by limiting font sizes via a wrapper.
+      // For MVP: wrap content and use scale based on actual stage dimensions.
+      const stageW = stage.clientWidth;
+      const refW = window.innerWidth;
+      const scale = stageW / refW;
+      const wrap = document.createElement("div");
+      wrap.style.cssText = `width:${refW}px;height:${refW * 9 / 16}px;transform:scale(${scale});transform-origin:top left;position:absolute;left:0;top:0`;
+      wrap.innerHTML = stage.innerHTML;
+      stage.innerHTML = "";
+      stage.appendChild(wrap);
+    }
+    window.addEventListener("resize", () => renderMiniStage());
+
+    function renderSlidePos() {
+      document.getElementById("slidePos").textContent = `${state.currentSlide + 1} / ${state.slides.length}`;
+    }
+
+    document.getElementById("prevBtn").onclick = () => {
+      if (state.currentSlide > 0) { state.currentSlide--; render(); }
+    };
+    document.getElementById("nextBtn").onclick = () => {
+      if (state.currentSlide < state.slides.length - 1) { state.currentSlide++; render(); }
+    };
+
+    // ── Editor ──
+    function renderEditor() {
+      const wrap = document.getElementById("editorScroll");
+      const slide = state.slides[state.currentSlide];
+      if (!slide) { wrap.innerHTML = ""; return; }
+      wrap.innerHTML = `<div class="editor-card" id="editorCard"></div>`;
+      const card = document.getElementById("editorCard");
+      if (slide.type === "title") renderTitleEditor(card, slide);
+      else if (slide.type === "program") renderProgramEditor(card, slide);
+      else if (slide.type === "vips") renderVipsEditor(card, slide);
+      else if (slide.type === "text") renderTextEditor(card, slide);
+      else if (slide.type === "image") renderImageEditor(card, slide);
+    }
+    function renderTitleEditor(card, s) {
+      card.innerHTML = `
+        <h4>타이틀 슬라이드</h4>
+        <label><span>큰 글자 (메인 제목)</span><input class="input" id="ed_title" placeholder="예: 심홍순 후보 캠프 개소식" value="${escapeHtml(s.title)}"/></label>
+        <label><span>부제 (금색)</span><input class="input" id="ed_sub" placeholder="예: 함께 만드는 우리 동네" value="${escapeHtml(s.subtitle)}"/></label>
+        <label><span>날짜/장소 (회색 작은 글)</span><input class="input" id="ed_date" placeholder="예: 2026.05.07. 19:00 / 시민회관" value="${escapeHtml(s.date)}"/></label>
+        <div style="font-size:11.5px;color:var(--muted)">큰 글자가 비어있으면 상단 행사명이 자동 표시됩니다</div>
+      `;
+      card.querySelector("#ed_title").oninput = (e) => { s.title = e.target.value; debouncedUpdate(); };
+      card.querySelector("#ed_sub").oninput = (e) => { s.subtitle = e.target.value; debouncedUpdate(); };
+      card.querySelector("#ed_date").oninput = (e) => { s.date = e.target.value; debouncedUpdate(); };
+    }
+    function renderProgramEditor(card, s) {
+      card.innerHTML = `
+        <h4>식순 슬라이드</h4>
+        <label><span>제목</span><input class="input" id="ed_title" value="${escapeHtml(s.title)}"/></label>
+        <div style="font-size:11.5px;color:var(--muted);margin-bottom:8px">⭐ 표시로 현재 진행 중인 항목을 강조 (큰 화면에서 금색으로 표시)</div>
+        <ul class="prog-list" id="progList"></ul>
+        <button class="btn btn-sm" id="addProg" style="margin-top:8px">＋ 항목 추가</button>
+      `;
+      card.querySelector("#ed_title").oninput = (e) => { s.title = e.target.value; debouncedUpdate(); };
+      const list = card.querySelector("#progList");
+      const renderList = () => {
+        list.innerHTML = (s.items || []).map((it, i) => `
+          <li class="prog-item ${it.id === s.activeId ? "active" : ""}" data-id="${it.id}">
+            <span class="num">${i + 1}</span>
+            <input class="prog-input" value="${escapeHtml(it.text)}"/>
+            <div class="actions">
+              <button class="mark-active" title="진행 중으로 표시">⭐</button>
+              <button class="del-item" title="삭제">✕</button>
+            </div>
+          </li>`).join("");
+        list.querySelectorAll(".prog-item").forEach(li => {
+          const id = li.dataset.id;
+          const it = s.items.find(x => x.id === id);
+          li.querySelector(".prog-input").oninput = (e) => { it.text = e.target.value; debouncedUpdate(); };
+          li.querySelector(".mark-active").onclick = () => {
+            s.activeId = s.activeId === id ? null : id;
+            renderList();
+            debouncedUpdate();
+          };
+          li.querySelector(".del-item").onclick = () => {
+            s.items = s.items.filter(x => x.id !== id);
+            renderList();
+            debouncedUpdate();
+          };
+        });
+      };
+      renderList();
+      card.querySelector("#addProg").onclick = () => {
+        s.items.push({ id: uid(), text: "" });
+        renderList(); debouncedUpdate();
+      };
+    }
+    function renderVipsEditor(card, s) {
+      card.innerHTML = `
+        <h4>내빈 소개 슬라이드</h4>
+        <label><span>제목</span><input class="input" id="ed_title" value="${escapeHtml(s.title)}"/></label>
+        <label><span>열 개수</span>
+          <select class="select" id="ed_cols">
+            <option value="1" ${s.columns === 1 ? "selected" : ""}>1열</option>
+            <option value="2" ${s.columns === 2 ? "selected" : ""}>2열</option>
+            <option value="3" ${s.columns === 3 ? "selected" : ""}>3열</option>
+            <option value="4" ${s.columns === 4 ? "selected" : ""}>4열</option>
+          </select>
+        </label>
+        <div style="font-size:11.5px;color:var(--muted)">우측 패널에서 내빈을 추가/편집하면 여기에 자동 반영됩니다</div>
+      `;
+      card.querySelector("#ed_title").oninput = (e) => { s.title = e.target.value; debouncedUpdate(); };
+      card.querySelector("#ed_cols").onchange = (e) => { s.columns = parseInt(e.target.value); debouncedUpdate(); };
+    }
+    function renderTextEditor(card, s) {
+      card.innerHTML = `
+        <h4>자유 텍스트 슬라이드</h4>
+        <label><span>제목 (큰 글자)</span><input class="input" id="ed_title" value="${escapeHtml(s.title)}"/></label>
+        <label><span>본문</span><textarea class="textarea" id="ed_body" rows="6">${escapeHtml(s.body)}</textarea></label>
+      `;
+      card.querySelector("#ed_title").oninput = (e) => { s.title = e.target.value; debouncedUpdate(); };
+      card.querySelector("#ed_body").oninput = (e) => { s.body = e.target.value; debouncedUpdate(); };
+    }
+    function renderImageEditor(card, s) {
+      card.innerHTML = `
+        <h4>이미지 슬라이드</h4>
+        ${s.src
+          ? `<img src="${s.src}" style="max-width:100%;max-height:200px;border-radius:6px;border:1px solid var(--border);margin-bottom:10px"/>`
+          : `<div style="padding:30px;border:2px dashed var(--border-strong);border-radius:6px;text-align:center;color:var(--muted);margin-bottom:10px">이미지 없음</div>`}
+        <button class="btn btn-primary btn-sm" id="pickImg">${s.src ? "이미지 변경" : "이미지 선택"}</button>
+        ${s.src ? `<button class="btn btn-sm" id="clearImg" style="margin-left:6px">제거</button>` : ""}
+      `;
+      card.querySelector("#pickImg").onclick = () => {
+        const input = document.getElementById("slideImageInput");
+        input.onchange = async () => {
+          const f = input.files[0]; if (!f) return;
+          if (f.size > 5 * 1024 * 1024) return toast("이미지는 5MB 이하만 가능합니다");
+          s.src = await readAsDataURL(f);
+          render();
+          input.value = "";
+        };
+        input.click();
+      };
+      const clear = card.querySelector("#clearImg");
+      if (clear) clear.onclick = () => { s.src = ""; render(); };
+    }
+
+    let updateTimer;
+    function debouncedUpdate() {
+      clearTimeout(updateTimer);
+      updateTimer = setTimeout(() => {
+        renderSlideList();
+        renderMiniStage();
+        saveState();
+        broadcastState();
+      }, 80);
+    }
+
+    // ── VIP list ──
+    function renderVipList() {
+      const list = document.getElementById("vipList");
+      document.getElementById("vipCount").textContent = state.vips.length;
+      if (state.vips.length === 0) {
+        list.innerHTML = '<li style="padding:14px;text-align:center;color:var(--muted);font-size:12.5px">아직 내빈이 없습니다</li>';
+        return;
+      }
+      list.innerHTML = state.vips.map(v => `
+        <li class="vip-card" data-id="${v.id}">
+          <div class="vip-photo ${v.photo ? "has-photo" : ""}" data-photo style="${v.photo ? `background-image:url(${v.photo})` : ""}">
+            ${!v.photo ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>' : ""}
+          </div>
+          <div class="vip-info">
+            <input class="vip-affil" data-field="affiliation" placeholder="소속" value="${escapeHtml(v.affiliation)}"/>
+            <input class="vip-name" data-field="name" placeholder="이름" value="${escapeHtml(v.name)}"/>
+          </div>
+          <button class="vip-del" data-del>✕</button>
+        </li>`).join("");
+
+      list.querySelectorAll(".vip-card").forEach(card => {
+        const id = card.dataset.id;
+        const v = state.vips.find(x => x.id === id);
+        card.querySelector("[data-photo]").onclick = () => {
+          const input = document.getElementById("vipPhotoInput");
+          input.onchange = async () => {
+            const f = input.files[0]; if (!f) return;
+            if (f.size > 2 * 1024 * 1024) return toast("사진은 2MB 이하만 가능합니다");
+            v.photo = await readAsDataURL(f);
+            render();
+            input.value = "";
+          };
+          input.click();
+        };
+        card.querySelectorAll("input[data-field]").forEach(inp => {
+          inp.oninput = (e) => {
+            v[e.target.dataset.field] = e.target.value;
+            saveState();
+            broadcastState();
+            renderMiniStage();
+          };
+        });
+        card.querySelector("[data-del]").onclick = () => {
+          if (!confirm(`'${v.name || v.affiliation || "이 내빈"}'을(를) 삭제할까요?`)) return;
+          state.vips = state.vips.filter(x => x.id !== id);
+          render();
+        };
+      });
+    }
+    document.getElementById("addVipBtn").onclick = () => {
+      state.vips.push({ id: uid(), name: "", affiliation: "", photo: "" });
+      render();
+    };
+
+    // ── Audio bar ──
+    function renderAudioBar() {
+      document.querySelectorAll(".audio-btn[data-track]").forEach(btn => {
+        const trackKey = btn.dataset.track;
+        const t = state.audioTracks[trackKey];
+        const hasFile = !!(t && t.src);
+        btn.classList.toggle("no-file", !hasFile);
+        btn.classList.toggle("playing", state.audio.playing && state.audio.track === trackKey);
+      });
+    }
+    document.querySelectorAll(".audio-btn[data-track]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const trackKey = btn.dataset.track;
+        const t = state.audioTracks[trackKey];
+        if (!t.src) {
+          // Prompt to upload
+          const input = document.getElementById("audioFileInput");
+          input.onchange = async () => {
+            const f = input.files[0]; if (!f) return;
+            if (f.size > 5 * 1024 * 1024) return toast("오디오는 5MB 이하만 가능합니다 (mp3 압축 권장)");
+            t.src = await readAsDataURL(f);
+            saveState();
+            renderAudioBar();
+            toast(`${t.name} 파일이 등록됐어요. 다시 누르면 재생됩니다.`);
+            input.value = "";
+          };
+          input.click();
+          return;
+        }
+        // If already playing this track, stop. Else play.
+        if (state.audio.playing && state.audio.track === trackKey) {
+          stopAudioControl();
+        } else {
+          playAudioControl(trackKey);
+        }
+      });
+      // Right-click to re-upload
+      btn.addEventListener("contextmenu", (e) => {
+        e.preventDefault();
+        const trackKey = btn.dataset.track;
+        const t = state.audioTracks[trackKey];
+        if (!confirm(`${t.name} 오디오 파일을 ${t.src ? "교체" : "추가"}할까요?`)) return;
+        const input = document.getElementById("audioFileInput");
+        input.onchange = async () => {
+          const f = input.files[0]; if (!f) return;
+          if (f.size > 5 * 1024 * 1024) return toast("5MB 이하만 가능합니다");
+          t.src = await readAsDataURL(f);
+          saveState();
+          renderAudioBar();
+          toast(`${t.name} 파일이 ${t.src ? "교체" : "추가"}됐어요`);
+          input.value = "";
+        };
+        input.click();
+      });
+    });
+
+    const ctrlAudio = document.getElementById("ctrlAudio");
+
+    function playAudioControl(trackKey) {
+      const t = state.audioTracks[trackKey];
+      if (!t || !t.src) return;
+      state.audio = { track: trackKey, playing: true };
+      ctrlAudio.src = t.src;
+      ctrlAudio.play().catch(() => toast("재생 실패"));
+      broadcast({ type: "play", track: trackKey });
+      ctrlAudio.onended = () => {
+        state.audio.playing = false;
+        renderAudioBar();
+      };
+      renderAudioBar();
+    }
+    function stopAudioControl() {
+      state.audio = { track: null, playing: false };
+      ctrlAudio.pause(); ctrlAudio.currentTime = 0;
+      broadcast({ type: "stop" });
+      renderAudioBar();
+    }
+
+    document.getElementById("stopBtn").onclick = stopAudioControl;
+    document.getElementById("blankBtn").onclick = () => {
+      state.blank = !state.blank;
+      saveState();
+      broadcast({ type: "blank", blank: state.blank });
+      document.getElementById("blankBtn").classList.toggle("playing", state.blank);
+    };
+
+    // ── Presenter window ──
+    let presenterWin = null;
+    function setPresenterStatus(alive) {
+      const el = document.getElementById("presenterStatus");
+      el.classList.toggle("live", alive);
+      el.querySelector(".lbl").textContent = alive ? "발표 화면 LIVE" : "발표 화면 없음";
+    }
+    document.getElementById("openPresenterBtn").onclick = () => {
+      const url = location.pathname + "?present";
+      presenterWin = window.open(url, "ceremonyPresenter", "popup=true,width=1280,height=720");
+      if (!presenterWin) return toast("팝업이 차단됐어요. 브라우저에서 팝업을 허용해주세요");
+      setTimeout(() => broadcastState(), 600);
+    };
+    // Periodically ping presenter to know if it's alive
+    setInterval(() => {
+      broadcast({ type: "request-state" });
+      // If no response in 1.5s, assume dead
+    }, 3000);
+    // Listen for "presenter-alive" → set live in onmessage above
+
+    // ── Keyboard ──
+    document.addEventListener("keydown", (e) => {
+      if (e.target.matches("input, textarea")) return;
+      if (e.key === "ArrowRight" || e.key === "PageDown" || e.key === " ") {
+        e.preventDefault();
+        document.getElementById("nextBtn").click();
+      } else if (e.key === "ArrowLeft" || e.key === "PageUp") {
+        e.preventDefault();
+        document.getElementById("prevBtn").click();
+      } else if (e.key === "b" || e.key === "B") {
+        document.getElementById("blankBtn").click();
+      } else if (e.key === "Escape") {
+        if (state.audio.playing) stopAudioControl();
+      }
+    });
+
+    // Initial render
+    render();
+  }
+
+  // Also handle for presenter mode the keyboard locally (when presenter window has focus)
+  if (PRESENTER) {
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowRight" || e.key === "PageDown" || e.key === " ") {
+        state.currentSlide = Math.min(state.currentSlide + 1, state.slides.length - 1);
+        renderPresenter();
+        broadcast({ type: "state", state });
+      } else if (e.key === "ArrowLeft" || e.key === "PageUp") {
+        state.currentSlide = Math.max(state.currentSlide - 1, 0);
+        renderPresenter();
+        broadcast({ type: "state", state });
+      } else if (e.key === "f" || e.key === "F") {
+        document.documentElement.requestFullscreen?.();
+      } else if (e.key === "Escape") {
+        if (document.fullscreenElement) document.exitFullscreen();
+      }
+    });
+  }
+</script>
+</body>
+</html>

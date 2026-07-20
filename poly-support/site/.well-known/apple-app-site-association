@@ -1,0 +1,14 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appIDs": ["52XS8VGD43.kr.polyx.app.junggyeom"],
+        "components": [
+          { "/": "/support", "comment": "후원 메인" },
+          { "/": "/support/*", "comment": "후원 하위 경로 전체" }
+        ]
+      }
+    ]
+  }
+}

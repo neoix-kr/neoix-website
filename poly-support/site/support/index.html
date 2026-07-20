@@ -1,0 +1,1384 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>폴리 서포트 — 우리동네 정치인 후원</title>
+<meta name="description" content="우리동네 정치인의 후원회를 찾고 투명하게 후원하세요. 후원금은 선관위에 신고된 후원회 계좌로만 전달됩니다.">
+<meta property="og:title" content="폴리 서포트 — 우리동네 정치인 후원">
+<meta property="og:description" content="본인인증부터 세액공제까지, 정치 후원을 가장 쉽고 투명하게.">
+<meta property="og:url" content="https://polyx.kr/support">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+:root {
+  /* 정치중립: 파랑(민주)·빨강(국힘) 브랜드 사용 금지 — 폴리 보라(바이올렛) */
+  --brand: #7c3aed; --brand-dark: #6d28d9; --brand-bg: #f4f1fd;
+  --ink: #191919; --ink-2: #333d4b; --ink-3: #4e5968; --ink-4: #8b95a1;
+  --hair: rgba(25, 31, 40, .08); --bg: #ffffff; --bg-2: #fafafa;
+  --red: #f04452; --green: #00a05c;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  color: var(--ink); background: var(--bg); line-height: 1.5;
+  -webkit-font-smoothing: antialiased; word-break: keep-all;
+}
+.wrap { max-width: 960px; margin: 0 auto; padding: 0 24px; }
+::selection { background: var(--brand-bg); }
+
+/* ─── nav ─── */
+nav {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(255,255,255,.92); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--hair);
+}
+.nav-in { display: flex; align-items: center; justify-content: space-between; height: 56px; }
+.logo { font-weight: 800; font-size: 17px; color: var(--ink); text-decoration: none; letter-spacing: -0.02em; white-space: nowrap; }
+.nav-links { display: flex; gap: 4px; align-items: center; }
+.nav-links a { text-decoration: none; color: var(--ink-3); font-size: 14px; font-weight: 600; padding: 8px 12px; border-radius: 8px; white-space: nowrap; }
+.nav-links a:hover { background: var(--bg-2); }
+.nav-links a.cta { background: var(--brand); color: #fff; margin-left: 4px; }
+.nav-links a.cta:hover { background: var(--brand-dark); }
+@media (max-width: 520px) { .nav-links a:not(.cta) { display: none; } }
+
+/* ─── 공통 ─── */
+section { padding: 88px 0; }
+section.alt { background: var(--bg-2); border-top: 1px solid var(--hair); border-bottom: 1px solid var(--hair); }
+.sec-head { text-align: center; max-width: 560px; margin: 0 auto; }
+.sec-head .eyebrow { display: inline-block; font-size: 13px; font-weight: 700; color: var(--brand-dark); background: var(--brand-bg); padding: 6px 12px; border-radius: 8px; margin-bottom: 16px; }
+h2 { font-size: clamp(22px, 3.6vw, 30px); font-weight: 800; letter-spacing: -0.02em; line-height: 1.35; }
+.sec-sub { margin-top: 12px; color: var(--ink-3); font-size: 15px; line-height: 1.7; }
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 15px; font-weight: 700; height: 50px; padding: 0 24px; border-radius: 12px;
+  text-decoration: none; border: none; cursor: pointer; transition: transform .12s ease-out, background .15s ease-out;
+  font-family: inherit;
+}
+.btn:active { transform: scale(.98); }
+.btn-primary { background: var(--brand); color: #fff; }
+.btn-primary:hover { background: var(--brand-dark); }
+.btn-ghost { background: transparent; color: var(--ink-2); border: 1px solid var(--hair); }
+.btn-ghost:hover { background: var(--bg-2); }
+
+/* ─── hero ─── */
+.hero { padding: 96px 0 88px; text-align: center; }
+.hero h1 { font-size: clamp(30px, 5.4vw, 46px); font-weight: 800; letter-spacing: -0.02em; line-height: 1.3; }
+.hero h1 .accent { color: var(--brand); }
+.hero p.sub { margin: 16px auto 0; max-width: 460px; font-size: clamp(15px, 2.4vw, 17px); color: var(--ink-3); line-height: 1.7; }
+.hero-btns { margin-top: 32px; display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+.hero .note { margin-top: 16px; font-size: 13px; color: var(--ink-4); }
+
+/* 기존 vs 폴리 — 좌우 카드 대비 */
+.vs { display: grid; grid-template-columns: 1fr 44px 1fr; align-items: stretch; max-width: 780px; margin: 36px auto 0; text-align: left; }
+@media (max-width: 720px) { .vs { grid-template-columns: 1fr; } .vs-arrow { transform: rotate(90deg); margin: 4px 0; } }
+.vs-card { border-radius: 16px; padding: 22px; }
+.vs-card.old { background: var(--bg-2); border: 1px solid var(--hair); }
+.vs-card.new { background: var(--brand); color: #fff; box-shadow: 0 16px 40px rgba(124,58,237,.3); }
+.vs-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin-bottom: 14px; }
+.vs-head .t { font-size: 15px; font-weight: 800; }
+.vs-card.old .t { color: var(--ink-3); }
+.vs-head .m { font-size: 11.5px; font-weight: 600; color: var(--ink-4); white-space: nowrap; }
+.vs-card.new .m { color: rgba(255,255,255,.75); }
+.vs-card ol { list-style: none; }
+.vs-card ol li { display: flex; gap: 10px; align-items: flex-start; padding: 6px 0; font-size: 13.5px; line-height: 1.5; }
+.vs-card.old ol li { color: var(--ink-3); }
+.vs-card ol li .n {
+  flex-shrink: 0; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 800; margin-top: 1px;
+}
+.vs-card.old .n { background: rgba(25,31,40,.07); color: var(--ink-4); }
+.vs-card.new .n { background: rgba(255,255,255,.22); color: #fff; }
+.vs-card.new .hl-li { font-weight: 800; }
+.vs-arrow { display: flex; align-items: center; justify-content: center; color: var(--brand); }
+.cmp-punch { text-align: center; font-size: clamp(16px, 2.6vw, 19px); font-weight: 800; margin-top: 28px; letter-spacing: -0.01em; }
+.cmp-punch .accent { color: var(--brand); }
+
+/* ─── 데모 배치 ─── */
+.demo-row { display: flex; gap: 40px; align-items: center; justify-content: center; margin-top: 48px; flex-wrap: wrap; }
+.demo-steps { max-width: 340px; text-align: left; }
+.demo-steps .st { display: flex; gap: 14px; padding: 16px 0; border-bottom: 1px solid var(--hair); }
+.demo-steps .st:last-child { border-bottom: none; }
+.demo-steps .st .n { font-size: 13px; font-weight: 700; color: var(--ink-4); font-variant-numeric: tabular-nums; padding-top: 2px; flex-shrink: 0; }
+.demo-steps .st h4 { font-size: 15px; font-weight: 700; }
+.demo-steps .st p { font-size: 13.5px; color: var(--ink-3); margin-top: 3px; line-height: 1.6; }
+.demo-caption { text-align: center; font-size: 12.5px; color: var(--ink-4); margin-top: 20px; }
+.demo-caption b { color: var(--brand-dark); font-weight: 700; }
+
+/* ─── 폰 목업 (아이폰/안드로이드) ─── */
+.phone-col { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+.os-toggle { display: inline-flex; background: rgba(25,31,40,.06); border-radius: 10px; padding: 3px; }
+.os-toggle button {
+  font-family: inherit; font-size: 13px; font-weight: 700; color: var(--ink-4); border: none; background: transparent;
+  padding: 7px 16px; border-radius: 8px; cursor: pointer; transition: all .15s ease-out;
+}
+.os-toggle button.on { background: #fff; color: var(--ink); box-shadow: 0 1px 4px rgba(25,31,40,.12); }
+.phone {
+  width: 300px; flex-shrink: 0; position: relative; border-radius: 54px; padding: 10px;
+  background: linear-gradient(160deg, #4a4b53 0%, #202127 22%, #0d0e11 55%, #26272d 100%);
+  box-shadow: 0 34px 70px rgba(25,31,40,.32), 0 8px 18px rgba(25,31,40,.18);
+  transition: border-radius .25s ease-out;
+}
+/* 메탈 엣지 하이라이트 */
+.phone::after {
+  content: ""; position: absolute; inset: 2px; border-radius: 52px; pointer-events: none;
+  border: 1px solid rgba(255,255,255,.14);
+  transition: border-radius .25s ease-out;
+}
+/* 사이드 버튼 (iOS: 좌 액션+볼륨2 / 우 전원) */
+.side-btn { position: absolute; width: 3px; border-radius: 2px 0 0 2px; background: linear-gradient(180deg, #3c3d44, #17181c 50%, #34353c); }
+.sb-act { left: -3px; top: 118px; height: 22px; }
+.sb-v1 { left: -3px; top: 156px; height: 40px; }
+.sb-v2 { left: -3px; top: 204px; height: 40px; }
+.sb-pwr { left: auto; right: -3px; top: 168px; height: 62px; border-radius: 0 2px 2px 0; }
+.screen {
+  position: relative; background: #f6f7f9; border-radius: 44px; height: 620px; overflow: hidden;
+  display: flex; flex-direction: column; transition: border-radius .25s ease-out;
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,.55);
+}
+.island {
+  position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
+  width: 84px; height: 23px; background: #08080a; border-radius: 14px; z-index: 30;
+  transition: all .25s ease-out;
+}
+/* 카메라 렌즈 */
+.island::after {
+  content: ""; position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
+  width: 10px; height: 10px; border-radius: 50%;
+  background: radial-gradient(circle at 34% 32%, #2b3b55 0%, #101722 45%, #000 100%);
+  box-shadow: inset 0 0 2px rgba(90,130,200,.5);
+}
+/* 안드로이드(갤럭시): 각진 프레임 + 중앙 펀치홀 + 우측 버튼 */
+.phone.android { border-radius: 28px; background: linear-gradient(160deg, #3a3b42 0%, #191a1f 30%, #0c0d10 60%, #22232a 100%); }
+.phone.android::after { border-radius: 26px; }
+.phone.android .screen { border-radius: 19px; }
+.phone.android .island { width: 13px; height: 13px; border-radius: 50%; top: 11px; background: #050506; }
+.phone.android .island::after { right: 1.5px; top: 1.5px; transform: none; width: 10px; height: 10px; }
+.phone.android .home-ind { width: 60px; height: 3px; opacity: .55; }
+.phone.android .sb-act { display: none; }
+.phone.android .sb-v1, .phone.android .sb-v2 { left: auto; right: -3px; border-radius: 0 2px 2px 0; top: 130px; }
+.phone.android .sb-v2 { top: 178px; }
+.phone.android .sb-pwr { top: 232px; height: 34px; }
+
+/* 앱 홈 — 토스 송금 문법: 큰 타이포 + 키패드 */
+.app-logo { display: flex; align-items: center; justify-content: space-between; padding: 12px 18px 4px; }
+.app-logo .t { font-size: 15px; font-weight: 800; letter-spacing: -0.02em; }
+.app-logo .t b { color: var(--brand); font-weight: 800; }
+.app-logo svg { color: var(--ink-3); }
+.recv { display: flex; align-items: center; gap: 10px; padding: 10px 18px 0; }
+.recv .avatar { width: 40px; height: 40px; font-size: 14px; }
+.amt-zone { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0 18px; min-height: 0; }
+.big-amt {
+  font-size: 33px; font-weight: 800; letter-spacing: -0.03em; font-variant-numeric: tabular-nums;
+  transition: transform .1s ease-out;
+}
+.big-amt.zero { font-size: 19px; font-weight: 600; color: var(--ink-4); letter-spacing: -0.01em; }
+.big-amt.pulse { transform: scale(1.04); }
+.amt-hint {
+  margin-top: 10px; font-size: 11.5px; font-weight: 700; color: var(--brand-dark);
+  background: var(--brand-bg); border-radius: 999px; padding: 6px 12px;
+}
+.amt-hint[hidden] { display: none; }
+.chips { display: flex; gap: 6px; padding: 0 16px 8px; }
+.chips button {
+  flex: 1; font-family: inherit; font-size: 12px; font-weight: 700; padding: 9px 0; border-radius: 9px;
+  border: 1px solid var(--hair); background: #fff; color: var(--ink-2); cursor: pointer; transition: transform .1s;
+}
+.chips button:active { transform: scale(.95); background: var(--bg-2); }
+.keypad { display: grid; grid-template-columns: repeat(3, 1fr); padding: 0 10px; }
+.keypad button {
+  font-family: inherit; font-size: 21px; font-weight: 600; color: var(--ink);
+  background: transparent; border: none; padding: 11px 0; border-radius: 12px; cursor: pointer;
+  transition: background .12s ease-out, transform .08s ease-out;
+}
+.keypad button:active { background: rgba(25,31,40,.06); transform: scale(.92); }
+.p-btn:disabled { opacity: .35; cursor: not-allowed; }
+
+/* 의원 선택 화면 */
+.pick-title { font-size: 19px; font-weight: 800; letter-spacing: -0.02em; padding: 14px 6px 12px; }
+.pick-search {
+  display: flex; align-items: center; gap: 8px; background: #fff; border: 1px solid var(--hair);
+  border-radius: 12px; padding: 10px 12px; margin-bottom: 8px;
+}
+.pick-search svg { color: var(--ink-4); flex-shrink: 0; }
+.pick-search input {
+  border: none; outline: none; background: transparent; font-family: inherit; font-size: 13.5px; width: 100%; color: var(--ink);
+}
+.pick-search input::placeholder { color: var(--ink-4); }
+.pick-list { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
+.pick-item {
+  display: flex; align-items: center; gap: 10px; width: 100%; text-align: left;
+  font-family: inherit; background: transparent; border: none; cursor: pointer;
+  padding: 11px 6px; border-bottom: 1px solid var(--hair); transition: background .12s, transform .08s;
+}
+.pick-item:active { background: rgba(25,31,40,.04); transform: scale(.985); }
+.pick-item .avatar { width: 40px; height: 40px; font-size: 14px; }
+.pick-item .pi-n { font-size: 14.5px; font-weight: 700; }
+.pick-item .pi-m { font-size: 12px; color: var(--ink-4); margin-top: 1px; }
+.pick-item svg { margin-left: auto; color: var(--ink-4); flex-shrink: 0; }
+.back-row { display: flex; align-items: center; gap: 6px; padding: 12px 12px 4px; }
+.back-row button {
+  display: flex; align-items: center; justify-content: center; background: transparent; border: none; cursor: pointer;
+  color: var(--ink-2); padding: 4px; border-radius: 8px;
+}
+.back-row button:active { background: rgba(25,31,40,.06); }
+.back-row .bt { font-size: 15px; font-weight: 800; }
+.statusbar {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 14px 24px 4px; font-size: 13px; font-weight: 700; color: #101012; z-index: 20;
+}
+.statusbar svg { display: block; }
+.home-ind { position: absolute; bottom: 7px; left: 50%; transform: translateX(-50%); width: 108px; height: 4px; border-radius: 2px; background: rgba(16,16,18,.9); z-index: 30; }
+
+.app-head { display: flex; align-items: center; gap: 6px; padding: 10px 16px 8px; font-size: 16px; font-weight: 800; }
+.app-head svg { color: var(--ink-3); }
+.app-body { flex: 1; overflow: hidden; padding: 0 14px 20px; }
+.p-head { display: flex; align-items: center; gap: 10px; background: #fff; border: 1px solid var(--hair); border-radius: 14px; padding: 14px; }
+.avatar {
+  width: 44px; height: 44px; border-radius: 50%; background: var(--brand-bg); color: var(--brand-dark);
+  display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 16px; flex-shrink: 0;
+}
+.p-name { font-size: 15px; font-weight: 700; }
+.p-meta { font-size: 12px; color: var(--ink-4); margin-top: 1px; }
+.p-card { background: #fff; border: 1px solid var(--hair); border-radius: 14px; padding: 14px; margin-top: 10px; }
+.p-label { font-size: 12px; font-weight: 600; color: var(--ink-4); margin-bottom: 8px; }
+.amounts { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.amounts button {
+  font-family: inherit; font-size: 13px; font-weight: 700; text-align: center; padding: 11px 0; border-radius: 9px;
+  border: 1px solid var(--hair); color: var(--ink-2); background: #fff; cursor: pointer; font-variant-numeric: tabular-nums;
+  transition: transform .1s ease-out;
+}
+.amounts button:active { transform: scale(.96); }
+.amounts button.on { background: var(--brand); border-color: var(--brand); color: #fff; }
+.amounts input {
+  font-family: inherit; font-size: 13px; font-weight: 700; text-align: center; padding: 11px 4px; border-radius: 9px;
+  border: 1.5px solid var(--brand); color: var(--ink); background: #fff; outline: none; width: 100%;
+}
+.limit-line { font-size: 13.5px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.g-bar { height: 7px; border-radius: 4px; background: rgba(25,31,40,.07); overflow: hidden; margin-top: 8px; }
+.g-fill { height: 100%; border-radius: 4px; background: var(--brand); transition: width .5s ease-out; }
+.tax-hint { margin-top: 9px; font-size: 11.5px; color: var(--brand-dark); font-weight: 600; display: none; }
+.tax-hint.show { display: block; }
+.p-btn {
+  width: 100%; margin-top: 12px; background: var(--brand); color: #fff; text-align: center; font-size: 14.5px; font-weight: 700;
+  padding: 14px 0; border-radius: 12px; border: none; cursor: pointer; font-family: inherit; transition: transform .1s ease-out;
+}
+.p-btn:active { transform: scale(.98); }
+.p-safe { margin-top: 10px; font-size: 11px; color: var(--ink-4); text-align: center; line-height: 1.5; }
+
+/* 바텀시트 */
+.dim {
+  position: absolute; inset: 0; background: rgba(16,16,18,.4); z-index: 40; opacity: 0;
+  transition: opacity .25s ease-out; pointer-events: none;
+}
+.dim.show { opacity: 1; pointer-events: auto; }
+.sheet {
+  position: absolute; left: 0; right: 0; bottom: 0; z-index: 50;
+  background: #fff; border-radius: 24px 24px 0 0; padding: 8px 16px 26px;
+  transform: translateY(105%); transition: transform .32s cubic-bezier(.32,.72,.35,1);
+}
+.sheet.show { transform: translateY(0); }
+.grabber { width: 36px; height: 4px; border-radius: 2px; background: rgba(25,31,40,.15); margin: 4px auto 12px; }
+.sheet h5 { font-size: 16px; font-weight: 800; margin-bottom: 12px; }
+.sh-row { display: flex; align-items: center; gap: 10px; background: var(--bg-2); border-radius: 12px; padding: 12px; }
+.sh-row .avatar { width: 36px; height: 36px; font-size: 13px; }
+.sh-amt { display: flex; justify-content: space-between; align-items: baseline; padding: 14px 4px 4px; }
+.sh-amt .l { font-size: 13px; color: var(--ink-4); font-weight: 600; }
+.sh-amt .v { font-size: 22px; font-weight: 800; font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
+.agree { margin-top: 8px; }
+.agree label { display: flex; gap: 8px; align-items: flex-start; font-size: 12.5px; color: var(--ink-3); padding: 7px 4px; cursor: pointer; line-height: 1.45; }
+.agree input { width: 16px; height: 16px; accent-color: var(--brand); flex-shrink: 0; margin-top: 1px; }
+.auth-btn {
+  width: 100%; margin-top: 10px; font-family: inherit; font-size: 14px; font-weight: 700;
+  padding: 13px 0; border-radius: 12px; border: 1px solid var(--hair); background: #fff; color: var(--ink-2); cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.auth-btn.done { border-color: rgba(0,160,92,.25); background: #f0faf5; color: var(--green); cursor: default; }
+.spinner { width: 14px; height: 14px; border: 2px solid rgba(25,31,40,.15); border-top-color: var(--ink-3); border-radius: 50%; animation: spin .7s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.pay-btn {
+  width: 100%; margin-top: 8px; font-family: inherit; font-size: 15px; font-weight: 800;
+  padding: 15px 0; border-radius: 12px; border: none; background: var(--brand); color: #fff; cursor: pointer;
+  transition: transform .1s ease-out, opacity .15s;
+}
+.pay-btn:disabled { opacity: .35; cursor: not-allowed; }
+.pay-btn:not(:disabled):active { transform: scale(.98); }
+.sh-note { margin-top: 10px; font-size: 11px; color: var(--ink-4); text-align: center; line-height: 1.5; }
+
+/* 완료 화면 */
+.done-view { flex: 1; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 0 24px 40px; text-align: center; }
+.done-view.show { display: flex; }
+.check-circle {
+  width: 72px; height: 72px; border-radius: 50%; background: var(--brand); color: #fff;
+  display: flex; align-items: center; justify-content: center; animation: pop .45s cubic-bezier(.3,1.6,.5,1);
+}
+@keyframes pop { 0% { transform: scale(.4); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+.done-view h4 { font-size: 19px; font-weight: 800; margin-top: 18px; }
+.done-view .amt { font-size: 15px; color: var(--ink-3); margin-top: 6px; font-variant-numeric: tabular-nums; }
+.done-view .rc { margin-top: 14px; font-size: 12.5px; color: var(--ink-4); line-height: 1.7; background: #fff; border: 1px solid var(--hair); border-radius: 12px; padding: 12px 16px; }
+.done-view .again { margin-top: 20px; font-family: inherit; font-size: 13px; font-weight: 700; color: var(--brand-dark); background: var(--brand-bg); border: none; border-radius: 10px; padding: 10px 18px; cursor: pointer; }
+
+/* money flow */
+.money { margin: 56px auto 0; max-width: 720px; border-radius: 16px; background: var(--ink); color: #fff; padding: 28px 24px; text-align: center; }
+.money .row { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; justify-content: center; font-weight: 700; font-size: clamp(13px, 2.2vw, 15px); }
+.money .chip { background: rgba(255,255,255,.1); padding: 9px 16px; border-radius: 8px; }
+.money .chip.hl { background: var(--brand); }
+.money .arr { opacity: .4; }
+.money .no { font-size: 13px; font-weight: 400; color: rgba(255,255,255,.6); margin-top: 14px; line-height: 1.6; }
+
+/* limit rows */
+.limits { margin: 48px auto 0; max-width: 640px; border-top: 1px solid var(--hair); }
+.limits .row { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 17px 4px; border-bottom: 1px solid var(--hair); }
+.limits .k { font-size: 15px; color: var(--ink-2); }
+.limits .v { font-size: 15px; font-weight: 700; color: var(--ink); text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.limits .row.hl .k { font-weight: 700; color: var(--ink); }
+.limits .row.hl .v { color: var(--brand-dark); }
+.limits .v.danger { color: var(--red); }
+.tax-note { margin: 14px auto 0; max-width: 640px; font-size: 13px; color: var(--ink-4); line-height: 1.6; text-align: center; }
+
+/* ─── 대시보드 목업 ─── */
+.browser {
+  max-width: 720px; margin: 48px auto 0; background: var(--bg); border: 1px solid var(--hair);
+  border-radius: 16px; overflow: hidden; box-shadow: 0 12px 40px rgba(25,31,40,.08); text-align: left;
+}
+.browser .bar { display: flex; align-items: center; gap: 6px; padding: 12px 16px; border-bottom: 1px solid var(--hair); background: var(--bg-2); }
+.browser .dot { width: 10px; height: 10px; border-radius: 50%; background: rgba(25,31,40,.12); }
+.browser .url { margin-left: 10px; font-size: 12px; color: var(--ink-4); }
+.browser .body { padding: 24px; }
+.db-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; }
+.db-top h4 { font-size: 16px; font-weight: 800; }
+.db-top .sum { font-size: 13px; color: var(--ink-3); margin-top: 4px; }
+.db-top .sum b { color: var(--ink); font-variant-numeric: tabular-nums; }
+.db-btns { display: flex; gap: 6px; flex-wrap: wrap; }
+.db-btn { font-family: inherit; cursor: pointer; font-size: 12.5px; font-weight: 700; padding: 9px 14px; border-radius: 8px; border: 1px solid var(--hair); color: var(--ink-2); background: var(--bg); white-space: nowrap; transition: transform .1s ease-out; }
+.db-btn:active { transform: scale(.97); }
+.db-btn.pri { background: var(--brand); border-color: var(--brand); color: #fff; }
+.db-btn.ok { background: #f0faf5; border-color: rgba(0,160,92,.25); color: var(--green); cursor: default; }
+.gauge { margin-top: 18px; }
+.gauge .g-label { display: flex; justify-content: space-between; font-size: 12px; color: var(--ink-4); margin-bottom: 6px; }
+table.db { width: 100%; border-collapse: collapse; margin-top: 18px; font-size: 13px; }
+table.db th { text-align: left; font-weight: 600; color: var(--ink-4); padding: 10px 8px; border-bottom: 1px solid var(--hair); font-size: 12px; }
+table.db td { padding: 12px 8px; border-bottom: 1px solid var(--hair); color: var(--ink-2); font-variant-numeric: tabular-nums; }
+table.db td.r, table.db th.r { text-align: right; }
+table.db tr.new-row td { background: var(--brand-bg); }
+.tag { display: inline-block; font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 6px; }
+.tag.done { background: #f0faf5; color: var(--green); }
+.tag.wait { background: var(--brand-bg); color: var(--brand-dark); }
+@media (max-width: 560px) { table.db th:nth-child(4), table.db td:nth-child(4) { display: none; } .browser .body { padding: 16px; } }
+
+.grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 40px; }
+@media (max-width: 800px) { .grid3 { grid-template-columns: 1fr; } }
+.card { background: var(--bg); border: 1px solid var(--hair); border-radius: 16px; padding: 24px; text-align: left; }
+.card h3 { font-size: 16px; font-weight: 700; margin-bottom: 6px; letter-spacing: -0.01em; }
+.card p { font-size: 14px; color: var(--ink-3); line-height: 1.6; }
+.card .ic { display: block; width: 22px; height: 22px; margin-bottom: 14px; color: var(--ink-2); }
+
+/* ─── 절차 + 비용 ─── */
+.flow { margin: 48px auto 0; max-width: 640px; border-top: 1px solid var(--hair); text-align: left; }
+.flow .step { display: flex; gap: 20px; align-items: baseline; padding: 17px 4px; border-bottom: 1px solid var(--hair); }
+.flow .step .t { font-size: 13px; font-weight: 700; color: var(--ink-4); font-variant-numeric: tabular-nums; flex-shrink: 0; }
+.flow .step .d { font-size: 15px; font-weight: 600; color: var(--ink-2); }
+.flow .step .d small { display: block; font-weight: 400; font-size: 13px; color: var(--ink-4); margin-top: 2px; }
+/* 요금제 — 누적 확장이 보이는 3티어 */
+.tiers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 40px auto 0; max-width: 860px; align-items: stretch; }
+@media (max-width: 800px) { .tiers { grid-template-columns: 1fr; } }
+.tier { background: var(--bg); border: 1px solid var(--hair); border-radius: 16px; padding: 26px 22px; text-align: left; display: flex; flex-direction: column; position: relative; }
+.tier.featured { border: 1.5px solid var(--brand); box-shadow: 0 12px 32px rgba(124,58,237,.12); }
+.tier .badge-top {
+  position: absolute; top: -11px; left: 50%; transform: translateX(-50%);
+  background: var(--brand); color: #fff; font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: 999px; white-space: nowrap;
+}
+.tier .t-name { font-size: 15px; font-weight: 800; }
+.tier .t-tag { font-size: 12.5px; color: var(--ink-4); margin-top: 2px; }
+.tier .t-price { margin-top: 14px; font-size: 28px; font-weight: 800; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+.tier .t-price small { font-size: 13px; font-weight: 600; color: var(--ink-4); letter-spacing: 0; }
+.tier .inherit {
+  margin-top: 16px; display: flex; align-items: center; gap: 6px;
+  background: var(--brand-bg); color: var(--brand-dark); font-size: 12px; font-weight: 700;
+  padding: 8px 12px; border-radius: 8px;
+}
+.tier ul { list-style: none; margin-top: 14px; flex: 1; }
+.tier ul li { display: flex; gap: 8px; align-items: flex-start; font-size: 13.5px; color: var(--ink-2); padding: 5px 0; line-height: 1.5; }
+.tier ul li::before { content: "✓"; color: var(--brand); font-weight: 800; flex-shrink: 0; }
+.tier ul li.plus { font-weight: 700; color: var(--ink); }
+.tier ul li.plus::before { content: "+"; color: var(--brand-dark); }
+.tier { cursor: pointer; transition: transform .15s ease-out, box-shadow .15s ease-out; }
+.tier:hover { transform: translateY(-3px); box-shadow: 0 16px 36px rgba(25,31,40,.1); }
+.tier .more { margin-top: 14px; font-size: 12.5px; font-weight: 700; color: var(--brand-dark); }
+
+/* ─── 티어 상세 모달 ─── */
+.tmodal-dim {
+  position: fixed; inset: 0; z-index: 300; background: rgba(12,12,16,.55);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  display: none; align-items: flex-end; justify-content: center; padding: 20px;
+}
+@media (min-width: 640px) { .tmodal-dim { align-items: center; } }
+.tmodal-dim.show { display: flex; }
+.tmodal {
+  background: #fff; border-radius: 28px; max-width: 640px; width: 100%; max-height: 90vh; overflow-y: auto;
+  padding: 0; position: relative; animation: tmUp .34s cubic-bezier(.26,1.2,.4,1);
+  box-shadow: 0 40px 100px rgba(12,12,16,.4);
+}
+@keyframes tmUp { from { transform: translateY(36px) scale(.97); opacity: 0; } to { transform: none; opacity: 1; } }
+.tm-x {
+  position: sticky; top: 16px; margin: 16px 16px -48px auto; display: flex; align-items: center; justify-content: center;
+  width: 34px; height: 34px; border-radius: 50%; z-index: 10;
+  border: none; background: rgba(255,255,255,.85); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  color: var(--ink-3); font-size: 14px; cursor: pointer; font-family: inherit;
+  box-shadow: 0 2px 10px rgba(25,31,40,.14);
+}
+.tm-x:hover { background: #fff; color: var(--ink); }
+.tm-body { display: none; }
+.tm-body.show { display: block; }
+.tm-head { padding: 34px 32px 0; }
+.tm-tag {
+  display: inline-block; font-size: 11.5px; font-weight: 800; letter-spacing: .02em;
+  color: var(--brand-dark); background: var(--brand-bg); padding: 6px 11px; border-radius: 999px;
+}
+.tm-title { font-size: 26px; font-weight: 800; letter-spacing: -0.03em; line-height: 1.32; margin-top: 14px; }
+.tm-price { display: flex; align-items: baseline; gap: 8px; margin-top: 10px; font-size: 13px; color: var(--ink-4); font-weight: 500; }
+.tm-price b { color: var(--ink); font-size: 19px; font-weight: 800; font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+/* 비주얼: 풀블리드 밴드 */
+.tm-visual {
+  margin: 24px 0 0; padding: 26px 32px;
+  background: linear-gradient(180deg, #f7f7fd 0%, #f1f2fb 100%);
+  border-top: 1px solid rgba(124,58,237,.08); border-bottom: 1px solid rgba(124,58,237,.08);
+}
+.tm-feats { padding: 10px 32px 0; }
+.tm-feats .f { display: flex; gap: 14px; padding: 15px 0; align-items: flex-start; }
+.tm-feats .f + .f { border-top: 1px solid var(--hair); }
+.tm-feats .f svg {
+  flex-shrink: 0; width: 40px; height: 40px; padding: 10px; box-sizing: border-box;
+  color: var(--brand-dark); background: var(--brand-bg); border-radius: 13px;
+}
+.tm-feats .f h5 { font-size: 15px; font-weight: 700; letter-spacing: -0.01em; }
+.tm-feats .f p { font-size: 13px; color: var(--ink-3); margin-top: 3px; line-height: 1.65; }
+.tm-foot { padding: 14px 32px 30px; }
+.tm-cta { width: 100%; height: 54px; border-radius: 14px; font-size: 15.5px; }
+.tm-note { text-align: center; font-size: 12px; color: var(--ink-4); margin-top: 12px; }
+
+/* 스탠다드 비주얼: 결제→서류 파이프라인 */
+.pipe { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: center; }
+.pipe .doc {
+  background: #fff; border: 1px solid var(--hair); border-radius: 12px; padding: 12px 14px; min-width: 128px;
+  box-shadow: 0 2px 8px rgba(25,31,40,.05);
+}
+.pipe .doc .d-t { font-size: 11px; color: var(--ink-4); font-weight: 600; }
+.pipe .doc .d-v { font-size: 13px; font-weight: 800; margin-top: 3px; }
+.pipe .doc .d-v .ok { color: var(--green); }
+.pipe .par { color: var(--brand); font-weight: 800; }
+.pipe .src { background: var(--brand); color: #fff; border: none; }
+.pipe .src .d-t { color: rgba(255,255,255,.7); }
+
+/* 프로 비주얼: 단체 CRM */
+.crm-row { display: flex; align-items: center; gap: 10px; background: #fff; border: 1px solid var(--hair); border-radius: 12px; padding: 11px 13px; margin-bottom: 7px; }
+.crm-row .avatar { width: 34px; height: 34px; font-size: 12px; border-radius: 10px; }
+.crm-row .c-n { font-size: 13.5px; font-weight: 700; }
+.crm-row .c-m { font-size: 11.5px; color: var(--ink-4); margin-top: 1px; }
+.crm-badge { margin-left: auto; font-size: 11px; font-weight: 800; padding: 4px 9px; border-radius: 7px; }
+.crm-badge.hi { background: #f0faf5; color: var(--green); }
+.crm-badge.mid { background: var(--brand-bg); color: var(--brand-dark); }
+.crm-badge.lo { background: rgba(25,31,40,.05); color: var(--ink-4); }
+.crm-next {
+  display: flex; align-items: center; gap: 8px; background: var(--brand); color: #fff; border-radius: 12px;
+  padding: 12px 14px; font-size: 12.5px; font-weight: 700; margin-top: 4px;
+}
+
+/* 맥스 비주얼: 폴리맵 */
+.pmap-wrap { display: grid; grid-template-columns: 1.2fr 1fr; gap: 14px; align-items: stretch; }
+@media (max-width: 620px) { .pmap-wrap { grid-template-columns: 1fr; } }
+.pmap-card { background: #fff; border: 1px solid var(--hair); border-radius: 12px; padding: 14px; }
+.pmap-card .pm-t { font-size: 12px; font-weight: 700; color: var(--ink-3); margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+.pmap-card .pm-t .ai { font-size: 10px; font-weight: 800; color: var(--brand-dark); background: var(--brand-bg); padding: 3px 7px; border-radius: 6px; }
+.pmap-legend { display: flex; align-items: center; gap: 6px; font-size: 10.5px; color: var(--ink-4); margin-top: 10px; }
+.pmap-legend .bar { flex: 1; height: 6px; border-radius: 3px; background: linear-gradient(90deg, #eee9f9, #d3c4f5, #a586ee, #6d28d9); }
+.price-strip { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 18px; text-align: center; }
+.price-strip b { color: var(--brand-dark); }
+.price-note { text-align: center; font-size: 13px; color: var(--ink-4); margin-top: 14px; }
+
+/* ─── form ─── */
+.form-card { margin: 56px auto 0; background: var(--bg); border: 1px solid var(--hair); border-radius: 16px; padding: 32px; max-width: 560px; text-align: left; }
+@media (max-width: 560px) { .form-card { padding: 24px 20px; } }
+.form-card h3 { font-size: 20px; font-weight: 800; letter-spacing: -0.01em; text-align: center; }
+.form-card .desc { font-size: 14px; color: var(--ink-4); margin: 6px 0 24px; text-align: center; }
+.form-row { margin-bottom: 16px; }
+.form-row label { display: block; font-size: 13px; font-weight: 600; color: var(--ink-3); margin-bottom: 6px; }
+.form-row input, .form-row select, .form-row textarea {
+  width: 100%; font-family: inherit; font-size: 15px; color: var(--ink);
+  padding: 13px 14px; border: 1px solid var(--hair); border-radius: 12px; background: var(--bg-2);
+  outline: none; transition: border-color .15s ease-out, background .15s ease-out; -webkit-appearance: none; appearance: none;
+}
+.form-row input::placeholder, .form-row textarea::placeholder { color: var(--ink-4); }
+.form-row input:focus, .form-row select:focus, .form-row textarea:focus { border-color: var(--brand); background: var(--bg); }
+.form-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 560px) { .form-2col { grid-template-columns: 1fr; } }
+.form-agree { display: flex; gap: 8px; align-items: flex-start; font-size: 13px; color: var(--ink-4); margin: 20px 0; line-height: 1.5; }
+.form-agree input { width: 16px; height: 16px; margin-top: 2px; accent-color: var(--brand); flex-shrink: 0; }
+#formMsg { margin-top: 14px; font-size: 14px; font-weight: 600; display: none; padding: 13px 14px; border-radius: 12px; }
+#formMsg.ok { display: block; background: #f0faf5; color: var(--green); }
+#formMsg.err { display: block; background: #fdf3f4; color: var(--red); }
+
+/* faq */
+.faq { margin: 40px auto 0; max-width: 640px; border-top: 1px solid var(--hair); text-align: left; }
+details { border-bottom: 1px solid var(--hair); }
+summary {
+  cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; gap: 16px;
+  padding: 18px 4px; font-size: 15px; font-weight: 600; color: var(--ink-2);
+}
+summary::-webkit-details-marker { display: none; }
+summary::after { content: "+"; font-size: 18px; color: var(--ink-4); font-weight: 400; flex-shrink: 0; }
+details[open] summary::after { content: "−"; }
+details .a { padding: 0 4px 20px; font-size: 14px; color: var(--ink-3); line-height: 1.7; }
+
+/* footer */
+footer { padding: 40px 0 56px; border-top: 1px solid var(--hair); text-align: center; }
+footer .f-logo { font-weight: 800; font-size: 15px; }
+footer p { font-size: 12px; color: var(--ink-4); margin: 10px auto 0; max-width: 640px; line-height: 1.7; }
+footer a { color: var(--ink-4); }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap nav-in">
+    <a class="logo" href="/support">폴리 서포트</a>
+    <div class="nav-links">
+      <a href="#donor">후원 안내</a>
+      <a href="#politician">정치인용</a>
+      <a href="#open" class="cta">후원회 개설</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <h1>정치후원금 모금,<br><span class="accent">폴리-서포트</span>로 쉽고 간편하게 모아보세요!</h1>
+    <p class="sub">후원 페이지 개설부터 결제, 영수증, 회계보고까지 한 번에.</p>
+
+    <div class="vs">
+      <div class="vs-card old">
+        <div class="vs-head"><span class="t">기존 방식</span><span class="m">여섯 단계 · 영수증은 따로</span></div>
+        <ol>
+          <li><span class="n">1</span>후원회 계좌번호 확인</li>
+          <li><span class="n">2</span>계좌번호 복사</li>
+          <li><span class="n">3</span>송금앱에 붙여넣기</li>
+          <li><span class="n">4</span>금액 입력</li>
+          <li><span class="n">5</span>후원 완료</li>
+          <li><span class="n">6</span>세액공제 받으려면 영수증 발급 신청·제출</li>
+        </ol>
+      </div>
+      <div class="vs-arrow">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+      </div>
+      <div class="vs-card new">
+        <div class="vs-head"><span class="t">폴리 서포트</span><span class="m">세 단계 · 전부 자동</span></div>
+        <ol>
+          <li><span class="n">1</span>앱/링크로 후원 클릭</li>
+          <li><span class="n">2</span>간편결제·이체로 후원 완료</li>
+          <li class="hl-li"><span class="n">3</span>영수증 확인부터 세액공제 자동신청까지 원스톱!</li>
+        </ol>
+      </div>
+    </div>
+    <div class="cmp-punch">후원 문화가 <span class="accent">새롭게</span> 달라집니다!</div>
+
+    <div class="hero-btns">
+      <a class="btn btn-primary" href="#open">후원회 개설 신청</a>
+      <a class="btn btn-ghost" href="https://www.give.go.kr/portal/main/contents.do?menuNo=200015" target="_blank" rel="noopener">후원하러 가기</a>
+    </div>
+    <div class="note">후원 결제는 중앙선거관리위원회 정치후원금센터에서 진행됩니다.</div>
+  </div>
+</header>
+
+<!-- ① 후원자 -->
+<section id="donor" class="alt">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">후원자</span>
+      <h2>후원, 3분이면 끝나요</h2>
+      <p class="sec-sub">말로만 쉽다고 하지 않을게요. 아래 화면을 직접 눌러보세요 — 결제창까지 실제로 열립니다.</p>
+    </div>
+
+    <div class="demo-row">
+      <div class="phone-col">
+        <div class="os-toggle" id="osToggle">
+          <button class="on" data-os="ios">아이폰</button>
+          <button data-os="android">안드로이드</button>
+        </div>
+      <div class="phone" id="demoPhone">
+        <span class="side-btn sb-act"></span>
+        <span class="side-btn sb-v1"></span>
+        <span class="side-btn sb-v2"></span>
+        <span class="side-btn sb-pwr"></span>
+        <div class="screen">
+          <div class="island"></div>
+          <div class="statusbar">
+            <span>9:41</span>
+            <svg width="52" height="12" viewBox="0 0 52 12" fill="currentColor"><rect x="0" y="4" width="3" height="8" rx="1"/><rect x="5" y="2.5" width="3" height="9.5" rx="1"/><rect x="10" y="1" width="3" height="11" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/><path d="M25 4.5a7 7 0 0 1 8.5 0l-1.3 1.6a5 5 0 0 0-5.9 0Zm2.1 2.6a4 4 0 0 1 4.3 0L30 9l-1.4-1.4Z" transform="translate(0 .5)"/><rect x="38" y="1.5" width="12" height="9" rx="2.5" fill="none" stroke="currentColor" stroke-width="1"/><rect x="39.5" y="3" width="8" height="6" rx="1.2"/><rect x="50.7" y="4.5" width="1.3" height="3" rx=".6"/></svg>
+          </div>
+
+          <div class="app-body" id="pickView" style="display:flex; flex-direction:column; padding:0 14px 14px;">
+            <div class="app-logo">
+              <span class="t">폴리<b>·</b>서포트</span>
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+            </div>
+            <div class="pick-title">누구를 후원할까요?</div>
+            <div class="pick-search">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+              <input id="pickSearch" placeholder="이름·지역으로 검색" autocomplete="off">
+            </div>
+            <div class="pick-list" id="pickList"></div>
+            <div class="p-safe">선관위에 등록된 후원회만 표시됩니다</div>
+          </div>
+
+          <div class="app-body" id="payHome" style="display:none; flex-direction:column; padding:0 14px 18px;">
+            <div class="back-row">
+              <button id="backToPick" aria-label="뒤로">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+              </button>
+              <span class="bt">후원하기</span>
+            </div>
+            <div class="recv">
+              <div class="avatar" id="recvAvatar">홍</div>
+              <div>
+                <div class="p-name" id="recvName">홍길동 의원 후원회에</div>
+                <div class="p-meta">선관위 신고계좌 · 후원회로 바로 전달</div>
+              </div>
+            </div>
+            <div class="amt-zone">
+              <div class="big-amt zero" id="bigAmt">얼마를 후원할까요?</div>
+              <div class="amt-hint" id="amtHint" hidden></div>
+            </div>
+            <div class="chips" id="quickAdd">
+              <button data-add="10000">+1만</button>
+              <button data-add="50000">+5만</button>
+              <button data-add="100000">+10만</button>
+              <button data-set="100000">전액공제 10만</button>
+            </div>
+            <div class="keypad" id="keypad">
+              <button data-k="1">1</button><button data-k="2">2</button><button data-k="3">3</button>
+              <button data-k="4">4</button><button data-k="5">5</button><button data-k="6">6</button>
+              <button data-k="7">7</button><button data-k="8">8</button><button data-k="9">9</button>
+              <button data-k="00">00</button><button data-k="0">0</button><button data-k="del">⌫</button>
+            </div>
+            <button class="p-btn" id="openSheetBtn" disabled>후원하기</button>
+            <div class="p-safe">후원금은 선관위에 신고된 후원회 계좌로 직접 전달됩니다</div>
+          </div>
+
+          <div class="done-view" id="doneView">
+            <div class="check-circle">
+              <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+            </div>
+            <h4>후원이 완료됐어요</h4>
+            <div class="amt" id="doneAmt">홍길동 의원 후원회 · 100,000원</div>
+            <div class="rc">정치자금영수증이 곧 발급돼요.<br>연말정산에서 10만 원까지 전액 세액공제!<wbr></div>
+            <button class="again" id="resetDemo">데모 처음부터 다시 보기</button>
+          </div>
+
+          <div class="dim" id="sheetDim"></div>
+          <div class="sheet" id="paySheet">
+            <div class="grabber"></div>
+            <h5>후원 확인</h5>
+            <div class="sh-row">
+              <div class="avatar" id="shAvatar">홍</div>
+              <div>
+                <div style="font-size:13.5px; font-weight:700;" id="shName">홍길동 의원 후원회</div>
+                <div style="font-size:11.5px; color:var(--ink-4);">선관위 신고계좌 · ○○은행 000-000000</div>
+              </div>
+            </div>
+            <div class="sh-amt"><span class="l">후원 금액</span><span class="v" id="sheetAmt">100,000원</span></div>
+            <div class="agree">
+              <label><input type="checkbox" class="agr"> 정치자금법상 후원 한도와 실명 확인 안내를 확인했어요</label>
+              <label><input type="checkbox" class="agr"> 본인 명의 결제수단으로 후원합니다 (법인카드 불가)</label>
+            </div>
+            <button class="auth-btn" id="authBtn">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/></svg>
+              휴대폰 본인인증
+            </button>
+            <button class="pay-btn" id="payBtn" disabled>100,000원 결제하기</button>
+            <div class="sh-note">KG이니시스 테스트 결제창이 열려요 · 실제 청구되지 않아요</div>
+          </div>
+
+          <div class="home-ind"></div>
+        </div>
+      </div>
+      </div>
+
+      <div class="demo-steps">
+        <div class="st"><span class="n">01</span><div><h4>후원할 의원 선택</h4><p>우리동네 의원을 검색해서 골라요. 폴리 앱에서는 내 지역구 의원이 바로 떠요.</p></div></div>
+        <div class="st"><span class="n">02</span><div><h4>금액 입력</h4><p>키패드로 입력하면 예상 환급액을 실시간으로 알려드려요. 10만 원까지는 전액 환급.</p></div></div>
+        <div class="st"><span class="n">03</span><div><h4>휴대폰 본인인증</h4><p>실명 확인과 동시에 법정 한도를 자동으로 확인해요. 한도를 넘으면 결제가 열리지 않아요.</p></div></div>
+        <div class="st"><span class="n">04</span><div><h4>카드·간편결제</h4><p>결제가 끝나면 정치자금영수증이 발급되고, 연말정산 때 그대로 쓰면 돼요.</p></div></div>
+      </div>
+    </div>
+    <div class="demo-caption"><b>살아있는 데모입니다.</b> 금액을 고르고 결제하기까지 눌러보세요 — KG이니시스 테스트 결제창이 실제로 열립니다. (인물·수치는 가상)</div>
+
+    <div class="money">
+      <div class="row">
+        <span class="chip">후원자</span><span class="arr">→</span>
+        <span class="chip">결제대행(PG)</span><span class="arr">→</span>
+        <span class="chip hl">후원회 신고계좌</span>
+      </div>
+      <div class="no">폴리는 후원금을 수령·보관·전달하지 않습니다. 후원금은 선거관리위원회에 신고된 후원회 계좌로만 전달됩니다.</div>
+    </div>
+
+    <div class="limits">
+      <div class="row hl"><span class="k">연말정산 세액공제</span><span class="v">10만 원까지 전액 환급</span></div>
+      <div class="row"><span class="k">한 후원회에 연간 (국회의원 기준)</span><span class="v">최대 500만 원</span></div>
+      <div class="row"><span class="k">모든 후원회 합산 연간</span><span class="v">최대 2,000만 원</span></div>
+      <div class="row"><span class="k">익명 후원</span><span class="v">1회 10만 원 · 연 120만 원</span></div>
+      <div class="row"><span class="k">법인·단체·외국인</span><span class="v danger">기부 불가</span></div>
+    </div>
+    <div class="tax-note">10만 원 초과분은 15% 세액공제 — 지방소득세 포함 시 16.5%(3천만 원 초과분 25%, 포함 시 27.5%). 근거: 정치자금법 제11조·제12조·제16조, 조세특례제한법 제76조.</div>
+  </div>
+</section>
+
+<!-- ② 정치인 -->
+<section id="politician">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">정치인·회계책임자</span>
+      <h2>후원 내역이 회계보고까지<br>그대로 이어져요</h2>
+      <p class="sec-sub">결제와 동시에 수입부가 기록되고, 영수증 발행과 선관위 회계보고 서류까지 대시보드에서 끝냅니다. 버튼을 눌러보세요 — 이것도 움직여요.</p>
+    </div>
+
+    <div class="browser">
+      <div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="url">polyx.kr/support — 후원회 대시보드</span></div>
+      <div class="body">
+        <div class="db-top">
+          <div>
+            <h4>홍길동 의원 후원회 · 수입부</h4>
+            <div class="sum">이번 달 모금 <b id="dbSum">3,250,000원</b> · 후원 <span id="dbCnt">41</span>건</div>
+          </div>
+          <div class="db-btns">
+            <button class="db-btn" id="issueBtn">영수증 일괄 발행</button>
+            <button class="db-btn pri" id="reportBtn">회계보고서 내려받기</button>
+          </div>
+        </div>
+        <div class="gauge">
+          <div class="g-label"><span>연간 모금 한도</span><span>4,800만 / 1억 5,000만 원</span></div>
+          <div class="g-bar" style="height:8px;"><div class="g-fill" style="width:32%"></div></div>
+        </div>
+        <table class="db" id="dbTable">
+          <tr><th>일시</th><th>후원인</th><th class="r">금액</th><th>실명확인</th><th class="r">영수증</th></tr>
+          <tr><td>07.04 14:02</td><td>김○○</td><td class="r">100,000</td><td>완료</td><td class="r"><span class="tag done">발행됨</span></td></tr>
+          <tr><td>07.04 11:38</td><td>이○○</td><td class="r">50,000</td><td>완료</td><td class="r"><span class="tag done">발행됨</span></td></tr>
+          <tr><td>07.03 21:15</td><td>익명 (10만 원 이하)</td><td class="r">100,000</td><td>완료</td><td class="r"><span class="tag wait">대기 · D-29</span></td></tr>
+          <tr><td>07.03 09:47</td><td>박○○</td><td class="r">300,000</td><td>완료</td><td class="r"><span class="tag wait">대기 · D-28</span></td></tr>
+        </table>
+      </div>
+    </div>
+    <div class="demo-caption">위 폰 데모에서 결제를 완료하면 이 수입부에 방금 건이 실시간으로 올라와요. 회계보고서 버튼은 실제 파일을 내려받습니다. (수치는 가상)</div>
+
+    <div class="grid3">
+      <div class="card">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg>
+        <h3>위반이 생기기 전에 차단</h3><p>실명 미확인, 한도 초과, 법인카드, 외국인 결제는 결제 단계에서 자동으로 막혀요. 회계책임자가 사후에 걸러낼 일이 없어요.</p>
+      </div>
+      <div class="card">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/></svg>
+        <h3>영수증, 기한 놓치지 않게</h3><p>정치자금영수증은 기부일부터 30일 안에 교부해야 해요. 발행 대기 목록과 마감 알림으로 한 번에 처리합니다.</p>
+      </div>
+      <div class="card">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>
+        <h3>회계보고 시즌이 편해져요</h3><p>수입부와 기부자 명단(연 300만 원 초과 공개분 포함)이 선관위 보고 양식 그대로 정리돼 검토 후 제출만 하면 돼요.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ③ 가입·계약·비용 -->
+<section id="open" class="alt">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">개설 안내</span>
+      <h2>개설 절차와 비용</h2>
+      <p class="sec-sub">복잡한 계약은 폴리가 대신 진행해요. 후원회는 서류만 준비하면 됩니다.</p>
+    </div>
+
+    <div class="flow">
+      <div class="step"><span class="t">01</span><div class="d">사전 신청<small>아래 신청서를 남기면 오픈 순서대로 연락드려요.</small></div></div>
+      <div class="step"><span class="t">02</span><div class="d">서류 준비<small>후원회 등록증 · 고유번호증 · 후원회 통장 사본 · 회계책임자 확인 서류. 체크리스트로 안내해 드려요.</small></div></div>
+      <div class="step"><span class="t">03</span><div class="d">결제(PG) 가맹 심사 — 폴리가 대행<small>계약 당사자는 후원회이고, 정산 계좌는 선관위에 신고된 후원회 계좌로만 등록돼요. 통상 1~2주.</small></div></div>
+      <div class="step"><span class="t">04</span><div class="d">후원 페이지 오픈<small>전용 링크와 폴리 앱 노출이 시작되고, 대시보드가 열려요.</small></div></div>
+    </div>
+
+    <div class="tiers">
+      <div class="tier" data-tier="std">
+        <div class="t-name">스탠다드</div>
+        <div class="t-tag">모금과 법정 의무, 이걸로 끝</div>
+        <div class="t-price">9,900원<small> /월</small></div>
+        <ul>
+          <li>후원 페이지 + 카드·간편결제</li>
+          <li>실명·한도·법인카드 자동 차단</li>
+          <li>정치자금영수증 발행 + 마감 알림</li>
+          <li>수입부 자동 기록 · 선관위 회계보고서</li>
+          <li>폴리 앱 후원 노출</li>
+        </ul>
+        <div class="more">자세히 보기 →</div>
+      </div>
+      <div class="tier featured" data-tier="pro">
+        <div class="badge-top">가장 인기</div>
+        <div class="t-name">프로</div>
+        <div class="t-tag">지역구 조직까지 관리</div>
+        <div class="t-price">29,000원<small> /월</small></div>
+        <div class="inherit">스탠다드의 모든 기능 포함</div>
+        <ul>
+          <li class="plus">지역구 모든 단체를 한눈에 — 현황·명단·일정 관리</li>
+          <li class="plus">방문·행사·모임 기록이 자동으로 쌓여요</li>
+          <li class="plus">어디부터 챙길지, 단체별 우호도 자동 분류</li>
+        </ul>
+        <div class="more">자세히 보기 →</div>
+      </div>
+      <div class="tier" data-tier="max">
+        <div class="t-name">맥스</div>
+        <div class="t-tag">다음 선거를 준비한다면</div>
+        <div class="t-price">99,000원<small> /월</small></div>
+        <div class="inherit">스탠다드 + 프로의 모든 기능 포함</div>
+        <ul>
+          <li class="plus">AI 기반 지역구 표심 분석 — 폴리랩 리포트 제공</li>
+          <li class="plus">역대 선거 개표 심층 분석 (동·투표소 단위)</li>
+          <li class="plus">경쟁 후보·정당 득표 추이</li>
+        </ul>
+        <div class="more">자세히 보기 →</div>
+      </div>
+    </div>
+    <div class="price-strip">
+      <span>모금액 수수료 <b>0원</b></span>
+      <span>개설비·사전 신청 <b>무료</b></span>
+    </div>
+    <div class="price-note">정식 오픈 기준 요금이며, 사전 신청 후원회에는 우선 할인가로 안내드려요. 청구서는 모금 시스템 이용료(모금경비)와 부가서비스 이용료로 분리 발행되고, 카드 결제수수료는 PG사 정책에 따라 후원회가 PG사에 직접 부담해요(폴리와 무관).</div>
+
+    <div class="form-card">
+      <h3>후원회 개설 사전 신청</h3>
+      <p class="desc">서비스 오픈 시 순서대로 안내드려요. 신청은 무료이며 확정이 아니에요.</p>
+      <form id="openForm">
+        <div class="form-2col">
+          <div class="form-row"><label>성함</label><input name="name" required placeholder="홍길동"></div>
+          <div class="form-row"><label>직위</label>
+            <select name="position" required>
+              <option value="">선택</option>
+              <option>국회의원</option>
+              <option>시·도지사</option>
+              <option>시장·군수·구청장</option>
+              <option>교육감</option>
+              <option>광역의원 (시·도의회)</option>
+              <option>기초의원 (시·군·구의회)</option>
+              <option>당협·지역위원장</option>
+              <option>대통령선거 후보자·예비후보자</option>
+              <option>기타 (출마 예정 등)</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row"><label>지역구</label><input name="district" required placeholder="예) 경기 고양시정"></div>
+        <div class="form-2col">
+          <div class="form-row"><label>연락처</label><input name="phone" required type="tel" placeholder="010-0000-0000"></div>
+          <div class="form-row"><label>이메일 (선택)</label><input name="email" type="email" placeholder="office@example.com"></div>
+        </div>
+        <div class="form-row"><label>문의 내용 (선택)</label><textarea name="message" rows="3" placeholder="후원회 등록 여부, 궁금한 점 등을 적어주세요"></textarea></div>
+        <div class="form-agree">
+          <input type="checkbox" id="agree" required>
+          <label for="agree" style="cursor:pointer;">개설 안내 목적의 개인정보(성명·연락처) 수집과 이용에 동의합니다. 안내 완료 후 파기됩니다.</label>
+        </div>
+        <button class="btn btn-primary" type="submit" style="width:100%;" id="submitBtn">사전 신청하기</button>
+        <div id="formMsg"></div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>자주 묻는 질문</h2>
+    </div>
+    <div class="faq">
+      <details>
+        <summary>폴리가 후원금을 받아서 전달하는 건가요?</summary>
+        <div class="a">아니요. 폴리는 후원금을 일절 수령하지 않습니다. 후원금은 결제대행사(PG)를 통해 각 후원회가 선거관리위원회에 신고한 계좌로 직접 전달됩니다. 폴리는 페이지와 시스템만 제공해요.</div>
+      </details>
+      <details>
+        <summary>후원하면 연말정산 혜택이 있나요?</summary>
+        <div class="a">네. 정치후원금은 10만 원까지 전액(100/110) 세액공제되고, 초과분은 15%(3천만 원 초과분 25%) 공제됩니다. 정치자금영수증을 발급받아 연말정산 때 제출하면 돼요.</div>
+      </details>
+      <details>
+        <summary>익명으로도 후원할 수 있나요?</summary>
+        <div class="a">1회 10만 원, 연간 120만 원 이하는 익명 후원이 가능합니다. 다만 이 경우 세액공제용 영수증 발급이 어려울 수 있어요.</div>
+      </details>
+      <details>
+        <summary>지방의원도 후원회를 만들 수 있나요?</summary>
+        <div class="a">네. 정치자금법 개정으로 광역·기초 지방의회 의원도 후원회를 둘 수 있게 되었습니다. 후원회 등록(관할 선관위)이 되어 있다면 폴리 서포트 개설을 신청할 수 있어요.</div>
+      </details>
+      <details>
+        <summary>폴리 앱에서도 후원할 수 있나요?</summary>
+        <div class="a">네. 아이폰에 폴리 앱이 설치되어 있으면 이 페이지 링크가 앱의 후원 화면으로 바로 연결됩니다. 앱이 없으면 이 웹사이트에서 그대로 진행하면 돼요.</div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="f-logo">폴리 서포트</div>
+    <p>폴리 서포트는 네오익스(NEOIX)가 운영하는 정치 후원 안내 서비스입니다. 폴리 서포트는 정치자금을 수령·보관·전달하지 않으며, 모든 후원금은 정치자금법에 따라 각 후원회가 관할 선거관리위원회에 신고한 예금계좌로 전달됩니다. 후원 한도와 세액공제 기준은 관련 법령 개정에 따라 달라질 수 있습니다. 예시 화면의 인물과 수치는 실제가 아니며, 데모 결제는 KG이니시스 테스트 환경으로 실제 청구되지 않습니다.</p>
+    <p>문의 <a href="mailto:jg@neoix.kr">jg@neoix.kr</a> · © 2026 NEOIX</p>
+  </div>
+</footer>
+
+<!-- 티어 상세 모달 -->
+<div class="tmodal-dim" id="tmodalDim">
+  <div class="tmodal" role="dialog" aria-modal="true">
+    <button class="tm-x" id="tmodalX">✕</button>
+
+    <!-- 스탠다드 -->
+    <div class="tm-body" id="tm-std">
+      <div class="tm-head">
+        <span class="tm-tag">스탠다드</span>
+        <div class="tm-title">결제 한 번에,<br>서류 세 가지가 저절로 끝나요</div>
+        <div class="tm-price"><b>월 9,900원</b><span>모금 시스템 이용료라 후원금에서 경비 처리</span></div>
+      </div>
+      <div class="tm-visual">
+        <div class="pipe">
+          <div class="doc src"><div class="d-t">후원 결제</div><div class="d-v">100,000원 완료</div></div>
+          <span class="par">→</span>
+          <div class="doc"><div class="d-t">수입부</div><div class="d-v"><span class="ok">✓</span> 자동 기록</div></div>
+          <span class="par">→</span>
+          <div class="doc"><div class="d-t">정치자금영수증</div><div class="d-v"><span class="ok">✓</span> 발행 대기 D-30</div></div>
+          <span class="par">→</span>
+          <div class="doc"><div class="d-t">선관위 회계보고서</div><div class="d-v"><span class="ok">✓</span> 양식 그대로</div></div>
+        </div>
+      </div>
+      <div class="tm-feats">
+        <div class="f"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg>
+          <div><h5>법 위반이 아예 불가능한 결제창</h5><p>실명 미확인·한도 초과·법인카드·외국인 결제는 결제 단계에서 자동으로 막혀요. 회계책임자가 사후 검증할 일이 없어요.</p></div></div>
+        <div class="f"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/></svg>
+          <div><h5>영수증, 마감 놓칠 수 없게</h5><p>기부일부터 30일 카운트다운과 알림, 대시보드에서 일괄 발행. 후원자에겐 자동 전달돼요.</p></div></div>
+        <div class="f"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>
+          <div><h5>회계보고 시즌, 검토만 하세요</h5><p>수입부·기부자 명단(300만 원 초과 공개분 포함)이 선관위 보고 양식으로 정리돼 나옵니다.</p></div></div>
+      </div>
+      <div class="tm-foot">
+        <button class="btn btn-primary tm-cta" data-goform>스탠다드로 사전 신청하기</button>
+        <div class="tm-note">사전 신청은 무료이고 확정이 아니에요</div>
+      </div>
+    </div>
+
+    <!-- 프로 -->
+    <div class="tm-body" id="tm-pro">
+      <div class="tm-head">
+        <span class="tm-tag">프로 · 가장 인기</span>
+        <div class="tm-title">지역구 조직이<br>주머니 속에 들어옵니다</div>
+        <div class="tm-price"><b>월 29,000원</b><span>스탠다드의 모든 기능 포함</span></div>
+      </div>
+      <div class="tm-visual">
+        <div class="crm-row"><div class="avatar">상</div><div><div class="c-n">○○동 상인회</div><div class="c-m">회원 128명 · 최근 방문 6/28</div></div><span class="crm-badge hi">우호</span></div>
+        <div class="crm-row"><div class="avatar">체</div><div><div class="c-n">△△체육회</div><div class="c-m">회원 342명 · 정기모임 매월 둘째 주</div></div><span class="crm-badge mid">중립</span></div>
+        <div class="crm-row"><div class="avatar">봉</div><div><div class="c-n">□□봉사단</div><div class="c-m">회원 56명 · 아직 접촉 전</div></div><span class="crm-badge lo">미접촉</span></div>
+        <div class="crm-next">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+          이번 주 금요일 · ○○동 상인회 정기총회 — 방문 일정 등록됨
+        </div>
+      </div>
+      <div class="tm-feats">
+        <div class="f"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          <div><h5>단체 현황·명단·일정을 한 화면에</h5><p>지역구 시민단체·직능단체를 등록하면 회원 규모, 핵심 인물, 정기모임 일정이 한눈에 정리돼요.</p></div></div>
+        <div class="f"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="10"/></svg>
+          <div><h5>방문·행사 기록이 자동 이력으로</h5><p>언제 누구를 만났는지 쌓이니까, 다음 방문 때 "지난번 그 얘기"가 가능해져요.</p></div></div>
+        <div class="f"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m3 11 18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></svg>
+          <div><h5>어디부터 챙길지 알려드려요</h5><p>공개 활동 기반으로 단체별 우호도를 분류해 우선순위를 제안해요. 미접촉 단체도 놓치지 않아요.</p></div></div>
+      </div>
+      <div class="tm-foot">
+        <button class="btn btn-primary tm-cta" data-goform>프로로 사전 신청하기</button>
+        <div class="tm-note">사전 신청은 무료이고 확정이 아니에요</div>
+      </div>
+    </div>
+
+    <!-- 맥스 -->
+    <div class="tm-body" id="tm-max">
+      <div class="tm-head">
+        <span class="tm-tag">맥스</span>
+        <div class="tm-title">다음 선거,<br>감이 아니라 데이터로 준비하세요</div>
+        <div class="tm-price"><b>월 99,000원</b><span>스탠다드 + 프로의 모든 기능 포함</span></div>
+      </div>
+      <div class="tm-visual">
+        <div class="pmap-wrap">
+          <div class="pmap-card">
+            <div class="pm-t">○○구 동별 표심 지도 <span class="ai">AI 분석</span></div>
+            <svg viewBox="0 0 220 132" style="width:100%; display:block;">
+              <defs>
+                <filter id="pmS" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="1.5" stdDeviation="1.5" flood-color="#191f28" flood-opacity=".12"/></filter>
+              </defs>
+              <g filter="url(#pmS)">
+                <rect x="6"  y="8"  width="48" height="38" rx="10" fill="#d3c4f5"/>
+                <rect x="58" y="4"  width="52" height="42" rx="10" fill="#a586ee"/>
+                <rect x="114" y="10" width="44" height="36" rx="10" fill="#eee9f9"/>
+                <rect x="162" y="6"  width="50" height="40" rx="10" fill="#d3c4f5"/>
+                <rect x="10" y="50" width="52" height="44" rx="10" fill="#a586ee"/>
+                <rect x="66" y="50" width="58" height="44" rx="11" fill="#6d28d9" stroke="#fff" stroke-width="2.5"/>
+                <rect x="128" y="50" width="40" height="44" rx="10" fill="#d3c4f5"/>
+                <rect x="172" y="50" width="40" height="44" rx="10" fill="#a586ee"/>
+                <rect x="8"  y="98" width="44" height="28" rx="9" fill="#eee9f9"/>
+                <rect x="56" y="98" width="50" height="28" rx="9" fill="#d3c4f5"/>
+                <rect x="110" y="98" width="52" height="28" rx="9" fill="#a586ee"/>
+                <rect x="166" y="98" width="46" height="28" rx="9" fill="#d3c4f5"/>
+              </g>
+              <text x="95" y="68" font-size="8.5" font-weight="800" fill="#fff" font-family="inherit">중앙동</text>
+              <text x="95" y="79" font-size="10.5" font-weight="800" fill="#fff" font-family="inherit">52.4%</text>
+            </svg>
+            <div class="pmap-legend"><span>열세</span><span class="bar"></span><span>우세</span></div>
+          </div>
+          <div class="pmap-card">
+            <div class="pm-t">3개 선거 득표 추이</div>
+            <svg viewBox="0 0 160 110" style="width:100%; display:block;">
+              <line x1="10" y1="90" x2="150" y2="90" stroke="rgba(25,31,40,.12)"/>
+              <line x1="10" y1="55" x2="150" y2="55" stroke="rgba(25,31,40,.06)"/>
+              <line x1="10" y1="20" x2="150" y2="20" stroke="rgba(25,31,40,.06)"/>
+              <polyline points="25,62 80,48 135,30" fill="none" stroke="#6d28d9" stroke-width="3" stroke-linecap="round"/>
+              <polyline points="25,45 80,55 135,60" fill="none" stroke="#c7cbd4" stroke-width="3" stroke-linecap="round" stroke-dasharray="1 6"/>
+              <circle cx="25" cy="62" r="4" fill="#6d28d9"/><circle cx="80" cy="48" r="4" fill="#6d28d9"/><circle cx="135" cy="30" r="5" fill="#6d28d9" stroke="#fff" stroke-width="2"/>
+              <circle cx="25" cy="45" r="3.5" fill="#c7cbd4"/><circle cx="80" cy="55" r="3.5" fill="#c7cbd4"/><circle cx="135" cy="60" r="3.5" fill="#c7cbd4"/>
+              <text x="135" y="18" font-size="9.5" font-weight="800" fill="#6d28d9" text-anchor="middle" font-family="inherit">48.2%</text>
+              <text x="25" y="103" font-size="8" fill="#8b95a1" text-anchor="middle" font-family="inherit">7회</text>
+              <text x="80" y="103" font-size="8" fill="#8b95a1" text-anchor="middle" font-family="inherit">8회</text>
+              <text x="135" y="103" font-size="8" fill="#8b95a1" text-anchor="middle" font-family="inherit">9회</text>
+            </svg>
+            <div class="pmap-legend" style="justify-content:flex-end; gap:10px;"><span style="color:#6d28d9; font-weight:800;">● 우리</span><span>● 경쟁</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="tm-feats">
+        <div class="f"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M4.9 4.9l2.9 2.9M16.2 16.2l2.9 2.9M2 12h4M18 12h4M4.9 19.1l2.9-2.9M16.2 7.8l2.9-2.9"/></svg>
+          <div><h5>AI가 읽어주는 우리 지역구 표심</h5><p>동·투표소 단위 개표 데이터를 AI가 분석해, 어디가 강하고 어디가 흔들리는지 지도로 보여드려요. 폴리랩 리포트로 제공됩니다.</p></div></div>
+        <div class="f"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+          <div><h5>역대 선거를 동·투표소 단위로</h5><p>2018년 이후 모든 선거의 개표 결과를 파고들어, 우리 지역의 진짜 흐름을 확인해요.</p></div></div>
+        <div class="f"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="m19 8 2 2-4.5 4.5L14 12"/></svg>
+          <div><h5>경쟁 후보·정당까지 추적</h5><p>상대 진영의 득표 추이를 나란히 놓고 보면, 다음 선거 전략이 저절로 정리됩니다.</p></div></div>
+      </div>
+      <div class="tm-foot">
+        <button class="btn btn-primary tm-cta" data-goform>맥스로 사전 신청하기</button>
+        <div class="tm-note">사전 신청은 무료이고 확정이 아니에요</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 이니시스 웹표준결제 요청 폼 (JS가 채움) -->
+<form id="inipayForm" method="post" style="display:none;">
+  <input name="version" value="1.0">
+  <input name="gopaymethod" value="Card">
+  <input name="mid" value="INIpayTest">
+  <input name="oid" value="">
+  <input name="price" value="">
+  <input name="timestamp" value="">
+  <input name="use_chkfake" value="Y">
+  <input name="signature" value="">
+  <input name="verification" value="">
+  <input name="mKey" value="">
+  <input name="currency" value="WON">
+  <input name="goodname" value="정치후원금 데모 (홍길동 의원 후원회)">
+  <input name="buyername" value="데모후원자">
+  <input name="buyertel" value="01000000000">
+  <input name="buyeremail" value="demo@polyx.kr">
+  <input name="returnUrl" value="">
+  <input name="closeUrl" value="">
+  <input name="acceptmethod" value="below1000:centerCd(Y)">
+  <input name="charset" value="UTF-8">
+</form>
+
+<script src="https://stdpay.inicis.com/stdjs/INIStdPay.js" charset="UTF-8"></script>
+<script>
+/* ───────── 신청 폼 (Supabase) ───────── */
+// 네오익스 공유 Supabase (통합계정 프로젝트) — 폴리앱 기존 URL(hpjq…)은 소멸됨
+const SUPABASE_URL = 'https://nroddjekdjwnwguwkudl.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_Uygr7NmVn1wmqopNrb4FRw_CRWw7Xeg';
+
+document.getElementById('openForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const f = e.target;
+  const btn = document.getElementById('submitBtn');
+  const msg = document.getElementById('formMsg');
+  btn.disabled = true; btn.textContent = '신청 중…'; msg.className = '';
+  const payload = {
+    name: f.name.value.trim(),
+    position: f.position.value,
+    district: f.district.value.trim(),
+    phone: f.phone.value.trim(),
+    email: f.email.value.trim() || null,
+    message: f.message.value.trim() || null,
+  };
+  try {
+    const res = await fetch(SUPABASE_URL + '/rest/v1/support_applications', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', apikey: SUPABASE_KEY, Authorization: 'Bearer ' + SUPABASE_KEY },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) throw new Error(await res.text());
+    msg.className = 'ok'; msg.textContent = '신청이 접수됐어요. 오픈 순서대로 연락드릴게요.';
+    f.reset();
+  } catch (err) {
+    msg.className = 'err'; msg.textContent = '접수에 실패했어요. 잠시 후 다시 시도하거나 이메일로 문의해 주세요.';
+  } finally {
+    btn.disabled = false; btn.textContent = '사전 신청하기';
+  }
+});
+
+/* ───────── 폰 데모: 의원 선택 → 토스식 키패드 → 바텀시트 → 이니시스 ───────── */
+const won = (n) => n.toLocaleString('ko-KR') + '원';
+let amount = 0;
+const REMAIN_LIMIT = 4900000; // 이 후원회 남은 한도 (데모)
+
+/* 의원 선택 (전원 가상 인물 — 정치중립) */
+const POLS = [
+  { n: '홍길동', m: '○○시 ○○구 · 시의회' },
+  { n: '성춘향', m: '○○시 △△구 · 국회의원' },
+  { n: '이몽룡', m: '○○시 □□구 · 구의회' },
+  { n: '임꺽정', m: '△△군 · 군의회' },
+  { n: '장보고', m: '□□도 · 도의회' },
+];
+let selPol = POLS[0];
+const pickList = document.getElementById('pickList');
+
+function renderPicks(q) {
+  const kw = (q || '').trim();
+  pickList.innerHTML = POLS
+    .filter(p => !kw || p.n.includes(kw) || p.m.includes(kw))
+    .map((p, idx) => `
+      <button class="pick-item" data-i="${POLS.indexOf(p)}">
+        <div class="avatar">${p.n[0]}</div>
+        <div><div class="pi-n">${p.n} 의원 후원회</div><div class="pi-m">${p.m}</div></div>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+      </button>`).join('') || '<div class="p-safe" style="padding-top:24px;">검색 결과가 없어요</div>';
+}
+renderPicks('');
+
+document.getElementById('pickSearch').addEventListener('input', (e) => renderPicks(e.target.value));
+
+pickList.addEventListener('click', (e) => {
+  const b = e.target.closest('.pick-item');
+  if (!b) return;
+  selPol = POLS[parseInt(b.dataset.i, 10)];
+  document.getElementById('recvAvatar').textContent = selPol.n[0];
+  document.getElementById('recvName').textContent = selPol.n + ' 의원 후원회에';
+  document.getElementById('shAvatar').textContent = selPol.n[0];
+  document.getElementById('shName').textContent = selPol.n + ' 의원 후원회';
+  setAmount(0);
+  document.getElementById('pickView').style.display = 'none';
+  document.getElementById('payHome').style.display = 'flex';
+});
+
+document.getElementById('backToPick').addEventListener('click', () => {
+  document.getElementById('payHome').style.display = 'none';
+  document.getElementById('pickView').style.display = 'flex';
+});
+
+const bigAmt = document.getElementById('bigAmt');
+const amtHint = document.getElementById('amtHint');
+const sheetAmt = document.getElementById('sheetAmt');
+const payBtn = document.getElementById('payBtn');
+const openSheetBtn = document.getElementById('openSheetBtn');
+
+function taxBack(v) {
+  // 10만 원까지 전액(100/110+지방세), 초과분 16.5%, 3천만 초과분 27.5%
+  const over = Math.max(0, v - 100000);
+  return Math.min(v, 100000) + Math.round(Math.min(over, 29900000) * 0.165 + Math.max(0, over - 29900000) * 0.275);
+}
+
+function setAmount(v) {
+  amount = Math.max(0, Math.min(v, REMAIN_LIMIT));
+  if (amount === 0) {
+    bigAmt.textContent = '얼마를 후원할까요?';
+    bigAmt.classList.add('zero');
+    amtHint.hidden = true;
+    openSheetBtn.disabled = true;
+    openSheetBtn.textContent = '후원하기';
+  } else {
+    bigAmt.textContent = won(amount);
+    bigAmt.classList.remove('zero');
+    bigAmt.classList.remove('pulse');
+    void bigAmt.offsetWidth; // 리플로우로 펄스 재시작
+    bigAmt.classList.add('pulse');
+    amtHint.hidden = false;
+    amtHint.textContent = amount <= 100000
+      ? `연말정산에서 ${won(taxBack(amount))} 전액 돌려받아요`
+      : `예상 환급 ${won(taxBack(amount))} · 초과분 16.5% 공제`;
+    openSheetBtn.disabled = false;
+    openSheetBtn.textContent = won(amount) + ' 후원하기';
+  }
+  sheetAmt.textContent = won(amount);
+  payBtn.textContent = won(amount) + ' 결제하기';
+}
+
+document.getElementById('keypad').addEventListener('click', (e) => {
+  const b = e.target.closest('button');
+  if (!b) return;
+  const k = b.dataset.k;
+  if (k === 'del') return setAmount(Math.floor(amount / 10));
+  if (k === '00') return setAmount(amount * 100);
+  setAmount(amount * 10 + parseInt(k, 10));
+});
+
+document.getElementById('quickAdd').addEventListener('click', (e) => {
+  const b = e.target.closest('button');
+  if (!b) return;
+  if (b.dataset.set) return setAmount(parseInt(b.dataset.set, 10));
+  setAmount(amount + parseInt(b.dataset.add, 10));
+});
+
+/* 아이폰/안드로이드 프레임 토글 */
+document.getElementById('osToggle').addEventListener('click', (e) => {
+  const b = e.target.closest('button');
+  if (!b) return;
+  [...document.querySelectorAll('#osToggle button')].forEach(x => x.classList.remove('on'));
+  b.classList.add('on');
+  document.getElementById('demoPhone').classList.toggle('android', b.dataset.os === 'android');
+});
+
+/* 바텀시트 */
+const dim = document.getElementById('sheetDim');
+const sheet = document.getElementById('paySheet');
+let authDone = false;
+
+function openSheet() {
+  dim.classList.add('show');
+  sheet.classList.add('show');
+}
+function closeSheet() {
+  dim.classList.remove('show');
+  sheet.classList.remove('show');
+}
+document.getElementById('openSheetBtn').addEventListener('click', openSheet);
+dim.addEventListener('click', closeSheet);
+
+const authBtn = document.getElementById('authBtn');
+const agrs = [...document.querySelectorAll('.agr')];
+function refreshPay() {
+  payBtn.disabled = !(authDone && agrs.every(a => a.checked));
+}
+agrs.forEach(a => a.addEventListener('change', refreshPay));
+
+authBtn.addEventListener('click', () => {
+  if (authDone) return;
+  authBtn.innerHTML = '<span class="spinner"></span> 인증 중…';
+  setTimeout(() => {
+    authDone = true;
+    authBtn.classList.add('done');
+    authBtn.innerHTML = '✓ 본인인증 완료 (데모)';
+    refreshPay();
+  }, 1200);
+});
+
+/* 이니시스 웹표준결제 (테스트 MID) */
+const SIGN_KEY = 'SU5JTElURV9UUklQTEVERVNfS0VZU1RS'; // INIpayTest 공개 테스트 키
+async function sha256hex(s) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
+  return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+payBtn.addEventListener('click', async () => {
+  payBtn.disabled = true;
+  const f = document.getElementById('inipayForm');
+  const oid = 'POLYDEMO_' + Date.now();
+  const ts = String(Date.now());
+  const price = String(amount);
+  f.oid.value = oid;
+  f.price.value = price;
+  f.timestamp.value = ts;
+  f.signature.value = await sha256hex(`oid=${oid}&price=${price}&timestamp=${ts}`);
+  f.verification.value = await sha256hex(`oid=${oid}&price=${price}&signKey=${SIGN_KEY}&timestamp=${ts}`);
+  f.mKey.value = await sha256hex(SIGN_KEY);
+  f.returnUrl.value = location.origin + '/support/demo-complete.html';
+  f.closeUrl.value = location.origin + '/support/demo-close.html';
+  f.goodname.value = `정치후원금 데모 (${selPol.n} 의원 후원회)`;
+  try {
+    localStorage.setItem('polyDemoAmt', price);
+    localStorage.setItem('polyDemoName', selPol.n);
+  } catch (e) {}
+  try {
+    INIStdPay.pay('inipayForm');
+  } catch (e) {
+    alert('결제창을 여는 데 실패했어요. PC 브라우저에서 다시 시도해 주세요.');
+  }
+  setTimeout(() => { payBtn.disabled = false; }, 1500);
+});
+
+/* 결제 데모 복귀 (?paid=demo) → 완료화면 + 수입부 실시간 반영 */
+(function handleReturn() {
+  const q = new URLSearchParams(location.search);
+  if (q.get('paid') !== 'demo') return;
+  history.replaceState(null, '', '/support/');
+  let amt = 100000, nm = '홍길동';
+  try {
+    amt = parseInt(localStorage.getItem('polyDemoAmt'), 10) || 100000;
+    nm = localStorage.getItem('polyDemoName') || '홍길동';
+  } catch (e) {}
+
+  // 폰: 완료 화면
+  document.getElementById('pickView').style.display = 'none';
+  document.getElementById('payHome').style.display = 'none';
+  document.getElementById('doneView').classList.add('show');
+  document.getElementById('doneAmt').textContent = nm + ' 의원 후원회 · ' + won(amt);
+
+  // 대시보드: 방금 건 추가 + 합계 갱신
+  const t = document.getElementById('dbTable');
+  const now = new Date();
+  const pad = (n) => String(n).padStart(2, '0');
+  const row = t.insertRow(1);
+  row.className = 'new-row';
+  row.innerHTML = `<td>${pad(now.getMonth() + 1)}.${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}</td>` +
+    `<td>나 (방금 데모 결제)</td><td class="r">${amt.toLocaleString('ko-KR')}</td><td>완료</td>` +
+    `<td class="r"><span class="tag wait">대기 · D-30</span></td>`;
+  document.getElementById('dbSum').textContent = won(3250000 + amt);
+  document.getElementById('dbCnt').textContent = '42';
+
+  document.getElementById('donor').scrollIntoView();
+})();
+
+document.getElementById('resetDemo').addEventListener('click', () => {
+  location.href = '/support/';
+});
+
+/* ───────── 요금제 상세 모달 ───────── */
+const tmodalDim = document.getElementById('tmodalDim');
+function openTier(key) {
+  document.querySelectorAll('.tm-body').forEach(b => b.classList.remove('show'));
+  const body = document.getElementById('tm-' + key);
+  if (!body) return;
+  body.classList.add('show');
+  tmodalDim.classList.add('show');
+  tmodalDim.querySelector('.tmodal').scrollTop = 0;
+  document.body.style.overflow = 'hidden';
+}
+function closeTier() {
+  tmodalDim.classList.remove('show');
+  document.body.style.overflow = '';
+}
+document.querySelectorAll('.tier[data-tier]').forEach(t =>
+  t.addEventListener('click', () => openTier(t.dataset.tier)));
+document.getElementById('tmodalX').addEventListener('click', closeTier);
+tmodalDim.addEventListener('click', (e) => { if (e.target === tmodalDim) closeTier(); });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeTier(); });
+document.querySelectorAll('[data-goform]').forEach(b =>
+  b.addEventListener('click', () => { closeTier(); document.querySelector('.form-card').scrollIntoView({ behavior: 'smooth' }); }));
+
+/* ───────── 대시보드 데모 버튼 ───────── */
+document.getElementById('issueBtn').addEventListener('click', function () {
+  const waits = document.querySelectorAll('#dbTable .tag.wait');
+  if (!waits.length) return;
+  waits.forEach(w => { w.className = 'tag done'; w.textContent = '발행됨'; });
+  this.classList.add('ok');
+  this.textContent = '✓ ' + waits.length + '건 발행 완료';
+});
+
+document.getElementById('reportBtn').addEventListener('click', () => {
+  const rows = [['일시', '후원인', '금액(원)', '실명확인', '영수증'],
+    ...[...document.querySelectorAll('#dbTable tr')].slice(1).map(tr =>
+      [...tr.cells].map(td => td.textContent.trim().replace(/,/g, '')))];
+  rows.push([], ['이번 달 모금 합계', document.getElementById('dbSum').textContent, '', '', '']);
+  rows.push(['* 선관위 회계보고 양식 데모 출력입니다. 수치는 가상입니다.', '', '', '', '']);
+  const csv = '﻿' + rows.map(r => r.join(',')).join('\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+  a.download = '후원회_수입부_데모.csv';
+  a.click();
+  URL.revokeObjectURL(a.href);
+});
+</script>
+</body>
+</html>
