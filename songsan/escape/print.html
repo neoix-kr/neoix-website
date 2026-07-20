@@ -315,5 +315,121 @@
   </div>
 </section>
 
+
+<!-- ── 8. 군중 12인 포스터 (A2 확대 인쇄) ────────────────── -->
+<section class="sheet">
+  <h2>군중 12인 포스터 <span style="font-size:9pt;font-weight:400">(p9 · 벽에 붙이세요)</span></h2>
+  <p style="font-size:9.5pt;color:#5C513A">
+    <b>A2로 확대 인쇄</b>해 벽에 붙입니다. 패드에는 답(번호)만 입력합니다.
+    네 명이 조건을 소리내어 읽으며 함께 후보를 지워 나가는 것이 이 문제의 목적입니다.
+  </p>
+  <div class="cut"><div id="crowdArt" style="background:#F7F1DE;padding:6mm;border-radius:2mm"></div></div>
+  <div class="warn">
+    <b>교사용</b> — 정답 <b>11번</b>. 조건 4개(뒤로 왔다 / 손을 대었다 / 홀로 있었다 / 머리를 가린 여인)로
+    소거하면 11번만 남습니다. <b>5번이 미끼</b>입니다(조건 3개는 맞지만 앞줄). 이 상자는 잘라내고 붙이세요.
+  </div>
+</section>
+
+<!-- ── 9. 거울글씨 편지 ───────────────────────────────────── -->
+<section class="sheet">
+  <h2>거꾸로 쓰인 편지 <span style="font-size:9pt;font-weight:400">(p8 · 손거울과 함께 배치)</span></h2>
+  <p style="font-size:9.5pt;color:#5C513A">
+    화물칸 담당 교사가 <b>손거울과 함께</b> 건넵니다. 패드에는 완성된 답만 입력합니다.
+  </p>
+  <div class="cut"><div id="letterArt" style="background:#F7F1DE;padding:6mm;border-radius:2mm"></div></div>
+  <div class="warn">
+    <b>교사용</b> — 정답 <b>새사람전하라</b>. 밑줄 글자에 붙은 작은 숫자는 누가복음 8장의 절 번호이고,
+    작은 것부터 세우면 27새 · 29사 · 33람 · 35전 · 38하 · 39라 입니다. 이 상자는 잘라내고 붙이세요.
+  </div>
+</section>
+
+<!-- ── 10. 레핀 인쇄물 ────────────────────────────────────── -->
+<section class="sheet">
+  <h2>레핀 「야이로의 딸을 살리심」 <span style="font-size:9pt;font-weight:400">(p10 · A3 벽 인쇄 + 손거울)</span></h2>
+  <p style="font-size:9.5pt;color:#5C513A">
+    <b>A3로 확대 인쇄</b>해 벽에 붙이고 <b>손거울</b>을 함께 둡니다.
+    아래 계산식은 <b>상하 반전</b>되어 있어 거울로만 읽힙니다.
+  </p>
+  <div class="cut" style="text-align:center">
+    <img src="assets/painting-repin-jairus.webp" style="width:100%;max-width:150mm;border:2px solid #241C06">
+    <p style="font-size:8.5pt;color:#5C513A;margin-top:2mm">일리야 레핀, 「야이로의 딸을 살리심」 (1871)</p>
+    <div style="margin-top:5mm;padding:5mm;border:1.5px dashed #8A7C60;border-radius:2mm;display:inline-block">
+      <div style="font-size:8.5pt;color:#6B5F45;margin-bottom:2mm">거울에 비춰 읽으라</div>
+      <div style="font-family:'Jua';font-size:22pt;letter-spacing:5px;transform:scaleY(-1);color:#241C06">
+        &#9398; &times; &#9399; &minus; &#9400; &times; &#9401;
+      </div>
+    </div>
+    <table style="margin-top:5mm;font-size:9.5pt">
+      <tr><th style="width:12mm">&#9398;</th><td>여인이 앓은 햇수 <span style="color:#6B5F45">(눅 8:43)</span></td></tr>
+      <tr><th>&#9399;</th><td>소녀의 나이 <span style="color:#6B5F45">(눅 8:42)</span></td></tr>
+      <tr><th>&#9400;</th><td>그림 속에서 <b>타오르고 있는</b> 촛불의 수 <span style="color:#6B5F45">(직접 세라)</span></td></tr>
+      <tr><th>&#9401;</th><td>방에 들어가도록 허락받은 사람의 수 <span style="color:#6B5F45">(눅 8:51)</span></td></tr>
+    </table>
+  </div>
+  <div class="warn">
+    <b>교사용</b> — 정답 <b>129</b>. &#9398;12 &#9399;12 &#9400;3 &#9401;5 → (12&times;12)&minus;(3&times;5)=129.
+    &#9401;에서 <b>예수님까지 세어 6을 쓰는 실수</b>가 가장 흔합니다(베드로·요한·야고보와 아이의 부모 = 5).
+    이 상자는 잘라내고 붙이세요.
+  </div>
+</section>
+
+<script>
+const ART_PRINT = {
+crowd(){ // P9: 군중 12명 수색 (정답 11)
+  const person=(x,y,n,{veil=false,arm=null,skirt=false}={})=>{
+    let s=`<g transform="translate(${x},${y})" stroke="#2B2416" fill="none" stroke-width="3" stroke-linecap="round">`;
+    s+=`<circle cx="0" cy="-24" r="9" ${veil?'fill="#2B2416" opacity=".85"':''}/>`;
+    if(veil) s+=`<path d="M-11 -26 a11 11 0 0 1 22 0 v10 l-5 -4 h-12 l-5 4 Z" fill="#2B2416" opacity=".25"/>`;
+    if(skirt) s+=`<path d="M-10 -13 h20 l6 34 h-32 Z"/>`;
+    else s+=`<path d="M-10 -13 h20 l4 30 h-28 Z"/>`;
+    if(arm==='L') s+=`<path d="M-9 -8 L-26 -14" stroke-width="3.5"/><circle cx="-28" cy="-15" r="2.6" fill="#2B2416"/>`;
+    if(arm==='R') s+=`<path d="M9 -8 L26 -14" stroke-width="3.5"/><circle cx="28" cy="-15" r="2.6" fill="#2B2416"/>`;
+    s+=`<circle cx="0" cy="-49" r="9.5" fill="#F2E7CB" stroke="#8A2F1E" stroke-width="2"/><text y="-44" text-anchor="middle" font-size="13" font-family="Jua" fill="#8A2F1E">${n}</text>`;
+    return s+'</g>';
+  };
+  let s=`<svg viewBox="0 0 460 330">`;
+  s+=`<text x="230" y="20" text-anchor="middle" font-size="13" font-family="Gowun Batang" fill="#5C513A">─ 뒤(북쪽) ─</text>`;
+  s+=`<g transform="translate(230,175)" stroke="#8A6C14" fill="none" stroke-width="3.5" stroke-linecap="round">
+      <circle cx="0" cy="-30" r="11"/><path d="M-13 -16 h26 l6 44 h-38 Z"/>
+      <path d="M0 -52 l4 7 h-8 Z M-9 -47 l-6 -5 M9 -47 l6 -5" stroke-width="2.5"/>
+      <text y="34" text-anchor="middle" font-size="12" font-family="Gowun Batang" fill="#8A6C14">예수님</text></g>`;
+  // 뒤(위쪽) 6명: 2(여,손X,홀로) 3(남,손O)+4(여,손X) 붙음 / 7(여,손O)+9(남,손O) 붙음 / 11(여,손O,홀로)★
+  s+=person(52,102,2,{veil:true,skirt:true});
+  s+=person(140,86,3,{arm:'R'});
+  s+=person(176,84,4,{veil:true,skirt:true});
+  s+=person(288,84,7,{veil:true,arm:'L',skirt:true});
+  s+=person(324,86,9,{arm:'L'});
+  s+=person(408,100,11,{veil:true,arm:'L',skirt:true}); // ★정답
+  // 앞(아래쪽) 6명: 1(남) 5(여,손O,홀로:미끼) 6(남,손O) 8(여,손X) 10(남) 12(여,손O)
+  s+=person(48,262,1,{});
+  s+=person(128,274,5,{veil:true,arm:'R',skirt:true});
+  s+=person(208,282,6,{arm:'R'});
+  s+=person(288,282,8,{veil:true,skirt:true});
+  s+=person(360,274,10,{});
+  s+=person(424,258,12,{veil:true,arm:'L',skirt:true});
+  s+=`</svg>`;
+  return `<div class="art-wrap">${s}</div>`;
+},
+mirrorLetter(){ // 절 번호 정렬: 새27 사29 람33 전35 하38 라39 (편지 등장 순서는 뒤섞임)
+  return `<div class="art-wrap"><div class="mirror-box">
+  성 안의 친구들에게.<br>
+  이 편지를 <u>전<sup>35</sup></u>하는 자는 예전의 내가 아닙니다.<br>
+  사람들이 나를 부<u>라<sup>39</sup></u>보듯 두려워하던 시절,<br>
+  나의 집은 무덤이었고 나의 옷은 없었습니다.<br>
+  그러나 주님이 배에서 내리신 그 날,<br>
+  모든 것이 <u>새<sup>27</sup></u>로 시작되었습니다.<br>
+  이제 나는 <u>하<sup>38</sup></u>늘 아래 부끄러움 없이,<br>
+  <u>사<sup>29</sup></u>슬 대신 옷을 입고,<br>
+  무덤이 아니라 사<u>람<sup>33</sup></u> 사는 집으로 돌아갑니다.<br>
+  주님이 행하신 큰 일을 온 성에 말하겠습니다.<br>
+  — 거라사에서
+  </div></div>`;
+},
+};
+
+document.getElementById('crowdArt').innerHTML = ART_PRINT.crowd();
+document.getElementById('letterArt').innerHTML = ART_PRINT.mirrorLetter();
+</script>
+
 </body>
 </html>

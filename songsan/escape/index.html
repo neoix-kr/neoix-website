@@ -135,6 +135,7 @@ h1.title{font-size:42px;color:var(--parch);letter-spacing:1px;text-align:center;
 .act-adv{margin-top:14px;padding:13px;border:1px solid rgba(194,154,43,.4);border-radius:9px;background:rgba(194,154,43,.1);text-align:center}
 .act-adv b{display:block;font-size:19px;color:var(--brass-lt);font-weight:400}
 .act-adv span{display:block;margin-top:5px;font-family:'Gowun Batang',serif;font-size:14px;color:var(--chalk-dim)}
+.field-cue{display:block;margin-bottom:9px;padding:8px 11px;border-radius:6px;background:#FBEFE9;border:1.5px solid #B5503F;color:#8A2F1E;font-size:14.5px;line-height:1.6}
 .pz-mission{font-family:'Gowun Batang',serif;font-size:17px;line-height:1.8;word-break:keep-all;text-align:left;color:var(--ink)}
 .pz-mission b{color:#8A2F1E;font-weight:700}
 .pz-mission .step{display:block;margin-top:6px}
@@ -1247,6 +1248,16 @@ const Explore = {
     if(hs.item && !S.items[hs.item]){
       this.openCloseup(roomId,hsId); return;
     }
+    // 배 조작 — 닻·돛·조타륜·하중
+    const op=SHIP_OPS[roomId+'.'+hsId];
+    if(op){
+      if(S.ship[op.key]){ this.feedback(op.done); return; }
+      if(S.act<op.act){ this.feedback('아직 그럴 때가 아니다. '+ACTS[S.act].tell); return; }
+      S.ship[op.key]=true; Sound.creak(); tryAdvanceAct(); save();
+      logEvent('배 조작: '+op.name);
+      UI.render(); Explore.render(); this.feedback('⚓ '+op.doing);
+      return;
+    }
     // 이 사물에 사건(퍼즐)이 묶여 있으면 여기서 열린다 — v2의 핵심
     const bound=PUZZLE_AT[roomId+'.'+hsId];
     if(bound && !S.solved[bound]){
@@ -1391,8 +1402,8 @@ const STAGES = [
       hints:['눅 8:27 그가 살던 곳 / 8:29 사람들이 채운 것 / 8:33 군대의 최후 / 8:39 주님이 보내신 곳.','무덤 → 사슬 → 돼지 → 집.'],
       reveal:'무덤 → 사슬 → 돼지 → 집',
       success:'자물쇠가 열렸다. 그는 집으로 돌아갔다.'},
-    { id:'p8', img:'scene-gerasa-restored', type:'text', title:'거꾸로 쓰인 편지', art:'mirrorLetter',
-      mission:'새사람이 된 그가 성으로 보낸 편지. 글씨가 전부 <b>뒤집혀</b> 있고, 밑줄 친 글자 여섯에는 <b>작은 숫자</b>가 붙어 있다.<span class="step">그 숫자는 <b>누가복음 8장의 절 번호</b>다. 성경을 펴서 각 절이 이 이야기의 어느 장면인지 확인하라.</span><span class="step">그리고 <b>절 번호가 작은 것부터</b> 여섯 글자를 이어 입력하라.</span>',
+    { id:'p8', img:'scene-gerasa-restored', type:'text', title:'거꾸로 쓰인 편지', 
+      mission:'<span class="field-cue">📍 이 문제는 패드에 답만 넣는다. 현장에 놓인 <b>거울글씨 편지</b>와 손거울을 보고 풀어라.</span>새사람이 된 그가 성으로 보낸 편지. 글씨가 전부 <b>뒤집혀</b> 있고, 밑줄 친 글자 여섯에는 <b>작은 숫자</b>가 붙어 있다.<span class="step">그 숫자는 <b>누가복음 8장의 절 번호</b>다. 성경을 펴서 각 절이 이 이야기의 어느 장면인지 확인하라.</span><span class="step">그리고 <b>절 번호가 작은 것부터</b> 여섯 글자를 이어 입력하라.</span>',
       placeholder:'여섯 글자', answers:['새사람전하라'],
       toolNote:'손거울이 있으면 편하다. 없다면 눈으로 뒤집어 읽어라.',
       hints:['화면을 거울에 비추면 바로 읽힌다. 밑줄 글자와 절 번호를 종이에 옮겨 적고 정렬하라.','27새 → 29사 → 33람 → 35전 → 38하 → 39라.'],
@@ -1406,14 +1417,14 @@ const STAGES = [
   story:'돌아온 항구는 인파로 가득하다.<br>12년을 앓은 여인이 군중 속에 숨어 있고,<br>12살 소녀의 시간이 끝났다는 전갈이 온다.<br>모두가 끝이라 말하는 곳에서 <b>숫자 12</b>가 열쇠가 된다.',
   verse:'"예수께서 이르시되 내게 손을 댄 자가 누구냐" — 눅 8:45',
   puzzles:[
-    { id:'p9', type:'number', title:'군중 속의 손', bible:true, art:'crowd',
-      mission:'군중 <b>열두 명</b> 가운데 옷자락에 손을 댄 그 여인을 찾아라. 누가의 기록이 단서다. (눅 8:43-44)<span class="step">① 여인은 예수님의 <b>뒤로</b> 다가왔다.</span><span class="step">② 옷 가에 <b>손을 대었다</b> — 손을 뻗은 사람이다.</span><span class="step">③ 12년의 병은 그녀를 <b>홀로</b> 남겼다 — 누구와도 붙어 있지 않다.</span><span class="step">④ 머리를 가린 <b>여인</b>이다. 그 번호를 입력하라.</span>',
+    { id:'p9', type:'number', title:'군중 속의 손', bible:true, 
+      mission:'<span class="field-cue">📍 이 문제는 패드에 답만 넣는다. 벽에 붙은 <b>군중 12인 포스터</b>을 보고 풀어라.</span>군중 <b>열두 명</b> 가운데 옷자락에 손을 댄 그 여인을 찾아라. 누가의 기록이 단서다. (눅 8:43-44)<span class="step">① 여인은 예수님의 <b>뒤로</b> 다가왔다.</span><span class="step">② 옷 가에 <b>손을 대었다</b> — 손을 뻗은 사람이다.</span><span class="step">③ 12년의 병은 그녀를 <b>홀로</b> 남겼다 — 누구와도 붙어 있지 않다.</span><span class="step">④ 머리를 가린 <b>여인</b>이다. 그 번호를 입력하라.</span>',
       placeholder:'번호', answers:['11'],
       hints:['조건을 하나씩 지워라: 앞줄 전부 탈락(5번이 아무리 그럴듯해도 앞줄이다). 뒤에서 손 안 뻗은 사람 탈락.','뒤에서 손을 뻗은 이는 3·7·9·11. 그중 옆 사람과 붙어 있지 않은 머리 가린 여인은 하나뿐이다.'],
       reveal:'「11」번 — 뒤쪽에서 홀로 손을 뻗은, 머리 가린 여인. (5번은 앞줄 미끼, 7번은 9번과 붙어 있다)',
       success:'"내게 손을 댄 자가 누구냐" — 찾았다.'},
-    { id:'p10', type:'number', title:'레핀의 방', bible:true, custom:'reflRoom',
-      mission:'150년 전, 화가 레핀이 <b>그 방</b>을 그렸다. 네 개의 수는 찾을 수 있지만, <b>그 수들을 엮는 공식</b>은 이 방 어디에도 똑바로 적혀 있지 않다.<span class="step">Ⓐ 여인이 앓은 <b>햇수</b> (눅 8:43)</span><span class="step">Ⓑ 소녀의 <b>나이</b> (눅 8:42)</span><span class="step">Ⓒ 그림 속 <b>타오르는 촛불의 수</b></span><span class="step">Ⓓ 방에 <b>들어가도록 허락받은 사람의 수</b> (눅 8:51)</span><span class="step">공식은 <b>물에 비친 방 속에 거꾸로</b> 잠겨 있다. 계산 결과를 입력하라.</span>',
+    { id:'p10', type:'number', title:'레핀의 방', bible:true, 
+      mission:'<span class="field-cue">📍 이 문제는 패드에 답만 넣는다. 벽에 붙은 <b>레핀 인쇄물</b>과 손거울을 보고 풀어라.</span>150년 전, 화가 레핀이 <b>그 방</b>을 그렸다. 네 개의 수는 찾을 수 있지만, <b>그 수들을 엮는 공식</b>은 이 방 어디에도 똑바로 적혀 있지 않다.<span class="step">Ⓐ 여인이 앓은 <b>햇수</b> (눅 8:43)</span><span class="step">Ⓑ 소녀의 <b>나이</b> (눅 8:42)</span><span class="step">Ⓒ 그림 속 <b>타오르는 촛불의 수</b></span><span class="step">Ⓓ 방에 <b>들어가도록 허락받은 사람의 수</b> (눅 8:51)</span><span class="step">공식은 <b>물에 비친 방 속에 거꾸로</b> 잠겨 있다. 계산 결과를 입력하라.</span>',
       placeholder:'계산 결과', answers:['129'],
       hints:['반영을 켜고 패드를 통째로 뒤집어 보라. 공식이 떠오른다. 먼저 Ⓐ12 Ⓑ12 Ⓒ3 Ⓓ5를 확정하라.','공식은 Ⓐ×Ⓑ−Ⓒ×Ⓓ. (12×12)−(3×5)=144−15=129.'],
       reveal:'물그림자 속 공식: Ⓐ×Ⓑ−Ⓒ×Ⓓ = 144−15 = 「129」',
@@ -1457,7 +1468,7 @@ let S = null;
 function defaultState(){
   return { phase:'lobby', teamName:'', startTs:0, finishTs:0,
     stageIdx:0, puzzleIdx:0, penaltyMin:0,
-    solved:{}, act:0, openPz:null,
+    solved:{}, act:0, openPz:null, ship:{},
     hintsUsed:{}, hintTexts:[], wrongStreak:0, cooldownUntil:0, log:[],
     items:{}, opened:{}, unlocked:{}, phys:{} };
 }
@@ -1491,17 +1502,32 @@ function tryCombine(){
   }
   return null;
 }
+// 배 조작 — 공간에서 배를 실제로 다뤄야 항로가 전진한다
+const SHIP_OPS = {
+  'deck.anchor': { key:'anchor', act:1, name:'닻 올리기',
+    doing:'닻줄을 감는다. 쇠사슬이 갑판을 긁으며 무거운 닻이 물 밖으로 올라온다.',
+    done:'닻은 이미 올라와 있다.' },
+  'deck.sail':   { key:'sail',   act:1, name:'돛 펴기',
+    doing:'활대의 밧줄을 풀자 돛이 소리를 내며 펼쳐진다. 바람이 돛을 문다.',
+    done:'돛은 이미 펴져 있다.' },
+  'wheel.helm':  { key:'helm',   act:2, name:'침로 잡기',
+    doing:'조타륜을 두 손으로 붙잡고 침로를 맞춘다. 뱃머리가 파도를 정면으로 받기 시작한다.',
+    done:'침로는 이미 잡혀 있다.' },
+  'hold.pillar': { key:'trim',   act:3, name:'하중 정렬',
+    doing:'무거운 궤짝을 좌우로 옮겨 배의 기울기를 잡는다. 뱃바닥이 수평을 되찾는다.',
+    done:'하중은 이미 정렬돼 있다.' },
+};
 const PZ_SPOT = Object.fromEntries(Object.entries(PUZZLE_AT).map(([k,v])=>[v,k]));
 
 // 막(幕) — 항로 위의 배가 어디까지 왔는가. 각 막은 열쇠 사건이 풀리면 전진한다.
 const ACTS = [
   { id:0, name:'부두',      room:'deck',   need:[], needItems:['key'], needPhys:['deck.crate'],
     tell:'갑판을 뒤져 열쇠를 찾고, 승선 명부함의 네 자리를 채우라.' },
-  { id:1, name:'출항',      room:'cabin',  need:['p1'], needPhys:['cabin.chart'],
+  { id:1, name:'출항',      room:'cabin',  need:['p1'], needPhys:['cabin.chart'], needShip:['anchor','sail'],
     tell:'선장실에서 허가증을 읽고, 출항 명령서의 네 자리를 채우라.' },
-  { id:2, name:'폭풍',      room:'wheel',  need:['p2','p3','p4','p5'], needPhys:['wheel.navchest'],
+  { id:2, name:'폭풍',      room:'wheel',  need:['p2','p3','p4','p5'], needPhys:['wheel.navchest'], needShip:['helm'],
     tell:'광풍 속에서 침로를 다시 잡고, 항해궤를 열라.' },
-  { id:3, name:'무덤 섬',   room:'hold',   need:['p6','p7','p8'], needPhys:['hold.net'],
+  { id:3, name:'무덤 섬',   room:'hold',   need:['p6','p7','p8'], needPhys:['hold.net'], needShip:['trim'],
     tell:'배를 가볍게 하고, 사슬 자물쇠를 끊으라.' },
   { id:4, name:'돌아온 항구',room:'crew',  need:['p9','p10','p11'], needPhys:['crew.chest'],
     tell:'인파 속에서 그 한 사람을 찾고, 선원 명부 궤를 열라.' },
@@ -1532,12 +1558,13 @@ function canOpen(pzId){
 function tryAdvanceAct(){
   while(S.act<ACTS.length-1){
     const a=ACTS[S.act];
-    const need=a.need||[], items=a.needItems||[], locks=a.needPhys||[];
+    const need=a.need||[], items=a.needItems||[], locks=a.needPhys||[], ops=a.needShip||[];
     const pzOk = need.every(id=>S.solved[id]);
     const itOk = items.every(k=>S.items&&S.items[k]);
     const lkOk = locks.every(k=>S.phys&&S.phys[k]);
-    if(!need.length && !items.length && !locks.length) break;
-    if(pzOk && itOk && lkOk) S.act++; else break;
+    const opOk = ops.every(k=>S.ship&&S.ship[k]);
+    if(!need.length && !items.length && !locks.length && !ops.length) break;
+    if(pzOk && itOk && lkOk && opOk) S.act++; else break;
   }
 }
 function save(){ try{ localStorage.setItem(LS_KEY, JSON.stringify(S)); }catch(e){} }
@@ -1555,6 +1582,7 @@ function migrate(){
   if(typeof S.act!=='number') S.act=0;
   if(S.openPz===undefined) S.openPz=null;
   if(typeof S.teamCode!=='number') S.teamCode=0;
+  if(!S.ship) S.ship={};
   // 구버전(선형 커서) 세이브 → 지나온 관문을 solved로 환산
   if(S._v!==2){
     let n=STAGES.slice(0,S.stageIdx||0).reduce((t,st)=>t+st.puzzles.length,0)+(S.puzzleIdx||0);
@@ -1998,6 +2026,7 @@ const Admin = {
     for(let i=0;i<actIdx;i++){
       (ACTS[i].need||[]).forEach(id=>{ S.solved[id]=true; });
       (ACTS[i].needItems||[]).forEach(k=>{ S.items[k]=true; });
+      (ACTS[i].needShip||[]).forEach(k=>{ S.ship[k]=true; });
       (ACTS[i].needPhys||[]).forEach(k=>{
         S.phys[k]=true;
         const [r,h]=k.split('.'); const hs=ROOMS[r]&&ROOMS[r].hotspots.find(x=>x.id===h);
