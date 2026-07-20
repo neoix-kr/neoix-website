@@ -1,0 +1,319 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>믿음의 항해 — 현장 준비물 인쇄</title>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Jua&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Gowun Batang',serif;background:#4A4238;color:#241C06;padding:20px}
+  .sheet{width:210mm;min-height:297mm;background:#fff;margin:0 auto 18px;padding:14mm 12mm;
+    box-shadow:0 4px 20px rgba(0,0,0,.35);page-break-after:always;position:relative}
+  h1{font-family:'Jua';font-size:22pt;text-align:center;letter-spacing:2px}
+  h2{font-family:'Jua';font-size:15pt;margin:0 0 4mm;padding-bottom:2mm;border-bottom:2px solid #241C06}
+  .lead{text-align:center;font-size:10pt;color:#5C513A;margin-top:2mm}
+  table{width:100%;border-collapse:collapse;font-size:9.5pt;margin-top:3mm}
+  th,td{border:1px solid #8A7C60;padding:2.2mm 2.5mm;text-align:left;vertical-align:top}
+  th{background:#EFE7D3;font-family:'Jua';font-weight:400}
+  .cut{border:1.6px dashed #8A7C60;border-radius:2mm;padding:6mm;margin-top:5mm;position:relative}
+  .cut::before{content:'✂';position:absolute;top:-3.4mm;left:5mm;background:#fff;padding:0 2mm;font-size:9pt;color:#8A7C60}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:5mm}
+  .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:4mm}
+  /* 현장 카드 공통 */
+  .card{border:2px solid #241C06;border-radius:2mm;padding:6mm 5mm;text-align:center;
+    background:linear-gradient(#FBF6E6,#F2E9CE);min-height:44mm;display:flex;flex-direction:column;justify-content:center}
+  .card .ttl{font-family:'Jua';font-size:12pt;letter-spacing:1px}
+  .card .sub{font-size:8.5pt;color:#5C513A;margin-top:1.5mm}
+  .card .big{font-family:'Jua';font-size:40pt;letter-spacing:6px;margin-top:3mm;line-height:1}
+  .card .note{font-size:8pt;color:#6B5F45;margin-top:3mm;border-top:1px dotted #A99A78;padding-top:2mm}
+  .team{display:inline-block;font-family:'Jua';font-size:9pt;padding:1mm 3mm;border-radius:8px;color:#fff;margin-bottom:2mm}
+  .t0{background:#8A2F1E}.t1{background:#2E5C4A}.t2{background:#2B3F6B}
+  .back{background:repeating-linear-gradient(45deg,#F6EFDC,#F6EFDC 4mm,#EFE6CE 4mm,#EFE6CE 8mm)}
+  .slot{font-family:'Jua';font-size:10pt;background:#241C06;color:#F2E7CB;display:inline-block;
+    padding:1mm 3mm;border-radius:3px;letter-spacing:1px}
+  .warn{background:#FBEFE9;border:1.5px solid #B5503F;border-radius:2mm;padding:4mm;font-size:9.5pt;margin-top:4mm}
+  .warn b{color:#8A2F1E}
+  .seal{width:26mm;height:26mm;border:2.5px solid #8A2F1E;border-radius:50%;display:flex;
+    align-items:center;justify-content:center;font-family:'Jua';font-size:20pt;color:#8A2F1E;margin:3mm auto 0}
+  .toolbar{width:210mm;margin:0 auto 14px;display:flex;gap:8px;justify-content:flex-end}
+  .toolbar button{font-family:'Jua';font-size:11pt;padding:8px 16px;border:0;border-radius:8px;
+    background:#C29A2B;color:#241C06;cursor:pointer}
+  @media print{
+    body{background:#fff;padding:0}
+    .sheet{box-shadow:none;margin:0;width:auto;min-height:auto}
+    .toolbar{display:none}
+  }
+</style>
+</head>
+<body>
+
+<div class="toolbar"><button onclick="window.print()">🖨 인쇄 / PDF로 저장</button></div>
+
+<!-- ── 1. 교사 안내 ───────────────────────────────────────── -->
+<section class="sheet">
+  <h1>믿음의 항해 — 현장 준비물</h1>
+  <p class="lead">인쇄해서 잘라 배치하세요 · 팀당 태블릿 1대 · 성경 4권 · 소요 80분</p>
+
+  <h2 style="margin-top:7mm">이 게임이 작동하는 원리</h2>
+  <p style="font-size:10pt;line-height:1.75">
+    모든 자물쇠는 <b>네 자리</b>이고, 그 네 자리는 <b>한 곳에 없습니다</b>.
+    패드·현장 물건·성경·선생님 넷으로 쪼개져 있어서, 네 명이 흩어지지 않으면 숫자가 채워지지 않습니다.
+    패드만 붙잡고 있는 팀은 반드시 막힙니다.
+  </p>
+
+  <h2 style="margin-top:6mm">자물쇠별 네 자리 출처</h2>
+  <table>
+    <tr><th style="width:32mm">자물쇠</th><th style="width:16mm">코드</th><th>①</th><th>②</th><th>③</th><th>④</th></tr>
+    <tr><td>승선 명부함<br><span style="font-size:8pt;color:#6B5F45">갑판</span></td><td><b>2031</b></td>
+      <td>성경 <b>2</b></td><td>성경 <b>0</b></td><td>현장 <b>3</b></td><td>패드 <b>1</b></td></tr>
+    <tr><td>출항 명령서<br><span style="font-size:8pt;color:#6B5F45">선장실</span></td><td><b>0822</b></td>
+      <td>교사 <b>0</b></td><td>패드 <b>8</b></td><td>현장 <b>2</b></td><td>현장 <b>2</b></td></tr>
+    <tr><td>사슬 자물쇠<br><span style="font-size:8pt;color:#6B5F45">화물칸</span></td><td><b>0829</b></td>
+      <td>패드 <b>0</b></td><td>패드 <b>8</b></td><td>교사 <b>2</b></td><td>현장 <b>9</b></td></tr>
+    <tr><td>선원 명부 궤<br><span style="font-size:8pt;color:#6B5F45">선원실</span></td><td><b>0854</b></td>
+      <td>패드 <b>0</b></td><td>패드 <b>8</b></td><td>현장 <b>5</b></td><td>성경 <b>4</b></td></tr>
+    <tr><td>등대 철문<br><span style="font-size:8pt;color:#6B5F45">등대</span></td><td><b>0901</b></td>
+      <td>패드 <b>0</b></td><td>패드 <b>9</b></td><td>교사 <b>0</b></td><td>현장 <b>1</b></td></tr>
+  </table>
+  <p style="font-size:9pt;color:#5C513A;margin-top:2mm">
+    ※ 다섯 자물쇠의 숫자는 모두 <b>설교 본문의 장·절 주소</b>입니다.
+    2031=요20:31 · 0822=눅8:22 · 0829=눅8:29 · 0854=눅8:54 · 0901=눅9:1
+  </p>
+
+  <h2 style="margin-top:6mm">배치표</h2>
+  <table>
+    <tr><th style="width:38mm">인쇄물</th><th style="width:44mm">배치 장소</th><th>주는 값</th></tr>
+    <tr><td>승선 표찰 (팀별)</td><td>강당 입구 신발장·의자 등받이·게시판 뒤</td><td>2031의 ③ = <b>3</b></td></tr>
+    <tr><td>출항 명령서</td><td>강대상 아래</td><td>0822의 ③④ = <b>22</b></td></tr>
+    <tr><td>항해 카드 (팀별)</td><td>성가대석 악보꽂이 / 강단 계단 화분</td><td>항해궤 <b>전체 4자리</b></td></tr>
+    <tr><td>무덤 굴 지도</td><td>화물 상자 3개 중 가장 무거운 것 밑</td><td>0829의 ④ = <b>9</b></td></tr>
+    <tr><td>선원 명부</td><td>선원실 담당 교사가 소지</td><td>0854의 ③ = <b>5</b></td></tr>
+    <tr><td>깃발함 카드</td><td>등대(무대) 앞 상자</td><td>0901의 ④ = <b>1</b></td></tr>
+    <tr><td>보물 편지 (팀별)</td><td>비밀 선창 담당 교사가 소지</td><td>보물궤 <b>전체 4자리</b></td></tr>
+    <tr><td>성경 임무 카드 4장</td><td>팀에게 처음부터 한 묶음으로 지급</td><td>성경에서 찾는 숫자</td></tr>
+    <tr><td>교사 인장 카드 3장</td><td>미니게임 담당 교사 ①②③이 소지</td><td>이겨야 받는 숫자</td></tr>
+  </table>
+
+  <div class="warn">
+    <b>반드시 확인</b> — 관리자 PIN은 <b>3574</b>입니다. 학생에게 노출되면 관리자 화면에서
+    모든 코드가 그대로 보이고 전체 해금이 가능합니다. 교사끼리만 공유하세요.
+  </div>
+</section>
+
+<!-- ── 2. 승선 표찰 ───────────────────────────────────────── -->
+<section class="sheet">
+  <h2>승선 표찰 — 팀별 3장 <span style="font-size:9pt;font-weight:400">(2031의 ③ = 3)</span></h2>
+  <p style="font-size:9.5pt;color:#5C513A">팀 색 봉투에 넣어 강당 곳곳에 숨깁니다. 앞면은 표찰, 뒷면에 숫자가 있습니다.</p>
+  <div class="grid3">
+    <div class="cut"><div class="card"><span class="team t0">베드로호</span>
+      <div class="ttl">승 선 표 찰</div><div class="sub">믿음호 · 갈릴리 항로</div>
+      <div class="seal">⚓</div>
+      <div class="note">이 표찰을 가진 자만 배에 오른다</div></div></div>
+    <div class="cut"><div class="card"><span class="team t1">야고보호</span>
+      <div class="ttl">승 선 표 찰</div><div class="sub">믿음호 · 갈릴리 항로</div>
+      <div class="seal">⚓</div>
+      <div class="note">이 표찰을 가진 자만 배에 오른다</div></div></div>
+    <div class="cut"><div class="card"><span class="team t2">요한호</span>
+      <div class="ttl">승 선 표 찰</div><div class="sub">믿음호 · 갈릴리 항로</div>
+      <div class="seal">⚓</div>
+      <div class="note">이 표찰을 가진 자만 배에 오른다</div></div></div>
+  </div>
+
+  <h2 style="margin-top:9mm">표찰 뒷면 — 위와 같은 순서로 뒷면에 인쇄</h2>
+  <div class="grid3">
+    <div class="cut"><div class="card back"><div class="sub">승선 표찰 뒷면</div>
+      <div class="big">3</div><div class="note">명부함 <span class="slot">③</span> 자리</div></div></div>
+    <div class="cut"><div class="card back"><div class="sub">승선 표찰 뒷면</div>
+      <div class="big">3</div><div class="note">명부함 <span class="slot">③</span> 자리</div></div></div>
+    <div class="cut"><div class="card back"><div class="sub">승선 표찰 뒷면</div>
+      <div class="big">3</div><div class="note">명부함 <span class="slot">③</span> 자리</div></div></div>
+  </div>
+</section>
+
+<!-- ── 3. 출항 명령서 ─────────────────────────────────────── -->
+<section class="sheet">
+  <h2>출항 명령서 <span style="font-size:9pt;font-weight:400">(0822의 ③④ = 22)</span></h2>
+  <p style="font-size:9.5pt;color:#5C513A">강대상 아래에 둡니다. 봉랍(붉은 원) 부분을 뜯어야 숫자가 보이도록 접어 붙이세요.</p>
+  <div class="cut">
+    <div style="border:2px solid #241C06;padding:10mm;background:linear-gradient(#FBF6E6,#F2E9CE);text-align:center">
+      <div style="font-family:'Jua';font-size:16pt;letter-spacing:4px">출 항 명 령 서</div>
+      <div style="font-size:9pt;color:#5C513A;margin-top:2mm">믿음호 선장</div>
+      <hr style="margin:6mm 0;border:0;border-top:1px solid #A99A78">
+      <p style="font-size:13pt;line-height:2">“호수 저편으로 건너가자”</p>
+      <p style="font-size:9pt;color:#6B5F45;margin-top:4mm">— 이것이 이 배가 받은 단 하나의 명령이다 —</p>
+      <div style="margin-top:8mm;display:flex;justify-content:center;align-items:center;gap:6mm">
+        <span style="font-size:9pt;color:#6B5F45">봉랍을 뜯으라 ▶</span>
+        <div style="width:30mm;height:30mm;border:3px solid #8A2F1E;border-radius:50%;
+          display:flex;flex-direction:column;align-items:center;justify-content:center;background:#FBEFE9">
+          <span style="font-size:7.5pt;color:#8A2F1E">명령서 봉랍</span>
+          <span style="font-family:'Jua';font-size:26pt;color:#8A2F1E;line-height:1">22</span>
+        </div>
+      </div>
+      <div style="font-size:8pt;color:#6B5F45;margin-top:5mm">출항 명령서 <span class="slot">③ ④</span> 자리</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 4. 항해 카드 (팀별 전체 코드) ──────────────────────── -->
+<section class="sheet">
+  <h2>항해 카드 — 팀마다 숫자가 다릅니다 <span style="font-size:9pt;font-weight:400">(조타실 항해궤)</span></h2>
+  <div class="warn" style="margin-top:2mm">
+    <b>주의</b> — 이 카드만 팀별로 숫자가 다릅니다. 옆 팀 어깨너머로 봐도 통하지 않게 하기 위함입니다.
+    <b>반드시 해당 팀 색 봉투에만</b> 넣으세요. 성경 주소 자물쇠(2031 등)는 전 팀 공통입니다.
+  </div>
+  <div class="grid3">
+    <div class="cut"><div class="card"><span class="team t0">베드로호</span>
+      <div class="ttl">항 해 카 드</div><div class="sub">나침반 아래 적힌 수</div>
+      <div class="big">8624</div><div class="note">조타실 항해궤에 그대로 입력</div></div></div>
+    <div class="cut"><div class="card"><span class="team t1">야고보호</span>
+      <div class="ttl">항 해 카 드</div><div class="sub">나침반 아래 적힌 수</div>
+      <div class="big">5137</div><div class="note">조타실 항해궤에 그대로 입력</div></div></div>
+    <div class="cut"><div class="card"><span class="team t2">요한호</span>
+      <div class="ttl">항 해 카 드</div><div class="sub">나침반 아래 적힌 수</div>
+      <div class="big">7412</div><div class="note">조타실 항해궤에 그대로 입력</div></div></div>
+  </div>
+
+  <h2 style="margin-top:9mm">보물 편지 — 팀별 <span style="font-size:9pt;font-weight:400">(비밀 선창 보물궤)</span></h2>
+  <p style="font-size:9.5pt;color:#5C513A">비밀 선창 담당 교사가 소지하다가, 팀이 비밀 선창에 도달하면 건넵니다.</p>
+  <div class="grid3">
+    <div class="cut"><div class="card"><span class="team t0">베드로호</span>
+      <div class="ttl">선장의 편지</div><div class="sub">…끝에 적힌 수</div>
+      <div class="big">3327</div><div class="note">보물궤 봉인</div></div></div>
+    <div class="cut"><div class="card"><span class="team t1">야고보호</span>
+      <div class="ttl">선장의 편지</div><div class="sub">…끝에 적힌 수</div>
+      <div class="big">6085</div><div class="note">보물궤 봉인</div></div></div>
+    <div class="cut"><div class="card"><span class="team t2">요한호</span>
+      <div class="ttl">선장의 편지</div><div class="sub">…끝에 적힌 수</div>
+      <div class="big">2914</div><div class="note">보물궤 봉인</div></div></div>
+  </div>
+</section>
+
+<!-- ── 5. 무덤 굴 지도 · 선원 명부 · 깃발함 ───────────────── -->
+<section class="sheet">
+  <h2>무덤 굴 지도 <span style="font-size:9pt;font-weight:400">(0829의 ④ = 9)</span></h2>
+  <p style="font-size:9.5pt;color:#5C513A">화물 상자 3개 중 <b>가장 무거운 것 밑</b>에 깝니다. 상자를 옮겨야 나옵니다.</p>
+  <div class="cut"><div class="card" style="min-height:52mm">
+    <div class="ttl">무 덤 굴 지 도</div>
+    <div class="sub">거라사 해안 · 벼랑 아래</div>
+    <div style="font-size:26pt;letter-spacing:8px;margin-top:4mm">⌂ ⌂ ⌂<br>⌂ ⌂ ⌂</div>
+    <div class="sub" style="margin-top:3mm">굴의 수를 세지 말라. 세어야 할 것은 뒷면에 있다</div>
+  </div></div>
+  <div class="cut"><div class="card back">
+    <div class="sub">무덤 굴 지도 뒷면</div><div class="big">9</div>
+    <div class="note">사슬 자물쇠 <span class="slot">④</span> 자리</div></div></div>
+
+  <div class="grid2" style="margin-top:8mm">
+    <div>
+      <h2>선원 명부 <span style="font-size:9pt;font-weight:400">(0854의 ③ = 5)</span></h2>
+      <div class="cut"><div class="card">
+        <div class="ttl">선 원 명 부</div>
+        <div style="font-size:10pt;line-height:1.9;margin-top:3mm;text-align:left;padding-left:8mm">
+          1 침상 — 사용 중<br>2 침상 — 사용 중<br>3 침상 — 사용 중<br>4 침상 — 사용 중<br>
+          <b>5 침상 — 비어 있음</b><br>6 침상 — 사용 중
+        </div>
+        <div class="note">선원 명부 궤 <span class="slot">③</span> 자리 = 비어 있는 침상 번호</div>
+      </div></div>
+    </div>
+    <div>
+      <h2>깃발함 카드 <span style="font-size:9pt;font-weight:400">(0901의 ④ = 1)</span></h2>
+      <div class="cut"><div class="card">
+        <div class="ttl">깃 발 함</div><div class="sub">마지막 한 장</div>
+        <div style="font-size:34pt;margin-top:3mm">▰</div>
+        <div class="big" style="font-size:30pt;margin-top:1mm">1</div>
+        <div class="note">등대 철문 <span class="slot">④</span> 자리</div>
+      </div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 6. 성경 임무 카드 ──────────────────────────────────── -->
+<section class="sheet">
+  <h2>성경 임무 카드 — 4장 한 묶음</h2>
+  <p style="font-size:9.5pt;color:#5C513A">
+    팀에게 처음부터 지급합니다. <b>성경 담당 한 명</b>이 들고 다니며 찾습니다.
+    선생님은 <b>쪽수만</b> 알려주고 내용은 말하지 않습니다.
+  </p>
+  <div class="grid2">
+    <div class="cut"><div class="card">
+      <div class="ttl">성경 임무 ①</div>
+      <div style="font-size:10.5pt;line-height:1.8;margin-top:3mm">
+        표적을 <b>다 기록하지 않았다</b>고 밝힌 책이 있다.<br>그 책의 <b>장 번호 두 자리</b>를 가져오라.
+      </div>
+      <div class="note">승선 명부함 <span class="slot">① ②</span> 자리 · 정답 20</div>
+    </div></div>
+    <div class="cut"><div class="card">
+      <div class="ttl">성경 임무 ②</div>
+      <div style="font-size:10.5pt;line-height:1.8;margin-top:3mm">
+        폭풍 속에서 주님이 <b>베개</b>를 베고 주무셨다고 적은 복음서가 있다.<br>그 <b>장 번호</b>를 가져오라.
+      </div>
+      <div class="note">항해궤 보조 단서 · 정답 4 (막 4장)</div>
+    </div></div>
+    <div class="cut"><div class="card">
+      <div class="ttl">성경 임무 ③</div>
+      <div style="font-size:10.5pt;line-height:1.8;margin-top:3mm">
+        무덤 사이에 거하던 사람이 예수를 만나는 <b>절 번호 두 자리</b>를 가져오라.<br>
+        <span style="font-size:9pt;color:#6B5F45">(누가복음 8장)</span>
+      </div>
+      <div class="note">보물궤 보조 단서 · 정답 27</div>
+    </div></div>
+    <div class="cut"><div class="card">
+      <div class="ttl">성경 임무 ④</div>
+      <div style="font-size:10.5pt;line-height:1.8;margin-top:3mm">
+        소녀의 손을 잡고 <b>“아이야 일어나라”</b> 하신 절의 <b>끝자리</b>를 가져오라.<br>
+        <span style="font-size:9pt;color:#6B5F45">(누가복음 8장)</span>
+      </div>
+      <div class="note">선원 명부 궤 <span class="slot">④</span> 자리 · 정답 4 (8:54)</div>
+    </div></div>
+  </div>
+  <div class="warn">
+    카드에 <b>정답을 적어 두지 마세요</b>. 위 “정답” 표기는 <b>교사 확인용</b>이므로,
+    학생용으로 인쇄할 때는 그 줄을 가리거나 잘라내고 주십시오.
+  </div>
+</section>
+
+<!-- ── 7. 교사 인장 카드 ──────────────────────────────────── -->
+<section class="sheet">
+  <h2>선생님 인장 카드 — 미니게임 담당 교사가 소지</h2>
+  <p style="font-size:9.5pt;color:#5C513A">이겨야 받습니다. 진 팀은 즉시 재도전할 수 있습니다.</p>
+  <div class="grid3">
+    <div class="cut"><div class="card">
+      <div class="ttl">돛 허가 인장</div><div class="sub">① 매듭 시험</div>
+      <div class="big">0</div>
+      <div class="note">출항 명령서 <span class="slot">①</span> 자리</div></div></div>
+    <div class="cut"><div class="card">
+      <div class="ttl">상륙 허가 인장</div><div class="sub">③ 군대의 사슬</div>
+      <div class="big">2</div>
+      <div class="note">사슬 자물쇠 <span class="slot">③</span> 자리</div></div></div>
+    <div class="cut"><div class="card">
+      <div class="ttl">파송 인장</div><div class="sub">폐회 교사</div>
+      <div class="big">0</div>
+      <div class="note">등대 철문 <span class="slot">③</span> 자리</div></div></div>
+  </div>
+
+  <h2 style="margin-top:9mm">미니게임 운영 규칙</h2>
+  <table>
+    <tr><th style="width:30mm">게임</th><th style="width:26mm">장소</th><th>규칙</th><th style="width:18mm">소요</th></tr>
+    <tr><td>① 매듭 시험</td><td>강당 뒤편</td>
+      <td>60초 안에 옭매듭·8자매듭 중 2개를 밧줄로 완성. 교사 시범 1회 후 시작.
+        팀에서 <b>2명까지</b> 손댈 수 있다. 실패 시 즉시 재도전</td><td>1~2분</td></tr>
+    <tr><td>② 폭풍 신호수</td><td>복도 끝<br>(조명 낮춤)</td>
+      <td>교사가 손전등으로 5자리 모스를 <b>정확히 3회</b> 송신.
+        <b>팀에서 1명만</b> 올 수 있다(몰려오면 무효). 소리로 알려주기 금지.
+        4회째 요청 시 2분 페널티</td><td>2~3분</td></tr>
+    <tr><td>③ 군대의 사슬</td><td>별실 또는<br>복도 반대편</td>
+      <td>팀원 <b>4명 전원</b> 팔에 리본을 채운다. 한 명씩 교사와 가위바위보,
+        이기면 자기 리본 해제. 지면 맨 뒤로. <b>4명 전부 풀려야</b> 클리어</td><td>2~3분</td></tr>
+  </table>
+  <p style="font-size:9pt;color:#5C513A;margin-top:3mm">
+    ② 폭풍 신호수가 송신할 모스 5자리는 <b>82425</b>입니다 (누가복음 8장 24-25절).
+    부호: <b>−−−·· / ··−−− / ····− / ··−−− / ·····</b>
+  </p>
+  <div class="warn">
+    필요 교사 <b>6명</b>(최소 5명) — 미니게임 3명 · 총괄/타이머 1명 · 성경 도우미 겸 안전 1명 · 폐회(등대) 1명.
+    클리어한 팀 학생이 다음 팀의 등대지기를 맡으면 1명을 아낄 수 있습니다.
+  </div>
+</section>
+
+</body>
+</html>
