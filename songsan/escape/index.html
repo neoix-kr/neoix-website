@@ -127,6 +127,14 @@ h1.title{font-size:42px;color:var(--parch);letter-spacing:1px;text-align:center;
 .pz-head{width:100%;text-align:center}
 .pz-stage{font-family:'Gowun Batang',serif;font-size:13px;color:var(--chalk-dim);letter-spacing:2px}
 .pz-title{font-size:27px;color:var(--parch);margin-top:6px;letter-spacing:.5px}
+.ship-idle{text-align:center;padding:26px 18px}
+.ship-act{font-size:26px;color:var(--brass-lt);letter-spacing:2px}
+.ship-tell{font-family:'Gowun Batang',serif;font-size:16px;line-height:1.7;color:var(--chalk-dim);margin-top:10px}
+.pz-back{font-family:inherit;font-size:14px;color:var(--chalk-dim);background:rgba(233,237,240,.06);border:1px solid var(--sea-line);border-radius:8px;padding:8px 13px;margin-bottom:12px;cursor:pointer}
+.pz-back:active{background:rgba(233,237,240,.13)}
+.act-adv{margin-top:14px;padding:13px;border:1px solid rgba(194,154,43,.4);border-radius:9px;background:rgba(194,154,43,.1);text-align:center}
+.act-adv b{display:block;font-size:19px;color:var(--brass-lt);font-weight:400}
+.act-adv span{display:block;margin-top:5px;font-family:'Gowun Batang',serif;font-size:14px;color:var(--chalk-dim)}
 .pz-mission{font-family:'Gowun Batang',serif;font-size:17px;line-height:1.8;word-break:keep-all;text-align:left;color:var(--ink)}
 .pz-mission b{color:#8A2F1E;font-weight:700}
 .pz-mission .step{display:block;margin-top:6px}
@@ -543,7 +551,6 @@ h1.title{font-size:42px;color:var(--parch);letter-spacing:1px;text-align:center;
     <span class="tb-pen" id="tbPen"></span>
     <span class="tb-spacer"></span>
     <button class="tb-btn tb-explore" onclick="Explore.open()">🧭 수색</button>
-    <button class="tb-btn" id="btnSeals" onclick="UI.showSeals()">인장 <span id="sealCount">0</span>/4</button>
     <button class="tb-btn" onclick="UI.showMyHints()">힌트</button>
     <button class="tb-btn tb-ic amb-btn" onclick="Ambience.toggle()" aria-label="배경음">🔊</button>
     <button class="tb-btn tb-ic" onclick="Admin.openGate()" aria-label="관리자"><svg class="ic" width="16" height="16" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="6"><circle cx="50" cy="50" r="26"/><circle cx="50" cy="50" r="9"/><path d="M50 24 V4 M50 76 v20 M24 50 H4 M76 50 h20 M32 32 L18 18 M68 32 L82 18 M32 68 L18 82 M68 68 L82 82"/></svg></button>
@@ -570,9 +577,9 @@ h1.title{font-size:42px;color:var(--parch);letter-spacing:1px;text-align:center;
 <script>
 /* =========================================================
    믿음의 항해 - 중고등부 고난도 방탈출 (오프라인 단일 파일)
-   관리자 PIN: 1004 · 13관문 · 명화 2점 내장
+   관리자 PIN: 3574 · 13관문 · 명화 2점 내장
    ========================================================= */
-const ADMIN_PIN = '1004';
+const ADMIN_PIN = '3574';
 const PENALTY = { hint1: 2, hint2: 2, reveal: 5 };
 const LS_KEY = 'faithVoyage_v3';
 const TEAM_PRESETS = ['베드로호', '야고보호', '요한호'];
@@ -1102,6 +1109,7 @@ secret:`<svg viewBox="0 0 460 260" fill="none" stroke="#2B2416" stroke-width="3.
 const Explore = {
   view:'map', room:null,
   open(){ if(!S||!S.teamName){ return; } this.view='room'; this.room=this.roomList()[0]; this.render(); document.getElementById('exploreModal').classList.add('show'); },
+  closeModal(){ const m=document.getElementById('exploreModal'); if(m) m.classList.remove('show'); },
   close(){
     try{ Ambience.setMood('calm'); }catch(e){} document.getElementById('exploreModal').classList.remove('show'); },
   MOOD:{deck:'storm', wheel:'storm', cabin:'below', crew:'below', hold:'below', secret:'below'},
@@ -1196,7 +1204,7 @@ const Explore = {
   reveal(roomId,hsId){
     const hs=ROOMS[roomId].hotspots.find(h=>h.id===hsId); const k=hs.item;
     if(!k||S.items[k]) return;
-    S.items[k]=true; S.opened[roomId+'.'+hsId]=true; save(); Sound.chest(); logEvent('도구 획득: '+ITEMS[k].name);
+    S.items[k]=true; S.opened[roomId+'.'+hsId]=true; tryAdvanceAct(); save(); Sound.chest(); logEvent('도구 획득: '+ITEMS[k].name);
     const sc=document.getElementById('cuScene');
     if(sc){ const t=sc.querySelector('.cu-trace'); if(t)t.style.display='none';
       const hint=document.getElementById('cuHint'); if(hint)hint.style.display='none';
@@ -1222,6 +1230,13 @@ const Explore = {
     }
     if(hs.item && !S.items[hs.item]){
       this.openCloseup(roomId,hsId); return;
+    }
+    // 이 사물에 사건(퍼즐)이 묶여 있으면 여기서 열린다 — v2의 핵심
+    const bound=PUZZLE_AT[roomId+'.'+hsId];
+    if(bound && !S.solved[bound]){
+      const a=actOf(bound);
+      if(a>=0 && a>S.act){ this.feedback('아직 이 일에 손댈 때가 아니다. ' + ACTS[S.act].tell); return; }
+      Game.openPuzzle(bound); return;
     }
     const msg=(hs.item||hs.locked)?(hs.after||'더 이상 아무것도 없다.'):hs.text;
     // 확대해 볼 가치가 있는 사물은 클로즈업으로 (망원경·해도·나침반 등)
@@ -1423,12 +1438,81 @@ let S = null;
 function defaultState(){
   return { phase:'lobby', teamName:'', startTs:0, finishTs:0,
     stageIdx:0, puzzleIdx:0, penaltyMin:0,
+    solved:{}, act:0, openPz:null,
     hintsUsed:{}, hintTexts:[], wrongStreak:0, cooldownUntil:0, log:[],
     items:{}, opened:{}, unlocked:{}, phys:{} };
 }
+
+/* ============================================================
+   v2 진행 엔진 — 공간이 메인, 퍼즐은 사물을 만졌을 때 튀어나오는 사건
+   기존 선형 커서(stageIdx/puzzleIdx)는 "지금 열려 있는 퍼즐" 포인터로만 남는다.
+   ============================================================ */
+
+// 방.사물 → 퍼즐 바인딩. 아이템이 있는 사물은 아이템을 먼저 챙긴 뒤 사건이 열린다.
+const PUZZLE_AT = {
+  'cabin.desk':'p1', 'cabin.painting':'p2',
+  'wheel.chart':'p3', 'wheel.lantern':'p4', 'wheel.hatch':'p5',
+  'hold.sacks':'p6', 'hold.shadow':'p7', 'hold.barrels':'p8',
+  'crew.hammock':'p9', 'crew.cupboard':'p10', 'crew.boots':'p11',
+  'deck.sail':'p12', 'deck.bell':'p13',
+};
+const PZ_SPOT = Object.fromEntries(Object.entries(PUZZLE_AT).map(([k,v])=>[v,k]));
+
+// 막(幕) — 항로 위의 배가 어디까지 왔는가. 각 막은 열쇠 사건이 풀리면 전진한다.
+const ACTS = [
+  { id:0, name:'부두',      room:'deck',   need:[], needItems:['key'],  tell:'갑판을 뒤져 밧줄을 풀고 배에 오르라.' },
+  { id:1, name:'출항',      room:'cabin',  need:['p1'],                tell:'선장실에서 출항 명령을 되찾으라.' },
+  { id:2, name:'폭풍',      room:'wheel',  need:['p2','p3','p4','p5'], tell:'광풍 속에서 침로를 다시 잡으라.' },
+  { id:3, name:'무덤 섬',   room:'hold',   need:['p6','p7','p8'],      tell:'배를 가볍게 하고 무덤 문을 열라.' },
+  { id:4, name:'돌아온 항구',room:'crew',  need:['p9','p10','p11'],    tell:'인파 속에서 그 한 사람을 찾으라.' },
+  { id:5, name:'등대',      room:'deck',   need:['p12','p13'],         tell:'신호를 올리고 등대에 불을 켜라.' },
+];
+
+function pzById(id){
+  for(const st of STAGES) for(const p of st.puzzles) if(p.id===id) return p;
+  return null;
+}
+function pzIndex(id){
+  for(let si=0;si<STAGES.length;si++){
+    const pi=STAGES[si].puzzles.findIndex(p=>p.id===id);
+    if(pi>=0) return {si,pi};
+  }
+  return null;
+}
+function solvedCount(){ return Object.keys(S&&S.solved||{}).length; }
+function actOf(pzId){ return ACTS.findIndex(a=>a.need.includes(pzId)); }
+// 이 퍼즐을 지금 열 수 있는가 — 자기 막이 열렸고 아직 안 풀었으면 연다
+function canOpen(pzId){
+  if(!S||S.solved[pzId]) return false;
+  const a=actOf(pzId);
+  return a<0 || a<=S.act;
+}
+// 현재 막의 사건을 다 풀었으면 다음 막으로 전진
+function tryAdvanceAct(){
+  while(S.act<ACTS.length-1){
+    const a=ACTS[S.act];
+    const need=a.need||[], items=a.needItems||[];
+    const pzOk = need.every(id=>S.solved[id]);
+    const itOk = items.every(k=>S.items&&S.items[k]);
+    if(!need.length && !items.length) break;       // 조건 없는 막은 수동 전진만
+    if(pzOk && itOk) S.act++; else break;
+  }
+}
 function save(){ try{ localStorage.setItem(LS_KEY, JSON.stringify(S)); }catch(e){} }
-function load(){ try{ const raw=localStorage.getItem(LS_KEY); if(raw){ S=JSON.parse(raw); S.items=S.items||{}; S.opened=S.opened||{}; return true; } }catch(e){} return false; }
+function load(){ try{ const raw=localStorage.getItem(LS_KEY); if(raw){ S=JSON.parse(raw); S.items=S.items||{}; S.opened=S.opened||{}; migrate(); return true; } }catch(e){} return false; }
 function logEvent(msg){ S.log.push({t:Date.now(),msg}); save(); }
+function migrate(){
+  if(!S) return;
+  if(!S.solved) S.solved={};
+  if(typeof S.act!=='number') S.act=0;
+  if(S.openPz===undefined) S.openPz=null;
+  // 구버전(선형 커서) 세이브 → 지나온 관문을 solved로 환산
+  if(S._v!==2){
+    let n=STAGES.slice(0,S.stageIdx||0).reduce((t,st)=>t+st.puzzles.length,0)+(S.puzzleIdx||0);
+    outer: for(const st of STAGES) for(const p of st.puzzles){ if(n--<=0) break outer; S.solved[p.id]=true; }
+    tryAdvanceAct(); S._v=2;
+  }
+}
 function sealCount(){ return Math.min(S?S.stageIdx:0,4); }
 
 /* ---------------- 사운드 ---------------- */
@@ -1730,7 +1814,7 @@ const Admin = {
   /* 한눈에 보는 대시보드 */
   dash(){
     const st=STAGES[S.stageIdx], pz=st&&st.puzzles[S.puzzleIdx];
-    const done=(S.phase==='finish')?TOTAL_PUZZLES:STAGES.slice(0,S.stageIdx).reduce((n,s)=>n+s.puzzles.length,0)+S.puzzleIdx;
+    const done=(S.phase==='finish')?TOTAL_PUZZLES:solvedCount();
     const pct=Math.round(done/TOTAL_PUZZLES*100);
     const tools=Object.keys(ITEMS).map(k=>
       `<span class="tool-chip${S.items&&S.items[k]?' on':''}" title="${ITEMS[k].name}">${ITEMS[k].name}</span>`).join('');
@@ -1782,7 +1866,7 @@ const Admin = {
           <button class="jump-ch${si===S.stageIdx?' on':''}" onclick="Admin.jump(${si},-1)">${stg.chapter} · ${stg.title}</button>
           <div class="jump-pz">${stg.puzzles.map((p,pi)=>{
             const gi=STAGES.slice(0,si).reduce((n,s)=>n+s.puzzles.length,0)+pi;
-            const cls=(si===S.stageIdx&&pi===S.puzzleIdx&&S.phase==='play')?'on':(gi<done?'ok':'');
+            const cls=(S.openPz===p.id)?'on':(S.solved[p.id]?'ok':'');
             return `<button class="${cls}" title="${p.title}" onclick="Admin.jump(${si},${pi})">${pi+1}</button>`;
           }).join('')}</div></div>`;
       });
@@ -1831,12 +1915,19 @@ const Admin = {
   pen(d){ S.penaltyMin=Math.max(0,S.penaltyMin+d); save(); UI.updateTopbar(); Admin.open(); },
   // 진행 모드 — pi가 -1이면 그 챕터의 스토리 화면, 아니면 해당 관문
   jump(si,pi){
-    if(!S||S.phase==='lobby'){ return; }
-    S.stageIdx=si;
-    if(pi<0){ S.puzzleIdx=0; S.phase='story'; }
-    else { S.puzzleIdx=pi; S.phase='play'; }
-    S.finishTs=null;
-    logEvent('관리자 이동: '+STAGES[si].chapter+(pi<0?' 스토리':' 관문'+(pi+1)));
+    if(!S||S.phase==='lobby') return;
+    S.phase='play'; S.finishTs=null;
+    if(pi<0){ // 챕터 → 그 챕터가 속한 막으로 이동하고 배로
+      const first=STAGES[si].puzzles[0];
+      const a=actOf(first.id); if(a>=0) S.act=Math.max(S.act,a);
+      S.openPz=null;
+      logEvent('관리자 이동: '+STAGES[si].chapter);
+    } else {
+      const pz=STAGES[si].puzzles[pi];
+      const a=actOf(pz.id); if(a>=0) S.act=Math.max(S.act,a);
+      logEvent('관리자 이동: '+pz.title);
+      save(); Admin.close(); Game.openPuzzle(pz.id); return;
+    }
     save(); Admin.close(); UI.render();
   },
   jumpFinish(){
@@ -1883,7 +1974,7 @@ const Info = {
 const Game = {
   startGate(){ Sound.ac(); Pin.open('게임 시작','관리자 선생님이 비밀번호를 입력하면 시작할 수 있어요.',()=>UI.renderTeamSelect()); },
   begin(teamName){
-    S=defaultState(); S.teamName=teamName; S.phase='story';
+    S=defaultState(); S.teamName=teamName; S.phase='story'; S._v=2;
     logEvent('게임 준비: '+teamName);
     save(); UI.render();
   },
@@ -1900,27 +1991,42 @@ const Game = {
     }
     S.phase='play'; save(); UI.render();
   },
-  advance(skipped){
+  /* v2 — 사물에서 사건을 연다 */
+  openPuzzle(id){
+    const ix=pzIndex(id); if(!ix) return;
     Morse.stop();
-    const st=STAGES[S.stageIdx];
-    const pz=st.puzzles[S.puzzleIdx];
-    if(!skipped){ Sound.good(); }
+    S.openPz=id; S.stageIdx=ix.si; S.puzzleIdx=ix.pi;
     S.wrongStreak=0; S.cooldownUntil=0;
-    if(S.puzzleIdx<st.puzzles.length-1){
-      S.puzzleIdx++;
-      save(); UI.render();
-      if(!skipped&&pz.success) Info.show('봉인 해제',`<div style="width:56px;height:56px;margin:6px auto 0">${IC.seal}</div><p class="desc" style="margin-top:10px">${pz.success}</p>`);
-    }else if(S.stageIdx<STAGES.length-1){
-      const sealTxt = S.stageIdx<4 ? SEAL_TEXTS[S.stageIdx] : null;
-      S.stageIdx++; S.puzzleIdx=0; S.phase='story';
-      save(); UI.render();
-      const sealHtml = sealTxt?`<div class="seal-row"><div class="seal-chip"><span class="ord">${S.stageIdx}번째 인장</span><span class="tx">${sealTxt}</span></div></div><p class="desc" style="margin-top:8px">인장을 획득했다. 상단 [인장]에서 언제든 확인하라.</p>`:'';
-      Info.show('관문 통과',`<p class="desc">${pz.success||''}</p>${sealHtml}`);
-    }else{
-      S.finishTs=Date.now(); S.phase='finish';
-      logEvent('완주'); save(); UI.render();
+    Explore.closeModal();
+    save(); UI.render();
+  },
+  /* v2 — 사건을 풀거나 접고 배로 돌아간다 */
+  backToShip(){
+    Morse.stop();
+    S.openPz=null; save(); UI.render();
+  },
+  /* v2 — 사건 해결 처리 */
+  solve(skipped){
+    Morse.stop();
+    const pz=STAGES[S.stageIdx].puzzles[S.puzzleIdx];
+    if(!skipped) Sound.good();
+    S.wrongStreak=0; S.cooldownUntil=0;
+    S.solved[pz.id]=true;
+    const before=S.act;
+    tryAdvanceAct();
+    const advanced=S.act>before;
+    S.openPz=null;
+    const allDone=ACTS[ACTS.length-1].need.every(id=>S.solved[id]);
+    if(allDone){ S.finishTs=Date.now(); S.phase='finish'; logEvent('완주'); save(); UI.render(); return; }
+    save(); UI.render();
+    if(advanced){
+      Info.show('항로 전진', `<p class="desc">${pz.success||''}</p>
+        <div class="act-adv"><b>${ACTS[S.act].name}</b><span>${ACTS[S.act].tell}</span></div>`);
+    } else if(!skipped && pz.success){
+      Info.show('사건 해결', `<p class="desc">${pz.success}</p>`);
     }
   },
+  advance(skipped){ this.solve(skipped); },
   submitWrong(el){
     S.wrongStreak++; save();
     Sound.bad();
@@ -1951,9 +2057,9 @@ const UI = {
     document.getElementById('tbTimer').textContent=_t;
     const _et=document.getElementById('exTimer'); if(_et)_et.textContent=_t;
     document.getElementById('tbPen').textContent=S.penaltyMin>0?`벌점 +${S.penaltyMin}분`:'';
-    document.getElementById('sealCount').textContent=sealCount();
     rb.classList.add('show');
-    const done=S.phase==='finish'?TOTAL_PUZZLES:STAGES.slice(0,S.stageIdx).reduce((n,s)=>n+s.puzzles.length,0)+S.puzzleIdx;
+    // v2 — 항로 위의 배. 진행 표시는 관문 번호가 아니라 "어디까지 왔는가"다.
+    const done=S.phase==='finish'?TOTAL_PUZZLES:solvedCount();
     const W=560,H=30,pad=16;
     const step=(W-pad*2)/(TOTAL_PUZZLES-1);
     let nodes='';
@@ -1975,8 +2081,25 @@ const UI = {
     const root=document.getElementById('screen-root');
     if(S===null||S.phase==='lobby') return this.renderLobby(root);
     if(S.phase==='story') return this.renderStory(root);
-    if(S.phase==='play') return this.renderPlay(root);
+    // v2 — 메인은 공간(배)이다. 사물에서 사건을 열었을 때만 퍼즐 화면이 뜬다.
+    if(S.phase==='play') return S.openPz ? this.renderPlay(root) : this.renderShip(root);
     if(S.phase==='finish') return this.renderFinish(root);
+  },
+  /* v2 — 배(공간)를 메인 화면으로 */
+  renderShip(root){
+    root=root||document.getElementById('screen-root');
+    const act=ACTS[S.act]||ACTS[0];
+    root.innerHTML=`<div class="screen">
+      <div class="ship-idle">
+        <div class="ship-act">${act.name}</div>
+        <p class="ship-tell">${act.tell}</p>
+        <button class="btn" onclick="Explore.open()">🧭 배로 들어가기</button>
+      </div>
+    </div>`;
+    // 탐색 모달을 곧바로 띄운다 — 배 안이 곧 화면이다
+    const m=document.getElementById('exploreModal');
+    if(!m||!m.classList.contains('show')) Explore.open();
+    else Explore.render();
   },
   renderLobby(root){
     root=root||document.getElementById('screen-root');
@@ -2104,7 +2227,8 @@ const UI = {
     }
     root.innerHTML=`<div class="screen">
       <div class="pz-head">
-        <p class="pz-stage">${st.chapter} ${st.title} · 관문 ${S.puzzleIdx+1} / ${st.puzzles.length}</p>
+        <button class="pz-back" onclick="Game.backToShip()">← 배로 돌아가기</button>
+        <p class="pz-stage">${(PZ_SPOT[pz.id]?ROOMS[PZ_SPOT[pz.id].split('.')[0]].name+' · ':'')}${ACTS[Math.max(0,actOf(pz.id))].name}</p>
         <h2 class="pz-title">${pz.title}</h2>
       </div>
       <div class="card" id="pzCard">
