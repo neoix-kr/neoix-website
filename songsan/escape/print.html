@@ -22,14 +22,14 @@
   .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:4mm}
   /* 현장 카드 공통 */
   .card{border:2px solid #241C06;border-radius:2mm;padding:6mm 5mm;text-align:center;
-    background:linear-gradient(#FBF6E6,#F2E9CE);min-height:44mm;display:flex;flex-direction:column;justify-content:center}
+    background:linear-gradient(rgba(251,246,230,.82),rgba(242,233,206,.82)),url('assets/permit-parchment.webp') center/cover;min-height:44mm;display:flex;flex-direction:column;justify-content:center}
   .card .ttl{font-family:'Jua';font-size:12pt;letter-spacing:1px}
   .card .sub{font-size:8.5pt;color:#5C513A;margin-top:1.5mm}
   .card .big{font-family:'Jua';font-size:40pt;letter-spacing:6px;margin-top:3mm;line-height:1}
   .card .note{font-size:8pt;color:#6B5F45;margin-top:3mm;border-top:1px dotted #A99A78;padding-top:2mm}
   .team{display:inline-block;font-family:'Jua';font-size:9pt;padding:1mm 3mm;border-radius:8px;color:#fff;margin-bottom:2mm}
   .t0{background:#8A2F1E}.t1{background:#2E5C4A}.t2{background:#2B3F6B}
-  .back{background:repeating-linear-gradient(45deg,#F6EFDC,#F6EFDC 4mm,#EFE6CE 4mm,#EFE6CE 8mm)}
+  .back{background:linear-gradient(rgba(246,239,220,.80),rgba(239,230,206,.80)),url('assets/tex-wet-seachart.webp') center/cover}
   .slot{font-family:'Jua';font-size:10pt;background:#241C06;color:#F2E7CB;display:inline-block;
     padding:1mm 3mm;border-radius:3px;letter-spacing:1px}
   .warn{background:#FBEFE9;border:1.5px solid #B5503F;border-radius:2mm;padding:4mm;font-size:9.5pt;margin-top:4mm}
@@ -53,7 +53,7 @@
 <!-- ── 1. 교사 안내 ───────────────────────────────────────── -->
 <section class="sheet">
   <h1>믿음의 항해 — 현장 준비물</h1>
-  <p class="lead">인쇄해서 잘라 배치하세요 · 팀당 태블릿 1대 · 성경 4권 · 소요 80분</p>
+  <p class="lead">인쇄해서 잘라 배치하세요 · 팀당 태블릿 1대 · 성경 4권 · 소요 80분</p><div style="margin:3mm 0 1mm;border:2px solid #241C06;border-radius:2mm;overflow:hidden;position:relative"><img src="assets/hero.webp" alt="" style="width:100%;height:46mm;object-fit:cover;display:block"><div style="position:absolute;left:0;right:0;bottom:0;padding:2mm 3mm;background:linear-gradient(transparent,rgba(10,18,28,.85));color:#F2E7CB;font-size:9pt">믿음호 — 출항을 기다리는 배</div></div>
 
   <h2 style="margin-top:7mm">이 게임이 작동하는 원리</h2>
   <p style="font-size:10pt;line-height:1.75">
@@ -108,15 +108,15 @@
   <div class="grid3">
     <div class="cut"><div class="card"><span class="team t0">베드로호</span>
       <div class="ttl">승 선 표 찰</div><div class="sub">믿음호 · 갈릴리 항로</div>
-      <div class="seal">⚓</div>
+      <img src="assets/permit-wax-seal.webp" alt="" style="width:24mm;height:24mm;object-fit:contain;margin:3mm auto 0;display:block">
       <div class="note">이 표찰을 가진 자만 배에 오른다</div></div></div>
     <div class="cut"><div class="card"><span class="team t1">야고보호</span>
       <div class="ttl">승 선 표 찰</div><div class="sub">믿음호 · 갈릴리 항로</div>
-      <div class="seal">⚓</div>
+      <img src="assets/permit-wax-seal.webp" alt="" style="width:24mm;height:24mm;object-fit:contain;margin:3mm auto 0;display:block">
       <div class="note">이 표찰을 가진 자만 배에 오른다</div></div></div>
     <div class="cut"><div class="card"><span class="team t2">요한호</span>
       <div class="ttl">승 선 표 찰</div><div class="sub">믿음호 · 갈릴리 항로</div>
-      <div class="seal">⚓</div>
+      <img src="assets/permit-wax-seal.webp" alt="" style="width:24mm;height:24mm;object-fit:contain;margin:3mm auto 0;display:block">
       <div class="note">이 표찰을 가진 자만 배에 오른다</div></div></div>
   </div>
 
@@ -144,10 +144,10 @@
       <p style="font-size:9pt;color:#6B5F45;margin-top:4mm">— 이것이 이 배가 받은 단 하나의 명령이다 —</p>
       <div style="margin-top:8mm;display:flex;justify-content:center;align-items:center;gap:6mm">
         <span style="font-size:9pt;color:#6B5F45">봉랍을 뜯으라 ▶</span>
-        <div style="width:30mm;height:30mm;border:3px solid #8A2F1E;border-radius:50%;
-          display:flex;flex-direction:column;align-items:center;justify-content:center;background:#FBEFE9">
-          <span style="font-size:7.5pt;color:#8A2F1E">명령서 봉랍</span>
-          <span style="font-family:'Jua';font-size:26pt;color:#8A2F1E;line-height:1">22</span>
+        <div style="position:relative;width:34mm;height:34mm">
+          <img src="assets/permit-wax-seal.webp" alt="" style="width:100%;height:100%;object-fit:contain">
+          <span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+            font-family:'Jua';font-size:24pt;color:#FBEFE9;text-shadow:0 1px 3px rgba(0,0,0,.7)">22</span>
         </div>
       </div>
       <div style="font-size:8pt;color:#6B5F45;margin-top:5mm">출항 명령서 <span class="slot">③ ④</span> 자리</div>
@@ -157,7 +157,7 @@
 
 <!-- ── 4. 항해 카드 (팀별 전체 코드) ──────────────────────── -->
 <section class="sheet">
-  <h2>항해 카드 — 팀마다 숫자가 다릅니다 <span style="font-size:9pt;font-weight:400">(조타실 항해궤)</span></h2>
+  <div style="margin:3mm 0 1mm;border:2px solid #241C06;border-radius:2mm;overflow:hidden;position:relative"><img src="assets/room-wheel.webp" alt="" style="width:100%;height:40mm;object-fit:cover;display:block"><div style="position:absolute;left:0;right:0;bottom:0;padding:2mm 3mm;background:linear-gradient(transparent,rgba(10,18,28,.85));color:#F2E7CB;font-size:9pt">조타실 항해궤 — 팀마다 다른 네 자리</div></div><h2>항해 카드 — 팀마다 숫자가 다릅니다 <span style="font-size:9pt;font-weight:400">(조타실 항해궤)</span></h2>
   <div class="warn" style="margin-top:2mm">
     <b>주의</b> — 이 카드만 팀별로 숫자가 다릅니다. 옆 팀 어깨너머로 봐도 통하지 않게 하기 위함입니다.
     <b>반드시 해당 팀 색 봉투에만</b> 넣으세요. 성경 주소 자물쇠(2031 등)는 전 팀 공통입니다.
@@ -191,7 +191,7 @@
 
 <!-- ── 5. 무덤 굴 지도 · 선원 명부 · 깃발함 ───────────────── -->
 <section class="sheet">
-  <h2>무덤 굴 지도 <span style="font-size:9pt;font-weight:400">(0829의 ④ = 9)</span></h2>
+  <div style="margin:3mm 0 1mm;border:2px solid #241C06;border-radius:2mm;overflow:hidden;position:relative"><img src="assets/scene-gerasa-legion.webp" alt="" style="width:100%;height:34mm;object-fit:cover;display:block"><div style="position:absolute;left:0;right:0;bottom:0;padding:2mm 3mm;background:linear-gradient(transparent,rgba(10,18,28,.85));color:#F2E7CB;font-size:9pt">무덤 섬 — 사슬을 끊은 자리</div></div><h2>무덤 굴 지도 <span style="font-size:9pt;font-weight:400">(0829의 ④ = 9)</span></h2>
   <p style="font-size:9.5pt;color:#5C513A">화물 상자 3개 중 <b>가장 무거운 것 밑</b>에 깝니다. 상자를 옮겨야 나옵니다.</p>
   <div class="cut"><div class="card" style="min-height:52mm">
     <div class="ttl">무 덤 굴 지 도</div>
@@ -274,7 +274,7 @@
 
 <!-- ── 7. 교사 인장 카드 ──────────────────────────────────── -->
 <section class="sheet">
-  <h2>선생님 인장 카드 — 미니게임 담당 교사가 소지</h2>
+  <h2>선생님 인장 카드 — 미니게임 담당 교사가 소지</h2><div style="margin:3mm 0 1mm;border:2px solid #241C06;border-radius:2mm;overflow:hidden;position:relative"><img src="assets/scene-storm-signal-lamp.webp" alt="" style="width:100%;height:32mm;object-fit:cover;display:block"><div style="position:absolute;left:0;right:0;bottom:0;padding:2mm 3mm;background:linear-gradient(transparent,rgba(10,18,28,.85));color:#F2E7CB;font-size:9pt">폭풍 신호수 — 손전등 모스 82425</div></div>
   <p style="font-size:9.5pt;color:#5C513A">이겨야 받습니다. 진 팀은 즉시 재도전할 수 있습니다.</p>
   <div class="grid3">
     <div class="cut"><div class="card">
@@ -323,7 +323,7 @@
     <b>A2로 확대 인쇄</b>해 벽에 붙입니다. 패드에는 답(번호)만 입력합니다.
     네 명이 조건을 소리내어 읽으며 함께 후보를 지워 나가는 것이 이 문제의 목적입니다.
   </p>
-  <div class="cut"><div id="crowdArt" style="background:#F7F1DE;padding:6mm;border-radius:2mm"></div></div>
+  <div style="margin:3mm 0 1mm;border:2px solid #241C06;border-radius:2mm;overflow:hidden;position:relative"><img src="assets/scene-crowd-hem.webp" alt="" style="width:100%;height:40mm;object-fit:cover;display:block"><div style="position:absolute;left:0;right:0;bottom:0;padding:2mm 3mm;background:linear-gradient(transparent,rgba(10,18,28,.85));color:#F2E7CB;font-size:9pt">옷 가에 손을 대니 — 눅 8:43-44</div></div><div class="cut"><div id="crowdArt" style="background:#F7F1DE;padding:6mm;border-radius:2mm"></div></div>
   <div class="warn">
     <b>교사용</b> — 정답 <b>11번</b>. 조건 4개(뒤로 왔다 / 손을 대었다 / 홀로 있었다 / 머리를 가린 여인)로
     소거하면 11번만 남습니다. <b>5번이 미끼</b>입니다(조건 3개는 맞지만 앞줄). 이 상자는 잘라내고 붙이세요.
@@ -336,7 +336,7 @@
   <p style="font-size:9.5pt;color:#5C513A">
     화물칸 담당 교사가 <b>손거울과 함께</b> 건넵니다. 패드에는 완성된 답만 입력합니다.
   </p>
-  <div class="cut"><div id="letterArt" style="background:#F7F1DE;padding:6mm;border-radius:2mm"></div></div>
+  <div style="margin:3mm 0 1mm;border:2px solid #241C06;border-radius:2mm;overflow:hidden;position:relative"><img src="assets/scene-gerasa-restored.webp" alt="" style="width:100%;height:38mm;object-fit:cover;display:block"><div style="position:absolute;left:0;right:0;bottom:0;padding:2mm 3mm;background:linear-gradient(transparent,rgba(10,18,28,.85));color:#F2E7CB;font-size:9pt">새사람이 된 그가 남긴 편지</div></div><div class="cut"><div id="letterArt" style="background:#F7F1DE;padding:6mm;border-radius:2mm"></div></div>
   <div class="warn">
     <b>교사용</b> — 정답 <b>새사람전하라</b>. 밑줄 글자에 붙은 작은 숫자는 누가복음 8장의 절 번호이고,
     작은 것부터 세우면 27새 · 29사 · 33람 · 35전 · 38하 · 39라 입니다. 이 상자는 잘라내고 붙이세요.
@@ -375,40 +375,112 @@
 
 <script>
 const ART_PRINT = {
-crowd(){ // P9: 군중 12명 수색 (정답 11)
+crowd(){ // P9: 군중 12명 수색 (정답 11) — 인그레이빙 화풍
+  const INK='#2B2416', SOFT='#6B5B3A';
   const person=(x,y,n,{veil=false,arm=null,skirt=false}={})=>{
-    let s=`<g transform="translate(${x},${y})" stroke="#2B2416" fill="none" stroke-width="3" stroke-linecap="round">`;
-    s+=`<circle cx="0" cy="-24" r="9" ${veil?'fill="#2B2416" opacity=".85"':''}/>`;
-    if(veil) s+=`<path d="M-11 -26 a11 11 0 0 1 22 0 v10 l-5 -4 h-12 l-5 4 Z" fill="#2B2416" opacity=".25"/>`;
-    if(skirt) s+=`<path d="M-10 -13 h20 l6 34 h-32 Z"/>`;
-    else s+=`<path d="M-10 -13 h20 l4 30 h-28 Z"/>`;
-    if(arm==='L') s+=`<path d="M-9 -8 L-26 -14" stroke-width="3.5"/><circle cx="-28" cy="-15" r="2.6" fill="#2B2416"/>`;
-    if(arm==='R') s+=`<path d="M9 -8 L26 -14" stroke-width="3.5"/><circle cx="28" cy="-15" r="2.6" fill="#2B2416"/>`;
-    s+=`<circle cx="0" cy="-49" r="9.5" fill="#F2E7CB" stroke="#8A2F1E" stroke-width="2"/><text y="-44" text-anchor="middle" font-size="13" font-family="Jua" fill="#8A2F1E">${n}</text>`;
+    let s=`<g transform="translate(${x},${y})">`;
+    // 겉옷 — 어깨에서 단으로 흐르는 실루엣
+    const hemW = skirt?19:16;
+    s+=`<path d="M-9 -16 C-13 -10 -${hemW} 14 -${hemW} 30 L${hemW} 30 C${hemW} 14 13 -10 9 -16 Z"
+         fill="#EDE3C6" stroke="${INK}" stroke-width="2.4" stroke-linejoin="round"/>`;
+    // 옷주름 (인그레이빙 해칭)
+    s+=`<g stroke="${SOFT}" stroke-width="1.1" fill="none" opacity=".75">
+        <path d="M-4 -10 C-6 2 -8 16 -8 28"/><path d="M3 -10 C4 2 5 16 5 28"/>
+        ${skirt?`<path d="M-12 6 C-13 16 -13 22 -13 28" opacity=".6"/>`:''}</g>`;
+    // 단 그림자
+    s+=`<path d="M-${hemW} 30 L${hemW} 30" stroke="${INK}" stroke-width="2.6" stroke-linecap="round"/>`;
+    // 머리
+    s+=`<ellipse cx="0" cy="-25" rx="7.4" ry="8.6" fill="#EDE3C6" stroke="${INK}" stroke-width="2.2"/>`;
+    if(veil){
+      // 머리를 가린 여인 — 두건이 머리와 어깨를 덮는다
+      s+=`<path d="M-10 -20 C-11 -33 11 -33 10 -20 C10 -14 6 -12 4 -14 L-4 -14 C-6 -12 -10 -14 -10 -20 Z"
+           fill="${INK}" opacity=".9"/>`;
+      s+=`<path d="M-10 -21 C-13 -12 -12 -6 -11 -2 M10 -21 C13 -12 12 -6 11 -2"
+           stroke="${INK}" stroke-width="2" fill="none" stroke-linecap="round"/>`;
+    } else {
+      // 맨머리 — 짧은 머리선만
+      s+=`<path d="M-7 -29 C-4 -33 4 -33 7 -29" stroke="${INK}" stroke-width="2.2" fill="none" stroke-linecap="round"/>`;
+    }
+    // 옷깃
+    s+=`<path d="M-9 -16 C-4 -12 4 -12 9 -16" stroke="${INK}" stroke-width="1.8" fill="none"/>`;
+    // 뻗은 손
+    if(arm){
+      const d = arm==='L' ? -1 : 1;
+      s+=`<path d="M${9*d} -10 C${20*d} -13 ${26*d} -15 ${30*d} -16"
+           stroke="${INK}" stroke-width="3" fill="none" stroke-linecap="round"/>`;
+      s+=`<path d="M${30*d} -16 c${2.4*d} -1.6 ${4.6*d} -0.4 ${4.4*d} 1.4 c${-0.2*d} 1.8 ${-2.6*d} 2.4 ${-4.4*d} 1.2 Z"
+           fill="${INK}"/>`;
+    }
+    // 번호 — 밀랍 인장처럼
+    s+=`<circle cx="0" cy="-49" r="10" fill="#F2E7CB" stroke="#8A2F1E" stroke-width="2.2"/>`;
+    s+=`<circle cx="0" cy="-49" r="7.2" fill="none" stroke="#8A2F1E" stroke-width=".9" opacity=".55"/>`;
+    s+=`<text y="-44.6" text-anchor="middle" font-size="12.5" font-family="Jua" fill="#8A2F1E">${n}</text>`;
     return s+'</g>';
   };
   let s=`<svg viewBox="0 0 460 330">`;
   s+=`<text x="230" y="20" text-anchor="middle" font-size="13" font-family="Gowun Batang" fill="#5C513A">─ 뒤(북쪽) ─</text>`;
-  s+=`<g transform="translate(230,175)" stroke="#8A6C14" fill="none" stroke-width="3.5" stroke-linecap="round">
-      <circle cx="0" cy="-30" r="11"/><path d="M-13 -16 h26 l6 44 h-38 Z"/>
-      <path d="M0 -52 l4 7 h-8 Z M-9 -47 l-6 -5 M9 -47 l6 -5" stroke-width="2.5"/>
-      <text y="34" text-anchor="middle" font-size="12" font-family="Gowun Batang" fill="#8A6C14">예수님</text></g>`;
-  // 뒤(위쪽) 6명: 2(여,손X,홀로) 3(남,손O)+4(여,손X) 붙음 / 7(여,손O)+9(남,손O) 붙음 / 11(여,손O,홀로)★
+  s+=`<path d="M24 30 H436" stroke="#8A7648" stroke-width="1" opacity=".35" stroke-dasharray="5 6"/>`;
+  // 가운데 — 예수님
+  s+=`<g transform="translate(230,175)">
+      <path d="M-11 -18 C-16 -11 -24 16 -24 34 L24 34 C24 16 16 -11 11 -18 Z"
+        fill="#F6EBCC" stroke="#8A6C14" stroke-width="2.8" stroke-linejoin="round"/>
+      <g stroke="#B79A45" stroke-width="1.2" fill="none" opacity=".8">
+        <path d="M-5 -12 C-8 2 -11 18 -11 32"/><path d="M4 -12 C6 2 8 18 8 32"/></g>
+      <ellipse cx="0" cy="-28" rx="8.4" ry="9.6" fill="#F6EBCC" stroke="#8A6C14" stroke-width="2.6"/>
+      <path d="M-8 -32 C-4 -37 4 -37 8 -32" stroke="#8A6C14" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+      <circle cx="0" cy="-29" r="15" fill="none" stroke="#C29A2B" stroke-width="1.6" opacity=".85"/>
+      <path d="M-11 -18 C-4 -13 4 -13 11 -18" stroke="#8A6C14" stroke-width="2" fill="none"/>
+      <path d="M-24 34 h48" stroke="#8A6C14" stroke-width="3" stroke-linecap="round"/>
+      <text y="52" text-anchor="middle" font-size="12" font-family="Gowun Batang" fill="#8A6C14">예수님</text></g>`;
+  // 뒤(위쪽) 6명
   s+=person(52,102,2,{veil:true,skirt:true});
   s+=person(140,86,3,{arm:'R'});
   s+=person(176,84,4,{veil:true,skirt:true});
   s+=person(288,84,7,{veil:true,arm:'L',skirt:true});
   s+=person(324,86,9,{arm:'L'});
   s+=person(408,100,11,{veil:true,arm:'L',skirt:true}); // ★정답
-  // 앞(아래쪽) 6명: 1(남) 5(여,손O,홀로:미끼) 6(남,손O) 8(여,손X) 10(남) 12(여,손O)
+  // 앞(아래쪽) 6명
   s+=person(48,262,1,{});
   s+=person(128,274,5,{veil:true,arm:'R',skirt:true});
   s+=person(208,282,6,{arm:'R'});
   s+=person(288,282,8,{veil:true,skirt:true});
   s+=person(360,274,10,{});
   s+=person(424,258,12,{veil:true,arm:'L',skirt:true});
-  s+=`</svg>`;
-  return `<div class="art-wrap">${s}</div>`;
+  s+=`<text x="230" y="322" text-anchor="middle" font-size="13" font-family="Gowun Batang" fill="#5C513A">─ 앞(남쪽) ─</text>`;
+  return `<div class="art-wrap">${s}</svg></div>`;
+},
+
+flags(){ // P12: 숫자 깃발 (뒤집힘 2개: 9↕,0↕,0,1 → 0901)
+  const flag=(n)=>{
+    const P={
+      0:`<path d="M0 0 H40 L20 16 Z" fill="#2B2416"/>`,
+      1:`<rect x="0" y="0" width="40" height="7" fill="#2B2416"/>`,
+      2:`<rect x="0" y="0" width="40" height="6" fill="#2B2416"/><rect x="0" y="11" width="40" height="6" fill="#2B2416"/>`,
+      3:`<rect x="0" y="0" width="40" height="5" fill="#2B2416"/><rect x="0" y="9" width="40" height="5" fill="#2B2416"/><rect x="0" y="18" width="40" height="5" fill="#2B2416"/>`,
+      4:`<path d="M0 0 L18 0 L0 16 Z" fill="#2B2416"/>`,
+      5:`<rect x="0" y="0" width="40" height="14" fill="#2B2416"/>`,
+      6:`<circle cx="20" cy="8" r="6.5" fill="#2B2416"/>`,
+      7:`<path d="M0 0 L40 28 L28 28 L0 8 Z" fill="#2B2416"/><circle cx="33" cy="6" r="3.5" fill="#2B2416"/>`,
+      8:`<circle cx="20" cy="7" r="6" fill="#2B2416"/><circle cx="20" cy="20" r="3.5" fill="#2B2416"/>`,
+      9:`<path d="M4 0 h32 a16 10 0 0 1 -32 0 Z" fill="#2B2416"/>`,
+    };
+    return `<g><rect x="0" y="0" width="40" height="28" fill="#F8F1DC" stroke="#2B2416" stroke-width="2"/>${P[n]}</g>`;
+  };
+  let table=`<div class="morse-table">`;
+  for(let n=0;n<=9;n++){
+    table+=`<div class="morse-cell"><svg width="40" height="28" viewBox="0 0 40 28">${flag(n)}</svg><div class="d">${n}</div></div>`;
+  }
+  table+=`</div>`;
+  const hoist=`<svg viewBox="0 0 300 140">
+    <line x1="30" y1="10" x2="30" y2="140" stroke="#5C513A" stroke-width="4"/>
+    <line x1="30" y1="18" x2="280" y2="30" stroke="#8A7648" stroke-width="2" stroke-dasharray="5 4"/>
+    <g transform="translate(52,14)"><g transform="rotate(180 20 14)">${flag(9)}</g></g>
+    <g transform="translate(110,20)"><g transform="rotate(180 20 14)">${flag(0)}</g></g>
+    <g transform="translate(168,26)">${flag(0)}</g>
+    <g transform="translate(226,32)">${flag(1)}</g>
+    <text x="160" y="120" text-anchor="middle" font-size="13" font-family="Gowun Batang" fill="#5C513A">― 믿음호 돛대에 게양된 신호 ―</text>
+  </svg>`;
+  return table+`<div class="art-wrap">${hoist}</div>`;
 },
 mirrorLetter(){ // 절 번호 정렬: 새27 사29 람33 전35 하38 라39 (편지 등장 순서는 뒤섞임)
   return `<div class="art-wrap"><div class="mirror-box">
