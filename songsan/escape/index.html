@@ -924,6 +924,8 @@ const ITEMS = {
   hammer:{name:'망치', icon:`<svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"><path d="M24 24 h40 a8 8 0 0 1 8 8 v6 H24 a6 6 0 0 1 -6 -6 v-2 a6 6 0 0 1 6 -6 Z"/><path d="M44 38 l-3 46 h14 l-3 -46"/></svg>`},
   flint:{name:'부싯돌', icon:`<svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 66 l17 -13 15 8 -6 17 -21 2 Z"/><path d="M56 44 l15 -7 9 11 -11 13 -15 -5 Z"/><path d="M50 30 l5 -11 M58 32 l11 -7 M44 27 l-3 -12"/></svg>`},
   oil:{name:'기름통', icon:`<svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"><path d="M32 44 h30 v36 a6 6 0 0 1 -6 6 H38 a6 6 0 0 1 -6 -6 Z"/><path d="M40 44 v-9 h14 v9 M62 52 l15 -12 7 9 -15 12"/><path d="M40 60 h14" opacity=".6"/></svg>`},
+  wick:{name:'무명 심지', icon:`<svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"><path d="M28 74 q10 -14 22 -8 t22 -8"/><path d="M30 60 q10 -14 22 -8 t20 -8" opacity=".6"/><path d="M34 44 q10 -12 20 -6" opacity=".35"/></svg>`},
+  torch:{name:'십자 횃대', icon:`<svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"><path d="M50 34 v52 M34 48 h32"/><path d="M50 30 c-7 -9 0 -16 0 -16 s7 7 0 16 Z" fill="currentColor" opacity=".85"/><path d="M42 40 q8 6 16 0" opacity=".5"/></svg>`}
 };
 // 도구 아이콘: assets/tool-<키>.webp 가 있으면 일러스트로 자동 교체, 없으면 위 SVG 유지(onerror 제거)
 Object.keys(ITEMS).forEach(k=>{
@@ -940,7 +942,7 @@ const ROOMS = {
     {id:'sail', x:39, y:3.5, w:18, h:26.5, name:'말린 돛', text:'돛은 단단히 말려 묶여 있다. 이런 바람에 펴면 배가 찢어진다.'},
     {id:'pulley', x:23.5, y:18, w:7, h:13, name:'도르래', look:true, text:'녹슨 도르래가 바람에 흔들리며 사슬을 긁는다. 걸린 건 없다.'},
     {id:'rigging', x:4.5, y:0, w:18, h:26, name:'삭구 줄', text:'버팀줄이 빗줄기를 타고 운다. 아직은 한 가닥도 끊기지 않았다.'},
-    {id:'crate', x:33, y:41, w:17, h:14, name:'나무 궤짝', subtle:true, look:true, text:'뚜껑 없는 빈 궤짝이다. 안에는 젖은 톱밥뿐.'},
+    {id:'crate', x:33, y:41, w:17, h:14, name:'나무 궤짝', phys:{ code:'2031', effect:'advance', label:'승선 명부함', prompt:'승선 명부함이 <b>네 자리 자물쇠</b>로 잠겨 있다.<br>네 자리는 한 곳에 없다 — 넷이 나뉘어 가지고 있다.<br><br>① ② <b>성경</b> — 표적을 다 기록하지 않았다고 밝힌 책의 <b>장 번호</b><br>③ <b>현장</b> — 팀 색 봉투에 든 승선 표찰 뒷면의 숫자<br>④ <b>패드</b> — 갑판 등불을 확대해 보라', done:'명부함이 열린다. 밧줄이 풀리고 <b>선장실</b>로 가는 길이 열렸다.<br>"믿는 자에게 생명을 주려 함이라" — 요 20:31' }, subtle:true, look:true, text:'뚜껑 없는 빈 궤짝이다. 안에는 젖은 톱밥뿐.'},
     {id:'railing', x:38, y:37.7, w:17.5, h:9.3, name:'뱃전 난간', text:'난간을 붙잡으니 손바닥에 소금기가 배어난다. 아래는 검은 물뿐이다.'},
     {id:'bucket', x:56, y:41, w:7, h:13, name:'두레박통', look:true, text:'난간에 걸린 작은 두레박. 바닥에 빗물이 조금 고여 있다.'},
     {id:'chain', x:65, y:44, w:7, h:15, name:'쇠사슬', text:'굵은 사슬이 뱃전을 따라 늘어져 있다. 사람의 힘으로 풀 고리가 아니다.'},
@@ -951,7 +953,7 @@ const ROOMS = {
   cabin:{ name:'선장실', scene:'cabin', hotspots:[
     {id:'desk', x:9, y:82, w:20, h:17, name:'책상', subtle:true, locked:{needs:'key', lockedText:'책상 서랍이 잠겨 있다. 열쇠가 필요하다.'}, item:'uv', trace:{x:50,y:60}, text:'열쇠가 맞았다. 서랍 속 — 보라색 유리의 자외선 등불!', after:'빈 서랍이다.'},
     {id:'painting', x:8, y:2, w:15, h:37, name:'액자 그림', subtle:true, item:'cross', trace:{x:72,y:52}, text:'벽의 그림을 들추자 벽감 속에 나무 십자가가 숨겨져 있다!', after:'그림 뒤엔 이제 아무것도 없다.'},
-    {id:'chart', x:14, y:58, w:20, h:21, name:'낡은 해도', text:'낡은 해도들. 항로는 이미 정해져 있다.'},
+    {id:'chart', x:14, y:58, w:20, h:21, name:'낡은 해도', phys:{ code:'0822', effect:'advance', label:'출항 명령서', prompt:'해도 위에 선장의 출항 명령서가 눌려 있다. <b>네 자리 봉인</b>이다.<br><br>① <b>선생님</b> — 매듭 시험을 통과하고 받은 돛 허가 인장<br>② <b>패드</b> — 승선 허가증에서 얻은 두 글자가 가리키는 곳<br>③ ④ <b>현장</b> — 강대상 아래 명령서 봉랍 안의 숫자', done:'닻이 오르고 돛이 펴진다. <b>배가 움직이기 시작했다.</b><br>"호수 저편으로 건너가자" — 눅 8:22' }, text:'낡은 해도들. 항로는 이미 정해져 있다.'},
     {id:'globe', x:0, y:21, w:8, h:30, name:'지구본', text:'지구본. 갈릴리 호수는 점 하나다.'},
     {id:'lamp', x:22, y:26, w:8, h:30, name:'기름 램프', text:'평범한 기름 램프다. 자외선은 아니다.'},
     {id:'wheel', x:11, y:39, w:7, h:12, name:'놋 타륜 장식', look:true, text:'선반 위에 놓인 손바닥만 한 놋 타륜. 진짜 키는 조타실에 있다.'},
@@ -976,7 +978,7 @@ const ROOMS = {
     {id:'lantern', x:43, y:15, w:9, h:25, name:'등불', look:true, text:'사슬에 매달린 등불 하나가 이 방의 유일한 빛이다. 심지가 파르르 떨릴 때마다 그림자가 함께 흔들린다.'},
     {id:'porthole', x:61, y:25, w:10, h:12, name:'현창', look:true, text:'둥근 놋테 현창 너머로 검은 바다가 일렁인다. 유리에 짠 물자국이 말라붙어 있다.'},
     {id:'shelf', x:81, y:17, w:12, h:22, name:'선반 그릇', look:true, text:'백랍 접시와 주전자가 나란히 엎어져 있다. 마지막 식사 이후로 아무도 손대지 않은 듯하다.'},
-    {id:'chest', x:79, y:65, w:19, h:22, name:'나무 궤짝', look:true, text:'천이 덮인 낡은 궤짝. 뚜껑은 굳게 닫혀 있고, 자물쇠 자리엔 녹만 남았다.'},
+    {id:'chest', x:79, y:65, w:19, h:22, name:'나무 궤짝', phys:{ code:'0854', effect:'advance', grantItem:'wick', label:'선원 명부 궤', prompt:'선원 명부 궤에 <b>네 자리</b>가 걸려 있다.<br><br>① ② <b>패드</b> — 이 항구에서 일어난 일이 적힌 <b>장</b><br>③ <b>현장</b> — 비어 있는 침상의 번호<br>④ <b>성경</b> — 소녀의 손을 잡고 부르신 절의 <b>끝자리</b>', done:'궤가 열린다. 안에는 무명 심지 천과 밀랍이 들어 있다.<br>"아이야 일어나라" — 눅 8:54<br><b>십자가에 심지를 감아 횃대를 만들 수 있다.</b>' }, look:true, text:'천이 덮인 낡은 궤짝. 뚜껑은 굳게 닫혀 있고, 자물쇠 자리엔 녹만 남았다.'},
     {id:'ropecoil', x:93, y:24, w:7, h:25, name:'밧줄 타래', text:'벽에 걸린 굵은 밧줄 타래. 손끝에 소금기가 서걱인다.'},
     {id:'wallrope', x:52, y:32, w:8, h:12, name:'감긴 밧줄', text:'뒷벽 못에 둥글게 감아 걸어둔 밧줄. 누군가 아주 정성스레 감아 두었다.'},
     {id:'barrel', x:37, y:54, w:10, h:14, name:'물통', look:true, text:'테를 두른 나무 물통과 옆에 처박힌 자루. 바닥에 물때가 검게 앉았다.'},
@@ -989,7 +991,7 @@ const ROOMS = {
   hold:{ name:'화물칸', scene:'hold', hotspots:[
     {id:'crate', x:34, y:38, w:34, h:46, name:'못질된 궤짝', locked:{needs:'hammer', lockedText:'궤짝이 단단히 못질되어 있다. 부술 도구가 필요하다.'}, item:'oil', trace:{x:58,y:66}, text:'망치로 궤짝을 뜯어낸다 — 등대용 기름통이 들어 있다!', after:'부서진 궤짝뿐이다.'},
     {id:'barrels', x:1, y:31, w:23, h:26, name:'포도주 통', text:'포도주 통. 가나의 것은 아니다.'},
-    {id:'net', x:69, y:0, w:30, h:46, name:'어망', text:'그물코마다 소금이 앉았다.'},
+    {id:'net', x:69, y:0, w:30, h:46, name:'어망', phys:{ code:'0829', effect:'advance', label:'사슬 자물쇠', prompt:'뱃바닥으로 내려가는 문이 굵은 <b>쇠사슬</b>로 잠겨 있다. 네 자리다.<br><br>① ② <b>패드</b> — 이 섬에서 풀어낸 사건들이 가리키는 <b>장</b><br>③ <b>선생님</b> — 군대의 사슬을 네 명이 모두 풀고 받은 상륙 허가 인장<br>④ <b>현장</b> — 무덤 굴 지도 뒷면의 숫자', done:'사슬이 끊어진다. "쇠사슬을 끊고" — 눅 8:29<br>뱃바닥이 무너지며 <b>비밀 선창</b>이 드러난다.' }, text:'그물코마다 소금이 앉았다.'},
     {id:'sacks', x:60, y:63, w:23, h:31, name:'곡식 자루', text:'곡식 자루뿐이다.'},
     {id:'shadow', x:70, y:52, w:11, h:11, name:'구석 그림자', text:'구석의 그림자… 쥐다! 놀란 건 너였다.'},
     {id:'lantern', x:42.5, y:15, w:10, h:19, name:'매달린 등불', look:true, text:'쇠사슬에 매달린 등불 하나가 이 어둠을 통째로 상대하고 있다. 기름은 아직 남았다.'},
@@ -1009,7 +1011,7 @@ const ROOMS = {
     {id:'helm', x:22, y:34, w:45, h:42, name:'조타륜', text:'거대한 조타륜. 지금은 아무도 잡고 있지 않다.'},
     {id:'binnacle', x:74, y:45, w:25, h:43, name:'나침반함', text:'나침반이 든 조타 등불함. 바늘은 흔들림 없이 북을 가리킨다.'},
     {id:'navchest', x:10, y:78, w:32, h:20, name:'항해 궤', subtle:true, trace:{x:16,y:78},
-      phys:{ code:'8624', unlocks:'secret',
+      phys:{ code:['8624','5137','7412'], unlocks:'secret',
         prompt:'항해 궤가 <b>네 자리 자물쇠</b>로 잠겨 있다.<br>열쇠 숫자는 배 안이 아니라 <b>지금 이 방(현장)</b> 어딘가에 숨겨진 <b>항해 카드</b>에 적혀 있다.<br>현장을 뒤져 카드를 찾아 숫자를 입력하라.',
         done:'궤가 열리며 낡은 해도 조각이 나온다 — <b>비밀 선창</b>으로 내려가는 길이 그려져 있다!' } },
     {id:'lantern', x:11, y:14, w:15, h:20, name:'오일 랜턴', look:true, text:'기름 등이 흔들리며 겨우 버틴다. 이 작은 불빛 하나가 조타실을 지키고 있다.'},
@@ -1029,7 +1031,7 @@ const ROOMS = {
     {id:'lantern', x:12, y:12, w:20, h:24, name:'등불', text:'홀로 타는 등불. 이 방을 아는 이가 밝혀 두었다.'},
     {id:'crates', x:8, y:44, w:28, h:24, name:'먼지 쌓인 상자들', text:'먼지 쌓인 상자들. 오래 아무도 오지 않았다.'},
     {id:'treasure', x:38, y:35, w:50, h:36, name:'보물 궤', subtle:true,
-      phys:{ code:'3327', reward:'treasure',
+      phys:{ code:['3327','6085','2914'], reward:'treasure',
         prompt:'선장의 보물 궤. <b>세 자리 봉인</b>이 걸려 있다.<br>봉인의 숫자는 <b>현장</b>에 숨겨진 <b>선장의 편지</b> 맨 끝에 적혀 있다.<br>편지를 찾아 숫자를 입력하라.',
         done:'⚓ 봉인이 풀렸다! 궤 안에는 선장의 편지와 <b>항해 훈장</b>이 들어 있다.<br>"여기까지 온 너희는 이미 믿음의 항해자다."' } },
     {id:'beams', x:33, y:0, w:45, h:9, name:'천장 들보', text:'머리 위를 가로지르는 굵은 들보. 갑판의 무게를 홀로 견디고 있다.'},
@@ -1287,9 +1289,12 @@ const Explore = {
     const okey=roomId+'.'+hsId;
     const inp=document.getElementById('physInput');
     const v=(inp?inp.value:'').replace(/\s/g,'');
-    if(v!==String(hs.phys.code)){ Sound.bad(); const e=document.getElementById('physErr'); if(e)e.textContent='숫자가 맞지 않는다. 현장을 더 뒤져 보라.'; if(inp){inp.value='';inp.focus();} return; }
+    if(v!==String(physCode(hs))){ Sound.bad(); const e=document.getElementById('physErr'); if(e)e.textContent='숫자가 맞지 않는다. 현장을 더 뒤져 보라.'; if(inp){inp.value='';inp.focus();} return; }
     S.phys[okey]=true;
     if(hs.phys.unlocks) S.unlocked[hs.phys.unlocks]=true;
+    if(hs.phys.grantItem) S.items[hs.phys.grantItem]=true;
+    if(hs.phys.effect==='advance') tryAdvanceAct();
+    tryCombine();
     save(); Sound.good(); logEvent('현장 코드 해결: '+roomId+'.'+hsId);
     const goMap=!!hs.phys.unlocks;
     Info.show('봉인 해제 ⚓', `<p class="desc">${hs.phys.done}</p><button class="btn small ink" onclick="Info.close();Explore.${goMap?'toMapRender':'render'}()">계속</button>`, true);
@@ -1456,16 +1461,38 @@ const PUZZLE_AT = {
   'crew.hammock':'p9', 'crew.cupboard':'p10', 'crew.boots':'p11',
   'deck.sail':'p12', 'deck.bell':'p13',
 };
+// 도구 결합 — 등대에 꽂을 횃대는 손으로 만든다
+const COMBINE = [ { need:['cross','wick'], make:'torch',
+  text:'십자가에 무명 심지를 감고 밀랍을 먹였다. <b>등대에 꽂을 횃대</b>가 되었다.' } ];
+function tryCombine(){
+  if(!S) return null;
+  for(const c of COMBINE){
+    if(S.items[c.make]) continue;
+    if(c.need.every(k=>S.items[k])){
+      c.need.forEach(k=>{ delete S.items[k]; });
+      S.items[c.make]=true; save();
+      Sound.good(); Info.show('도구 결합', `<p class="desc">${c.text}</p>`);
+      return c.make;
+    }
+  }
+  return null;
+}
 const PZ_SPOT = Object.fromEntries(Object.entries(PUZZLE_AT).map(([k,v])=>[v,k]));
 
 // 막(幕) — 항로 위의 배가 어디까지 왔는가. 각 막은 열쇠 사건이 풀리면 전진한다.
 const ACTS = [
-  { id:0, name:'부두',      room:'deck',   need:[], needItems:['key'],  tell:'갑판을 뒤져 밧줄을 풀고 배에 오르라.' },
-  { id:1, name:'출항',      room:'cabin',  need:['p1'],                tell:'선장실에서 출항 명령을 되찾으라.' },
-  { id:2, name:'폭풍',      room:'wheel',  need:['p2','p3','p4','p5'], tell:'광풍 속에서 침로를 다시 잡으라.' },
-  { id:3, name:'무덤 섬',   room:'hold',   need:['p6','p7','p8'],      tell:'배를 가볍게 하고 무덤 문을 열라.' },
-  { id:4, name:'돌아온 항구',room:'crew',  need:['p9','p10','p11'],    tell:'인파 속에서 그 한 사람을 찾으라.' },
-  { id:5, name:'등대',      room:'deck',   need:['p12','p13'],         tell:'신호를 올리고 등대에 불을 켜라.' },
+  { id:0, name:'부두',      room:'deck',   need:[], needItems:['key'], needPhys:['deck.crate'],
+    tell:'갑판을 뒤져 열쇠를 찾고, 승선 명부함의 네 자리를 채우라.' },
+  { id:1, name:'출항',      room:'cabin',  need:['p1'], needPhys:['cabin.chart'],
+    tell:'선장실에서 허가증을 읽고, 출항 명령서의 네 자리를 채우라.' },
+  { id:2, name:'폭풍',      room:'wheel',  need:['p2','p3','p4','p5'], needPhys:['wheel.navchest'],
+    tell:'광풍 속에서 침로를 다시 잡고, 항해궤를 열라.' },
+  { id:3, name:'무덤 섬',   room:'hold',   need:['p6','p7','p8'], needPhys:['hold.net'],
+    tell:'배를 가볍게 하고, 사슬 자물쇠를 끊으라.' },
+  { id:4, name:'돌아온 항구',room:'crew',  need:['p9','p10','p11'], needPhys:['crew.chest'],
+    tell:'인파 속에서 그 한 사람을 찾고, 선원 명부 궤를 열라.' },
+  { id:5, name:'등대',      room:'deck',   need:['p12','p13'],
+    tell:'신호를 올리고 등대에 불을 켜라.' },
 ];
 
 function pzById(id){
@@ -1491,21 +1518,29 @@ function canOpen(pzId){
 function tryAdvanceAct(){
   while(S.act<ACTS.length-1){
     const a=ACTS[S.act];
-    const need=a.need||[], items=a.needItems||[];
+    const need=a.need||[], items=a.needItems||[], locks=a.needPhys||[];
     const pzOk = need.every(id=>S.solved[id]);
     const itOk = items.every(k=>S.items&&S.items[k]);
-    if(!need.length && !items.length) break;       // 조건 없는 막은 수동 전진만
-    if(pzOk && itOk) S.act++; else break;
+    const lkOk = locks.every(k=>S.phys&&S.phys[k]);
+    if(!need.length && !items.length && !locks.length) break;
+    if(pzOk && itOk && lkOk) S.act++; else break;
   }
 }
 function save(){ try{ localStorage.setItem(LS_KEY, JSON.stringify(S)); }catch(e){} }
 function load(){ try{ const raw=localStorage.getItem(LS_KEY); if(raw){ S=JSON.parse(raw); S.items=S.items||{}; S.opened=S.opened||{}; migrate(); return true; } }catch(e){} return false; }
 function logEvent(msg){ S.log.push({t:Date.now(),msg}); save(); }
+// 팀별 코드 세트 — 옆 팀 어깨너머로 숫자를 봐도 안 통하게
+function teamIdx(){ return (S && typeof S.teamCode==='number') ? S.teamCode : 0; }
+function physCode(hs){
+  const c=hs.phys.code;
+  return Array.isArray(c) ? (c[teamIdx()] || c[0]) : c;
+}
 function migrate(){
   if(!S) return;
   if(!S.solved) S.solved={};
   if(typeof S.act!=='number') S.act=0;
   if(S.openPz===undefined) S.openPz=null;
+  if(typeof S.teamCode!=='number') S.teamCode=0;
   // 구버전(선형 커서) 세이브 → 지나온 관문을 solved로 환산
   if(S._v!==2){
     let n=STAGES.slice(0,S.stageIdx||0).reduce((t,st)=>t+st.puzzles.length,0)+(S.puzzleIdx||0);
@@ -1975,6 +2010,7 @@ const Game = {
   startGate(){ Sound.ac(); Pin.open('게임 시작','관리자 선생님이 비밀번호를 입력하면 시작할 수 있어요.',()=>UI.renderTeamSelect()); },
   begin(teamName){
     S=defaultState(); S.teamName=teamName; S.phase='story'; S._v=2;
+    S.teamCode=Math.max(0, TEAM_PRESETS.indexOf(teamName)) % 3;
     logEvent('게임 준비: '+teamName);
     save(); UI.render();
   },
