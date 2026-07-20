@@ -155,7 +155,8 @@ h1.title{font-size:42px;color:var(--parch);letter-spacing:1px;text-align:center;
 /* 퍼즐 고유 삽화 헤더 */
 .pz-art{margin-top:14px;border-radius:7px;overflow:hidden;border:1px solid rgba(94,74,26,.4);box-shadow:0 8px 26px rgba(0,0,0,.45),0 1px 0 rgba(255,255,255,.18) inset;background:#0c1520}
 .pz-art img{width:100%;height:auto;display:block}
-.art-wrap{margin-top:14px;background:rgba(255,255,255,.4);border:1px solid rgba(94,74,26,.35);border-radius:6px;padding:10px;overflow:hidden}
+.art-wrap{margin-top:14px;position:relative;border:1px solid rgba(94,74,26,.5);border-radius:5px;padding:14px 12px;overflow:hidden;background:radial-gradient(120% 90% at 50% 0%,rgba(255,252,238,.55),transparent 55%),linear-gradient(rgba(247,238,214,.72),rgba(240,228,196,.72)),url("assets/paper-gerasa-letter.webp") center/cover;box-shadow:inset 0 0 0 1px rgba(255,255,255,.35), inset 0 0 40px rgba(120,80,20,.13), 0 6px 18px rgba(0,0,0,.28)}
+.art-wrap::after{content:'';position:absolute;inset:5px;border:1px solid rgba(120,92,30,.28);border-radius:3px;pointer-events:none}
 .art-wrap svg{width:100%;height:auto;display:block}
 .painting{
   width:100%;display:block;border:7px solid #2E2415;outline:1px solid #8A6C14;border-radius:2px;
@@ -212,6 +213,7 @@ h1.title{font-size:42px;color:var(--parch);letter-spacing:1px;text-align:center;
 .hint-bar{display:flex;gap:10px;margin-top:18px;width:100%}
 .hint-bar .btn{margin-top:0;display:flex;align-items:center;justify-content:center;gap:9px}
 .hint-log{width:100%;margin-top:12px}
+.hint-divider{margin-top:18px;padding-top:12px;border-top:1px dashed rgba(233,237,240,.18);font-size:13px;letter-spacing:2px;color:var(--chalk-dim);text-align:center}
 .hint-item{
   background:rgba(194,154,43,.08);border:1px dashed var(--brass-dk);border-radius:6px;
   padding:11px 14px;font-family:'Gowun Batang',serif;font-size:15px;margin-top:8px;color:#E8D9AE;line-height:1.65;word-break:keep-all;
@@ -457,6 +459,38 @@ h1.title{font-size:42px;color:var(--parch);letter-spacing:1px;text-align:center;
 @keyframes glowp{0%,100%{filter:drop-shadow(0 0 4px rgba(228,196,99,.5))}50%{filter:drop-shadow(0 0 22px rgba(228,196,99,.95))}}
 .admin-row{display:flex;align-items:center;gap:8px;margin-top:9px;background:rgba(233,237,240,.05);border:1px solid rgba(233,237,240,.07);border-radius:8px;padding:10px 13px;font-size:15px;color:var(--chalk-dim)}
 .admin-row b{color:var(--chalk);font-weight:400}
+/* 관리자 대시보드 */
+.adm-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.adm-sub{font-family:'Gowun Batang',serif;font-size:13px;color:var(--chalk-dim);margin-top:4px}
+.adm-x{background:none;border:0;color:var(--chalk-dim);font-size:19px;cursor:pointer;padding:2px 6px;line-height:1}
+.adm-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:14px}
+.adm-stat{background:rgba(233,237,240,.05);border:1px solid rgba(233,237,240,.09);border-radius:9px;padding:9px 6px;text-align:center}
+.adm-stat span{display:block;font-family:'Gowun Batang',serif;font-size:11.5px;color:var(--chalk-dim);letter-spacing:1px}
+.adm-stat b{display:block;margin-top:3px;font-size:20px;color:var(--brass-lt);font-weight:400}
+.adm-stat b i{font-style:normal;font-size:12px;color:var(--chalk-dim)}
+.adm-bar{height:5px;border-radius:3px;background:rgba(233,237,240,.09);margin-top:10px;overflow:hidden}
+.adm-bar i{display:block;height:100%;background:linear-gradient(90deg,var(--brass-dk),var(--brass-lt));transition:width .4s ease}
+.adm-tabs{display:flex;gap:5px;margin-top:14px}
+.adm-tabs button{flex:1;font-family:inherit;font-size:13.5px;color:var(--chalk-dim);background:rgba(233,237,240,.05);border:1px solid rgba(233,237,240,.1);border-radius:8px;padding:9px 4px;cursor:pointer}
+.adm-tabs button.on{color:#241C06;background:var(--brass);border-color:var(--brass)}
+.adm-body{margin-top:12px;max-height:52vh;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.adm-card{background:rgba(233,237,240,.05);border:1px solid rgba(233,237,240,.09);border-radius:10px;padding:12px 13px;margin-top:9px}
+.adm-k{font-size:12px;letter-spacing:2px;color:var(--brass-lt);margin-bottom:7px}
+.adm-title{font-size:17px;color:var(--chalk)}
+.adm-ans{margin-top:8px;font-family:'Gowun Batang',serif;font-size:14px;color:var(--chalk-dim)}
+.adm-ans b{color:#7FD4BC;font-size:17px;font-weight:400;margin-left:5px}
+.adm-verse{margin-top:8px;font-family:'Gowun Batang',serif;font-size:13px;line-height:1.6;color:var(--chalk-dim);opacity:.85}
+.adm-li{display:flex;justify-content:space-between;gap:10px;font-family:'Gowun Batang',serif;font-size:13.5px;color:var(--chalk);padding:5px 0;border-bottom:1px solid rgba(233,237,240,.06)}
+.adm-li:last-child{border-bottom:0}
+.adm-li.dim{color:var(--chalk-dim);font-size:12.5px}
+.adm-li b{font-weight:400;color:var(--brass-lt)}
+.adm-note{font-family:'Gowun Batang',serif;font-size:13.5px;line-height:1.65;color:var(--chalk-dim);margin-top:10px}
+.tool-row{display:flex;flex-wrap:wrap;gap:6px}
+.tool-chip{font-size:12.5px;padding:5px 10px;border-radius:20px;border:1px solid rgba(233,237,240,.14);color:var(--chalk-dim);opacity:.45}
+.tool-chip.on{opacity:1;color:#241C06;background:var(--brass);border-color:var(--brass)}
+.adm-card.guide .adm-g{margin-top:11px;font-family:'Gowun Batang',serif;font-size:14px;line-height:1.75;color:var(--chalk)}
+.adm-card.guide .adm-g em{display:block;font-style:normal;font-family:'Jua';font-size:12px;letter-spacing:2px;color:var(--brass-lt);margin-bottom:3px}
+.adm-card.guide .adm-g.word{border-top:1px dashed rgba(233,237,240,.14);padding-top:10px;color:var(--brass-lt)}
 /* 관리자 진행 모드 */
 .admin-sec{margin-top:16px;font-size:13px;letter-spacing:3px;color:var(--brass-lt);border-bottom:1px solid rgba(194,154,43,.28);padding-bottom:6px}
 .admin-note{margin-top:8px;font-family:'Gowun Batang',serif;font-size:13px;line-height:1.6;color:var(--chalk-dim)}
@@ -467,6 +501,7 @@ h1.title{font-size:42px;color:var(--parch);letter-spacing:1px;text-align:center;
 .jump-pz{display:flex;gap:5px}
 .jump-pz button{width:30px;height:30px;font-family:inherit;font-size:13px;color:var(--chalk-dim);background:rgba(233,237,240,.05);border:1px solid rgba(233,237,240,.12);border-radius:7px;cursor:pointer}
 .jump-pz button.on{border-color:var(--brass);color:#241C06;background:var(--brass)}
+.jump-pz button.ok{border-color:rgba(127,212,188,.5);color:#7FD4BC}
 .jump-pz button:active{background:rgba(233,237,240,.15)}
 .admin-row .grow{flex:1}
 .admin-mini{font-family:inherit;font-size:14px;border:1px solid var(--sea-line);border-radius:6px;padding:7px 11px;background:transparent;color:var(--chalk)}
@@ -1337,7 +1372,7 @@ const STAGES = [
   story:'돌아온 항구는 인파로 가득하다.<br>12년을 앓은 여인이 군중 속에 숨어 있고,<br>12살 소녀의 시간이 끝났다는 전갈이 온다.<br>모두가 끝이라 말하는 곳에서 <b>숫자 12</b>가 열쇠가 된다.',
   verse:'"예수께서 이르시되 내게 손을 댄 자가 누구냐" — 눅 8:45',
   puzzles:[
-    { id:'p9', img:'scene-crowd-hem', type:'number', title:'군중 속의 손', bible:true, art:'crowd',
+    { id:'p9', type:'number', title:'군중 속의 손', bible:true, art:'crowd',
       mission:'군중 <b>열두 명</b> 가운데 옷자락에 손을 댄 그 여인을 찾아라. 누가의 기록이 단서다. (눅 8:43-44)<span class="step">① 여인은 예수님의 <b>뒤로</b> 다가왔다.</span><span class="step">② 옷 가에 <b>손을 대었다</b> — 손을 뻗은 사람이다.</span><span class="step">③ 12년의 병은 그녀를 <b>홀로</b> 남겼다 — 누구와도 붙어 있지 않다.</span><span class="step">④ 머리를 가린 <b>여인</b>이다. 그 번호를 입력하라.</span>',
       placeholder:'번호', answers:['11'],
       hints:['조건을 하나씩 지워라: 앞줄 전부 탈락(5번이 아무리 그럴듯해도 앞줄이다). 뒤에서 손 안 뻗은 사람 탈락.','뒤에서 손을 뻗은 이는 3·7·9·11. 그중 옆 사람과 붙어 있지 않은 머리 가린 여인은 하나뿐이다.'],
@@ -1363,7 +1398,7 @@ const STAGES = [
   story:'등대가 보인다. 그러나 불은 꺼져 있고,<br>탑의 문은 <b>세 개의 관문</b>으로 잠겨 있다.<br>돛대에는 낡은 신호기가, 너희 손에는 네 개의 인장이.<br>이 항해의 마지막 답은, 처음부터 하나였다.',
   verse:'"예수께서 열두 제자를 불러 모으사 모든 귀신을 제어하며 병을 고치는 능력과 권위를 주시고" — 눅 9:1',
   puzzles:[
-    { id:'p12', img:'flags-banner', type:'text', title:'파송의 신호기', bible:true, art:'flags',
+    { id:'p12', type:'text', title:'파송의 신호기', bible:true, art:'flags',
       mission:'돛대에 숫자 깃발 네 개가 게양되어 있다. 코드표와 대조해 읽어라.<span class="step">뱃사람의 오랜 규칙: <b>뒤집혀 게양된 깃발은 "9에서 그 수를 뺀 수"로 읽는다.</b></span><span class="step">뒤집힌 깃발이 <b>몇 개인지부터</b> 가려내야 한다. 읽어낸 네 자리는 성경의 주소다. 입력하라.</span>',
       placeholder:'숫자 4자리', answers:['0901'],
       hints:['코드표의 깃발을 180도 돌려 보며 게양된 깃발과 비교하라. 뒤집힌 깃발은 하나가 아니다.','첫째는 뒤집힌 9(9-9=0), 둘째는 뒤집힌 0(9-0=9). 셋째 0, 넷째 1 → 0901.'],
@@ -1618,25 +1653,28 @@ const Hint = {
     const inner=document.getElementById('hintModalInner');
     inner.innerHTML=`
       <div class="lantern-glow">${IC.lantern}</div>
-      <h3>등불 요청 중</h3>
-      <p class="desc">손을 들고 <b>관리자 선생님</b>을 불러 주세요.<br>선생님이 오시면 아래에서 힌트를 열어 주십니다.</p>
+      <h3>등불 밝히기</h3>
+      <p class="desc">힌트는 <b>바로 열립니다</b>. 대신 그만큼 항해 시간이 더해집니다.</p>
       <div style="margin-top:14px">
         <button class="btn small" onclick="Hint.grant(1)" ${used.includes(1)?'disabled':''}>힌트 하나 (+${PENALTY.hint1}분)${used.includes(1)?' · 사용함':''}</button>
         <button class="btn small" onclick="Hint.grant(2)" ${(used.includes(2)||!used.includes(1))?'disabled':''}>힌트 둘 (+${PENALTY.hint2}분)${used.includes(2)?' · 사용함':''}</button>
-        <button class="btn small oxb" onclick="Hint.grant('reveal')" ${used.includes('reveal')?'disabled':''}>정답 열기 (+${PENALTY.reveal}분)</button>
       </div>
-      <p class="desc" style="font-size:13.5px;opacity:.75">힌트를 열면 팀 기록에 시간이 더해집니다</p>
-      <button class="btn ghost small" onclick="Hint.cancel()">취소 (잘못 눌렀어요)</button>`;
+      <div class="hint-divider">여기부터는 선생님이 필요합니다</div>
+      <button class="btn small oxb" onclick="Hint.grant('reveal')" ${used.includes('reveal')?'disabled':''}>🔒 정답 열기 (+${PENALTY.reveal}분)${used.includes('reveal')?' · 사용함':''}</button>
+      <p class="desc" style="font-size:13.5px;opacity:.75">정답은 <b>관리자 선생님</b>만 열 수 있습니다. 손을 들어 선생님을 불러 주세요.</p>
+      <button class="btn ghost small" onclick="Hint.cancel()">닫기</button>`;
     document.getElementById('hintModal').classList.add('show');
-    Sound.bell();
-    clearInterval(this.chimeTimer);
-    this.chimeTimer=setInterval(()=>Sound.bell(),8000);
-    logEvent(`힌트 요청: ${pz.title}`);
+    logEvent(`힌트 창 열기: ${pz.title}`);
   },
   cancel(){ clearInterval(this.chimeTimer); document.getElementById('hintModal').classList.remove('show'); },
   grant(level){
     const pz=this.currentPuzzle();
-    Pin.open('관리자 확인','힌트를 열려면 관리자 선생님이 비밀번호를 입력해 주세요.',()=>{
+    // 힌트는 바로 열리고, 정답만 관리자 확인을 거친다
+    if(level!=='reveal'){ this.apply(pz,level); return; }
+    Pin.open('관리자 확인','정답을 열려면 관리자 선생님이 비밀번호를 입력해 주세요.',()=>this.apply(pz,level));
+  },
+  apply(pz,level){
+    {
       clearInterval(this.chimeTimer);
       const used=S.hintsUsed[pz.id]||(S.hintsUsed[pz.id]=[]);
       if(used.includes(level)) return;
@@ -1651,47 +1689,123 @@ const Hint = {
       UI.updateTopbar();
       UI.renderPlay();
       Info.show(label, `<div class="hint-item" style="font-size:17px">${text}</div>`);
-    });
+    }
   },
 };
+
+/* ---------------- 관리자 해설 (인솔 교사용) ---------------- */
+const TEACH = {};
 
 /* ---------------- 관리자 ---------------- */
 const Admin = {
   openGate(){ Pin.open('관리자 모드','관리자 선생님만 들어올 수 있어요.',()=>Admin.open()); },
-  open(){
+  tab:'now',
+  open(t){
+    if(t) this.tab=t;
     const inner=document.getElementById('adminInner');
-    const st=STAGES[S.stageIdx]; const pz=st&&st.puzzles[S.puzzleIdx];
-    const doneCount=(S.phase==='finish'||S.stageIdx>=STAGES.length)?TOTAL_PUZZLES:STAGES.slice(0,S.stageIdx).reduce((n,s)=>n+s.puzzles.length,0)+S.puzzleIdx;
-    let html=`<h3>관리자 패널</h3>
-      <div class="admin-row"><span class="grow">팀</span><b>${S.teamName||'-'}</b></div>
-      <div class="admin-row"><span class="grow">진행</span><b>${S.phase==='finish'?'완주':(st?st.chapter+' · '+(pz?pz.title:'스토리'):'-')} (${doneCount}/${TOTAL_PUZZLES})</b></div>
-      <div class="admin-row"><span class="grow">경과 시간</span><b>${UI.fmt(UI.elapsedMs())}</b></div>
-      <div class="admin-row"><span class="grow">확보한 도구</span><b>${Object.keys(S.items||{}).filter(k=>S.items[k]).map(k=>ITEMS[k].name).join(', ')||'없음'}</b></div>
-      <div class="admin-row"><span class="grow">벌점</span>
-        <button class="admin-mini" onclick="Admin.pen(-1)">-1분</button>
-        <b style="margin:0 6px">${S.penaltyMin}분</b>
-        <button class="admin-mini" onclick="Admin.pen(1)">+1분</button></div>`;
-    if(S.phase==='play'&&pz){
-      html+=`<div class="admin-row"><span class="grow">이 문제 정답</span><b style="color:#7FD4BC">${Admin.answerOf(pz)}</b></div>
-      <button class="btn small oxb" onclick="Admin.skip()">이 문제 건너뛰기 (+${PENALTY.reveal}분)</button>`;
-    }
-    // 진행 모드 — 안 풀고도 스토리·관문을 자유롭게 열람
-    html+=`<div class="admin-sec">진행 모드 · 안 풀어도 이동</div>
-      <div class="admin-note">아래를 눌러 어느 챕터·관문으로든 바로 이동합니다. 정답은 위 <b>이 문제 정답</b>에 표시됩니다.</div>`;
-    STAGES.forEach((stg,si)=>{
-      html+=`<div class="admin-jump">
-        <button class="jump-ch${si===S.stageIdx?' on':''}" onclick="Admin.jump(${si},-1)">${stg.chapter} · ${stg.title}</button>
-        <div class="jump-pz">${stg.puzzles.map((p,pi)=>
-          `<button class="${si===S.stageIdx&&pi===S.puzzleIdx&&S.phase==='play'?'on':''}" title="${p.title}" onclick="Admin.jump(${si},${pi})">${pi+1}</button>`).join('')}</div>
-      </div>`;
-    });
-    html+=`<div class="admin-jump"><button class="jump-ch" onclick="Admin.jumpFinish()">🏁 엔딩 화면 보기</button></div>
-      <button class="btn ghost small" onclick="Admin.unlockAll()">🔓 도구·비밀 선창 전체 해금 (탐색용)</button>`;
-    html+=`<button class="btn ghost small" onclick="Admin.reset()">게임 전체 초기화</button>
-      <button class="btn ghost small" onclick="location.href='../'">← 수련회 앱으로 나가기</button>
-      <button class="btn small" onclick="document.getElementById('adminModal').classList.remove('show')">닫기</button>`;
-    inner.innerHTML=html;
+    inner.innerHTML=this.dash();
     document.getElementById('adminModal').classList.add('show');
+    clearInterval(this._tick);
+    this._tick=setInterval(()=>{
+      const el=document.getElementById('admClock');
+      if(!el||!document.getElementById('adminModal').classList.contains('show')){ clearInterval(this._tick); return; }
+      el.textContent=UI.fmt(UI.elapsedMs());
+    },1000);
+  },
+  close(){ clearInterval(this._tick); document.getElementById('adminModal').classList.remove('show'); },
+  /* 한눈에 보는 대시보드 */
+  dash(){
+    const st=STAGES[S.stageIdx], pz=st&&st.puzzles[S.puzzleIdx];
+    const done=(S.phase==='finish')?TOTAL_PUZZLES:STAGES.slice(0,S.stageIdx).reduce((n,s)=>n+s.puzzles.length,0)+S.puzzleIdx;
+    const pct=Math.round(done/TOTAL_PUZZLES*100);
+    const tools=Object.keys(ITEMS).map(k=>
+      `<span class="tool-chip${S.items&&S.items[k]?' on':''}" title="${ITEMS[k].name}">${ITEMS[k].name}</span>`).join('');
+    const hintN=Object.values(S.hintsUsed||{}).reduce((n,a)=>n+a.filter(x=>x!=='reveal').length,0);
+    const revealN=Object.values(S.hintsUsed||{}).reduce((n,a)=>n+a.filter(x=>x==='reveal').length,0);
+    const phys=[['wheel.navchest','조타실 항해궤','8624'],['secret.treasure','비밀선창 보물궤','3327']];
+
+    let h=`<div class="adm-head">
+      <div><h3 style="margin:0">관리자 대시보드</h3>
+        <div class="adm-sub">${S.teamName||'팀 미지정'} · ${S.phase==='finish'?'완주':(st?st.chapter:'-')}</div></div>
+      <button class="adm-x" onclick="Admin.close()">✕</button>
+    </div>
+
+    <div class="adm-stats">
+      <div class="adm-stat"><span>경과</span><b id="admClock">${UI.fmt(UI.elapsedMs())}</b></div>
+      <div class="adm-stat"><span>진행</span><b>${done}<i>/${TOTAL_PUZZLES}</i></b></div>
+      <div class="adm-stat"><span>벌점</span><b>${S.penaltyMin}<i>분</i></b></div>
+      <div class="adm-stat"><span>힌트·정답</span><b>${hintN}<i>·${revealN}</i></b></div>
+    </div>
+    <div class="adm-bar"><i style="width:${pct}%"></i></div>
+
+    <div class="adm-tabs">
+      ${[['now','현재'],['map','진행'],['guide','해설'],['tools','상태'],['ctl','제어']]
+        .map(([k,n])=>`<button class="${this.tab===k?'on':''}" onclick="Admin.open('${k}')">${n}</button>`).join('')}
+    </div>
+    <div class="adm-body">`;
+
+    if(this.tab==='now'){
+      if(S.phase==='play'&&pz){
+        h+=`<div class="adm-card">
+          <div class="adm-k">지금 푸는 문제</div>
+          <div class="adm-title">${st.chapter} · ${pz.title}</div>
+          <div class="adm-ans">정답 <b>${this.answerOf(pz)}</b></div>
+          ${pz.verse?`<div class="adm-verse">${pz.verse}</div>`:''}
+        </div>
+        <button class="btn small oxb" onclick="Admin.skip()">이 문제 건너뛰기 (+${PENALTY.reveal}분)</button>`;
+        const used=(S.hintsUsed||{})[pz.id]||[];
+        h+=`<div class="adm-card"><div class="adm-k">이 팀이 쓴 힌트</div>
+          ${used.length?used.map(u=>`<div class="adm-li">${u==='reveal'?'정답 공개':'힌트 '+u}</div>`).join(''):'<div class="adm-li dim">아직 없음</div>'}</div>`;
+      } else {
+        h+=`<div class="adm-card"><div class="adm-k">현재 상태</div>
+          <div class="adm-title">${S.phase==='finish'?'🏁 완주':(S.phase==='story'?'스토리 화면':'대기 중')}</div></div>`;
+      }
+    }
+    else if(this.tab==='map'){
+      h+=`<div class="adm-note">아무 곳이나 눌러 바로 이동합니다. 안 풀어도 스토리를 전부 볼 수 있습니다.</div>`;
+      STAGES.forEach((stg,si)=>{
+        h+=`<div class="admin-jump">
+          <button class="jump-ch${si===S.stageIdx?' on':''}" onclick="Admin.jump(${si},-1)">${stg.chapter} · ${stg.title}</button>
+          <div class="jump-pz">${stg.puzzles.map((p,pi)=>{
+            const gi=STAGES.slice(0,si).reduce((n,s)=>n+s.puzzles.length,0)+pi;
+            const cls=(si===S.stageIdx&&pi===S.puzzleIdx&&S.phase==='play')?'on':(gi<done?'ok':'');
+            return `<button class="${cls}" title="${p.title}" onclick="Admin.jump(${si},${pi})">${pi+1}</button>`;
+          }).join('')}</div></div>`;
+      });
+      h+=`<div class="admin-jump"><button class="jump-ch" onclick="Admin.jumpFinish()">🏁 엔딩 화면 보기</button></div>`;
+    }
+    else if(this.tab==='guide'){
+      if(pz&&TEACH&&TEACH[pz.id]){
+        const t=TEACH[pz.id];
+        h+=`<div class="adm-card guide">
+          <div class="adm-k">${st.chapter} · ${pz.title}</div>
+          <div class="adm-g"><em>핵심</em>${t.core}</div>
+          <div class="adm-g"><em>정답과 근거</em>${t.answer}</div>
+          <div class="adm-g"><em>막힐 때</em>${t.stuck}</div>
+          <div class="adm-g word"><em>말씀 연결</em>${t.word}</div>
+        </div>`;
+      } else {
+        h+=`<div class="adm-note">지금 문제의 해설이 없습니다. <b>진행</b> 탭에서 관문으로 이동하면 해당 해설이 표시됩니다.</div>`;
+      }
+    }
+    else if(this.tab==='tools'){
+      h+=`<div class="adm-card"><div class="adm-k">확보한 도구</div><div class="tool-row">${tools}</div></div>
+        <div class="adm-card"><div class="adm-k">현장 코드</div>
+        ${phys.map(([k,n,c])=>`<div class="adm-li"><span>${n}</span><b>${(S.phys&&S.phys[k])?'✅ 해결':'미해결'} · 코드 ${c}</b></div>`).join('')}
+        <div class="adm-li"><span>비밀 선창</span><b>${(S.unlocked&&S.unlocked.secret)?'✅ 열림':'잠김'}</b></div></div>
+        <div class="adm-card"><div class="adm-k">최근 기록</div>
+        ${(S.log||[]).slice(-8).reverse().map(l=>`<div class="adm-li dim">${l}</div>`).join('')||'<div class="adm-li dim">없음</div>'}</div>`;
+    }
+    else {
+      h+=`<div class="adm-card"><div class="adm-k">벌점 조정</div>
+        <div class="adm-li"><span>현재 ${S.penaltyMin}분</span>
+          <span><button class="admin-mini" onclick="Admin.pen(-1)">-1분</button>
+          <button class="admin-mini" onclick="Admin.pen(1)">+1분</button></span></div></div>
+        <button class="btn ghost small" onclick="Admin.unlockAll()">🔓 도구·비밀 선창 전체 해금</button>
+        <button class="btn ghost small" onclick="Admin.reset()">게임 전체 초기화</button>
+        <button class="btn ghost small" onclick="location.href='../'">← 수련회 앱으로 나가기</button>`;
+    }
+    return h+`</div>`;
   },
   answerOf(pz){
     if(pz.type==='multiinput') return pz.fields.map(f=>f.answers[0]).join(' / ');
@@ -1709,14 +1823,14 @@ const Admin = {
     else { S.puzzleIdx=pi; S.phase='play'; }
     S.finishTs=null;
     logEvent('관리자 이동: '+STAGES[si].chapter+(pi<0?' 스토리':' 관문'+(pi+1)));
-    save(); document.getElementById('adminModal').classList.remove('show'); UI.render();
+    save(); Admin.close(); UI.render();
   },
   jumpFinish(){
     if(!S||S.phase==='lobby') return;
     S.stageIdx=STAGES.length-1; S.puzzleIdx=0;
     S.finishTs=S.finishTs||Date.now(); S.phase='finish';
     logEvent('관리자 이동: 엔딩');
-    save(); document.getElementById('adminModal').classList.remove('show'); UI.render();
+    save(); Admin.close(); UI.render();
   },
   unlockAll(){
     if(!S||S.phase==='lobby') return;
