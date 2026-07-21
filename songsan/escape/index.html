@@ -427,6 +427,24 @@ h1.title{font-size:42px;color:var(--parch);letter-spacing:1px;text-align:center;
 .phys-row input:focus{outline:none;border-color:var(--brass)}
 .phys-ok{margin-top:0;width:auto;padding:0 18px;white-space:nowrap}
 .phys-err{color:#F0A0A0;font-size:13px;min-height:16px;margin-top:8px}
+.ph-small{display:block;margin-top:8px;font-size:13px;color:var(--chalk-dim);opacity:.85}
+.phys-confirm{margin-top:12px;width:100%}
+/* 리듬 위젯 */
+.rhy{margin-top:12px}
+.rhy-target{font-family:'Gowun Batang',serif;font-size:14px;color:var(--chalk);padding:10px;border-radius:8px;background:rgba(233,237,240,.05);text-align:center;transition:background .1s}
+.rhy-target.flash{background:rgba(255,238,170,.55);color:#241C06}
+.rhy-target .rhy-hint{color:var(--chalk-dim);font-size:13px}
+#rhyPlay{margin-top:8px;width:100%}
+.rhy-got{min-height:34px;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:10px;padding:6px;border-radius:8px;border:1px dashed var(--sea-line)}
+.rhy-got .rhy-empty{color:var(--chalk-dim);font-size:13px;font-family:'Gowun Batang',serif}
+.rhy-got i{display:inline-block;background:var(--brass-lt);border-radius:6px}
+.rhy-got i.s{width:14px;height:14px;border-radius:50%}
+.rhy-got i.l{width:34px;height:14px}
+.rhy-pad{width:100%;margin-top:10px;padding:22px;border:2px solid var(--brass-dk);border-radius:12px;background:linear-gradient(180deg,#2B3F6B,#1C2C4E);color:var(--brass-lt);font-family:'Jua';font-size:17px;cursor:pointer;user-select:none;touch-action:none}
+.rhy-pad span{display:block;font-size:12px;color:var(--chalk-dim);margin-top:3px}
+.rhy-pad.on{background:linear-gradient(180deg,#C29A2B,#9A7A18);color:#241C06;transform:scale(.99)}
+.rhy-btns{display:flex;gap:8px;margin-top:10px}
+.rhy-btns .btn{flex:1;margin-top:0}
 .phys-cancel{margin-top:6px;background:none;border:0;color:var(--chalk-dim);font-family:inherit;font-size:13px;padding:4px 2px}
 /* 동그란 인벤토리 버튼 */
 .inv-strip{display:flex;gap:13px;justify-content:center;flex-wrap:wrap;margin-top:14px;padding:4px 0}
@@ -995,7 +1013,7 @@ const ROOMS = {
     {id:'sail', x:39, y:3.5, w:18, h:26.5, name:'말린 돛', text:'돛은 단단히 말려 묶여 있다. 이런 바람에 펴면 배가 찢어진다.'},
     {id:'pulley', x:23.5, y:18, w:7, h:13, name:'도르래', look:true, text:'녹슨 도르래가 바람에 흔들리며 사슬을 긁는다. 걸린 건 없다.'},
     {id:'rigging', x:4.5, y:0, w:18, h:26, name:'삭구 줄', text:'버팀줄이 빗줄기를 타고 운다. 아직은 한 가닥도 끊기지 않았다.'},
-    {id:'crate', x:33, y:41, w:17, h:14, name:'나무 궤짝', phys:{ code:'2031', effect:'advance', label:'승선 명부함', prompt:'승선 명부함이 <b>네 자리 자물쇠</b>로 잠겨 있다.<br>네 자리는 한 곳에 없다 — 넷이 나뉘어 가지고 있다.<br><br>① ② <b>성경</b> — 표적을 다 기록하지 않았다고 밝힌 책의 <b>장 번호</b><br>③ <b>현장</b> — 팀 색 봉투에 든 승선 표찰 뒷면의 숫자<br>④ <b>패드</b> — 갑판 등불을 확대해 보라', done:'명부함이 열린다. 밧줄이 풀리고 <b>선장실</b>로 가는 길이 열렸다.<br>"믿는 자에게 생명을 주려 함이라" — 요 20:31' }, subtle:true, look:true, text:'뚜껑 없는 빈 궤짝이다. 안에는 젖은 톱밥뿐.'},
+    {id:'crate', x:33, y:41, w:17, h:14, name:'나무 궤짝', phys:{ kind:'confirm', gate:'team', effect:'advance', label:'승선 서약', prompt:'📢 <b>부두 이젤 앞에 넷이 서라.</b><br>승선 서약문 네 행을 <b>한 사람씩</b> 이어 읽고, 마지막 행 「믿어 생명 얻으려 이 배에 오릅니다」를 <b>넷이 함께</b> 외쳐라.<br>그 다음, 각자 승선 명부에 <b>이름과 고백 한 줄</b>을 직접 적는다.<br><span class="ph-small">선장 선생님이 손등에 승선 스탬프를 찍어 주면 아래를 누른다.</span>', btn:'넷이 함께 서약하고, 각자 서명했다', done:'승선 명부에 넷의 이름이 올랐다. 밧줄이 풀린다.<br>「믿는 자에게 생명을 주려 함이라」 — 요 20:31' }, subtle:true, look:true, text:'뚜껑 없는 빈 궤짝이다. 안에는 젖은 톱밥뿐.'},
     {id:'railing', x:38, y:37.7, w:17.5, h:9.3, name:'뱃전 난간', text:'난간을 붙잡으니 손바닥에 소금기가 배어난다. 아래는 검은 물뿐이다.'},
     {id:'bucket', x:56, y:41, w:7, h:13, name:'두레박통', look:true, text:'난간에 걸린 작은 두레박. 바닥에 빗물이 조금 고여 있다.'},
     {id:'chain', x:65, y:44, w:7, h:15, name:'쇠사슬', text:'굵은 사슬이 뱃전을 따라 늘어져 있다. 사람의 힘으로 풀 고리가 아니다.'},
@@ -1006,7 +1024,7 @@ const ROOMS = {
   cabin:{ name:'선장실', scene:'cabin', hotspots:[
     {id:'desk', x:9, y:82, w:20, h:17, name:'책상', subtle:true, locked:{needs:'key', lockedText:'책상 서랍이 잠겨 있다. 열쇠가 필요하다.'}, item:'uv', trace:{x:50,y:60}, text:'열쇠가 맞았다. 서랍 속 — 보라색 유리의 자외선 등불!', after:'빈 서랍이다.'},
     {id:'painting', x:8, y:2, w:15, h:37, name:'액자 그림', subtle:true, item:'cross', trace:{x:72,y:52}, text:'벽의 그림을 들추자 벽감 속에 나무 십자가가 숨겨져 있다!', after:'그림 뒤엔 이제 아무것도 없다.'},
-    {id:'chart', x:14, y:58, w:20, h:21, name:'낡은 해도', phys:{ code:'0822', effect:'advance', label:'출항 명령서', prompt:'해도 위에 선장의 출항 명령서가 눌려 있다. <b>네 자리 봉인</b>이다.<br><br>① <b>선생님</b> — 매듭 시험을 통과하고 받은 돛 허가 인장<br>② <b>패드</b> — 승선 허가증에서 얻은 두 글자가 가리키는 곳<br>③ ④ <b>현장</b> — 강대상 아래 명령서 봉랍 안의 숫자', done:'닻이 오르고 돛이 펴진다. <b>배가 움직이기 시작했다.</b><br>"호수 저편으로 건너가자" — 눅 8:22' }, text:'낡은 해도들. 항로는 이미 정해져 있다.'},
+    {id:'chart', x:14, y:58, w:20, h:21, name:'낡은 해도', phys:{ kind:'confirm', gate:'teacher', effect:'advance', label:'출항 삭구', prompt:'⚓ <b>넷이 닻·돛·계류·신호 네 지점으로 흩어져라.</b><br>각자 도해 카드대로 <b>매듭 하나씩</b> 묶은 뒤, 함께 돛천을 끝까지 올린다.<br><span class="ph-small">갑판장 선생님이 네 매듭을 검사하고 통과시키면, 나무 십자가를 손에 쥐여 준다. 그때 아래를 누른다.</span>', btn:'갑판장의 매듭 검사를 통과했다', done:'닻이 오르고 돛이 펴진다. <b>배가 움직이기 시작했다.</b><br>「호수 저편으로 건너가자」 — 눅 8:22' }, text:'낡은 해도들. 항로는 이미 정해져 있다.'},
     {id:'globe', x:0, y:21, w:8, h:30, name:'지구본', text:'지구본. 갈릴리 호수는 점 하나다.'},
     {id:'lamp', x:22, y:26, w:8, h:30, name:'기름 램프', text:'평범한 기름 램프다. 자외선은 아니다.'},
     {id:'wheel', x:11, y:39, w:7, h:12, name:'놋 타륜 장식', look:true, text:'선반 위에 놓인 손바닥만 한 놋 타륜. 진짜 키는 조타실에 있다.'},
@@ -1031,7 +1049,7 @@ const ROOMS = {
     {id:'lantern', x:43, y:15, w:9, h:25, name:'등불', look:true, text:'사슬에 매달린 등불 하나가 이 방의 유일한 빛이다. 심지가 파르르 떨릴 때마다 그림자가 함께 흔들린다.'},
     {id:'porthole', x:61, y:25, w:10, h:12, name:'현창', look:true, text:'둥근 놋테 현창 너머로 검은 바다가 일렁인다. 유리에 짠 물자국이 말라붙어 있다.'},
     {id:'shelf', x:81, y:17, w:12, h:22, name:'선반 그릇', look:true, text:'백랍 접시와 주전자가 나란히 엎어져 있다. 마지막 식사 이후로 아무도 손대지 않은 듯하다.'},
-    {id:'chest', x:79, y:65, w:19, h:22, name:'나무 궤짝', phys:{ code:'0854', effect:'advance', grantItem:'wick', label:'선원 명부 궤', prompt:'선원 명부 궤에 <b>네 자리</b>가 걸려 있다.<br><br>① ② <b>패드</b> — 이 항구에서 일어난 일이 적힌 <b>장</b><br>③ <b>현장</b> — 비어 있는 침상의 번호<br>④ <b>성경</b> — 소녀의 손을 잡고 부르신 절의 <b>끝자리</b>', done:'궤가 열린다. 안에는 무명 심지 천과 밀랍이 들어 있다.<br>"아이야 일어나라" — 눅 8:54<br><b>십자가에 심지를 감아 횃대를 만들 수 있다.</b>' }, look:true, text:'천이 덮인 낡은 궤짝. 뚜껑은 굳게 닫혀 있고, 자물쇠 자리엔 녹만 남았다.'},
+    {id:'chest', x:79, y:65, w:19, h:22, name:'나무 궤짝', phys:{ kind:'word', answer:['믿음','네믿음','믿음이'], grantItem:'wick', effect:'advance', label:'그 한 사람', prompt:'👁 <b>넷이 각자 반투명 필름 한 장을 든다 — 군중 그림의 1/4씩.</b><br>네 모서리를 <b>동시에 맞잡아</b> 빛에 비추면, 군중 속 <b>한 얼굴만</b> 붉게 떠오른다 — 열두 해를 앓다 옷깃에 손을 댄 여인.<br>주님은 그를 이렇게 부르셨다: 「딸아, 네 ○○이 너를 구원하였다」(눅 8:48).<br><span class="ph-small">그 두 글자를 아래에 적어라.</span>', placeholder:'두 글자', done:'필름이 겹치자 그 여인이 드러난다. 궤가 열리고 무명 심지가 나온다.<br>「네 믿음이 너를 구원하였다」 — 눅 8:48<br><b>십자가에 심지를 감아 횃대를 만들 수 있다.</b>' }, look:true, text:'천이 덮인 낡은 궤짝. 뚜껑은 굳게 닫혀 있고, 자물쇠 자리엔 녹만 남았다.'},
     {id:'ropecoil', x:93, y:24, w:7, h:25, name:'밧줄 타래', text:'벽에 걸린 굵은 밧줄 타래. 손끝에 소금기가 서걱인다.'},
     {id:'wallrope', x:52, y:32, w:8, h:12, name:'감긴 밧줄', text:'뒷벽 못에 둥글게 감아 걸어둔 밧줄. 누군가 아주 정성스레 감아 두었다.'},
     {id:'barrel', x:37, y:54, w:10, h:14, name:'물통', look:true, text:'테를 두른 나무 물통과 옆에 처박힌 자루. 바닥에 물때가 검게 앉았다.'},
@@ -1044,7 +1062,7 @@ const ROOMS = {
   hold:{ name:'화물칸', scene:'hold', hotspots:[
     {id:'crate', x:34, y:38, w:34, h:46, name:'못질된 궤짝', locked:{needs:'hammer', lockedText:'궤짝이 단단히 못질되어 있다. 부술 도구가 필요하다.'}, item:'oil', trace:{x:58,y:66}, text:'망치로 궤짝을 뜯어낸다 — 등대용 기름통이 들어 있다!', after:'부서진 궤짝뿐이다.'},
     {id:'barrels', x:1, y:31, w:23, h:26, name:'포도주 통', text:'포도주 통. 가나의 것은 아니다.'},
-    {id:'net', x:69, y:0, w:30, h:46, name:'어망', phys:{ code:'0829', effect:'advance', label:'사슬 자물쇠', prompt:'뱃바닥으로 내려가는 문이 굵은 <b>쇠사슬</b>로 잠겨 있다. 네 자리다.<br><br>① ② <b>패드</b> — 이 섬에서 풀어낸 사건들이 가리키는 <b>장</b><br>③ <b>선생님</b> — 군대의 사슬을 네 명이 모두 풀고 받은 상륙 허가 인장<br>④ <b>현장</b> — 무덤 굴 지도 뒷면의 숫자', done:'사슬이 끊어진다. "쇠사슬을 끊고" — 눅 8:29<br>뱃바닥이 무너지며 <b>비밀 선창</b>이 드러난다.' }, text:'그물코마다 소금이 앉았다.'},
+    {id:'net', x:69, y:0, w:30, h:46, name:'어망', phys:{ kind:'confirm', gate:'teacher', effect:'advance', label:'사슬 끊기', prompt:'⛓ <b>넷이 종이 사슬로 서로 얽혀 있다 — 거라사에 매인 자처럼.</b><br><b>자기 사슬은 자기가 못 끊는다.</b> 한 사람씩 「나를 묶는 것」을 한마디 말하면, <b>동료가 그 사슬을 끊어 준다.</b><br>넷이 다 풀리면 십자가를 세우고 함께 선포하라.<br><span class="ph-small">거라사 선생님이 확인하면 상륙 열쇠와 기름·부싯돌을 건넨다.</span>', btn:'서로의 사슬을 다 끊고, 선생님의 확인을 받았다', done:'사슬이 하나씩 끊어진다. 「쇠사슬을 끊고」 — 눅 8:29<br>뱃바닥이 무너지며 <b>비밀 선창</b>이 드러난다.' }, text:'그물코마다 소금이 앉았다.'},
     {id:'sacks', x:60, y:63, w:23, h:31, name:'곡식 자루', text:'곡식 자루뿐이다.'},
     {id:'shadow', x:70, y:52, w:11, h:11, name:'구석 그림자', text:'구석의 그림자… 쥐다! 놀란 건 너였다.'},
     {id:'lantern', x:42.5, y:15, w:10, h:19, name:'매달린 등불', look:true, text:'쇠사슬에 매달린 등불 하나가 이 어둠을 통째로 상대하고 있다. 기름은 아직 남았다.'},
@@ -1064,9 +1082,9 @@ const ROOMS = {
     {id:'helm', x:22, y:34, w:45, h:42, name:'조타륜', text:'거대한 조타륜. 지금은 아무도 잡고 있지 않다.'},
     {id:'binnacle', x:74, y:45, w:25, h:43, name:'나침반함', text:'나침반이 든 조타 등불함. 바늘은 흔들림 없이 북을 가리킨다.'},
     {id:'navchest', x:10, y:78, w:32, h:20, name:'항해 궤', subtle:true, trace:{x:16,y:78},
-      phys:{ code:['8624','5137','7412'], unlocks:'secret',
-        prompt:'항해 궤가 <b>네 자리 자물쇠</b>로 잠겨 있다.<br>열쇠 숫자는 배 안이 아니라 <b>지금 이 방(현장)</b> 어딘가에 숨겨진 <b>항해 카드</b>에 적혀 있다.<br>현장을 뒤져 카드를 찾아 숫자를 입력하라.',
-        done:'궤가 열리며 낡은 해도 조각이 나온다 — <b>비밀 선창</b>으로 내려가는 길이 그려져 있다!' } },
+      phys:{ kind:'rhythm', pattern:['L','S','S','L'], unlocks:'secret', effect:'advance', label:'폭풍 침로',
+        prompt:'🔦 <b>폭풍이 배를 흔든다. 침로를 알리는 빛 신호를 재현해야 한다.</b><br>복도 끝 신호수 선생님이 손전등으로 <b>긴·짧은 빛</b>을 보낸다. (없으면 아래 <b>빛 신호 재생</b>으로 확인)<br>한 사람은 받아 적고, 다른 사람이 그 <b>리듬 그대로</b> 아래 두드림판을 눌러라.<br><span class="ph-small">길게 누르면 긴 신호, 짧게 누르면 짧은 신호.</span>',
+        done:'리듬이 맞자 폭풍음이 뚝 그친다. 「잠잠하라 고요하라」 — 눅 8:24<br>궤가 열리며 해도 조각이 나온다. <b>비밀 선창</b>으로 가는 길이다.' } },
     {id:'lantern', x:11, y:14, w:15, h:20, name:'오일 랜턴', look:true, text:'기름 등이 흔들리며 겨우 버틴다. 이 작은 불빛 하나가 조타실을 지키고 있다.'},
     {id:'curtain', x:0, y:10, w:11, h:28, name:'낡은 커튼', text:'소금기에 삭은 커튼이 늘어져 있다. 걷어 보아도 그 뒤엔 젖은 나무벽뿐이다.'},
     {id:'bell', x:7, y:37, w:11, h:9, name:'놋종', look:true, text:'당직을 알리던 놋종이다. 천둥소리에 묻혀 아무도 듣지 못할 것이다.'},
@@ -1084,9 +1102,10 @@ const ROOMS = {
     {id:'lantern', x:12, y:12, w:20, h:24, name:'등불', text:'홀로 타는 등불. 이 방을 아는 이가 밝혀 두었다.'},
     {id:'crates', x:8, y:44, w:28, h:24, name:'먼지 쌓인 상자들', text:'먼지 쌓인 상자들. 오래 아무도 오지 않았다.'},
     {id:'treasure', x:38, y:35, w:50, h:36, name:'보물 궤', subtle:true,
-      phys:{ code:['3327','6085','2914'], reward:'treasure',
-        prompt:'선장의 보물 궤. <b>세 자리 봉인</b>이 걸려 있다.<br>봉인의 숫자는 <b>현장</b>에 숨겨진 <b>선장의 편지</b> 맨 끝에 적혀 있다.<br>편지를 찾아 숫자를 입력하라.',
-        done:'⚓ 봉인이 풀렸다! 궤 안에는 선장의 편지와 <b>항해 훈장</b>이 들어 있다.<br>"여기까지 온 너희는 이미 믿음의 항해자다."' } },
+      phys:{ kind:'word', answer:['훈장','항해훈장'], reward:'treasure',
+        prompt:'📜 비밀 선창에 선장의 <b>보물 궤</b>가 있다.<br>곁에 놓인 <b>선장의 편지</b> 맨 끝에, 이 항해 끝에 주어지는 것의 이름이 <b>두 글자</b>로 적혀 있다.<br><span class="ph-small">편지를 찾아 그 두 글자를 적어라.</span>',
+        placeholder:'두 글자',
+        done:'⚓ 궤가 열린다! 선장의 편지와 <b>항해 훈장</b>이 들어 있다.<br>「여기까지 온 너희는 이미 믿음의 항해자다.」' } },
     {id:'beams', x:33, y:0, w:45, h:9, name:'천장 들보', text:'머리 위를 가로지르는 굵은 들보. 갑판의 무게를 홀로 견디고 있다.'},
     {id:'hull', x:0, y:8, w:11, h:26, name:'선체 늑재', text:'휘어 붙인 늑재가 벽을 따라 늘어섰다. 이 얇은 판자 하나가 바다를 막고 있다.'},
     {id:'arch', x:31, y:11, w:25, h:23, name:'둥근 격벽 아치', look:true, text:'어둠 속에 둥근 아치가 떠 있다. 배 안쪽 더 깊은 곳으로 이어지는 듯하다.'},
@@ -1105,9 +1124,10 @@ const ROOMS = {
     {id:'tower', x:58, y:8, w:30, h:46, name:'등대 탑', look:true, text:'탑 꼭대기 등명기가 캄캄하다. 저 불을 켜야 항해가 끝난다.'},
     {id:'lamproom', x:62, y:6, w:20, h:20, name:'등명기', look:true, text:'유리와 놋으로 짜인 등명기. 심지가 말라 있다.'},
     {id:'door', x:60, y:56, w:16, h:30, name:'등대 철문',
-      phys:{ code:'0901', effect:'advance', label:'등대 철문',
-        prompt:'등대 철문에 <b>네 자리</b>가 걸려 있다. 마지막 신호다.<br><br>① ② <b>패드</b> — 돛대에 게양된 신호기를 코드표와 대조하라. 뒤집힌 것이 있다<br>③ <b>선생님</b> — 파송 인장<br>④ <b>현장</b> — 등대 문 앞 깃발함의 마지막 깃발',
-        done:'철문이 열린다. "열두 제자를 불러 모으사 능력과 권위를 주시고" — 눅 9:1<br><b>이제 탑을 오른다.</b>' } },
+      phys:{ kind:'confirm', gate:'teacher', effect:'advance', label:'등대 점화',
+        prompt:'🔥 <b>짐을 내려놓고 등대 사방에 서라.</b><br>항해 내내 모은 부품 — <b>십자가 횃대·기름·부싯돌·심지</b> — 를 순서대로 끼우고,<br>넷이 손을 얹어 <b>「예수를 바라보자」를 함께 선포하라.</b><br><span class="ph-small">등대지기 선생님이 불을 켜면 아래를 누른다.</span>',
+        btn:'부품을 끼우고, 「예수를 바라보자」를 선포했다',
+        done:'탑 꼭대기에 불이 붙는다. 「열두 제자를 불러 모으사 능력과 권위를 주시고」 — 눅 9:1<br><b>이제 등대에 오른다.</b>' } },
     {id:'flagbox', x:40, y:62, w:16, h:22, name:'깃발함', look:true, text:'접안장 옆 깃발함. 신호기가 몇 장 남아 있다.'},
     {id:'jetty', x:6, y:64, w:30, h:26, name:'접안장', look:true, text:'배를 대는 돌 부두. 여기서부터는 걸어 올라가야 한다.'},
     {id:'seaway', x:2, y:36, w:34, h:24, name:'뱃길', text:'지나온 검은 물길. 폭풍은 뒤에 남았다.'},
@@ -1350,28 +1370,109 @@ const Explore = {
     const hs=ROOMS[roomId].hotspots.find(h=>h.id===hsId);
     const f=document.getElementById('exFeedback'); if(!f) return;
     f.classList.add('phys-active');
-    f.innerHTML=`<div class="phys-tag">📍 현장 미션 — 패드 밖 현장을 뒤져라</div>
+    const kind=hs.phys.kind||'code';
+    const tag = hs.phys.gate==='teacher' ? '🙋 선생님 미션 — 통과 후 확인'
+              : hs.phys.gate==='team'    ? '👥 팀 미션 — 넷이 함께'
+              : '📍 미션';
+    let body='';
+    if(kind==='confirm'){
+      body=`<button class="btn ink phys-confirm" onclick="Explore.physConfirm('${roomId}','${hsId}')">${hs.phys.btn||'완료했다'}</button>`;
+    } else if(kind==='word'){
+      body=`<div class="phys-row"><input id="physInput" autocomplete="off" placeholder="${hs.phys.placeholder||'답'}" maxlength="12">
+        <button class="btn ink small phys-ok" onclick="Explore.physSubmit('${roomId}','${hsId}')">입력</button></div>`;
+    } else if(kind==='rhythm'){
+      body=Rhythm.html(roomId,hsId);
+    } else { // 레거시 code
+      body=`<div class="phys-row"><input id="physInput" inputmode="numeric" autocomplete="off" placeholder="코드" maxlength="8">
+        <button class="btn ink small phys-ok" onclick="Explore.physSubmit('${roomId}','${hsId}')">입력</button></div>`;
+    }
+    f.innerHTML=`<div class="phys-tag">${tag}</div>
       <div class="phys-prompt">${hs.phys.prompt}</div>
-      <div class="phys-row"><input id="physInput" inputmode="numeric" autocomplete="off" placeholder="현장에서 찾은 코드" maxlength="8">
-        <button class="btn ink small phys-ok" onclick="Explore.physSubmit('${roomId}','${hsId}')">입력</button></div>
+      ${body}
       <div id="physErr" class="phys-err"></div>
       <button class="phys-cancel" onclick="Explore.render()">← 나중에</button>`;
-    setTimeout(()=>{const i=document.getElementById('physInput'); if(i){ i.focus(); i.addEventListener('keydown',e=>{if(e.key==='Enter')Explore.physSubmit(roomId,hsId);}); }},60);
+    if(kind==='rhythm') Rhythm.init(roomId,hsId);
+    else if(kind==='word'||kind==='code') setTimeout(()=>{const i=document.getElementById('physInput'); if(i){ i.focus(); i.addEventListener('keydown',e=>{if(e.key==='Enter')Explore.physSubmit(roomId,hsId);}); }},60);
   },
-  physSubmit(roomId,hsId){
+  physSubmit(roomId,hsId){ // word / code
     const hs=ROOMS[roomId].hotspots.find(h=>h.id===hsId);
-    const okey=roomId+'.'+hsId;
     const inp=document.getElementById('physInput');
     const v=(inp?inp.value:'').replace(/\s/g,'');
-    if(v!==String(physCode(hs))){ Sound.bad(); const e=document.getElementById('physErr'); if(e)e.textContent='숫자가 맞지 않는다. 현장을 더 뒤져 보라.'; if(inp){inp.value='';inp.focus();} return; }
+    let ok;
+    if((hs.phys.kind||'code')==='word'){
+      const norm=t=>String(t).replace(/\s/g,'');
+      ok=(hs.phys.answer||[]).some(a=>norm(a)===v);
+    } else ok=(v===String(physCode(hs)));
+    if(!ok){ Sound.bad(); const e=document.getElementById('physErr'); if(e)e.textContent='아직 아니다. 다시 살펴보라.'; if(inp){inp.value='';inp.focus();} return; }
+    this.physWin(roomId,hsId);
+  },
+  physConfirm(roomId,hsId){ this.physWin(roomId,hsId); },
+  physWin(roomId,hsId){
+    const hs=ROOMS[roomId].hotspots.find(h=>h.id===hsId);
+    const okey=roomId+'.'+hsId;
     S.phys[okey]=true;
     if(hs.phys.unlocks) S.unlocked[hs.phys.unlocks]=true;
     if(hs.phys.grantItem) S.items[hs.phys.grantItem]=true;
     if(hs.phys.effect==='advance') tryAdvanceAct();
     tryCombine();
-    save(); Sound.good(); logEvent('현장 코드 해결: '+roomId+'.'+hsId);
+    save(); Sound.good(); try{Sync.push(true);}catch(e){} logEvent('미션 해결: '+(hs.phys.label||okey));
     const goMap=!!hs.phys.unlocks;
     Info.show('열림 ⚓', `<p class="desc">${hs.phys.done}</p><button class="btn small ink" onclick="Info.close();Explore.${goMap?'toMapRender':'render'}()">계속</button>`, true);
+  },
+};
+
+/* ---------------- 리듬 재현 위젯 (2막 폭풍 침로) ----------------
+   빛의 긴/짧은 신호를 그대로 두드려 재현한다. 절대 타이밍이 아니라 긴·짧음의 순서만 맞추면 된다. */
+const Rhythm = {
+  target:[], got:[], room:null, hs:null, downAt:0,
+  html(roomId,hsId){
+    return `<div class="rhy">
+      <div class="rhy-target" id="rhyTarget"></div>
+      <button class="btn ghost small" id="rhyPlay" onclick="Rhythm.play()">🔦 빛 신호 재생</button>
+      <div class="rhy-got" id="rhyGot"><span class="rhy-empty">아래를 눌러 리듬을 재현하라</span></div>
+      <button class="rhy-pad" id="rhyPad">두드림판<br><span>짧게 · 길게</span></button>
+      <div class="rhy-btns">
+        <button class="btn ghost small" onclick="Rhythm.reset()">지우기</button>
+        <button class="btn ink small" onclick="Rhythm.check()">확인</button>
+      </div></div>`;
+  },
+  init(roomId,hsId){
+    const hs=ROOMS[roomId].hotspots.find(h=>h.id===hsId);
+    this.target=(hs.phys.pattern||['S']).slice(); this.got=[]; this.room=roomId; this.hs=hsId;
+    // 목표는 개수만 힌트로 (긴·짧음은 신호로 알아내야)
+    const t=document.getElementById('rhyTarget');
+    if(t) t.innerHTML='신호는 '+this.target.length+'번. <span class="rhy-hint">재생을 눌러 들어 보라.</span>';
+    this.renderGot();
+    const pad=document.getElementById('rhyPad'); if(!pad) return;
+    const down=e=>{ e.preventDefault(); this.downAt=Date.now(); pad.classList.add('on'); };
+    const up=e=>{ e.preventDefault(); if(!this.downAt) return;
+      const dur=Date.now()-this.downAt; this.downAt=0; pad.classList.remove('on');
+      this.got.push(dur<300?'S':'L'); Sound.tone(dur<300?880:440,dur<300?.08:.2,0,'sine',.2);
+      this.renderGot(); };
+    pad.addEventListener('pointerdown',down);
+    pad.addEventListener('pointerup',up);
+    pad.addEventListener('pointerleave',()=>{ if(this.downAt){ up({preventDefault(){}}); } });
+  },
+  renderGot(){
+    const g=document.getElementById('rhyGot'); if(!g) return;
+    g.innerHTML=this.got.length? this.got.map(x=>x==='S'?'<i class="s"></i>':'<i class="l"></i>').join('')
+      : '<span class="rhy-empty">아래를 눌러 리듬을 재현하라</span>';
+  },
+  play(){
+    let t=0;
+    this.target.forEach(x=>{
+      const dur=x==='S'?150:450;
+      setTimeout(()=>{ const p=document.getElementById('rhyTarget'); if(p){p.classList.add('flash'); setTimeout(()=>p.classList.remove('flash'),dur);}
+        Sound.tone(x==='S'?880:440,dur/1000,0,'sine',.25); }, t);
+      t+=dur+250;
+    });
+  },
+  reset(){ this.got=[]; this.renderGot(); const e=document.getElementById('physErr'); if(e)e.textContent=''; },
+  check(){
+    const t=this.target, g=this.got;
+    const ok = g.length===t.length && g.every((x,i)=>x===t[i]);
+    if(!ok){ Sound.bad(); const e=document.getElementById('physErr'); if(e)e.textContent='리듬이 맞지 않는다. 다시 들어 보라.'; this.reset(); return; }
+    Explore.physWin(this.room,this.hs);
   },
 };
 
