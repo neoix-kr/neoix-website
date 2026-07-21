@@ -552,7 +552,7 @@ h1.title{font-size:42px;color:var(--parch);letter-spacing:1px;text-align:center;
     <span class="tb-pen" id="tbPen"></span>
     <span class="tb-spacer"></span>
     <button class="tb-btn tb-explore" onclick="Explore.open()">🧭 수색</button>
-    <button class="tb-btn" onclick="UI.showMyHints()">힌트</button>
+    <button class="tb-btn" onclick="UI.showMyHints()">받은 힌트</button>
     <button class="tb-btn tb-ic amb-btn" onclick="Ambience.toggle()" aria-label="배경음">🔊</button>
     <button class="tb-btn tb-ic" onclick="Admin.openGate()" aria-label="관리자"><svg class="ic" width="16" height="16" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="6"><circle cx="50" cy="50" r="26"/><circle cx="50" cy="50" r="9"/><path d="M50 24 V4 M50 76 v20 M24 50 H4 M76 50 h20 M32 32 L18 18 M68 32 L82 18 M32 68 L18 82 M68 68 L82 82"/></svg></button>
     <span class="tb-timer" id="tbTimer">00:00</span>
@@ -1165,7 +1165,7 @@ secret:`<svg viewBox="0 0 460 260" fill="none" stroke="#2B2416" stroke-width="3.
 };
 const Explore = {
   view:'map', room:null,
-  open(){ if(!S||!S.teamName){ return; } this.view='room'; this.room=this.roomList()[0]; this.render(); document.getElementById('exploreModal').classList.add('show'); },
+  open(){ if(!S||!S.teamName){ return; } if(S.openPz){ return; } this.view='room'; this.room=this.roomList()[0]; this.render(); document.getElementById('exploreModal').classList.add('show'); },
   closeModal(){ const m=document.getElementById('exploreModal'); if(m) m.classList.remove('show'); },
   close(){
     try{ Ambience.setMood('calm'); }catch(e){} document.getElementById('exploreModal').classList.remove('show'); },
@@ -2147,7 +2147,7 @@ const Game = {
     if(!S.startTs){ S.startTs=Date.now(); logEvent('출항, 타이머 시작'); }
     S.phase='play'; save(); UI.render();
     // 출항하자마자 배 안을 탐색하며 시작 — 이것저것 뒤져 도구를 찾는다
-    if(!S.exploredOnce){ S.exploredOnce=true; save(); setTimeout(()=>Explore.open(), 350); }
+    if(!S.exploredOnce){ S.exploredOnce=true; save(); setTimeout(()=>{ if(!S.openPz) Explore.open(); }, 350); }
   },
   enterStage(){
     if(STAGES[S.stageIdx].id==='gerasa' && !S.items.cross){
@@ -2347,6 +2347,7 @@ const UI = {
   renderPlay(root){
     root=root||document.getElementById('screen-root');
     Morse.stop();
+    Explore.closeModal();   // 사건 화면 위에 탐색 모달이 겹치지 않게
     const st=STAGES[S.stageIdx];
     const pz=st.puzzles[S.puzzleIdx];
     const myHints=S.hintTexts.filter(h=>h.puzzle===pz.id);
@@ -2404,7 +2405,7 @@ const UI = {
         <p class="feedback" id="fb"></p>
       </div>
       <div class="hint-bar">
-        <button class="btn ghost" style="flex:1" onclick="Hint.request()"><svg class="ic" width="17" height="17" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="6"><path d="M40 12 h20 M36 20 h28 M34 20 c-6 8-8 14-8 24 0 20 10 34 24 34 s24-14 24-34 c0-10-2-16-8-24 M38 88 h24 M42 78 h16"/><path d="M50 36 c7 7 7 16 0 23 c-7-7-7-16 0-23 Z" fill="currentColor" stroke="none"/></svg> 등불 요청 — 관리자 호출</button>
+        <button class="btn ghost" style="flex:1" onclick="Hint.request()"><svg class="ic" width="17" height="17" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="6"><path d="M40 12 h20 M36 20 h28 M34 20 c-6 8-8 14-8 24 0 20 10 34 24 34 s24-14 24-34 c0-10-2-16-8-24 M38 88 h24 M42 78 h16"/><path d="M50 36 c7 7 7 16 0 23 c-7-7-7-16 0-23 Z" fill="currentColor" stroke="none"/></svg> 💡 힌트 보기</button>
       </div>
       ${myHints.length?`<div class="hint-log">${myHints.map(h=>`<div class="hint-item">${h.level} · ${h.text}</div>`).join('')}</div>`:''}
     </div>`;
