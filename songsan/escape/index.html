@@ -128,6 +128,14 @@ h1.title{font-size:42px;color:var(--parch);letter-spacing:1px;text-align:center;
 .pz-stage{font-family:'Gowun Batang',serif;font-size:13px;color:var(--chalk-dim);letter-spacing:2px}
 .pz-title{font-size:27px;color:var(--parch);margin-top:6px;letter-spacing:.5px}
 .ship-idle{text-align:center;padding:26px 18px}
+.ship-idle .ship-actname{font-size:26px;color:var(--chalk);letter-spacing:2px;margin-top:2px}
+.act-intro{text-align:left}
+.act-intro .ai-name{font-family:'Jua';font-size:22px;color:var(--brass-lt);letter-spacing:2px}
+.act-intro .ai-story{font-family:'Gowun Batang',serif;font-size:16px;line-height:1.85;color:var(--chalk);margin-top:12px}
+.act-intro .ai-goal{margin-top:16px;padding:12px 14px;border:1px solid rgba(194,154,43,.4);border-radius:9px;background:rgba(194,154,43,.1);font-family:'Gowun Batang',serif;font-size:15px;line-height:1.6;color:var(--chalk)}
+.act-intro .ai-goal span{display:block;font-family:'Jua';font-size:12px;letter-spacing:2px;color:var(--brass-lt);margin-bottom:4px}
+.ex-goal b{color:var(--brass-lt);font-weight:400;margin-right:6px}
+
 .ship-act{font-size:26px;color:var(--brass-lt);letter-spacing:2px}
 .ship-tell{font-family:'Gowun Batang',serif;font-size:16px;line-height:1.7;color:var(--chalk-dim);margin-top:10px}
 .pz-back{font-family:inherit;font-size:14px;color:var(--chalk-dim);background:rgba(233,237,240,.06);border:1px solid var(--sea-line);border-radius:8px;padding:8px 13px;margin-bottom:12px;cursor:pointer}
@@ -1230,7 +1238,7 @@ const Explore = {
             <button class="ex-back" onclick="Explore.close()">나가기</button>
           </div>
           <div class="ex-hud ex-hud-bottom">
-            <div class="ex-feedback" id="exFeedback">무엇이든 눌러 살펴보라 · 양옆 화살표로 옆방 이동</div>
+            <div class="ex-feedback ex-goal" id="exFeedback"><b>지금 할 일</b> ${ACTS[S.act]?ACTS[S.act].tell:''}</div>
             ${this.invStrip()}
           </div>
         </div>`;
@@ -1363,7 +1371,7 @@ const Explore = {
     tryCombine();
     save(); Sound.good(); logEvent('현장 코드 해결: '+roomId+'.'+hsId);
     const goMap=!!hs.phys.unlocks;
-    Info.show('봉인 해제 ⚓', `<p class="desc">${hs.phys.done}</p><button class="btn small ink" onclick="Info.close();Explore.${goMap?'toMapRender':'render'}()">계속</button>`, true);
+    Info.show('열림 ⚓', `<p class="desc">${hs.phys.done}</p><button class="btn small ink" onclick="Info.close();Explore.${goMap?'toMapRender':'render'}()">계속</button>`, true);
   },
 };
 
@@ -1481,7 +1489,7 @@ const STAGES = [
 {
   id:'sending', chapter:'최종장', title:'새로운 항해',
   sermon:'폐회 말씀 「끝난 줄 알았죠? 이제 시작이에요!」 · 누가복음 9:1-6',
-  story:'등대가 보인다. 그러나 불은 꺼져 있고,<br>탑의 문은 <b>세 개의 관문</b>으로 잠겨 있다.<br>돛대에는 낡은 신호기가, 너희 손에는 네 개의 인장이.<br>이 항해의 마지막 답은, 처음부터 하나였다.',
+  story:'등대가 보인다. 그러나 불은 꺼져 있다.<br>돛대엔 낡은 신호기가, 손엔 기름과 부싯돌과 십자가 횃대가.<br>이 항해의 마지막 답은, 처음부터 하나였다.',
   verse:'"예수께서 열두 제자를 불러 모으사 모든 귀신을 제어하며 병을 고치는 능력과 권위를 주시고" — 눅 9:1',
   puzzles:[
     { id:'p12', type:'text', title:'파송의 신호기', bible:true, art:'flags',
@@ -1490,13 +1498,13 @@ const STAGES = [
       hints:['코드표의 깃발을 180도 돌려 보며 게양된 깃발과 비교하라. 뒤집힌 깃발은 하나가 아니다.','첫째는 뒤집힌 9(9-9=0), 둘째는 뒤집힌 0(9-0=9). 셋째 0, 넷째 1 → 0901.'],
       reveal:'뒤집힌 9 → 0, 뒤집힌 0 → 9, 0, 1 → 「0901」 = 누가복음 9장 1절',
       success:'09장 01절 — 능력과 권위를 주시고, 보내셨다.'},
-    { id:'p13', img:'ignite', type:'meta', title:'등대 점화 — 최종 봉인', bible:true,
-      mission:'등대의 마지막 봉인은 <b>세 개의 관문</b>이다.<span class="step">관문 1: 항해 중 모은 <b>네 인장</b>을 받은 순서대로 이어 일곱 글자 문장을 만들라.</span><span class="step">관문 2: 그 문장이 기록된 <b>성경의 주소</b>(책·장·절)를 찾아라. 신약 뒤쪽, 편지들 사이에 있다.</span><span class="step">관문 3: 그 구절을 직접 펴라. "믿음의 주요 또 <b>◯◯</b>하게 하시는 이" — 빈칸 두 글자를 입력하라.</span><span class="step">※ 봉인이 풀려도 <b>기름</b>과 <b>부싯돌</b>이 없으면 등대는 켜지지 않는다. 배 안을 수색하라.</span>',
+    { id:'p13', img:'ignite', type:'meta', title:'등대 점화 — 마지막 문', bible:true,
+      mission:'등대의 마지막 문은 <b>세 자물쇠</b>다.<span class="step">첫째 — 이 항해 내내 모든 표적이 가리킨 <b>한 문장</b>. 폭풍도, 무덤 섬도, 돌아온 항구도 결국 한 곳을 바라보게 했다. <b>일곱 글자</b>로 적어라.</span><span class="step">둘째 — 그 문장이 그대로 적힌 <b>성경 구절</b>(신약 뒤편, 편지들 사이).</span><span class="step">셋째 — 그 구절에서 예수님을 이렇게 하시는 이라 부른다: 믿음의 주요 또 ___하게 하시는 이. <b>두 글자</b>.</span>',
       metaFields:[
         {label:'관문 1', placeholder:'일곱 글자 문장', answers:['예수를바라보자']},
         {label:'관문 2', placeholder:'예: 요한복음3장16절', answers:['히브리서12장2절','히브리서122','히122','히12장2절']},
         {label:'관문 3', placeholder:'두 글자', answers:['온전']}],
-      hints:['상단 [인장]에서 모은 인장을 받은 순서대로 확인하라. 관문 2의 책은 「히브리서」다.','관문 2: 히브리서 12장 2절. 관문 3: 그 구절의 "온전하게 하시는 이" — 「온전」.'],
+      hints:['첫째 문장은 이 게임의 이름이자 히브리서 12장 2절의 마지막 말이다. "예수를 ___".','둘째: 히브리서 12장 2절. 관문 3: 그 구절의 "온전하게 하시는 이" — 「온전」.'],
       reveal:'「예수를바라보자」 / 「히브리서 12장 2절」 / 「온전」',
       success:''},
   ]
@@ -1509,7 +1517,7 @@ let S = null;
 function defaultState(){
   return { phase:'lobby', teamName:'', startTs:0, finishTs:0,
     stageIdx:0, puzzleIdx:0, penaltyMin:0,
-    solved:{}, act:0, openPz:null, ship:{},
+    solved:{}, act:0, openPz:null, ship:{}, actSeen:{},
     hintsUsed:{}, hintTexts:[], wrongStreak:0, cooldownUntil:0, log:[],
     items:{}, opened:{}, unlocked:{}, phys:{} };
 }
@@ -1562,18 +1570,30 @@ const PZ_SPOT = Object.fromEntries(Object.entries(PUZZLE_AT).map(([k,v])=>[v,k])
 
 // 막(幕) — 항로 위의 배가 어디까지 왔는가. 각 막은 열쇠 사건이 풀리면 전진한다.
 const ACTS = [
-  { id:0, name:'부두',      room:'deck',   need:[], needItems:['key'], needPhys:['deck.crate'],
-    tell:'갑판을 뒤져 열쇠를 찾고, 승선 명부함의 네 자리를 채우라.' },
-  { id:1, name:'출항',      room:'cabin',  need:['p1'], needPhys:['cabin.chart'], needShip:['anchor','sail'],
-    tell:'선장실에서 허가증을 읽고, 출항 명령서의 네 자리를 채우라.' },
-  { id:2, name:'폭풍',      room:'wheel',  need:['p2','p3','p4','p5'], needPhys:['wheel.navchest'], needShip:['helm'],
-    tell:'광풍 속에서 침로를 다시 잡고, 항해궤를 열라.' },
-  { id:3, name:'무덤 섬',   room:'hold',   need:['p6','p7','p8'], needPhys:['hold.net'], needShip:['trim'],
-    tell:'배를 가볍게 하고, 사슬 자물쇠를 끊으라.' },
-  { id:4, name:'돌아온 항구',room:'crew',  need:['p9','p10','p11'], needPhys:['crew.chest'],
-    tell:'인파 속에서 그 한 사람을 찾고, 선원 명부 궤를 열라.' },
-  { id:5, name:'등대',      room:'lighthouse', need:['p12','p13'], needPhys:['lighthouse.door'],
-    tell:'신호를 올리고 등대에 불을 켜라.' },
+  { id:0, name:'부두', room:'deck', need:[], needItems:['key'], needPhys:['deck.crate'],
+    chapter:'개회 · 요 20:30-31',
+    intro:'믿음호가 갈릴리 항구에 정박해 있다.<br>저 바다 끝, <b>꺼진 등대</b>에 다시 불을 켜는 것이 이 항해의 목적이다.<br>그러나 승선 명부에 이름을 올리지 못한 자는 배에 오를 수 없다.',
+    tell:'갑판을 뒤져 열쇠를 찾고, 승선 명부함을 열어 배에 오르라.' },
+  { id:1, name:'출항', room:'cabin', need:['p1'], needPhys:['cabin.chart'], needShip:['anchor','sail'],
+    chapter:'개회 · 요 20:30-31',
+    intro:'선장이 없는 배다. 그의 선실에서 <b>출항 명령</b>을 되찾아야 한다.<br>승선 허가증은 텅 비어 있다 — <b>보이지 않는 것을 읽어내는 자</b>만이 닻을 올린다.',
+    tell:'허가증을 읽고 출항 명령서를 연 뒤, 닻을 올리고 돛을 펴라.' },
+  { id:2, name:'폭풍', room:'wheel', need:['p2','p3','p4','p5'], needPhys:['wheel.navchest'], needShip:['helm'],
+    chapter:'1과 · 눅 8:22-25',
+    intro:'출항하자마자 하늘이 검게 갈라졌다. 광풍이 배를 삼킨다.<br>조타실로 올라가 <b>침로</b>를 되찾지 못하면 배는 부서진다.<br>"너희 믿음이 어디 있느냐" — 이 폭풍을 잠재우는 이가 배 안에 있다.',
+    tell:'조타실에서 침로를 되찾고, 항해궤를 열어 폭풍을 빠져나가라.' },
+  { id:3, name:'무덤 섬', room:'hold', need:['p6','p7','p8'], needPhys:['hold.net'], needShip:['trim'],
+    chapter:'2과 · 눅 8:26-39',
+    intro:'폭풍 너머, 거라사의 <b>무덤 섬</b>. 안개가 무덤들 사이에 깔려 있다.<br>뱃사람의 규칙 — <b>십자가 없이는 이 섬에 내리지 않는다.</b><br>무덤에 갇혀 살던 자가 어떻게 집으로 돌아가는지, 이 섬이 답한다.',
+    tell:'십자가를 챙기고 하중을 정렬해 상륙한 뒤, 사슬 자물쇠를 끊어라.' },
+  { id:4, name:'돌아온 항구', room:'crew', need:['p9','p10','p11'], needPhys:['crew.chest'],
+    chapter:'3과 · 눅 8:40-56',
+    intro:'다시 항구. 인파가 배를 에워싼다.<br>12년을 앓은 여인이 군중 속에 손을 뻗고,<br>12살 소녀의 시간이 끝났다는 전갈이 온다. <b>모두가 끝이라 말하는 곳</b>에서.',
+    tell:'인파 속 그 한 사람을 찾고, 선원 명부 궤를 열어 등대에 꽂을 심지를 얻어라.' },
+  { id:5, name:'등대', room:'lighthouse', need:['p12','p13'], needPhys:['lighthouse.door'],
+    chapter:'폐회 · 눅 9:1-6',
+    intro:'등대가 눈앞이다. 불은 꺼져 있다.<br>항해 내내 모은 것 — <b>기름, 부싯돌, 십자가에 감은 심지.</b><br>이 항해의 답은 처음부터 하나였다.',
+    tell:'신호기를 올려 철문을 열고, 저 탑에 불을 켜라.' },
 ];
 
 function pzById(id){
@@ -1624,6 +1644,7 @@ function migrate(){
   if(S.openPz===undefined) S.openPz=null;
   if(typeof S.teamCode!=='number') S.teamCode=0;
   if(!S.ship) S.ship={};
+  if(!S.actSeen) S.actSeen={};
   // 구버전(선형 커서) 세이브 → 지나온 관문을 solved로 환산
   if(S._v!==2){
     let n=STAGES.slice(0,S.stageIdx||0).reduce((t,st)=>t+st.puzzles.length,0)+(S.puzzleIdx||0);
@@ -2187,7 +2208,8 @@ const Game = {
     save(); UI.render();
     if(advanced){
       Info.show('항로 전진', `<p class="desc">${pz.success||''}</p>
-        <div class="act-adv"><b>${ACTS[S.act].name}</b><span>${ACTS[S.act].tell}</span></div>`);
+        <div class="act-adv"><b>다음 — 제 ${S.act}막 · ${ACTS[S.act].name}</b><span>${ACTS[S.act].chapter||''}</span></div>
+        <button class="btn small" onclick="Info.close(); if(S.actSeen)delete S.actSeen[${S.act}]; UI.render();">계속</button>`, true);
     } else if(!skipped && pz.success){
       Info.show('사건 해결', `<p class="desc">${pz.success}</p>`);
     }
@@ -2257,15 +2279,31 @@ const UI = {
     const act=ACTS[S.act]||ACTS[0];
     root.innerHTML=`<div class="screen">
       <div class="ship-idle">
-        <div class="ship-act">${act.name}</div>
+        <div class="ship-act">${act.chapter||''}</div>
+        <div class="ship-actname">${act.name}</div>
         <p class="ship-tell">${act.tell}</p>
         <button class="btn" onclick="Explore.open()">🧭 배로 들어가기</button>
       </div>
     </div>`;
+    // 이 막의 이야기를 아직 안 봤으면 먼저 보여준다 — 개연성의 핵심
+    S.actSeen=S.actSeen||{};
+    if(!S.actSeen[S.act]){ this.actIntro(S.act); return; }
     // 탐색 모달을 곧바로 띄운다 — 배 안이 곧 화면이다
     const m=document.getElementById('exploreModal');
     if(!m||!m.classList.contains('show')) Explore.open();
     else Explore.render();
+  },
+  /* 막의 이야기 비트 — 왜 이 방에서 이걸 하는지 */
+  actIntro(i){
+    const a=ACTS[i]; if(!a) return;
+    S.actSeen=S.actSeen||{}; S.actSeen[i]=true; save();
+    Info.show(`${a.chapter||''}`, `
+      <div class="act-intro">
+        <div class="ai-name">제 ${i}막 · ${a.name}</div>
+        <p class="ai-story">${a.intro||''}</p>
+        <div class="ai-goal"><span>지금 할 일</span>${a.tell}</div>
+      </div>
+      <button class="btn" onclick="Info.close(); Explore.open();">🧭 시작한다</button>`, true);
   },
   renderLobby(root){
     root=root||document.getElementById('screen-root');
