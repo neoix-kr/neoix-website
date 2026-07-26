@@ -134,11 +134,15 @@ h1.title{font-size:42px;color:var(--parch);letter-spacing:1px;text-align:center;
 .act-intro .ai-story{font-family:'Gowun Batang',serif;font-size:16px;line-height:1.85;color:var(--chalk);margin-top:12px}
 .act-intro .ai-goal{margin-top:16px;padding:12px 14px;border:1px solid rgba(194,154,43,.4);border-radius:9px;background:rgba(194,154,43,.1);font-family:'Gowun Batang',serif;font-size:15px;line-height:1.6;color:var(--chalk)}
 .act-intro .ai-goal span{display:block;font-family:'Jua';font-size:12px;letter-spacing:2px;color:var(--brass-lt);margin-bottom:4px}
+.todo{display:flex;flex-wrap:wrap;gap:6px;margin-top:7px}
+.td{display:inline-flex;align-items:center;gap:6px;font-family:'Gowun Batang',serif;font-size:13.5px;
+  color:var(--chalk);background:rgba(10,20,32,.5);border:1px solid rgba(194,154,43,.35);border-radius:20px;padding:5px 11px}
+.td i{font-style:normal;font-family:'Jua';font-size:11px;color:#241C06;background:var(--brass);border-radius:10px;padding:1px 7px}
 .ex-goal b{color:var(--brass-lt);font-weight:400;margin-right:6px}
 
 .ship-act{font-size:26px;color:var(--brass-lt);letter-spacing:2px}
 .ship-tell{font-family:'Gowun Batang',serif;font-size:16px;line-height:1.7;color:var(--chalk-dim);margin-top:10px}
-.pz-back{font-family:inherit;font-size:14px;color:var(--chalk-dim);background:rgba(233,237,240,.06);border:1px solid var(--sea-line);border-radius:8px;padding:8px 13px;margin-bottom:12px;cursor:pointer}
+.pz-back{font-family:inherit;font-size:17px;color:var(--chalk);background:rgba(233,237,240,.1);border:1.5px solid var(--brass-dk);border-radius:11px;padding:14px 22px;margin-bottom:14px;cursor:pointer}
 .pz-back:active{background:rgba(233,237,240,.13)}
 .act-adv{margin-top:14px;padding:13px;border:1px solid rgba(194,154,43,.4);border-radius:9px;background:rgba(194,154,43,.1);text-align:center}
 .act-adv b{display:block;font-size:19px;color:var(--brass-lt);font-weight:400}
@@ -230,6 +234,9 @@ h1.title{font-size:42px;color:var(--parch);letter-spacing:1px;text-align:center;
 .hint-bar{display:flex;gap:10px;margin-top:18px;width:100%}
 .hint-bar .btn{margin-top:0;display:flex;align-items:center;justify-content:center;gap:9px}
 .hint-log{width:100%;margin-top:12px}
+.hint-cost{margin-top:10px;padding:10px 12px;border-radius:9px;background:rgba(194,154,43,.12);border:1px solid rgba(194,154,43,.4);font-family:'Gowun Batang',serif;font-size:15px;color:var(--chalk)}
+.hint-cost b{color:var(--brass-lt);font-weight:400}
+.hint-cost span{color:var(--chalk-dim);font-size:13px;margin-left:4px}
 .hint-divider{margin-top:18px;padding-top:12px;border-top:1px dashed rgba(233,237,240,.18);font-size:13px;letter-spacing:2px;color:var(--chalk-dim);text-align:center}
 .hint-item{
   background:rgba(194,154,43,.08);border:1px dashed var(--brass-dk);border-radius:6px;
@@ -302,7 +309,7 @@ h1.title{font-size:42px;color:var(--parch);letter-spacing:1px;text-align:center;
 .modal.wide{max-width:660px}
 .ex-head{display:flex;align-items:center;gap:10px;margin-bottom:10px}
 .ex-title{font-size:21px;color:var(--parch);letter-spacing:1px;flex:1}
-.ex-back{font-family:inherit;font-size:14px;color:var(--chalk-dim);background:transparent;border:1px solid var(--sea-line);border-radius:8px;padding:8px 12px}
+.ex-back{font-family:inherit;font-size:17px;color:var(--chalk);background:rgba(10,20,32,.72);border:1.5px solid var(--brass-dk);border-radius:11px;padding:14px 20px}
 .ex-back:active{background:rgba(233,237,240,.1)}
 .ex-scene{
   position:relative;border-radius:6px;overflow:hidden;color:var(--ink);
@@ -323,7 +330,9 @@ h1.title{font-size:42px;color:var(--parch);letter-spacing:1px;text-align:center;
 .scene-fb.show{display:block}
 .scene-fb svg{width:100%;height:100%}
 /* 전체화면 탐색 — 방 이미지가 화면을 꽉 채우고 HUD가 그 위에 뜸 */
-#exploreModal{padding:0}
+#exploreModal{padding:0;z-index:100}
+/* 힌트·안내·PIN·관리자는 탐색 위에 떠야 한다 */
+#hintModal,#infoModal,#pinModal,#adminModal{z-index:200}
 #exploreInner{width:100vw;max-width:100vw;height:100dvh;max-height:100dvh;border-radius:0;padding:0;overflow:hidden;display:block;position:relative;background:#0a1622}
 .ex-full{position:absolute;inset:0;overflow:hidden}
 .ex-stagefull{position:absolute;inset:0;z-index:1}
@@ -445,7 +454,7 @@ h1.title{font-size:42px;color:var(--parch);letter-spacing:1px;text-align:center;
 .rhy-pad.on{background:linear-gradient(180deg,#C29A2B,#9A7A18);color:#241C06;transform:scale(.99)}
 .rhy-btns{display:flex;gap:8px;margin-top:10px}
 .rhy-btns .btn{flex:1;margin-top:0}
-.phys-cancel{margin-top:6px;background:none;border:0;color:var(--chalk-dim);font-family:inherit;font-size:13px;padding:4px 2px}
+.phys-cancel{margin-top:12px;width:100%;background:rgba(233,237,240,.07);border:1px solid var(--sea-line);border-radius:10px;color:var(--chalk);font-family:inherit;font-size:16px;padding:13px}
 /* 동그란 인벤토리 버튼 */
 .inv-strip{display:flex;gap:13px;justify-content:center;flex-wrap:wrap;margin-top:14px;padding:4px 0}
 .inv-slot{
@@ -611,7 +620,21 @@ h1.title{font-size:42px;color:var(--parch);letter-spacing:1px;text-align:center;
    관리자 PIN: 3574 · 13관문 · 명화 2점 내장
    ========================================================= */
 const ADMIN_PIN = '3574';
-const PENALTY = { hint1: 2, hint2: 2, reveal: 5 };
+const PENALTY = { reveal: 5 };            // 정답 공개는 +5분 (관리자 전용)
+const HINT_FREE = 1;                        // 팀 전체 통틀어 첫 1회는 무료
+const HINT_STEP_SEC = 30;                   // 그 다음부터 30초씩 늘어난다 (30·60·90…)
+// 다음 힌트가 몇 초 추가되는지
+function nextHintSec(){
+  const used = (S && S.hintCount) || 0;
+  if(used < HINT_FREE) return 0;
+  return (used - HINT_FREE + 1) * HINT_STEP_SEC;
+}
+function penTotalSec(){ return ((S&&S.penaltyMin)||0)*60 + ((S&&S.penaltySec)||0); }
+function penLabel(){
+  const t=penTotalSec(); if(!t) return '';
+  const m=Math.floor(t/60), sec=t%60;
+  return m? (sec? `+${m}분 ${sec}초` : `+${m}분`) : `+${sec}초`;
+}
 const LS_KEY = 'faithVoyage_v3';
 const TEAM_PRESETS = ['베드로호', '야고보호', '요한호'];
 const SEAL_TEXTS = ['예수','를','바라','보자'];
@@ -1253,12 +1276,13 @@ const Explore = {
             <span class="ex-title">${room.name}</span>
             <span class="ex-dots">${list.map((r,k)=>`<i class="${k===i?'on':''}${ROOMS[r].hidden?' sc':''}"></i>`).join('')}</span>
             <span class="ex-timer" id="exTimer">${UI.fmt(UI.elapsedMs())}</span>
+            <button class="ex-map-btn" onclick="Hint.requestHere()">💡 힌트</button>
             <button class="ex-map-btn amb-btn" onclick="Ambience.toggle()" aria-label="배경음">🔊</button>
             <button class="ex-map-btn" onclick="Explore.showMap()">🧭 지도</button>
             <button class="ex-back" onclick="Explore.close()">나가기</button>
           </div>
           <div class="ex-hud ex-hud-bottom">
-            <div class="ex-feedback ex-goal" id="exFeedback"><b>지금 할 일</b> ${ACTS[S.act]?ACTS[S.act].tell:''}</div>
+            <div class="ex-feedback ex-goal" id="exFeedback">${goalHtml()}</div>
             ${this.invStrip()}
           </div>
         </div>`;
@@ -1417,7 +1441,8 @@ const Explore = {
     tryCombine();
     save(); Sound.good(); try{Sync.push(true);}catch(e){} logEvent('미션 해결: '+(hs.phys.label||okey));
     const goMap=!!hs.phys.unlocks;
-    Info.show('열림 ⚓', `<p class="desc">${hs.phys.done}</p><button class="btn small ink" onclick="Info.close();Explore.${goMap?'toMapRender':'render'}()">계속</button>`, true);
+    UI.render();
+    Info.show('열림 ⚓', `<p class="desc">${hs.phys.done}</p><button class="btn small ink" onclick="Info.close();UI.render();Explore.${goMap?'toMapRender':'render'}()">계속</button>`, true);
   },
 };
 
@@ -1617,7 +1642,7 @@ const TOTAL_PUZZLES = STAGES.reduce((n,s)=>n+s.puzzles.length,0);
 let S = null;
 function defaultState(){
   return { phase:'lobby', teamName:'', startTs:0, finishTs:0,
-    stageIdx:0, puzzleIdx:0, penaltyMin:0,
+    stageIdx:0, puzzleIdx:0, penaltyMin:0, penaltySec:0, hintCount:0,
     solved:{}, act:0, openPz:null, ship:{}, actSeen:{},
     hintsUsed:{}, hintTexts:[], wrongStreak:0, cooldownUntil:0, log:[],
     items:{}, opened:{}, unlocked:{}, phys:{} };
@@ -1697,6 +1722,30 @@ const ACTS = [
     tell:'신호기를 올려 철문을 열고, 저 탑에 불을 켜라.' },
 ];
 
+// 지금 막에서 "아직 안 끝난 것"만 구체적으로 알려준다
+const ITEM_NAME={key:'놋쇠 열쇠',uv:'자외선 등불',cross:'나무 십자가',hammer:'망치',flint:'부싯돌',oil:'기름통',wick:'무명 심지',torch:'십자 횃대'};
+const SHIP_NAME={anchor:'닻 올리기',sail:'돛 펴기',helm:'침로 잡기',trim:'하중 정렬'};
+function actTodo(){
+  if(!S) return [];
+  const a=ACTS[S.act]; if(!a) return [];
+  const out=[];
+  (a.needItems||[]).forEach(k=>{ if(!S.items||!S.items[k]) out.push({t:'찾기', s:(ITEM_NAME[k]||k)+' 찾기'}); });
+  (a.needShip||[]).forEach(k=>{ if(!S.ship||!S.ship[k]) out.push({t:'조작', s:SHIP_NAME[k]||k}); });
+  (a.need||[]).forEach(id=>{ if(!S.solved[id]){ const p=pzById(id); const spot=PZ_SPOT[id];
+      const rm=spot?ROOMS[spot.split('.')[0]]:null; const hs=rm?rm.hotspots.find(h=>h.id===spot.split('.')[1]):null;
+      out.push({t:'사건', s:(p?p.title:id)+(rm&&hs?` — ${rm.name}의 ${hs.name}`:'')}); } });
+  (a.needPhys||[]).forEach(k=>{ if(!S.phys||!S.phys[k]){ const [r,h]=k.split('.');
+      const hs=ROOMS[r]&&ROOMS[r].hotspots.find(x=>x.id===h);
+      out.push({t:'미션', s:((hs&&hs.phys&&hs.phys.label)||k)+(ROOMS[r]?` — ${ROOMS[r].name}`:'')}); } });
+  return out;
+}
+function goalHtml(){
+  const a=ACTS[S.act]; if(!a) return '';
+  const todo=actTodo();
+  if(!todo.length) return `<b>지금 할 일</b> ${a.tell}`;
+  return `<b>지금 할 일 · ${a.name}</b>`+
+    `<div class="todo">${todo.map(x=>`<span class="td"><i>${x.t}</i>${x.s}</span>`).join('')}</div>`;
+}
 function pzById(id){
   for(const st of STAGES) for(const p of st.puzzles) if(p.id===id) return p;
   return null;
@@ -1746,6 +1795,8 @@ function migrate(){
   if(typeof S.teamCode!=='number') S.teamCode=0;
   if(!S.ship) S.ship={};
   if(!S.actSeen) S.actSeen={};
+  if(typeof S.penaltySec!=='number') S.penaltySec=0;
+  if(typeof S.hintCount!=='number') S.hintCount=0;
   // 구버전(선형 커서) 세이브 → 지나온 관문을 solved로 환산
   if(S._v!==2){
     let n=STAGES.slice(0,S.stageIdx||0).reduce((t,st)=>t+st.puzzles.length,0)+(S.puzzleIdx||0);
@@ -1978,17 +2029,37 @@ const Hint = {
     inner.innerHTML=`
       <div class="lantern-glow">${IC.lantern}</div>
       <h3>등불 밝히기</h3>
-      <p class="desc">힌트는 <b>바로 열립니다</b>. 대신 그만큼 항해 시간이 더해집니다.</p>
+      <p class="desc">첫 힌트는 <b>무료</b>입니다. 그 다음부터 <b>30초씩</b> 늘어납니다.</p>
+      <div class="hint-cost">다음 힌트 <b>${nextHintSec()===0?'무료':'+'+nextHintSec()+'초'}</b>
+        <span>· 지금까지 ${S.hintCount||0}회 사용</span></div>
       <div style="margin-top:14px">
-        <button class="btn small" onclick="Hint.grant(1)" ${used.includes(1)?'disabled':''}>힌트 하나 (+${PENALTY.hint1}분)${used.includes(1)?' · 사용함':''}</button>
-        <button class="btn small" onclick="Hint.grant(2)" ${(used.includes(2)||!used.includes(1))?'disabled':''}>힌트 둘 (+${PENALTY.hint2}분)${used.includes(2)?' · 사용함':''}</button>
+        <button class="btn" onclick="Hint.grant(1)" ${used.includes(1)?'disabled':''}>힌트 하나${used.includes(1)?' · 사용함':''}</button>
+        <button class="btn" onclick="Hint.grant(2)" ${(used.includes(2)||!used.includes(1))?'disabled':''}>힌트 둘${used.includes(2)?' · 사용함':''}</button>
       </div>
       <div class="hint-divider">여기부터는 선생님이 필요합니다</div>
-      <button class="btn small oxb" onclick="Hint.grant('reveal')" ${used.includes('reveal')?'disabled':''}>🔒 정답 열기 (+${PENALTY.reveal}분)${used.includes('reveal')?' · 사용함':''}</button>
-      <p class="desc" style="font-size:13.5px;opacity:.75">정답은 <b>관리자 선생님</b>만 열 수 있습니다. 손을 들어 선생님을 불러 주세요.</p>
+      <button class="btn oxb" onclick="Hint.grant('reveal')" ${used.includes('reveal')?'disabled':''}>🔒 정답 열기 (+${PENALTY.reveal}분)${used.includes('reveal')?' · 사용함':''}</button>
+      <p class="desc" style="font-size:13.5px;opacity:.75">정답은 <b>관리자 선생님</b>만 열 수 있습니다.</p>
       <button class="btn ghost small" onclick="Hint.cancel()">닫기</button>`;
     document.getElementById('hintModal').classList.add('show');
     logEvent(`힌트 창 열기: ${pz.title}`);
+  },
+  // 탐색 중(사건 밖)에서 부르는 힌트 — 지금 막에서 뭘 해야 하는지 알려준다
+  requestHere(){
+    if(S && S.openPz){ return this.request(); }   // 사건 중이면 그 문제 힌트
+    const a=ACTS[S.act]; const todo=actTodo();
+    const cost=nextHintSec();
+    const inner=document.getElementById('hintModalInner');
+    inner.innerHTML=`
+      <div class="lantern-glow">${IC.lantern}</div>
+      <h3>등불 밝히기 — ${a?a.name:''}</h3>
+      <p class="desc">${a?a.tell:''}</p>
+      <div class="hint-cost">남은 할 일 <b>${todo.length}가지</b></div>
+      <div class="todo" style="margin-top:10px">${todo.map(x=>`<span class="td"><i>${x.t}</i>${x.s}</span>`).join('')||'<span class="td">모두 끝났다 — 항로가 열린다</span>'}</div>
+      <div class="hint-divider">더 자세한 힌트가 필요하면</div>
+      <p class="desc" style="font-size:14px">사물을 눌러 <b>사건</b>을 연 뒤, 그 안에서 힌트를 열 수 있습니다.
+        ${cost===0?'첫 힌트는 <b>무료</b>입니다.':'다음 힌트는 <b>+'+cost+'초</b>입니다.'}</p>
+      <button class="btn" onclick="Hint.cancel()">닫기</button>`;
+    document.getElementById('hintModal').classList.add('show');
   },
   cancel(){ clearInterval(this.chimeTimer); document.getElementById('hintModal').classList.remove('show'); },
   grant(level){
@@ -2005,7 +2076,12 @@ const Hint = {
       used.push(level);
       let text, label;
       if(level==='reveal'){ text=pz.reveal; label='정답'; S.penaltyMin+=PENALTY.reveal; }
-      else{ text=pz.hints[level-1]; label='힌트 '+level; S.penaltyMin+=PENALTY['hint'+level]; }
+      else{
+        const add=nextHintSec();
+        text=pz.hints[level-1]; label='힌트 '+level;
+        S.penaltySec=(S.penaltySec||0)+add;
+        S.hintCount=(S.hintCount||0)+1;
+      }
       S.hintTexts.push({puzzle:pz.id,title:pz.title,level:label,text});
       logEvent(`${label} 사용: ${pz.title}`);
       save();
@@ -2056,7 +2132,7 @@ const Admin = {
     <div class="adm-stats">
       <div class="adm-stat"><span>경과</span><b id="admClock">${UI.fmt(UI.elapsedMs())}</b></div>
       <div class="adm-stat"><span>진행</span><b>${done}<i>/${TOTAL_PUZZLES}</i></b></div>
-      <div class="adm-stat"><span>벌점</span><b>${S.penaltyMin}<i>분</i></b></div>
+      <div class="adm-stat"><span>벌점</span><b>${penLabel()||'0'}</b></div>
       <div class="adm-stat"><span>힌트·정답</span><b>${hintN}<i>·${revealN}</i></b></div>
     </div>
     <div class="adm-bar"><i style="width:${pct}%"></i></div>
@@ -2112,7 +2188,7 @@ const Admin = {
     }
     else {
       h+=`<div class="adm-card"><div class="adm-k">벌점 조정</div>
-        <div class="adm-li"><span>현재 ${S.penaltyMin}분</span>
+        <div class="adm-li"><span>현재 ${penLabel()||'0'} (힌트 ${S.hintCount||0}회)</span>
           <span><button class="admin-mini" onclick="Admin.pen(-1)">-1분</button>
           <button class="admin-mini" onclick="Admin.pen(1)">+1분</button></span></div></div>
         <div class="adm-note">해설·현황·코드표는 <b>관리자 창</b>에서 봅니다. 선생님 기기에서 여세요.</div>
@@ -2229,7 +2305,7 @@ const Sync = {
       locks:      Object.keys(S.phys||{}),
       hints:      hu.reduce((n,a)=>n+a.filter(x=>x!=='reveal').length,0),
       reveals:    hu.reduce((n,a)=>n+a.filter(x=>x==='reveal').length,0),
-      penalty_min:S.penaltyMin||0,
+      penalty_min:Math.round(penTotalSec()/60),
       elapsed_ms: UI.elapsedMs?UI.elapsedMs():0,
       phase:      S.phase||'play',
       finished:   S.phase==='finish',
@@ -2335,7 +2411,7 @@ const Game = {
 const UI = {
   fmt(ms){ const s=Math.floor(ms/1000), m=Math.floor(s/60), ss=s%60; return String(m).padStart(2,'0')+':'+String(ss).padStart(2,'0'); },
   elapsedMs(){ if(!S||!S.startTs) return 0; return (S.finishTs||Date.now())-S.startTs; },
-  finalMs(){ return this.elapsedMs()+S.penaltyMin*60000; },
+  finalMs(){ return this.elapsedMs()+penTotalSec()*1000; },
   updateTopbar(){
     const tb=document.getElementById('topbar');
     const rb=document.getElementById('routeBar');
@@ -2345,7 +2421,7 @@ const UI = {
     const _t=this.fmt(this.elapsedMs());
     document.getElementById('tbTimer').textContent=_t;
     const _et=document.getElementById('exTimer'); if(_et)_et.textContent=_t;
-    document.getElementById('tbPen').textContent=S.penaltyMin>0?`벌점 +${S.penaltyMin}분`:'';
+    document.getElementById('tbPen').textContent=penTotalSec()>0?`벌점 ${penLabel()}`:'';
     rb.classList.add('show');
     // v2 — 항로 위의 배. 진행 표시는 관문 번호가 아니라 "어디까지 왔는가"다.
     const done=S.phase==='finish'?TOTAL_PUZZLES:solvedCount();
@@ -2587,7 +2663,7 @@ const UI = {
         <p class="note onPaper" style="margin-top:2px">최종 기록 = 걸린 시간 + 벌점</p>
         <p class="record-detail">
           걸린 시간 ${this.fmt(this.elapsedMs())}<br>
-          힌트 벌점 +${S.penaltyMin}분<br>
+          힌트 벌점 ${penLabel()}<br>
           완주 시각 ${new Date(S.finishTs).toLocaleTimeString('ko-KR')}
         </p>
       </div>
