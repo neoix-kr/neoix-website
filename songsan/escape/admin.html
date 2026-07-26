@@ -59,6 +59,25 @@
   .err{color:var(--bad);font-family:'Gowun Batang',serif;font-size:14px;margin-top:10px;min-height:20px}
   .live{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--dim)}
   .live i{width:7px;height:7px;border-radius:50%;background:var(--good);animation:blink 1.6s infinite}
+  /* 안내서 — 나이 드신 선생님도 편히 읽도록 큼직하게 */
+  .manual{font-family:'Gowun Batang',serif;font-size:17px;line-height:1.9;color:var(--chalk);max-width:900px}
+  .manual h1{font-family:'Jua';font-size:30px;color:var(--brass-lt);margin:6px 0 14px}
+  .manual h2{font-family:'Jua';font-size:24px;color:var(--brass-lt);margin:30px 0 12px;padding-bottom:8px;border-bottom:2px solid rgba(194,154,43,.4)}
+  .manual h3{font-family:'Jua';font-size:20px;color:var(--chalk);margin:22px 0 10px}
+  .manual h4{font-family:'Jua';font-size:17px;color:var(--brass-lt);margin:16px 0 8px}
+  .manual p{margin:10px 0}
+  .manual ul{margin:10px 0 10px 22px}
+  .manual li{margin:7px 0}
+  .manual b{color:var(--brass-lt);font-weight:700}
+  .manual table{margin:14px 0;font-size:16px}
+  .manual th,.manual td{padding:11px 10px}
+  .manual blockquote{margin:14px 0;padding:14px 18px;border-left:4px solid var(--brass);
+    background:rgba(194,154,43,.12);border-radius:0 10px 10px 0}
+  .manual pre{background:rgba(4,10,18,.6);border:1px solid var(--line);border-radius:10px;
+    padding:14px;font-family:ui-monospace,monospace;font-size:14px;line-height:1.6;overflow-x:auto;color:var(--dim)}
+  .manual code{background:rgba(233,237,240,.1);border-radius:5px;padding:2px 7px;font-size:15px;color:var(--brass-lt)}
+  .manual hr{border:0;border-top:1px solid var(--line);margin:26px 0}
+  .manual a{color:var(--brass-lt)}
   @keyframes blink{50%{opacity:.25}}
 </style>
 </head>
@@ -127,12 +146,12 @@ function fmt(ms){ const t=Math.max(0,Math.floor(ms/1000)); return String(Math.fl
 function elapsed(){ if(!S||!S.startTs) return 0; return (S.finishTs||Date.now())-S.startTs+(S.penaltyMin||0)*60000; }
 function solvedN(){ return S&&S.solved?Object.keys(S.solved).length:0; }
 
-const TABS=[['live','현황'],['guide','관문 해설'],['codes','미션표'],['prep','준비물'],['games','미니게임']];
+const TABS=[['live','현황'],['manual','📖 안내서'],['guide','관문 해설'],['codes','미션표'],['prep','준비물'],['games','미니게임']];
 
 function render(){
   document.getElementById('tabs').innerHTML=TABS.map(([k,n])=>
     `<button class="${TAB===k?'on':''}" onclick="go('${k}')">${n}</button>`).join('');
-  document.getElementById('view').innerHTML=({live:vLive,guide:vGuide,codes:vCodes,prep:vPrep,games:vGames})[TAB]();
+  document.getElementById('view').innerHTML=({live:vLive,manual:vManual,guide:vGuide,codes:vCodes,prep:vPrep,games:vGames})[TAB]();
 }
 function go(t){ TAB=t; if(t==='live') fetchTeams().then(render); else render(); }
 function refresh(){ fetchTeams().then(render); }
@@ -228,6 +247,52 @@ function vLive(){
   return h;
 }
 
+let MANUAL_MD=null;
+function vManual(){
+  if(MANUAL_MD===null){
+    MANUAL_MD='';
+    fetch('GUIDE.md').then(r=>r.ok?r.text():Promise.reject()).then(t=>{ MANUAL_MD=t; if(TAB==='manual') render(); })
+      .catch(()=>{ MANUAL_MD=''; });
+    return `<div class="card"><p class="note">안내서를 불러오는 중…</p></div>`;
+  }
+  if(!MANUAL_MD) return `<div class="card"><p class="note">안내서를 불러오지 못했습니다.
+    <a class="btn" href="GUIDE.md" target="_blank" style="margin-top:8px">GUIDE.md 직접 열기</a></p></div>`;
+  return `<div class="card manual">${mdToHtml(MANUAL_MD)}</div>`;
+}
+// 아주 단순한 마크다운 변환 (안내서 전용)
+function mdToHtml(md){
+  const esc=t=>t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const lines=md.split('\n'); let out=[], inTable=false, inCode=false, inList=false;
+  const inline=t=>esc(t)
+    .replace(/\*\*([^*]+)\*\*/g,'<b>$1</b>')
+    .replace(/`([^`]+)`/g,'<code>$1</code>')
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g,'<a href="$2" target="_blank">$1</a>');
+  const closeList=()=>{ if(inList){ out.push('</ul>'); inList=false; } };
+  const closeTable=()=>{ if(inTable){ out.push('</table>'); inTable=false; } };
+  for(let raw of lines){
+    const l=raw.replace(/\r/g,'');
+    if(/^```/.test(l)){ if(inCode){ out.push('</pre>'); inCode=false; } else { closeList(); closeTable(); out.push('<pre>'); inCode=true; } continue; }
+    if(inCode){ out.push(esc(l)); continue; }
+    if(/^\s*$/.test(l)){ closeList(); closeTable(); continue; }
+    if(/^<a name=/.test(l)) continue;
+    if(/^\|/.test(l)){
+      const cells=l.split('|').slice(1,-1).map(c=>c.trim());
+      if(cells.every(c=>/^:?-+:?$/.test(c))) continue;
+      if(!inTable){ closeList(); out.push('<table>'); inTable=true;
+        out.push('<tr>'+cells.map(c=>`<th>${inline(c)}</th>`).join('')+'</tr>'); continue; }
+      out.push('<tr>'+cells.map(c=>`<td>${inline(c)}</td>`).join('')+'</tr>'); continue;
+    }
+    closeTable();
+    let m;
+    if((m=l.match(/^(#{1,4})\s+(.*)$/))){ closeList(); const lv=m[1].length; out.push(`<h${lv}>${inline(m[2])}</h${lv}>`); continue; }
+    if(/^>\s?/.test(l)){ closeList(); out.push(`<blockquote>${inline(l.replace(/^>\s?/,''))}</blockquote>`); continue; }
+    if(/^---+$/.test(l)){ closeList(); out.push('<hr>'); continue; }
+    if((m=l.match(/^\s*(?:[-*]|\d+\.)\s+(.*)$/))){ if(!inList){ out.push('<ul>'); inList=true; } out.push(`<li>${inline(m[1])}</li>`); continue; }
+    closeList(); out.push(`<p>${inline(l)}</p>`);
+  }
+  closeList(); closeTable(); if(inCode) out.push('</pre>');
+  return out.join('\n');
+}
 function vGuide(){
   return `<div class="card"><div class="k">인솔 교사용 관문 해설</div>
     <p class="note">학생이 “왜 그게 답이에요?”라고 물을 때 바로 답할 수 있게 정리했습니다.
