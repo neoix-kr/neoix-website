@@ -145,6 +145,13 @@ body.demo .ex-hs.demo-hit{border:2.5px solid #E5484D;border-radius:8px;backgroun
 body.demo .demo-tag{font-size:11.5px;line-height:1.25;font-family:'Gowun Batang',serif;color:#fff;
   background:#E5484D;border-radius:5px;padding:3px 7px;margin:-1px 0 0 -1px;white-space:nowrap;
   box-shadow:0 2px 6px rgba(0,0,0,.4);pointer-events:none;max-width:220px;overflow:hidden;text-overflow:ellipsis}
+.toast{position:fixed;left:50%;bottom:-90px;transform:translateX(-50%);z-index:250;
+  max-width:min(92vw,560px);padding:13px 18px;border-radius:12px;
+  background:rgba(12,22,34,.95);border:1px solid rgba(194,154,43,.45);
+  color:var(--chalk);font-family:'Gowun Batang',serif;font-size:15px;line-height:1.6;
+  box-shadow:0 8px 28px rgba(0,0,0,.5);opacity:0;transition:bottom .3s ease,opacity .3s ease;
+  pointer-events:none;text-align:center}
+.toast.on{bottom:calc(96px + env(safe-area-inset-bottom));opacity:1}
 .demo-card{margin-bottom:12px;padding:14px 16px;border:2px solid #E5484D;border-radius:10px;
   background:linear-gradient(rgba(255,244,242,.96),rgba(255,238,236,.96));text-align:left}
 .dc-head{font-family:'Jua';font-size:12px;letter-spacing:2px;color:#E5484D}
@@ -400,7 +407,14 @@ body.demo .demo-badge{display:block}
 .ex-hud-bottom .inv-strip{margin:0}
 /* 지도(개요) 보조 뷰는 패딩 래퍼로 */
 .ex-pad{padding:calc(14px + env(safe-area-inset-top)) 18px 20px;height:100%;overflow-y:auto;display:flex;flex-direction:column}
-.ex-pad .ex-scene{flex:0 0 auto;width:100%;aspect-ratio:3/2;min-height:46vh;max-height:64vh;margin:0 auto;position:relative;overflow:hidden;border-radius:10px}
+.ex-pad .ex-scene{flex:1 1 auto;width:100%;min-height:0;margin:0 auto;position:relative;
+  overflow:visible;border-radius:10px;background:transparent;border:0}
+/* 지도 이미지는 잘리지 않고 화면 안에 통째로 들어간다 */
+.ex-pad .ex-scene .ex-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
+/* 방 버튼 좌표는 '그림' 기준이어야 한다 — contain 여백을 뺀 실제 영역에 맞춘다 */
+.map-fit{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  aspect-ratio:3/2;width:100%;max-width:100%;max-height:100%;pointer-events:none}
+.map-fit .ex-room-btn{pointer-events:auto}
 .ex-pad .ex-scene .ex-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
 .ex-pad .ex-scene .ex-svgfb{position:absolute;inset:0}
 .ex-pad .ex-feedback{margin-top:auto}
@@ -449,7 +463,7 @@ body.demo .demo-badge{display:block}
 @keyframes hsBreath{0%,100%{opacity:.22;transform:translate(-50%,-50%) scale(.9)}50%{opacity:.5;transform:translate(-50%,-50%) scale(1.08)}}
 @media (prefers-reduced-motion:reduce){.ex-hs.subtle::after{animation:none;opacity:.3}}
 .ex-room-btn{
-  position:absolute;font-family:inherit;font-size:15px;letter-spacing:2px;
+  position:absolute;z-index:4;font-family:inherit;font-size:15px;letter-spacing:2px;
   background:rgba(43,36,22,.78);color:var(--parch);border:1px solid rgba(255,255,255,.25);
   border-radius:8px;padding:9px 13px;
 }
@@ -1129,6 +1143,11 @@ const ROOMS = {
     {id:'sofa', x:75, y:62, w:24, h:37, name:'긴 의자', text:'담요와 그물이 뒤엉킨 긴 의자. 누군가 급히 일어난 채로 그대로다.'},
   ]},
   crew:{ name:'선원실', scene:'crew', hotspots:[
+    {id:'pastor', x:52, y:14, w:20, h:26, name:'선장의 빈자리', subtle:true,
+      phys:{ kind:'confirm', gate:'teacher', effect:'advance', label:'선장의 인장',
+        prompt:'⚓ <b>선장의 자리가 비어 있다.</b><br>이 배에는 아직 <b>진짜 선장</b>이 오르지 않았다.<br><br>등대에 불을 켜려면 <b>선장의 인장</b>이 있어야 한다.<br>팀 전원이 <b>목사님을 찾아가</b> 인장을 받아 오라.<br><span class="ph-small">목사님이 내주시는 물음에 답하고, 인장을 받으면 목사님이 확인해 주십니다.</span>',
+        btn:'목사님께 선장의 인장을 받았다',
+        done:'선장의 인장이 항해일지에 찍혔다.<br>「예수께서 배에 오르시매 바람이 그치더라」<br><b>이제 이 배에 선장이 계신다.</b>' } },
     {id:'bunk', x:4, y:26, w:38, h:60, name:'침상', item:'hammer', trace:{x:54,y:60}, text:'침상 밑을 더듬자 낡은 망치가 손에 잡힌다!', after:'침상 밑은 비었다.'},
     {id:'cupboard', x:81, y:41, w:13, h:26, name:'찬장', subtle:true, item:'flint', trace:{x:36,y:66}, text:'찬장 깊숙한 곳, 헝겊에 싸인 부싯돌을 찾았다!', after:'그릇뿐이다.'},
     {id:'hammock', x:45, y:40, w:28, h:17, name:'해먹', text:'해먹이 흔들릴 뿐이다.'},
@@ -1299,7 +1318,13 @@ const Explore = {
     try{ Ambience.setMood(this.MOOD[id]||'below'); }catch(e){} this.view='room'; this.room=id; this.render(); },
   showMap(){ this.view='map'; this.room=null; this.render(); },
   back(){ this.close(); },
-  roomList(){ return MAP_SPOTS.filter(s=>!s.hidden||S.unlocked[s.id]||(s.id==='lighthouse'&&S.act>=5)).map(s=>s.id); },
+  // 지금 막까지 도달한 방만 열린다 — 한 방을 다 깨야 다음 방이 열림
+  roomList(){
+    const opened=new Set();
+    for(let i=0;i<=(S.act||0);i++){ const r=ACTS[i]&&ACTS[i].room; if(r) opened.add(r); }
+    if(S.unlocked&&S.unlocked.secret) opened.add('secret');   // 비밀 선창은 해금되면 추가
+    return MAP_SPOTS.filter(s=>opened.has(s.id)).map(s=>s.id);
+  },
   roomNav(dir){ const l=this.roomList(); let i=l.indexOf(this.room); i=Math.max(0,Math.min(l.length-1,i+dir)); this.goRoom(l[i]); },
   invStrip(){
     return `<div class="inv-strip">${Object.entries(ITEMS).map(([k,it])=>
@@ -1311,11 +1336,12 @@ const Explore = {
     if(this.view==='map'){
       inner.innerHTML=`<div class="ex-pad">
         <div class="ex-head"><span class="ex-title">믿음호 — 배 전체</span><button class="ex-back" onclick="Explore.goRoom(Explore.roomList()[0])">← 방으로</button></div>
-        <div class="ex-scene" style="position:relative">
+        <div class="ex-scene" style="position:relative"><div class="map-fit">
           <img class="ex-bg" src="assets/ship-map.webp" alt="" onerror="this.style.display='none';this.nextElementSibling.classList.add('show')">
           <div class="ex-svgfb">${sceneFallback('배 전체 지도')}</div>
           ${MAP_SPOTS.filter(s=>!s.hidden||S.unlocked[s.id]).map(s=>
             `<button class="ex-room-btn${s.hidden?' secret':''}" style="left:${s.x}%;top:${s.y}%" onclick="Explore.goRoom('${s.id}')">${s.hidden?'🔓 ':''}${s.name}</button>`).join('')}
+          </div>
         </div>
         <div class="ex-feedback" id="exFeedback">방을 눌러 들어가거나, ← 방으로 돌아가라.</div>
         ${this.invStrip()}
@@ -1775,7 +1801,7 @@ function tryCombine(){
     if(c.need.every(k=>S.items[k])){
       c.need.forEach(k=>{ delete S.items[k]; });
       S.items[c.make]=true; save();
-      Sound.good(); Info.show('도구 결합', `<p class="desc">${c.text}</p>`);
+      Sound.good(); Toast.show(`🔧 ${c.text}`, 3600);
       return c.make;
     }
   }
@@ -1816,7 +1842,7 @@ const ACTS = [
     chapter:'2과 · 눅 8:26-39',
     intro:'폭풍 너머, 거라사의 <b>무덤 섬</b>. 안개가 무덤들 사이에 깔려 있다.<br>뱃사람의 규칙 — <b>십자가 없이는 이 섬에 내리지 않는다.</b><br>무덤에 갇혀 살던 자가 어떻게 집으로 돌아가는지, 이 섬이 답한다.',
     tell:'십자가를 챙기고 하중을 정렬해 상륙한 뒤, 사슬 자물쇠를 끊어라.' },
-  { id:4, name:'돌아온 항구', room:'crew', need:['p9','p10','p11'], needPhys:['crew.chest'],
+  { id:4, name:'돌아온 항구', room:'crew', need:['p9','p10','p11'], needPhys:['crew.chest','crew.pastor'],
     chapter:'3과 · 눅 8:40-56',
     intro:'다시 항구. 인파가 배를 에워싼다.<br>12년을 앓은 여인이 군중 속에 손을 뻗고,<br>12살 소녀의 시간이 끝났다는 전갈이 온다. <b>모두가 끝이라 말하는 곳</b>에서.',
     tell:'인파 속 그 한 사람을 찾고, 선원 명부 궤를 열어 등대에 꽂을 심지를 얻어라.' },
@@ -2252,7 +2278,7 @@ const Hint = {
     logEvent(`길잡이 힌트 사용 (+${add}초): ${t.s}`);
     save(); UI.updateTopbar(); try{Sync.push(true);}catch(e){}
     this.cancel();
-    Info.show('길잡이', `<p class="desc">${txt}</p>${add?`<p class="desc" style="font-size:13px;opacity:.7">+${add}초가 더해졌습니다.</p>`:'<p class="desc" style="font-size:13px;opacity:.7">첫 힌트는 무료입니다.</p>'}`);
+    Toast.show(`💡 ${txt}${add?` <span style="opacity:.7">(+${add}초)</span>`:' <span style="opacity:.7">(무료)</span>'}`, 5200);
   },
   // 선생님 호출 — 관리자 창/컨트롤에 요청이 뜬다
   callTeacher(){
@@ -2261,7 +2287,7 @@ const Hint = {
     save(); try{Sync.push(true);}catch(e){}
     Sound.bell();
     this.cancel();
-    Info.show('선생님을 불렀습니다', `<p class="desc">손을 들고 기다려 주세요.<br>선생님 화면에 <b>호출</b>이 표시됩니다.</p>`);
+    Toast.show('🙋 선생님을 불렀습니다 — 손을 들고 기다려 주세요', 4200);
   },
   cancel(){ clearInterval(this.chimeTimer); document.getElementById('hintModal').classList.remove('show'); },
   grant(level){
@@ -2486,6 +2512,21 @@ const Admin = {
 };
 
 /* ---------------- 정보 모달 ---------------- */
+// 가벼운 알림 — 팝업 대신 화면 안에서 잠깐 떴다 사라진다
+const Toast = {
+  el:null, timer:null,
+  show(html, ms){
+    if(!this.el){
+      this.el=document.createElement('div');
+      this.el.className='toast';
+      document.body.appendChild(this.el);
+    }
+    this.el.innerHTML=html;
+    this.el.classList.add('on');
+    clearTimeout(this.timer);
+    this.timer=setTimeout(()=>this.el.classList.remove('on'), ms||3200);
+  },
+};
 const Info = {
   show(title,html,noClose){
     document.getElementById('infoInner').innerHTML=
@@ -2600,7 +2641,7 @@ const Game = {
         <div class="act-adv"><b>다음 — 제 ${S.act}막 · ${ACTS[S.act].name}</b><span>${ACTS[S.act].chapter||''}</span></div>
         <button class="btn small" onclick="Info.close(); if(S.actSeen)delete S.actSeen[${S.act}]; UI.render();">계속</button>`, true);
     } else if(!skipped && pz.success){
-      Info.show('사건 해결', `<p class="desc">${pz.success}</p>`);
+      Toast.show(`✅ ${pz.success}`, 3400);
     }
   },
   advance(skipped){ this.solve(skipped); },
