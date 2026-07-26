@@ -145,6 +145,18 @@ body.demo .ex-hs.demo-hit{border:2.5px solid #E5484D;border-radius:8px;backgroun
 body.demo .demo-tag{font-size:11.5px;line-height:1.25;font-family:'Gowun Batang',serif;color:#fff;
   background:#E5484D;border-radius:5px;padding:3px 7px;margin:-1px 0 0 -1px;white-space:nowrap;
   box-shadow:0 2px 6px rgba(0,0,0,.4);pointer-events:none;max-width:220px;overflow:hidden;text-overflow:ellipsis}
+.demo-card{margin-bottom:12px;padding:14px 16px;border:2px solid #E5484D;border-radius:10px;
+  background:linear-gradient(rgba(255,244,242,.96),rgba(255,238,236,.96));text-align:left}
+.dc-head{font-family:'Jua';font-size:12px;letter-spacing:2px;color:#E5484D}
+.dc-ans{margin-top:6px;font-family:'Gowun Batang',serif;font-size:16px;color:#8A2F1E}
+.dc-ans b{font-size:21px;font-weight:700;color:#C0362F}
+.dc-row{margin-top:11px;font-family:'Gowun Batang',serif;font-size:14.5px;line-height:1.75;color:#3A2418}
+.dc-row em{display:block;font-style:normal;font-family:'Jua';font-size:11.5px;letter-spacing:1.5px;
+  color:#B5503F;margin-bottom:3px}
+.dc-row.word{border-top:1px dashed rgba(181,80,63,.4);padding-top:10px;color:#7A3A28}
+.dc-row b{color:#8A2F1E;font-weight:700}
+.dc-verse{margin-top:11px;padding:10px 13px;border-left:3px solid #C0362F;background:rgba(192,54,47,.08);
+  border-radius:0 7px 7px 0;font-family:'Gowun Batang',serif;font-size:14px;line-height:1.7;color:#5C2418}
 .demo-answer{margin-bottom:10px;padding:9px 13px;border:2px solid #E5484D;border-radius:8px;
   background:rgba(229,72,77,.12);color:#E5484D;font-family:'Gowun Batang',serif;font-size:15px}
 .demo-answer b{font-size:18px;font-weight:700}
@@ -158,10 +170,22 @@ body.demo .demo-badge{display:block}
   color:var(--chalk);background:rgba(10,20,32,.5);border:1px solid rgba(194,154,43,.35);border-radius:20px;padding:5px 11px}
 .td i{font-style:normal;font-family:'Jua';font-size:11px;color:#241C06;background:var(--brass);border-radius:10px;padding:1px 7px}
 .ex-goal b{color:var(--brass-lt);font-weight:400;margin-right:6px}
-/* 목표 배너는 기본 접힘 — 사물을 가리지 않게. 누르면 펼쳐진다 */
-.ex-goal{max-height:64px;overflow:hidden;cursor:pointer;opacity:.94;transition:max-height .2s}
-.ex-goal.open{max-height:40vh;overflow-y:auto;opacity:1}
+/* 목표 배너 — 상단바 아래에 얇게. 누르면 펼쳐진다 */
+.ex-goal{position:absolute;left:12px;right:12px;top:calc(58px + env(safe-area-inset-top));
+  z-index:7;max-height:56px;overflow:hidden;cursor:pointer;opacity:.95;transition:max-height .2s;
+  margin:0;background:rgba(10,20,32,.82);backdrop-filter:blur(4px);
+  border:1px solid rgba(194,154,43,.32);border-radius:10px;padding:8px 13px}
+.ex-goal.open{max-height:46vh;overflow-y:auto;opacity:1;pointer-events:auto}
+/* 접힌 상태에선 뒤의 사물이 눌리도록 클릭을 통과시킨다 */
+.ex-goal:not(.open):not(.phys-active){pointer-events:none}
+.ex-goal:not(.open) .todo,.ex-goal:not(.open) b{pointer-events:auto}
 .ex-goal .todo{max-height:none}
+/* 미션(코드·리듬·확인)이 열리면 목표 배너가 아니라 '작업창'이 된다 —
+   접힘 해제하고 화면 가운데 아래로 내려 충분히 크게 */
+.ex-feedback.phys-active{position:absolute;left:12px;right:12px;top:auto;
+  bottom:calc(96px + env(safe-area-inset-bottom));max-height:64vh;overflow-y:auto;
+  cursor:default;opacity:1;z-index:9;background:rgba(8,16,26,.94);
+  border-color:rgba(194,154,43,.5);padding:14px 16px}
 
 .ship-act{font-size:26px;color:var(--brass-lt);letter-spacing:2px}
 .ship-tell{font-family:'Gowun Batang',serif;font-size:16px;line-height:1.7;color:var(--chalk-dim);margin-top:10px}
@@ -653,6 +677,7 @@ body.demo .demo-badge{display:block}
 <div class="modal-bg" id="adminModal"><div class="modal" id="adminInner"></div></div>
 <div class="modal-bg" id="infoModal"><div class="modal" id="infoInner"></div></div>
 
+<script src="teach.js"></script>
 <script>
 /* =========================================================
    믿음의 항해 - 중고등부 고난도 방탈출 (오프라인 단일 파일)
@@ -1323,8 +1348,8 @@ const Explore = {
             <button class="ex-map-btn" onclick="Explore.showMap()">🧭 지도</button>
             <button class="ex-back" onclick="Explore.close()">나가기</button>
           </div>
+          <div class="ex-feedback ex-goal" id="exFeedback" onclick="this.classList.toggle('open')">${goalHtml()}</div>
           <div class="ex-hud ex-hud-bottom">
-            <div class="ex-feedback ex-goal" id="exFeedback" onclick="this.classList.toggle('open')">${goalHtml()}</div>
             ${this.invStrip()}
           </div>
         </div>`;
@@ -1829,6 +1854,27 @@ const Demo = {
     if(hs.item && !(S.items&&S.items[hs.item])) return `<span class="demo-tag">${(ITEM_NAME[hs.item]||hs.item)} 있음</span>`;
     if(SHIP_OPS[key]) return `<span class="demo-tag">${SHIP_OPS[key].name}</span>`;
     return '';
+  },
+  // 교육 모드 해설 카드 — 정답·왜 그런지·성경 본문까지
+  explainCard(pz){
+    if(!pz) return '';
+    const t=(typeof TEACH!=='undefined')?TEACH[pz.id]:null;
+    const strip=x=>x||'';
+    let h=`<div class="demo-card">
+      <div class="dc-head">교육 모드 · 해설</div>
+      <div class="dc-ans">정답 <b>${this.answerOf(pz)}</b></div>`;
+    if(t){
+      h+=`<div class="dc-row"><em>어떤 문제인가</em>${strip(t.core)}</div>`;
+      h+=`<div class="dc-row"><em>왜 그 답인가</em>${strip(t.answer)}</div>`;
+      h+=`<div class="dc-row"><em>막힐 때 이렇게</em>${strip(t.stuck)}</div>`;
+      h+=`<div class="dc-row word"><em>말씀 연결</em>${strip(t.word)}</div>`;
+    }
+    // 성경 본문: 퍼즐 자체 구절이 있으면 그것, 없으면 그 막의 설교 본문
+    const av=(()=>{ const a=actOf(pz.id); return a>=0&&ACTS[a]?ACTS[a].chapter:''; })();
+    if(pz.verse) h+=`<div class="dc-verse">${pz.verse}</div>`;
+    else if(av) h+=`<div class="dc-verse">📖 ${av}</div>`;
+    if(pz.reveal) h+=`<div class="dc-row"><em>풀이</em>${pz.reveal}</div>`;
+    return h+`</div>`;
   },
   answerOf(pz){
     if(!pz) return '?';
@@ -2780,7 +2826,7 @@ const UI = {
         <h2 class="pz-title">${pz.title}</h2>
       </div>
       <div class="card" id="pzCard">
-        ${Demo.on()?`<div class="demo-answer">정답 &nbsp;<b>${Demo.answerOf(pz)}</b></div>`:''}
+        ${Demo.on()?Demo.explainCard(pz):''}
         <p class="pz-mission">${pz.mission}</p>
         ${pz.bible?`<p style="text-align:center;margin-top:10px;color:var(--ink-soft);font-size:13px;letter-spacing:1px"><svg class="ic" width="14" height="14" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="7"><path d="M24 20 h40 a8 8 0 0 1 8 8 v52 h-44 a8 8 0 0 1 -8 -8 V24 a6 6 0 0 1 4 -4 Z"/><path d="M28 80 h44 M46 36 v20 M38 44 h16"/></svg> 성경책이 필요한 관문</p>`:''}
         ${(pz.type==='text'||pz.type==='number')?'':((pz.type==='multiinput'&&!pz.verse)?'':(pz.type==='multiinput')?'':artHtml)}
