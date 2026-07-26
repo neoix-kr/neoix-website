@@ -1,0 +1,10 @@
+# HTML은 항상 최신을 받게 (배포 후 옛 화면이 남는 문제 방지)
+/*.html
+  Cache-Control: no-cache, must-revalidate
+
+/songsan/escape/
+  Cache-Control: no-cache, must-revalidate
+
+# 이미지·정적 자산은 캐시해도 됨
+/songsan/escape/assets/*
+  Cache-Control: public, max-age=86400
