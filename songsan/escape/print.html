@@ -69,9 +69,16 @@
     <tr><td>군중 12인 포스터 (A2 확대)</td><td>4막 선원실 구역 벽</td><td>1장</td></tr>
     <tr><td>레핀 그림 (A3 확대)</td><td>4막 선원실 구역 벽</td><td>1장</td></tr>
     <tr><td>거꾸로 쓰인 편지</td><td>3막 교사가 손거울과 함께 지급</td><td>팀마다 1장</td></tr>
+    <tr><td>목사님 물음 카드 · 선장의 인장 카드</td><td>4막 목사님 자리</td><td>물음 3장 · 인장 팀마다 1장</td></tr>
   </table>
 
-  <h2 style="margin-top:6mm">물건으로 준비할 것</h2>
+  </section>
+
+<!-- ── 표지 2 · 물건 준비물 ──────────────────────── -->
+<section class="sheet">
+<h1 style="font-size:18pt">물건으로 준비할 것</h1>
+<p class="lead" style="margin-bottom:5mm">인쇄물이 아닌, 실제로 챙겨야 하는 물건들입니다</p>
+
   <table>
     <tr><th style="width:52mm">물건</th><th style="width:46mm">쓰는 곳</th><th>비고</th></tr>
     <tr><td>태블릿</td><td>팀마다 1대</td><td>충전 확인</td></tr>
@@ -87,6 +94,7 @@
     <tr><td>손거울</td><td>3막 · 4막</td><td>2개</td></tr>
     <tr><td>LED 초·전등</td><td>5막 등대</td><td><b>진짜 불은 쓰지 않습니다</b></td></tr>
     <tr><td>바구니</td><td>5막 짐 검사</td><td>1개</td></tr>
+    <tr><td>도장 또는 사인펜</td><td>0막 손등 · <b>4막 목사님 인장</b></td><td></td></tr>
   </table>
 
   <div class="warn">
@@ -213,7 +221,7 @@
 
 <script>
 const ART_PRINT = {
-crowd(){ // P9: 군중 12명 수색 (정답 11) — 인그레이빙 화풍
+crowd(){ // P9: 군중 12명 — 인그레이빙 화풍
   const INK='#2B2416', SOFT='#6B5B3A';
   const person=(x,y,n,{veil=false,arm=null,skirt=false}={})=>{
     let s=`<g transform="translate(${x},${y})">`;
@@ -276,7 +284,7 @@ crowd(){ // P9: 군중 12명 수색 (정답 11) — 인그레이빙 화풍
   s+=person(176,84,4,{veil:true,skirt:true});
   s+=person(288,84,7,{veil:true,arm:'L',skirt:true});
   s+=person(324,86,9,{arm:'L'});
-  s+=person(408,100,11,{veil:true,arm:'L',skirt:true}); // ★정답
+  s+=person(408,100,11,{veil:true,arm:'L',skirt:true});
   // 앞(아래쪽) 6명
   s+=person(48,262,1,{});
   s+=person(128,274,5,{veil:true,arm:'R',skirt:true});

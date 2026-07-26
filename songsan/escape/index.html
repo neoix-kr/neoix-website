@@ -469,6 +469,8 @@ body.demo .demo-badge{display:block}
 }
 .ex-room-btn:active{background:rgba(138,47,30,.85)}
 .ex-room-btn.secret{background:rgba(120,86,20,.9);border-color:var(--brass);color:#FBEFD2;box-shadow:0 0 0 2px rgba(194,154,43,.35)}
+  .ex-room-btn.locked{opacity:.42;filter:grayscale(1);border-style:dashed;cursor:default}
+  .ex-room-btn.locked:hover{opacity:.55}
 /* 방 좌우 이동 화살표 */
 .ex-nav{position:absolute;top:50%;transform:translateY(-50%);z-index:6;display:flex;flex-direction:column;align-items:center;gap:2px;
   border:0;background:transparent;color:var(--brass-lt);cursor:pointer}
@@ -1325,6 +1327,7 @@ const Explore = {
     if(S.unlocked&&S.unlocked.secret) opened.add('secret');   // 비밀 선창은 해금되면 추가
     return MAP_SPOTS.filter(s=>opened.has(s.id)).map(s=>s.id);
   },
+  lockedTap(){ try{ Toast.show('🔒 <b>아직 잠겨 있다.</b> 지금 있는 곳을 다 끝내야 다음 문이 열린다.'); }catch(e){} },
   roomNav(dir){ const l=this.roomList(); let i=l.indexOf(this.room); i=Math.max(0,Math.min(l.length-1,i+dir)); this.goRoom(l[i]); },
   invStrip(){
     return `<div class="inv-strip">${Object.entries(ITEMS).map(([k,it])=>
@@ -1339,8 +1342,11 @@ const Explore = {
         <div class="ex-scene" style="position:relative"><div class="map-fit">
           <img class="ex-bg" src="assets/ship-map.webp" alt="" onerror="this.style.display='none';this.nextElementSibling.classList.add('show')">
           <div class="ex-svgfb">${sceneFallback('배 전체 지도')}</div>
-          ${MAP_SPOTS.filter(s=>!s.hidden||S.unlocked[s.id]).map(s=>
-            `<button class="ex-room-btn${s.hidden?' secret':''}" style="left:${s.x}%;top:${s.y}%" onclick="Explore.goRoom('${s.id}')">${s.hidden?'🔓 ':''}${s.name}</button>`).join('')}
+          ${(()=>{ const open=new Set(this.roomList());
+            return MAP_SPOTS.filter(s=>open.has(s.id)||(s.id!=='secret')).map(s=>{
+              if(open.has(s.id)) return `<button class="ex-room-btn${s.id==='secret'?' secret':''}" style="left:${s.x}%;top:${s.y}%" onclick="Explore.goRoom('${s.id}')">${s.id==='secret'?'🔓 ':''}${s.name}</button>`;
+              return `<button class="ex-room-btn locked" style="left:${s.x}%;top:${s.y}%" onclick="Explore.lockedTap()">🔒 ${s.name}</button>`;
+            }).join(''); })()}
           </div>
         </div>
         <div class="ex-feedback" id="exFeedback">방을 눌러 들어가거나, ← 방으로 돌아가라.</div>
