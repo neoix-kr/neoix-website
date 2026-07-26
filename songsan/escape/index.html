@@ -139,6 +139,20 @@ h1.title{font-size:42px;color:var(--parch);letter-spacing:1px;text-align:center;
   background:rgba(233,237,240,.1);border:1px solid var(--sea-line);color:var(--chalk);font-size:15px;line-height:1;cursor:pointer}
 .fb-x:active{background:rgba(233,237,240,.2)}
 .fb-msg{display:block;padding-right:4px}
+/* 교육(시연) 모드 — 정답을 대놓고 */
+body.demo .ex-hs.demo-hit{border:2.5px solid #E5484D;border-radius:8px;background:rgba(229,72,77,.1);
+  font-size:0;display:flex;align-items:flex-start;justify-content:flex-start}
+body.demo .demo-tag{font-size:11.5px;line-height:1.25;font-family:'Gowun Batang',serif;color:#fff;
+  background:#E5484D;border-radius:5px;padding:3px 7px;margin:-1px 0 0 -1px;white-space:nowrap;
+  box-shadow:0 2px 6px rgba(0,0,0,.4);pointer-events:none;max-width:220px;overflow:hidden;text-overflow:ellipsis}
+.demo-answer{margin-bottom:10px;padding:9px 13px;border:2px solid #E5484D;border-radius:8px;
+  background:rgba(229,72,77,.12);color:#E5484D;font-family:'Gowun Batang',serif;font-size:15px}
+.demo-answer b{font-size:18px;font-weight:700}
+body.demo #topbar{box-shadow:inset 0 -3px 0 #E5484D}
+.demo-badge{position:fixed;left:50%;transform:translateX(-50%);top:0;z-index:300;
+  background:#E5484D;color:#fff;font-size:12.5px;letter-spacing:1px;padding:3px 14px;border-radius:0 0 9px 9px;
+  pointer-events:none;display:none}
+body.demo .demo-badge{display:block}
 .todo{display:flex;flex-wrap:wrap;gap:6px;margin-top:7px}
 .td{display:inline-flex;align-items:center;gap:6px;font-family:'Gowun Batang',serif;font-size:13.5px;
   color:var(--chalk);background:rgba(10,20,32,.5);border:1px solid rgba(194,154,43,.35);border-radius:20px;padding:5px 11px}
@@ -369,7 +383,7 @@ h1.title{font-size:42px;color:var(--parch);letter-spacing:1px;text-align:center;
 .cu-open.show{opacity:1}
 .cu-hint{position:absolute;left:0;right:0;bottom:10px;text-align:center;color:var(--parch);font-family:'Gowun Batang',serif;font-size:15px;z-index:4;text-shadow:0 2px 6px rgba(0,0,0,.7)}
 .cu-trace{position:absolute;transform:translate(-50%,-50%);width:74px;height:74px;background:transparent;border:0;z-index:5;cursor:pointer}
-.cu-glow{display:block;width:100%;height:100%;border-radius:50%;background:radial-gradient(circle,rgba(255,238,180,.34),rgba(255,214,110,.12) 40%,transparent 66%);animation:cuPulse 3.6s ease-in-out infinite}
+.cu-glow{display:block;width:100%;height:100%;border-radius:50%;background:radial-gradient(circle,rgba(255,240,190,.5),rgba(255,214,110,.2) 42%,transparent 68%);animation:cuPulse 2.4s ease-in-out infinite}
 @keyframes cuPulse{0%,100%{transform:scale(.86);opacity:.4}50%{transform:scale(1.06);opacity:.78}}
 .cu-pop{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9;background:radial-gradient(circle at 50% 45%, rgba(20,32,50,.55), rgba(6,10,18,.82))}
 .cu-pop-ic{width:38%;max-width:180px;aspect-ratio:1;animation:cuPop .55s cubic-bezier(.2,1.6,.35,1)}
@@ -592,6 +606,7 @@ h1.title{font-size:42px;color:var(--parch);letter-spacing:1px;text-align:center;
   <path d="M50 6 L54 46 L50 50 L46 46 Z M50 94 L54 54 L50 50 L46 54 Z M6 50 L46 46 L50 50 L46 54 Z M94 50 L54 46 L50 50 L54 54 Z" stroke-width=".8"/>
   <path d="M22 22 L47 47 M78 22 L53 47 M22 78 L47 53 M78 78 L53 53" stroke-width=".6"/>
 </svg>
+<div class="demo-badge">교육 모드 — 정답 표시 중</div>
 <div id="app">
   <div id="topbar">
     <span class="tb-team" id="tbTeam">팀</span>
@@ -1275,7 +1290,9 @@ const Explore = {
             ${room.hotspots.map(h=>{
               const found=(h.item&&S.items[h.item])||(h.phys&&S.phys[this.room+'.'+h.id]);
               const sub=(h.subtle&&!found)?' subtle':'';
-              return `<button class="ex-hs${sub}" style="left:${h.x}%;top:${h.y}%;width:${h.w}%;height:${h.h}%" onclick="Explore.tap('${this.room}','${h.id}')" aria-label="${h.name||''}">.</button>`;
+              const dtag=Demo.tagFor(this.room,h);
+              const dcls=dtag?' demo-hit':'';
+              return `<button class="ex-hs${sub}${dcls}" style="left:${h.x}%;top:${h.y}%;width:${h.w}%;height:${h.h}%" onclick="Explore.tap('${this.room}','${h.id}')" aria-label="${h.name||''}">${dtag}</button>`;
             }).join('')}
           </div>
           ${i>0?`<button class="ex-nav prev" onclick="Explore.roomNav(-1)" aria-label="이전 방"><span>‹</span><em>${ROOMS[list[i-1]].name}</em></button>`:''}
@@ -1313,7 +1330,7 @@ const Explore = {
           <button class="ex-back" onclick="Explore.goRoom('${room}')">← 물러나기</button>
         </div>
         <div class="ex-hud ex-hud-bottom">
-          <div class="ex-feedback" id="exFeedback"><span id="cuHint">손끝으로 더듬어 보라</span></div>
+          <div class="ex-feedback" id="exFeedback"><span id="cuHint">✨ <b>반짝이는 곳</b>을 눌러 열어라</span></div>
           ${this.invStrip()}
         </div>
       </div>`;
@@ -1438,6 +1455,7 @@ const Explore = {
         <button class="btn ink small phys-ok" onclick="Explore.physSubmit('${roomId}','${hsId}')">입력</button></div>`;
     }
     f.innerHTML=`<div class="phys-tag">${tag}</div>
+      ${Demo.on()?`<div class="demo-answer">정답 &nbsp;<b>${Demo.physAnswer(hs)}</b></div>`:''}
       <div class="phys-prompt">${hs.phys.prompt}</div>
       ${body}
       <div id="physErr" class="phys-err"></div>
@@ -1752,6 +1770,48 @@ const ACTS = [
 // 지금 막에서 "아직 안 끝난 것"만 구체적으로 알려준다
 const ITEM_NAME={key:'놋쇠 열쇠',uv:'자외선 등불',cross:'나무 십자가',hammer:'망치',flint:'부싯돌',oil:'기름통',wick:'무명 심지',torch:'십자 횃대'};
 const SHIP_NAME={anchor:'닻 올리기',sail:'돛 펴기',helm:'침로 잡기',trim:'하중 정렬'};
+// ── 교육(시연) 모드 ── 정답을 대놓고 보여준다. 선생님 교육·시연용.
+const DEMO_KEY='faithVoyage_demo';
+const Demo = {
+  on(){ return localStorage.getItem(DEMO_KEY)==='1'; },
+  toggle(){
+    const next = !this.on();
+    localStorage.setItem(DEMO_KEY, next?'1':'0');
+    document.body.classList.toggle('demo', next);
+    if(S && S.phase && S.phase!=='lobby'){ UI.render(); try{Explore.render();}catch(e){} }
+    Info.show(next?'교육 모드 켬':'교육 모드 끔',
+      `<p class="desc">${next
+        ? '정답이 <b style="color:#E5484D">빨간 글씨</b>로 표시되고, 눌러야 할 곳에 <b style="color:#E5484D">빨간 테두리</b>가 생깁니다.<br>시연·교육용이니 <b>학생 앞에서는 꺼 주세요.</b>'
+        : '정답 표시가 사라졌습니다. 평소대로 진행합니다.'}</p>`);
+  },
+  init(){ if(this.on()) document.body.classList.add('demo'); },
+  // 사물 옆에 붙일 정답 딱지
+  tagFor(roomId,hs){
+    if(!this.on()) return '';
+    const key=roomId+'.'+hs.id;
+    const pz=PUZZLE_AT[key];
+    if(pz){ const p=pzById(pz); return `<span class="demo-tag">${p?p.title:pz} · 정답 ${Demo.answerOf(p)}</span>`; }
+    if(hs.phys){ return `<span class="demo-tag">${hs.phys.label||'미션'} · ${Demo.physAnswer(hs)}</span>`; }
+    if(hs.item && !(S.items&&S.items[hs.item])) return `<span class="demo-tag">${(ITEM_NAME[hs.item]||hs.item)} 있음</span>`;
+    if(SHIP_OPS[key]) return `<span class="demo-tag">${SHIP_OPS[key].name}</span>`;
+    return '';
+  },
+  answerOf(pz){
+    if(!pz) return '?';
+    if(pz.answers) return pz.answers[0];
+    if(pz.fields) return pz.fields.map(f=>f.answers[0]).join(' / ');
+    if(pz.answerDial&&pz.symbolNames) return pz.answerDial.map(i=>pz.symbolNames[i]).join('→');
+    if(pz.metaFields) return pz.metaFields.map(f=>f.answers[0]).join(' / ');
+    return '?';
+  },
+  physAnswer(hs){
+    const k=hs.phys.kind;
+    if(k==='word') return '입력 '+(hs.phys.answer||[])[0];
+    if(k==='rhythm') return '리듬 '+(hs.phys.pattern||[]).map(x=>x==='L'?'길':'짧').join('·');
+    if(k==='confirm') return '현장 수행 후 확인';
+    return hs.phys.code||'';
+  },
+};
 function actTodo(){
   if(!S) return [];
   const a=ACTS[S.act]; if(!a) return [];
@@ -2261,6 +2321,8 @@ const Admin = {
           <span><button class="admin-mini" onclick="Admin.pen(-1)">-1분</button>
           <button class="admin-mini" onclick="Admin.pen(1)">+1분</button></span></div></div>
         <div class="adm-note">해설·현황·코드표는 <b>관리자 창</b>에서 봅니다. 선생님 기기에서 여세요.</div>
+        <button class="btn ghost small" onclick="Demo.toggle();Admin.close()">🎓 교육(시연) 모드 ${Demo.on()?'끄기':'켜기'}</button>
+        <div class="adm-note" style="margin-top:6px">교육 모드를 켜면 정답이 빨간색으로 표시됩니다. 선생님 교육·시연용입니다.</div>
         <button class="btn ghost small" onclick="window.open('admin.html','_blank')">🖥 관리자 창 열기</button>
         <button class="btn ghost small" onclick="Admin.unlockAll()">🔓 도구·비밀 선창 전체 해금</button>
         <button class="btn ghost small" onclick="Admin.reset()">게임 전체 초기화</button>
@@ -2684,6 +2746,7 @@ const UI = {
         <h2 class="pz-title">${pz.title}</h2>
       </div>
       <div class="card" id="pzCard">
+        ${Demo.on()?`<div class="demo-answer">정답 &nbsp;<b>${Demo.answerOf(pz)}</b></div>`:''}
         <p class="pz-mission">${pz.mission}</p>
         ${pz.bible?`<p style="text-align:center;margin-top:10px;color:var(--ink-soft);font-size:13px;letter-spacing:1px"><svg class="ic" width="14" height="14" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="7"><path d="M24 20 h40 a8 8 0 0 1 8 8 v52 h-44 a8 8 0 0 1 -8 -8 V24 a6 6 0 0 1 4 -4 Z"/><path d="M28 80 h44 M46 36 v20 M38 44 h16"/></svg> 성경책이 필요한 관문</p>`:''}
         ${(pz.type==='text'||pz.type==='number')?'':((pz.type==='multiinput'&&!pz.verse)?'':(pz.type==='multiinput')?'':artHtml)}
@@ -2832,6 +2895,7 @@ window.addEventListener('beforeunload',e=>{
   if(S&&(S.phase==='play'||S.phase==='story')&&S.startTs){ e.preventDefault(); e.returnValue=''; }
 });
 load();
+Demo.init();
 UI.render();
 Ambience.arm();
 Sync.start();
