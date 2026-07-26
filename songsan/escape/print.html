@@ -118,7 +118,7 @@
   <div class="cut">
     <h2 style="border:0;font-size:12pt">승선 명부 (각자 서명)</h2>
     <table><tr><th style="width:36mm">이름</th><th>나의 고백 한 줄</th><th style="width:24mm">선장 확인</th></tr>
-    ${'<tr><td style="height:11mm"></td><td></td><td></td></tr>'.repeat(4)}</table>
+    <tr><td style="height:11mm"></td><td></td><td></td></tr><tr><td style="height:11mm"></td><td></td><td></td></tr><tr><td style="height:11mm"></td><td></td><td></td></tr><tr><td style="height:11mm"></td><td></td><td></td></tr></table>
   </div>
 </section>
 
@@ -127,14 +127,22 @@
   <h2>출항 삭구 — 매듭 도해 4장 <span style="font-size:9pt;font-weight:400">(1막 · 손)</span></h2>
   <p style="font-size:9.5pt;color:#5C513A">네 지점에 하나씩 붙입니다. 각자 자기 지점의 매듭을 묶고, 갑판장이 이 도해와 대조해 검사합니다. 통과하면 <b>나무 십자가</b>를 건넵니다.</p>
   <div class="grid2">
-    ${[['닻 자리','옭매듭 (오버핸드)','밧줄 끝에 고리를 만들어 한 번 통과시켜 조인다'],
-       ['돛 자리','8자 매듭','고리를 두 번 감아 8자 모양으로 통과'],
-       ['계류 자리','clove hitch (말뚝매기)','기둥에 두 번 감아 끝을 끼운다'],
-       ['신호 자리','두 줄 잇기','두 밧줄 끝을 나란히 겹쳐 함께 옭매듭']].map(k=>`
     <div class="cut"><div class="card" style="min-height:52mm">
-      <div class="ttl">${k[0]}</div><div class="sub">${k[1]}</div>
+      <div class="ttl">닻 자리</div><div class="sub">옭매듭 (오버핸드)</div>
       <div style="font-size:30pt;margin-top:3mm">🪢</div>
-      <div class="note">${k[2]}</div></div></div>`).join('')}
+      <div class="note">밧줄 끝에 고리를 만들어 한 번 통과시켜 조인다</div></div></div>
+    <div class="cut"><div class="card" style="min-height:52mm">
+      <div class="ttl">돛 자리</div><div class="sub">8자 매듭</div>
+      <div style="font-size:30pt;margin-top:3mm">🪢</div>
+      <div class="note">고리를 두 번 감아 8자 모양으로 통과</div></div></div>
+    <div class="cut"><div class="card" style="min-height:52mm">
+      <div class="ttl">계류 자리</div><div class="sub">말뚝매기 (클로브 히치)</div>
+      <div style="font-size:30pt;margin-top:3mm">🪢</div>
+      <div class="note">기둥에 두 번 감아 끝을 끼운다</div></div></div>
+    <div class="cut"><div class="card" style="min-height:52mm">
+      <div class="ttl">신호 자리</div><div class="sub">두 줄 잇기</div>
+      <div style="font-size:30pt;margin-top:3mm">🪢</div>
+      <div class="note">두 밧줄 끝을 나란히 겹쳐 함께 옭매듭</div></div></div>
   </div>
   <div class="warn"><b>갑판장 안내</b> — 매듭 이름이 정확하지 않아도, 도해처럼 <b>단단히 조여졌는지</b>만 봅니다. 통과 시 십자가 지급(3막 상륙·5막 횃대에 쓰임).</div>
 </section>
