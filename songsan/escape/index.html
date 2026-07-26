@@ -158,6 +158,10 @@ body.demo .demo-badge{display:block}
   color:var(--chalk);background:rgba(10,20,32,.5);border:1px solid rgba(194,154,43,.35);border-radius:20px;padding:5px 11px}
 .td i{font-style:normal;font-family:'Jua';font-size:11px;color:#241C06;background:var(--brass);border-radius:10px;padding:1px 7px}
 .ex-goal b{color:var(--brass-lt);font-weight:400;margin-right:6px}
+/* 목표 배너는 기본 접힘 — 사물을 가리지 않게. 누르면 펼쳐진다 */
+.ex-goal{max-height:64px;overflow:hidden;cursor:pointer;opacity:.94;transition:max-height .2s}
+.ex-goal.open{max-height:40vh;overflow-y:auto;opacity:1}
+.ex-goal .todo{max-height:none}
 
 .ship-act{font-size:26px;color:var(--brass-lt);letter-spacing:2px}
 .ship-tell{font-family:'Gowun Batang',serif;font-size:16px;line-height:1.7;color:var(--chalk-dim);margin-top:10px}
@@ -361,7 +365,9 @@ body.demo .demo-badge{display:block}
 .ex-full.portrait{display:flex;align-items:center;justify-content:center}
 .ex-bg-blur{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:blur(34px) brightness(.4) saturate(1.2);transform:scale(1.18);z-index:0}
 .ex-stage{position:relative;height:100%;aspect-ratio:3/4;max-width:100%;z-index:1;box-shadow:0 0 70px rgba(0,0,0,.65),0 0 0 1px rgba(228,196,99,.18)}
-.ex-hud{position:absolute;left:0;right:0;z-index:8;display:flex;align-items:center;gap:9px}
+.ex-hud{position:absolute;left:0;right:0;z-index:8;display:flex;align-items:center;gap:9px;pointer-events:none}
+/* HUD 안에서 실제로 누르는 것들만 클릭을 받는다 — 빈 여백은 뒤의 사물이 눌리게 */
+.ex-hud button,.ex-hud a,.ex-hud input,.ex-hud .ex-feedback,.ex-hud .inv-strip{pointer-events:auto}
 .ex-hud-top{top:0;padding:calc(11px + env(safe-area-inset-top)) 16px 30px;background:linear-gradient(180deg,rgba(6,12,20,.82),rgba(6,12,20,.28) 62%,transparent)}
 .ex-hud-top .ex-title{flex:0 0 auto;text-shadow:0 2px 8px rgba(0,0,0,.7)}
 .ex-nav{top:47%}
@@ -1318,7 +1324,7 @@ const Explore = {
             <button class="ex-back" onclick="Explore.close()">나가기</button>
           </div>
           <div class="ex-hud ex-hud-bottom">
-            <div class="ex-feedback ex-goal" id="exFeedback">${goalHtml()}</div>
+            <div class="ex-feedback ex-goal" id="exFeedback" onclick="this.classList.toggle('open')">${goalHtml()}</div>
             ${this.invStrip()}
           </div>
         </div>`;
