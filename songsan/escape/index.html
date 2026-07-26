@@ -134,6 +134,11 @@ h1.title{font-size:42px;color:var(--parch);letter-spacing:1px;text-align:center;
 .act-intro .ai-story{font-family:'Gowun Batang',serif;font-size:16px;line-height:1.85;color:var(--chalk);margin-top:12px}
 .act-intro .ai-goal{margin-top:16px;padding:12px 14px;border:1px solid rgba(194,154,43,.4);border-radius:9px;background:rgba(194,154,43,.1);font-family:'Gowun Batang',serif;font-size:15px;line-height:1.6;color:var(--chalk)}
 .act-intro .ai-goal span{display:block;font-family:'Jua';font-size:12px;letter-spacing:2px;color:var(--brass-lt);margin-bottom:4px}
+.ex-feedback.fb-note{position:relative;padding-right:44px;border-color:rgba(194,154,43,.45);background:rgba(24,38,58,.82)}
+.fb-x{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:32px;height:32px;border-radius:50%;
+  background:rgba(233,237,240,.1);border:1px solid var(--sea-line);color:var(--chalk);font-size:15px;line-height:1;cursor:pointer}
+.fb-x:active{background:rgba(233,237,240,.2)}
+.fb-msg{display:block;padding-right:4px}
 .todo{display:flex;flex-wrap:wrap;gap:6px;margin-top:7px}
 .td{display:inline-flex;align-items:center;gap:6px;font-family:'Gowun Batang',serif;font-size:13.5px;
   color:var(--chalk);background:rgba(10,20,32,.5);border:1px solid rgba(194,154,43,.35);border-radius:20px;padding:5px 11px}
@@ -351,7 +356,9 @@ h1.title{font-size:42px;color:var(--parch);letter-spacing:1px;text-align:center;
 .ex-hud-bottom .inv-strip{margin:0}
 /* 지도(개요) 보조 뷰는 패딩 래퍼로 */
 .ex-pad{padding:calc(14px + env(safe-area-inset-top)) 18px 20px;height:100%;overflow-y:auto;display:flex;flex-direction:column}
-.ex-pad .ex-scene{width:100%}
+.ex-pad .ex-scene{flex:0 0 auto;width:100%;aspect-ratio:3/2;min-height:46vh;max-height:64vh;margin:0 auto;position:relative;overflow:hidden;border-radius:10px}
+.ex-pad .ex-scene .ex-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
+.ex-pad .ex-scene .ex-svgfb{position:absolute;inset:0}
 .ex-pad .ex-feedback{margin-top:auto}
 /* 확대(closeup) — 침대 등 크게 보기 → 흔적 → 팝 */
 .ex-scene.closeup{aspect-ratio:1;height:min(66dvh,92vw);width:auto;max-width:96vw;margin:0 auto;min-height:0;background:#0e1622;position:relative;overflow:hidden}
@@ -1231,6 +1238,7 @@ const Explore = {
     try{ Ambience.setMood('calm'); }catch(e){} document.getElementById('exploreModal').classList.remove('show'); },
   MOOD:{deck:'storm', wheel:'storm', cabin:'below', crew:'below', hold:'below', secret:'below'},
   goRoom(id){
+    clearTimeout(this.fbTimer);
     try{ Ambience.setMood(this.MOOD[id]||'below'); }catch(e){} this.view='room'; this.room=id; this.render(); },
   showMap(){ this.view='map'; this.room=null; this.render(); },
   back(){ this.close(); },
@@ -1385,9 +1393,28 @@ const Explore = {
         </div>
       </div>`;
   },
+  fbTimer:null,
   feedback(t){
     const f=document.getElementById('exFeedback');
-    if(f){ f.classList.remove('phys-active'); f.textContent=t; f.classList.remove('pulse'); void f.offsetWidth; f.classList.add('pulse'); }
+    if(!f) return;
+    clearTimeout(this.fbTimer);
+    f.classList.remove('phys-active');
+    f.innerHTML=`<span class="fb-msg">${t}</span><button class="fb-x" onclick="Explore.clearFeedback()" aria-label="닫기">✕</button>`;
+    f.classList.add('fb-note');
+    f.classList.remove('pulse'); void f.offsetWidth; f.classList.add('pulse');
+    // 10초 뒤 자동으로 목표 배너로 돌아간다 (직접 눌러 바로 닫을 수도 있다)
+    this.fbTimer=setTimeout(()=>this.clearFeedback(), 10000);
+  },
+  clearFeedback(){
+    clearTimeout(this.fbTimer);
+    const f=document.getElementById('exFeedback');
+    if(!f) return;
+    if(this.view==='room' && !S.openPz){
+      f.classList.remove('fb-note','phys-active');
+      f.innerHTML=goalHtml();
+    } else {
+      f.classList.remove('fb-note');
+    }
   },
   toMapRender(){ this.view='map'; this.room=null; this.render(); },
   physOpen(roomId,hsId){
@@ -1733,7 +1760,16 @@ function actTodo(){
   (a.needShip||[]).forEach(k=>{ if(!S.ship||!S.ship[k]) out.push({t:'조작', s:SHIP_NAME[k]||k}); });
   (a.need||[]).forEach(id=>{ if(!S.solved[id]){ const p=pzById(id); const spot=PZ_SPOT[id];
       const rm=spot?ROOMS[spot.split('.')[0]]:null; const hs=rm?rm.hotspots.find(h=>h.id===spot.split('.')[1]):null;
-      out.push({t:'사건', s:(p?p.title:id)+(rm&&hs?` — ${rm.name}의 ${hs.name}`:'')}); } });
+      let where = rm&&hs ? ` — ${rm.name}의 ${hs.name}` : '';
+      // 잠겨 있거나 아이템이 먼저 필요한 사물이면 그것까지 알려준다
+      if(hs){
+        const okey=spot;
+        if(hs.locked && !S.opened[okey] && !(S.items&&S.items[hs.locked.needs]))
+          where += ` (${(ITEM_NAME[hs.locked.needs]||hs.locked.needs)} 필요)`;
+        else if(hs.item && !(S.items&&S.items[hs.item]))
+          where += ` (열면 ${ITEM_NAME[hs.item]||hs.item})`;
+      }
+      out.push({t:'사건', s:(p?p.title:id)+where}); } });
   (a.needPhys||[]).forEach(k=>{ if(!S.phys||!S.phys[k]){ const [r,h]=k.split('.');
       const hs=ROOMS[r]&&ROOMS[r].hotspots.find(x=>x.id===h);
       out.push({t:'미션', s:((hs&&hs.phys&&hs.phys.label)||k)+(ROOMS[r]?` — ${ROOMS[r].name}`:'')}); } });
@@ -2043,7 +2079,7 @@ const Hint = {
     document.getElementById('hintModal').classList.add('show');
     logEvent(`힌트 창 열기: ${pz.title}`);
   },
-  // 탐색 중(사건 밖)에서 부르는 힌트 — 지금 막에서 뭘 해야 하는지 알려준다
+  // 탐색 중(사건 밖)에서도 언제나 힌트를 요청할 수 있다
   requestHere(){
     if(S && S.openPz){ return this.request(); }   // 사건 중이면 그 문제 힌트
     const a=ACTS[S.act]; const todo=actTodo();
@@ -2053,13 +2089,39 @@ const Hint = {
       <div class="lantern-glow">${IC.lantern}</div>
       <h3>등불 밝히기 — ${a?a.name:''}</h3>
       <p class="desc">${a?a.tell:''}</p>
-      <div class="hint-cost">남은 할 일 <b>${todo.length}가지</b></div>
+      <div class="hint-cost">다음 힌트 <b>${cost===0?'무료':'+'+cost+'초'}</b>
+        <span>· 지금까지 ${S.hintCount||0}회</span></div>
       <div class="todo" style="margin-top:10px">${todo.map(x=>`<span class="td"><i>${x.t}</i>${x.s}</span>`).join('')||'<span class="td">모두 끝났다 — 항로가 열린다</span>'}</div>
-      <div class="hint-divider">더 자세한 힌트가 필요하면</div>
-      <p class="desc" style="font-size:14px">사물을 눌러 <b>사건</b>을 연 뒤, 그 안에서 힌트를 열 수 있습니다.
-        ${cost===0?'첫 힌트는 <b>무료</b>입니다.':'다음 힌트는 <b>+'+cost+'초</b>입니다.'}</p>
-      <button class="btn" onclick="Hint.cancel()">닫기</button>`;
+      <div style="margin-top:14px">
+        <button class="btn" onclick="Hint.actHint()">💡 지금 할 일 힌트 열기 ${cost===0?'(무료)':'(+'+cost+'초)'}</button>
+        <button class="btn ghost" onclick="Hint.callTeacher()">🙋 선생님 부르기</button>
+      </div>
+      <button class="btn ghost small" onclick="Hint.cancel()">닫기</button>`;
     document.getElementById('hintModal').classList.add('show');
+  },
+  // 막 단위 힌트 — 남은 할 일 중 첫 번째를 콕 집어 알려준다
+  actHint(){
+    const todo=actTodo();
+    if(!todo.length){ this.cancel(); return; }
+    const add=nextHintSec();
+    S.penaltySec=(S.penaltySec||0)+add;
+    S.hintCount=(S.hintCount||0)+1;
+    const t=todo[0];
+    const txt=`먼저 이것부터 — <b>${t.s}</b>`;
+    S.hintTexts.push({puzzle:'act'+S.act,title:ACTS[S.act].name,level:'길잡이',text:txt});
+    logEvent(`길잡이 힌트 사용 (+${add}초): ${t.s}`);
+    save(); UI.updateTopbar(); try{Sync.push(true);}catch(e){}
+    this.cancel();
+    Info.show('길잡이', `<p class="desc">${txt}</p>${add?`<p class="desc" style="font-size:13px;opacity:.7">+${add}초가 더해졌습니다.</p>`:'<p class="desc" style="font-size:13px;opacity:.7">첫 힌트는 무료입니다.</p>'}`);
+  },
+  // 선생님 호출 — 관리자 창/컨트롤에 요청이 뜬다
+  callTeacher(){
+    S.hintCall={at:Date.now(), act:S.act, pz:S.openPz||null};
+    logEvent('선생님 호출');
+    save(); try{Sync.push(true);}catch(e){}
+    Sound.bell();
+    this.cancel();
+    Info.show('선생님을 불렀습니다', `<p class="desc">손을 들고 기다려 주세요.<br>선생님 화면에 <b>호출</b>이 표시됩니다.</p>`);
   },
   cancel(){ clearInterval(this.chimeTimer); document.getElementById('hintModal').classList.remove('show'); },
   grant(level){
@@ -2144,6 +2206,13 @@ const Admin = {
     <div class="adm-body">`;
 
     if(this.tab==='now'){
+      if(S.hintCall){
+        h+=`<div class="adm-card" style="border-color:rgba(228,196,99,.6);background:rgba(194,154,43,.14)">
+          <div class="adm-k">🙋 힌트 호출</div>
+          <div class="adm-title">팀이 선생님을 불렀습니다</div>
+          <div class="adm-li dim">${new Date(S.hintCall.at).toLocaleTimeString('ko-KR')} · ${ACTS[S.hintCall.act]?ACTS[S.hintCall.act].name:''}막</div>
+          <button class="btn small" onclick="Admin.answerCall()">확인했음 · 호출 해제</button></div>`;
+      }
       if(S.phase==='play'&&pz){
         h+=`<div class="adm-card">
           <div class="adm-k">지금 푸는 문제</div>
@@ -2206,6 +2275,7 @@ const Admin = {
     if(pz.answers) return pz.answers[0];
     return '-';
   },
+  answerCall(){ delete S.hintCall; save(); try{Sync.push(true);}catch(e){} Admin.open('now'); },
   pen(d){ S.penaltyMin=Math.max(0,S.penaltyMin+d); save(); UI.updateTopbar(); Admin.open(); },
   // 진행 모드 — pi가 -1이면 그 챕터의 스토리 화면, 아니면 해당 관문
   jump(si,pi){
@@ -2309,7 +2379,7 @@ const Sync = {
       elapsed_ms: UI.elapsedMs?UI.elapsedMs():0,
       phase:      S.phase||'play',
       finished:   S.phase==='finish',
-      last_event: (S.log&&S.log.length)?S.log[S.log.length-1].msg:null,
+      last_event: (S.hintCall? '🙋 선생님 호출 중' : ((S.log&&S.log.length)?S.log[S.log.length-1].msg:null)),
       updated_at: new Date().toISOString(),
     };
   },
