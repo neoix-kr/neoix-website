@@ -13,16 +13,16 @@
 <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" rel="stylesheet">
 <style>
 :root {
-  --primary: #3182f6; --primary-light: #e8f3ff; --primary-dark: #1b64da;
-  --text: #1e293b; --muted: #64748b; --light: #94a3b8;
-  --bg: #f8fafc; --surface: #ffffff; --border: #e2e8f0; --border-strong: #cbd5e1;
-  --success: #10b981; --success-bg: #ecfdf5;
-  --warning: #f59e0b; --warning-bg: #fffbeb;
-  --danger: #ef4444; --danger-bg: #fef2f2;
-  --info: #3b82f6; --info-bg: #eff6ff;
+  --primary: #4f46e5; --primary-light: #eef0fe; --primary-dark: #4338ca;
+  --text: #191f28; --muted: #4e5968; --light: #8b95a1; --faint: #b0b8c1;
+  --bg: #f4f5f7; --surface: #ffffff; --border: #eceef1; --border-strong: #dfe3e8;
+  --success: #059669; --success-bg: #ecfdf5;
+  --warning: #d97706; --warning-bg: #fffbeb;
+  --danger: #dc2626; --danger-bg: #fef2f2;
+  --info: #1d6fd6; --info-bg: #e8f3ff;
   --purple: #7c3aed; --purple-bg: #f5f3ff;
   --cyan: #0891b2; --cyan-bg: #ecfeff;
-  --sidebar-w: 260px; --sidebar-collapsed: 72px; --header-h: 64px;
+  --sidebar-w: 250px; --sidebar-collapsed: 72px; --header-h: 60px;
 }
 * { margin:0; padding:0; box-sizing:border-box; }
 html, body { height:100%; }
@@ -37,15 +37,16 @@ input, select, textarea { font-family:inherit; }
 /* ── Login ── */
 #loginView {
   display:flex; align-items:center; justify-content:center; height:100vh;
-  background:linear-gradient(135deg, #e8f3ff 0%, #f5f3ff 50%, #ecfeff 100%);
+  background:var(--bg);
 }
 .login-box {
-  width:400px; padding:48px 40px; background:#fff; border-radius:20px;
+  width:400px; max-width:calc(100vw - 32px); padding:48px 40px; background:#fff; border-radius:20px;
   box-shadow:0 4px 24px rgba(0,0,0,.06); text-align:center;
 }
+@media (max-width:480px) { .login-box { padding:36px 24px; } }
 .login-logo-wrap { display:flex; align-items:center; justify-content:center; gap:12px; margin-bottom:8px; }
 .login-logo-icon {
-  width:44px; height:44px; border-radius:12px; background:linear-gradient(135deg,#3182f6,#7c3aed);
+  width:44px; height:44px; border-radius:12px; background:var(--text);
   display:flex; align-items:center; justify-content:center; color:#fff; font-size:20px; font-weight:800;
 }
 .login-logo-text { font-size:24px; font-weight:800; color:var(--text); letter-spacing:.04em; }
@@ -80,7 +81,7 @@ input, select, textarea { font-family:inherit; }
 .sidebar.collapsed { width:var(--sidebar-collapsed); }
 .sidebar-top { padding:18px 20px; display:flex; align-items:center; gap:12px; border-bottom:1px solid var(--border); min-height:var(--header-h); }
 .sidebar-logo {
-  width:36px; height:36px; border-radius:10px; background:linear-gradient(135deg,#3182f6,#7c3aed);
+  width:36px; height:36px; border-radius:10px; background:var(--text);
   display:flex; align-items:center; justify-content:center; color:#fff; font-size:16px; font-weight:800; flex-shrink:0;
 }
 .sidebar-brand-text { font-size:16px; font-weight:800; color:var(--text); white-space:nowrap; }
@@ -111,7 +112,7 @@ input, select, textarea { font-family:inherit; }
 .sidebar-bottom { padding:12px; border-top:1px solid var(--border); }
 .sidebar-user { display:flex; align-items:center; gap:10px; padding:8px; border-radius:10px; }
 .sidebar-avatar {
-  width:34px; height:34px; border-radius:10px; background:linear-gradient(135deg,#3182f6,#7c3aed);
+  width:34px; height:34px; border-radius:10px; background:var(--text);
   display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:700; color:#fff; flex-shrink:0;
 }
 .sidebar-user-info { overflow:hidden; }
@@ -152,7 +153,7 @@ body.sidebar-collapsed .top-header { left:var(--sidebar-collapsed); }
   background:var(--bg); font-size:13px; font-weight:500; color:var(--text); cursor:default;
 }
 .header-user-avatar {
-  width:26px; height:26px; border-radius:8px; background:linear-gradient(135deg,#3182f6,#7c3aed);
+  width:26px; height:26px; border-radius:8px; background:var(--text);
   display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; color:#fff;
 }
 .btn-logout {
@@ -170,7 +171,7 @@ body.sidebar-collapsed .content-wrap { margin-left:var(--sidebar-collapsed); }
   margin-top:var(--header-h); padding:28px; overflow-y:auto;
   height:calc(100vh - var(--header-h)); background:var(--bg);
 }
-.page-title { font-size:22px; font-weight:700; margin-bottom:4px; }
+.page-title { font-size:23px; font-weight:800; letter-spacing:-.02em; margin-bottom:4px; }
 .page-desc { font-size:13px; color:var(--muted); margin-bottom:24px; }
 
 /* ── Stat Cards (바른문자 style) ── */
@@ -192,12 +193,12 @@ body.sidebar-collapsed .content-wrap { margin-left:var(--sidebar-collapsed); }
 .stat-icon.warning { background:var(--warning-bg); color:var(--warning); }
 .stat-icon svg { stroke:currentColor; fill:none; stroke-linecap:round; stroke-linejoin:round; }
 .stat-label { font-size:12px; color:var(--muted); font-weight:500; }
-.stat-value { font-size:28px; font-weight:700; color:var(--text); line-height:1.2; }
+.stat-value { font-size:27px; font-weight:800; letter-spacing:-.02em; color:var(--text); line-height:1.2; }
 .stat-sub { font-size:11px; color:var(--light); margin-top:2px; }
 
 /* ── Section Header ── */
 .section-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
-.section-title { font-size:16px; font-weight:700; }
+.section-title { font-size:16px; font-weight:800; letter-spacing:-.01em; }
 
 /* ── Project Cards ── */
 .project-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(320px,1fr)); gap:16px; }
@@ -413,20 +414,97 @@ tbody tr:hover { background:#fafbfc; }
 .empty { text-align:center; padding:60px 20px; color:var(--light); }
 .empty-text { font-size:14px; margin-top:8px; }
 
+/* ── Empty ── */
+
+/* ══ 대시보드 히어로 (전체 가입자 + 추이) ══ */
+.hero-card { background:#fff; border:1px solid var(--border); border-radius:20px; padding:22px 24px; margin-bottom:24px;
+  display:grid; grid-template-columns:230px 1fr; gap:26px; align-items:center; }
+.hero-label { font-size:13px; color:var(--muted); font-weight:600; }
+.hero-num { font-size:36px; font-weight:800; letter-spacing:-.03em; margin-top:2px; }
+.hero-num small { font-size:16px; font-weight:700; color:var(--light); margin-left:2px; }
+.hero-delta { display:inline-flex; align-items:center; gap:4px; background:var(--success-bg); color:var(--success);
+  font-size:12.5px; font-weight:700; padding:4px 10px; border-radius:99px; margin-top:10px; }
+.hero-delta.zero { background:var(--bg); color:var(--light); }
+.hero-spark svg { width:100%; height:84px; display:block; }
+.hero-axis { display:flex; justify-content:space-between; font-size:11px; color:var(--faint); margin-top:6px; }
+
+/* ══ 앱 카드 ══ */
+.appcards { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:28px; }
+.appcard { background:#fff; border:1px solid var(--border); border-radius:18px; padding:18px; cursor:pointer; transition:box-shadow .15s, transform .1s; }
+.appcard:hover { box-shadow:0 4px 16px rgba(0,0,0,.05); transform:translateY(-1px); }
+.appcard .r { display:flex; align-items:center; gap:9px; }
+.appcard .ic { width:34px; height:34px; border-radius:10px; overflow:hidden; background:var(--bg); flex-shrink:0;
+  display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:800; color:var(--muted); }
+.appcard .ic img { width:100%; height:100%; object-fit:cover; display:block; }
+.appcard .nm { font-size:13.5px; font-weight:700; color:var(--muted); }
+.appcard .n { font-size:25px; font-weight:800; letter-spacing:-.02em; margin-top:10px; }
+.appcard .d { font-size:12px; font-weight:700; color:var(--success); margin-top:3px; }
+.appcard .d.zero { color:var(--faint); }
+
+/* ══ 피드(최근 가입·알림·모바일 사용자 리스트) ══ */
+.feed { background:#fff; border:1px solid var(--border); border-radius:18px; overflow:hidden; }
+.frow { display:flex; align-items:center; gap:12px; padding:13px 16px; border-bottom:1px solid var(--border); cursor:pointer; }
+.frow:last-child { border-bottom:0; }
+.frow:hover { background:#fafbfc; }
+.fav { width:40px; height:40px; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center;
+  font-size:15px; font-weight:800; color:#fff; }
+.fbody { flex:1; min-width:0; }
+.fn { font-size:14.5px; font-weight:700; display:flex; align-items:center; gap:6px; flex-wrap:wrap; word-break:break-all; }
+.fs { font-size:12px; color:var(--light); margin-top:3px; word-break:break-all; }
+.ft { font-size:11.5px; color:var(--faint); white-space:nowrap; flex-shrink:0; }
+.chip { display:inline-flex; font-size:10.5px; font-weight:700; padding:2.5px 7px; border-radius:6px; line-height:1.4; }
+.chip-internal { background:#fff1f0; color:#c2410c; }
+.cols2 { display:grid; grid-template-columns:1.1fr .9fr; gap:20px; align-items:start; }
+
+/* ══ 필터 칩 ══ */
+.fchips { display:flex; gap:6px; flex-wrap:wrap; }
+.fchip { font-size:13px; font-weight:700; padding:8px 14px; border-radius:99px; background:#fff; border:1px solid var(--border); color:var(--muted); cursor:pointer; user-select:none; }
+.fchip.on { background:var(--text); border-color:var(--text); color:#fff; }
+.fchip .cnt { font-weight:700; opacity:.55; margin-left:3px; }
+
+/* ══ 모바일 하단 탭바 ══ */
+.tabbar { display:none; }
+
 /* ── Responsive ── */
-@media (max-width:1024px) { .stats-row { grid-template-columns:repeat(2,1fr); } }
+@media (max-width:1024px) { .stats-row { grid-template-columns:repeat(2,1fr); } .appcards { grid-template-columns:repeat(2,1fr); } .hero-card { grid-template-columns:1fr; gap:14px; } .cols2 { grid-template-columns:1fr; } }
 @media (max-width:768px) {
-  .sidebar { transform:translateX(-100%); width:280px; }
+  .sidebar { transform:translateX(-100%); width:280px; transition:transform .25s ease; }
   .sidebar.open { transform:translateX(0); box-shadow:4px 0 24px rgba(0,0,0,.08); }
   .content-wrap, body.sidebar-collapsed .content-wrap { margin-left:0 !important; }
-  .top-header, body.sidebar-collapsed .top-header { left:0 !important; }
+  .top-header, body.sidebar-collapsed .top-header { left:0 !important; padding:0 16px; }
   .burger { display:flex; }
-  .main { padding:20px 16px; }
-  .stats-row { grid-template-columns:1fr 1fr; }
+  .header-site-link { display:none; }
+  .header-user-badge { display:none; }
+  .main { padding:18px 16px calc(86px + env(safe-area-inset-bottom)); height:calc(100vh - var(--header-h)); }
+  .page-title { font-size:21px; }
+  .stats-row { grid-template-columns:1fr 1fr; gap:10px; }
+  .stat-card { padding:16px; }
+  .stat-value { font-size:23px; }
+  .appcards { grid-template-columns:1fr 1fr; gap:10px; }
   .project-grid { grid-template-columns:1fr; }
   .sidebar-backdrop { display:none; position:fixed; inset:0; background:rgba(0,0,0,.3); z-index:25; }
   .sidebar-backdrop.open { display:block; }
+  /* 표 → 가로 스크롤 허용(잘림 방지), 사용자 목록은 카드로 대체 */
+  .table-wrap { border-radius:16px; }
+  .table-toolbar { padding:14px 16px; }
+  .table-search { width:100%; }
+  .tabs { width:100%; overflow-x:auto; scrollbar-width:none; }
+  .tabs::-webkit-scrollbar { display:none; }
+  .tab-btn { white-space:nowrap; }
+  .modal { width:100%; max-width:100%; border-radius:20px 20px 0 0; position:fixed; bottom:0; left:0; max-height:88vh; padding:24px 20px calc(24px + env(safe-area-inset-bottom)); }
+  /* 하단 탭바 */
+  .tabbar { position:fixed; left:0; right:0; bottom:0; background:rgba(255,255,255,.94); backdrop-filter:blur(16px);
+    border-top:1px solid var(--border); display:flex; padding:7px 6px calc(7px + env(safe-area-inset-bottom)); z-index:40; }
+  .tabbar .tb { flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; padding:5px 0; color:var(--faint); position:relative; }
+  .tabbar .tb svg { width:23px; height:23px; stroke:currentColor; fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+  .tabbar .tb span { font-size:10.5px; font-weight:700; }
+  .tabbar .tb.on { color:var(--text); }
+  .tabbar .tb .tbdot { position:absolute; top:3px; right:calc(50% - 15px); width:7px; height:7px; border-radius:50%; background:var(--danger); display:none; }
+  .tabbar .tb .tbdot.show { display:block; }
 }
+/* 데스크탑에서 사용자 카드 리스트 숨김(표 사용), 모바일에서 표 숨김 */
+@media (min-width:769px) { .m-only { display:none !important; } }
+@media (max-width:768px) { .d-only { display:none !important; } }
 </style>
 </head>
 <body>
@@ -494,6 +572,11 @@ tbody tr:hover { background:#fafbfc; }
         <svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4-4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
         <span class="nav-label">통합 사용자</span>
         <span class="badge" id="usersBadge" style="display:none"></span>
+      </div>
+      <div class="nav-item" data-view="notifications">
+        <svg viewBox="0 0 24 24"><path d="M6 8a6 6 0 0112 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 003.4 0"/></svg>
+        <span class="nav-label">알림</span>
+        <span id="notifNavDot" style="display:none;margin-left:auto;width:7px;height:7px;border-radius:50%;background:var(--danger)"></span>
       </div>
       <div class="nav-item" data-view="poly">
         <svg viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
@@ -582,15 +665,32 @@ tbody tr:hover { background:#fafbfc; }
       <section id="dashboardView">
         <h1 class="page-title" id="welcomeTitle">대시보드</h1>
         <p class="page-desc" id="welcomeDate"></p>
-        <div class="stats-row" id="dashStats"></div>
+        <div class="hero-card" id="heroCard"><span style="font-size:13px;color:var(--muted)">불러오는 중...</span></div>
         <div class="section-header">
-          <h2 class="section-title">앱별 가입자</h2>
+          <h2 class="section-title">앱별 사용자</h2>
         </div>
-        <div class="stats-row" id="dashAppStats"><span style="font-size:13px;color:var(--muted)">불러오는 중...</span></div>
-        <div class="section-header">
-          <h2 class="section-title">프로젝트 현황</h2>
+        <div class="appcards" id="dashAppStats"><span style="font-size:13px;color:var(--muted)">불러오는 중...</span></div>
+        <div class="cols2">
+          <div>
+            <div class="section-header">
+              <h2 class="section-title">최근 가입</h2>
+              <a style="font-size:12.5px;color:var(--light);cursor:pointer;font-weight:600" data-goto="notifications">전체 보기 ›</a>
+            </div>
+            <div class="feed" id="recentFeed"></div>
+          </div>
+          <div>
+            <div class="section-header"><h2 class="section-title">프로젝트 현황</h2></div>
+            <div class="project-grid" id="projectCards" style="grid-template-columns:1fr"></div>
+          </div>
         </div>
-        <div class="project-grid" id="projectCards"></div>
+      </section>
+
+      <!-- ── 알림 (신규 가입 이력) ── -->
+      <section id="notificationsView" style="display:none">
+        <h1 class="page-title">알림</h1>
+        <p class="page-desc">신규 가입과 앱 사용 시작이 시간순으로 쌓입니다</p>
+        <div style="margin-bottom:16px"><button class="btn-sm btn-primary-sm" id="btnEnablePush2">이 기기에서 푸시 알림 받기</button></div>
+        <div class="feed" id="notifFeed"><div class="empty">불러오는 중...</div></div>
       </section>
 
       <!-- ── OGX ── -->
@@ -699,9 +799,10 @@ tbody tr:hover { background:#fafbfc; }
               <button class="btn-sm" id="btnUsersCsv" style="background:var(--bg);color:var(--text);white-space:nowrap">⬇ 엑셀</button>
             </div>
           </div>
-          <div style="overflow-x:auto">
+          <div style="overflow-x:auto" class="d-only">
             <table><thead><tr><th>이름/아이디</th><th>이메일</th><th>연락처</th><th>가입 앱</th><th>가입경로</th><th>사용 앱</th><th>가입일</th><th>최근 로그인</th><th>관리</th></tr></thead><tbody id="usersBody"></tbody></table>
           </div>
+          <div class="m-only" id="usersCards"></div>
         </div>
       </section>
 
@@ -1005,6 +1106,29 @@ tbody tr:hover { background:#fafbfc; }
   </div>
 </div>
 
+<!-- 모바일 하단 탭바 -->
+<div class="tabbar" id="tabbar" style="display:none">
+  <button class="tb on" data-tb="dashboard"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg><span>홈</span></button>
+  <button class="tb" data-tb="users"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg><span>사용자</span></button>
+  <button class="tb" data-tb="notifications"><span class="tbdot" id="tbNotifDot"></span><svg viewBox="0 0 24 24"><path d="M6 8a6 6 0 0112 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 003.4 0"/></svg><span>알림</span></button>
+  <button class="tb" data-tb="__more"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1.6"/><circle cx="5" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg><span>더보기</span></button>
+</div>
+
+<!-- 사용자 상세 모달 -->
+<div class="modal-overlay" id="userModal">
+  <div class="modal">
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:22px">
+      <div class="fav" id="umAv" style="width:52px;height:52px;font-size:19px">?</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:18px;font-weight:800" id="umName">—</div>
+        <div style="font-size:12.5px;color:var(--light);word-break:break-all" id="umEmail"></div>
+      </div>
+      <button class="btn-sm btn-outline" onclick="document.getElementById('userModal').classList.remove('open')">닫기</button>
+    </div>
+    <div id="umBody"></div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script type="module">
@@ -1024,7 +1148,7 @@ const fmtFull = d => d ? new Date(d).toLocaleString('ko-KR', { year:'numeric', m
 const fmtPhone = p => { const d = (p||'').replace(/[^0-9]/g,''); if (!/^01[0-9]{8,9}$/.test(d)) return p || '-'; return d.length===11 ? `${d.slice(0,3)}-${d.slice(3,7)}-${d.slice(7)}` : `${d.slice(0,3)}-${d.slice(3,6)}-${d.slice(6)}`; };
 const phoneOfApp = (u, key) => { const a = (u.apps||[]).find(x => x.key === key); return (a && a.phone) || u.phone || null; };
 
-const headerTitles = { dashboard:'대시보드', ogx:'OGX 찬양팀', poly:'폴리', users:'통합 사용자', jmap:'J맵', push:'푸시 발송', appconfig:'앱 원격설정', projects:'프로젝트 관리', settings:'설정' };
+const headerTitles = { dashboard:'대시보드', notifications:'알림', ogx:'OGX 찬양팀', poly:'폴리', users:'통합 사용자', jmap:'J맵', push:'푸시 발송', appconfig:'앱 원격설정', projects:'프로젝트 관리', settings:'설정' };
 const PUSH_API = 'https://neoix-push.neoix-kr.workers.dev';
 const VAPID_PUBLIC = 'BOrOH5QabcdnthmIVBjQx2LjPYYGrFKkyQitEvEMia_YcX35LApXv44DSWuJelMkQFzIcguIT0w3CL1fk1WGsWY';
 
@@ -1190,6 +1314,7 @@ function enterApp() {
   $('welcomeDate').textContent = dateStr;
   loadDashboard();
   loadHeroWords();
+  $('tabbar').style.display = '';
 }
 
 // ── 홈 히어로 단어 ──
@@ -1210,57 +1335,112 @@ async function saveHeroWords() {
   toast('저장됐습니다. 홈에 바로 반영됩니다.', 'success');
 }
 
+// ── 내부 계정(데모·심사용 @neoix.kr) — 실사용자 통계와 구분 ──
+const isInternalU = u => /@neoix\.kr$/i.test(u.email || '');
+const AVA_COLORS = ['#4f46e5','#0ea5e9','#059669','#d97706','#dc2626','#7c3aed','#0891b2','#64748b'];
+const avaColor = s => AVA_COLORS[[...String(s||'?')].reduce((a,c)=>a+c.charCodeAt(0),0)%AVA_COLORS.length];
+const APP_ICONS = { 'travel-globe':'/link/icon-swoong.png', 'pray':'/link/icon-pray.png', 'poly':'/link/icon-poly.png' };
+const nameOfU = u => u.display_name || (u.email ? u.email.split('@')[0] : '이름 없음');
+const provChipU = p => { const m={kakao:['카카오','badge-kakao'],apple:['Apple','badge-gray'],email:['이메일','badge-gray'],google:['Google','badge-danger']}; const x=m[p]||[p||'이메일','badge-gray']; return `<span class="chip ${x[1]}">${x[0]}</span>`; };
+const fmtAgo = d => { const t=(Date.now()-new Date(d))/1000; if(t<3600) return Math.max(1,Math.round(t/60))+'분 전'; if(t<86400) return Math.round(t/3600)+'시간 전'; if(t<86400*2) return '어제'; return new Date(d).toLocaleDateString('ko-KR',{month:'numeric',day:'numeric'}); };
+
+function frowHTML(u){
+  const chips = membershipKeysOf(u).map(k=>{const i=appInfo(k);return `<span class="chip ${i.cls}">${i.name}</span>`;}).join('')
+    + provChipU(u.signup_provider) + (isInternalU(u)?'<span class="chip chip-internal">내부</span>':'');
+  return `<div class="frow" onclick="openUserModal('${u.id}')">
+    <div class="fav" style="background:${avaColor(u.id)}">${nameOfU(u)[0].toUpperCase()}</div>
+    <div class="fbody"><div class="fn">${nameOfU(u)} ${chips}</div><div class="fs">${u.email||'-'}</div></div>
+    <div class="ft">${fmtAgo(u.created_at)}</div></div>`;
+}
+
+window.openUserModal = function(id){
+  const u = cachedUsers.find(x=>x.id===id); if(!u) return;
+  $('umAv').style.background=avaColor(u.id); $('umAv').textContent=nameOfU(u)[0].toUpperCase();
+  $('umName').textContent=nameOfU(u); $('umEmail').textContent=u.email||'-';
+  const rows=[['가입경로',(u.signup_provider||'email')],['가입일',new Date(u.created_at).toLocaleString('ko-KR')],['최근 로그인',u.last_sign_in_at?new Date(u.last_sign_in_at).toLocaleString('ko-KR'):'-'],['계정 ID',u.id]];
+  const apps=(u.apps||[]).map(a=>{const i=appInfo(a.key);return `<div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border)"><span class="chip ${i.cls}">${i.name}</span><span style="font-size:12px;color:var(--light)">첫 사용 ${new Date(a.first_seen).toLocaleDateString('ko-KR')}</span></div>`;}).join('')||'<div style="font-size:12.5px;color:var(--light);padding:6px 0">기록된 앱 없음</div>';
+  $('umBody').innerHTML = `
+    ${isInternalU(u)?'<div class="chip chip-internal" style="margin-bottom:14px">내부 계정 (데모·심사용) — 실사용자 통계 제외</div>':''}
+    <div style="font-size:12px;font-weight:700;color:var(--light);margin-bottom:4px">사용 중인 앱</div>${apps}
+    <div style="font-size:12px;font-weight:700;color:var(--light);margin:16px 0 2px">계정 정보</div>
+    ${rows.map(r=>`<div style="display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid var(--border)"><span style="font-size:12.5px;color:var(--muted);flex-shrink:0">${r[0]}</span><span style="font-size:12.5px;font-weight:600;word-break:break-all;text-align:right">${r[1]}</span></div>`).join('')}`;
+  $('userModal').classList.add('open');
+};
+
+// 30일 누적 가입 스파크라인
+function sparklineHTML(users){
+  const days=30, today=new Date(); today.setHours(23,59,59,999);
+  const counts=[];
+  for(let i=days-1;i>=0;i--){ const end=new Date(today.getTime()-i*86400000); counts.push(users.filter(u=>new Date(u.created_at)<=end).length); }
+  const min=Math.min(...counts), max=Math.max(...counts,1);
+  const W=320,H=84,P=6;
+  const pts=counts.map((c,i)=>[i*(W/(days-1)), H-P-((c-min)/((max-min)||1))*(H-P*2)]);
+  const line=pts.map((p,i)=>(i?'L':'M')+p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ');
+  const d0=new Date(today.getTime()-29*86400000);
+  return `<div class="hero-spark"><svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">
+    <defs><linearGradient id="hg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4f46e5" stop-opacity=".14"/><stop offset="1" stop-color="#4f46e5" stop-opacity="0"/></linearGradient></defs>
+    <path d="${line} L${W},${H} L0,${H} Z" fill="url(#hg)"/>
+    <path d="${line}" fill="none" stroke="#4f46e5" stroke-width="2.5" stroke-linecap="round"/>
+    <circle cx="${pts[pts.length-1][0].toFixed(1)}" cy="${pts[pts.length-1][1].toFixed(1)}" r="4" fill="#4f46e5"/></svg>
+    <div class="hero-axis"><span>${d0.getMonth()+1}월 ${d0.getDate()}일</span><span>오늘</span></div></div>`;
+}
+
 // ── Dashboard ──
 async function loadDashboard() {
   const { data: projects } = await supabase.from('admin_projects').select('*').order('sort_order');
   cachedProjects = projects || [];
-  let roomCount = 0, memberCount = 0, userCount = 0;
-  try {
-    const { count: rc } = await supabase.from('rooms').select('*', { count:'exact', head:true }); roomCount = rc || 0;
-    const { count: mc } = await supabase.from('room_members').select('*', { count:'exact', head:true }); memberCount = mc || 0;
-    const { data: users } = await supabase.rpc('get_all_users'); cachedUsers = users || []; userCount = cachedUsers.length;
-  } catch(e) {}
-  const activeCount = cachedProjects.filter(p => p.status === 'active').length;
+  try { const { count: rc } = await supabase.from('rooms').select('*', { count:'exact', head:true }); if (rc > 0) { $('ogxBadge').textContent = rc; $('ogxBadge').style.display = ''; } } catch(e) {}
+  try { await fetchDirectory(); } catch(e) {}
+  const real = cachedUsers.filter(u => !isInternalU(u));
+  const weekAgo = Date.now() - 7*86400000;
+  const wk = real.filter(u => new Date(u.created_at) > weekAgo).length;
 
-  $('dashStats').innerHTML = `
-    <div class="stat-card"><div class="stat-card-top">${svgIcon(ICO.projects,'blue')}<span class="stat-label">전체 프로젝트</span></div><div class="stat-value">${cachedProjects.length}</div></div>
-    <div class="stat-card"><div class="stat-card-top">${svgIcon(ICO.active,'green')}<span class="stat-label">운영 중</span></div><div class="stat-value" style="color:var(--success)">${activeCount}</div></div>
-    <div class="stat-card"><div class="stat-card-top">${svgIcon(ICO.users,'purple')}<span class="stat-label">전체 가입자</span></div><div class="stat-value">${userCount}</div></div>
-    <div class="stat-card"><div class="stat-card-top">${svgIcon(ICO.rooms,'cyan')}<span class="stat-label">OGX 방</span></div><div class="stat-value">${roomCount}</div></div>
-  `;
+  $('heroCard').innerHTML = `<div>
+      <div class="hero-label">전체 가입자</div>
+      <div class="hero-num">${cachedUsers.length}<small>명</small></div>
+      <span class="hero-delta${wk?'':' zero'}">${wk?'▲ 이번 주 +'+wk:'이번 주 +0'}</span>
+      <div style="font-size:11.5px;color:var(--faint);margin-top:9px">실사용자 ${real.length} · 내부(데모·심사) ${cachedUsers.length-real.length}</div>
+    </div>${sparklineHTML(cachedUsers)}`;
 
-  if (userCount > 0) { $('usersBadge').textContent = userCount; $('usersBadge').style.display = ''; }
-  if (roomCount > 0) { $('ogxBadge').textContent = roomCount; $('ogxBadge').style.display = ''; }
-  loadAppStats();
+  // 앱 카드 — 실사용자 기준, 내부 제외 표기
+  const stats = {};
+  cachedUsers.forEach(u => { const internal = isInternalU(u); membershipKeysOf(u).forEach(k => {
+    stats[k] = stats[k] || { total:0, internal:0, new_7d:0 };
+    stats[k].total++; if (internal) stats[k].internal++;
+    const a = (u.apps||[]).find(x => x.key === k);
+    const f = a ? a.first_seen : (k === 'ogx' ? u.created_at : null);
+    if (!internal && f && new Date(f).getTime() > weekAgo) stats[k].new_7d++;
+  });});
+  const order = Object.keys(APPS);
+  const keys = [...order.filter(k=>stats[k]), ...Object.keys(stats).filter(k=>!APPS[k])];
+  const gotoOf = k => k==='poly' ? 'poly' : k==='ogx' ? 'ogx' : 'app-'+k;
+  $('dashAppStats').innerHTML = keys.map(k => { const i = appInfo(k), s = stats[k], realN = s.total - s.internal;
+    return `<div class="appcard" onclick="navigate('${gotoOf(k)}')">
+      <div class="r"><div class="ic">${APP_ICONS[k]?`<img src="${APP_ICONS[k]}" alt="">`:i.name.slice(0,3)}</div><div class="nm">${i.name}</div></div>
+      <div class="n">${realN}</div>
+      <div class="d${s.new_7d?'':' zero'}">이번 주 +${s.new_7d}${s.internal?` · 내부 ${s.internal} 제외`:''}</div></div>`;
+  }).join('');
+
+  const recent = [...cachedUsers].sort((a,b)=>new Date(b.created_at)-new Date(a.created_at)).slice(0,6);
+  $('recentFeed').innerHTML = recent.map(frowHTML).join('') || '<div class="empty">아직 없음</div>';
+  refreshNotifDot();
   renderProjectCards();
 }
 
-// 앱별 사용자 카드 — 통합 계정 전체 + 각 앱 사용자 수(멤버십 기준, 중복 집계)
-// 사용자 탭과 동일한 기준으로 디렉토리에서 직접 계산 (통계 불일치 방지)
-async function loadAppStats() {
-  try {
-    await fetchDirectory();
-    const weekAgo = Date.now() - 7 * 86400000;
-    const stats = {}; // key → {total, new_7d}
-    cachedUsers.forEach(u => membershipKeysOf(u).forEach(k => {
-      stats[k] = stats[k] || { total: 0, new_7d: 0 };
-      stats[k].total++;
-      const a = (u.apps || []).find(x => x.key === k);
-      const f = a ? a.first_seen : (k === 'ogx' ? u.created_at : null); // 별칭계정은 가입일 기준
-      if (f && new Date(f).getTime() > weekAgo) stats[k].new_7d++;
-    }));
-    const order = Object.keys(APPS);
-    const keys = [...order.filter(k => stats[k]), ...Object.keys(stats).filter(k => !APPS[k])];
-    const unifiedCard = `<div class="stat-card" style="border:1.5px solid var(--primary)"><div class="stat-card-top">${svgIcon(ICO.users,'blue')}<span class="stat-label">통합 계정 전체</span></div>
-      <div class="stat-value">${cachedUsers.length}</div>
-      <div style="font-size:12px;color:var(--light);margin-top:4px">네오익스 계정 가입자</div></div>`;
-    $('dashAppStats').innerHTML = unifiedCard + keys.map(k => {
-      const i = appInfo(k), s = stats[k];
-      return `<div class="stat-card"><div class="stat-card-top"><span class="app-chip ${i.cls}" style="font-size:12px">${i.name}</span><span class="stat-label">사용자</span></div>
-        <div class="stat-value">${s.total}</div>
-        <div style="font-size:12px;color:${s.new_7d>0?'var(--success)':'var(--light)'};margin-top:4px">이번 주 +${s.new_7d}</div></div>`;
-    }).join('');
-  } catch(e) { $('dashAppStats').innerHTML = ''; }
+// ── 알림(신규 가입 이력) ──
+async function loadNotifications() {
+  try { await fetchDirectory(); } catch(e) {}
+  const list = [...cachedUsers].sort((a,b)=>new Date(b.created_at)-new Date(a.created_at)).slice(0,100);
+  $('notifFeed').innerHTML = list.map(frowHTML).join('') || '<div class="empty">아직 없음</div>';
+  if (list.length) localStorage.setItem('adm_seen_signup', list[0].created_at);
+  refreshNotifDot();
+}
+function refreshNotifDot() {
+  const latest = [...cachedUsers].sort((a,b)=>new Date(b.created_at)-new Date(a.created_at))[0];
+  const seen = localStorage.getItem('adm_seen_signup');
+  const show = !!latest && (!seen || new Date(latest.created_at) > new Date(seen));
+  const d = $('tbNotifDot'); if (d) d.classList.toggle('show', show);
+  const nb = $('notifNavDot'); if (nb) nb.style.display = show ? '' : 'none';
 }
 
 function renderProjectCards() {
@@ -1407,7 +1587,7 @@ function renderUsers(filter = '') {
   const nameOf = u => u.display_name || u.username || '-';
   let list = userAppFilter === 'all' ? cachedUsers : cachedUsers.filter(u => membershipKeysOf(u).includes(userAppFilter));
   if (filter) list = list.filter(u => nameOf(u).toLowerCase().includes(filter) || (u.email||'').toLowerCase().includes(filter));
-  if (!list.length) { $('usersBody').innerHTML = '<tr><td colspan="9" style="text-align:center;color:var(--light);padding:40px">가입자가 없습니다</td></tr>'; return; }
+  if (!list.length) { $('usersBody').innerHTML = '<tr><td colspan="9" style="text-align:center;color:var(--light);padding:40px">가입자가 없습니다</td></tr>'; const uc0=$('usersCards'); if(uc0) uc0.innerHTML='<div class="empty">가입자가 없습니다</div>'; return; }
   $('usersBody').innerHTML = list.map(u => {
     const [pLabel, pClass] = providerBadge[u.signup_provider] || [u.signup_provider ? u.signup_provider : '이메일','badge-gray'];
     const saKey = appOf(u);
@@ -1417,7 +1597,7 @@ function renderUsers(filter = '') {
     const usedApps = mk.length
       ? mk.map(k => { const i = appInfo(k); const a = (u.apps||[]).find(x => x.key === k); return `<span class="app-chip ${i.cls}"${a ? ` title="첫 사용 ${fmt(a.first_seen)}"` : ''}>${i.name}</span>`; }).join('')
       : '<span style="color:var(--light)">-</span>';
-    return `<tr>
+    return `<tr onclick="openUserModal('${u.id}')" style="cursor:pointer">
       <td class="td-bold">${nameOf(u)}</td>
       <td class="td-mono">${u.email||'-'}</td>
       <td class="td-mono">${fmtPhone(u.phone)}</td>
@@ -1427,9 +1607,11 @@ function renderUsers(filter = '') {
       <td style="color:var(--light)">${fmt(u.created_at)}</td>
       <td style="color:var(--light)">${fmtFull(u.last_sign_in_at)}</td>
       <td><button class="btn-sm user-del-btn" data-uid="${u.id || u.user_id || ''}" data-uname="${nameOf(u)}"
-        style="padding:5px 10px;font-size:11.5px;color:#d0312d;background:#fdf0ef">삭제</button></td>
+        style="padding:5px 10px;font-size:11.5px;color:#d0312d;background:#fdf0ef" onclick="event.stopPropagation()">삭제</button></td>
     </tr>`;
   }).join('');
+  const uc = $('usersCards');
+  if (uc) uc.innerHTML = `<div class="feed" style="border:0;border-radius:0">${list.map(frowHTML).join('')}</div>`;
 }
 
 // ── 앱 공용 뷰 (기도해요/슈웅/홈 등 — 그 앱 사용자만) ──
@@ -1470,7 +1652,7 @@ function renderAppViewUsers() {
     const [pLabel, pClass] = providerBadge[u.signup_provider] || [u.signup_provider ? u.signup_provider : '이메일','badge-gray'];
     const saKey = appOf(u);
     const saBadge = saKey ? (() => { const i = appInfo(saKey); return `<span class="badge ${i.cls}">${i.name}</span>`; })() : '<span style="color:var(--light)">-</span>';
-    return `<tr>
+    return `<tr onclick="openUserModal('${u.id}')" style="cursor:pointer">
       <td class="td-bold">${nameOf(u)}</td>
       <td class="td-mono">${u.email||'-'}</td>
       <td class="td-mono">${fmtPhone(phoneOfApp(u, key))}</td>
@@ -1480,9 +1662,11 @@ function renderAppViewUsers() {
       <td style="color:var(--light)">${fmt(u.created_at)}</td>
       <td style="color:var(--light)">${fmtFull(u.last_sign_in_at)}</td>
       <td><button class="btn-sm user-del-btn" data-uid="${u.id || u.user_id || ''}" data-uname="${nameOf(u)}"
-        style="padding:5px 10px;font-size:11.5px;color:#d0312d;background:#fdf0ef">삭제</button></td>
+        style="padding:5px 10px;font-size:11.5px;color:#d0312d;background:#fdf0ef" onclick="event.stopPropagation()">삭제</button></td>
     </tr>`;
   }).join('');
+  const uc = $('usersCards');
+  if (uc) uc.innerHTML = `<div class="feed" style="border:0;border-radius:0">${list.map(frowHTML).join('')}</div>`;
 }
 
 // ── Projects CRUD ──
@@ -2199,7 +2383,7 @@ function cfgSyncSwitchLabel() {
 }
 
 // ── Navigation ──
-const views = ['dashboard','ogx','poly','users','app','jmap','push','appconfig','projects','settings'];
+const views = ['dashboard','notifications','ogx','poly','users','app','jmap','push','appconfig','projects','settings'];
 // 앱 원격설정에 저장 안 한 값이 있으면 화면을 떠날 때 한 번 잡아요.
 // (한 번 더 누르면 그냥 나갈 수 있게 해서 화면에 갇히지 않도록)
 let cfgLeaveArmed = false;
@@ -2220,7 +2404,9 @@ function navigate(view) {
   document.querySelectorAll('.nav-item').forEach(n => n.classList.toggle('active', n.dataset.view === view));
   $('headerTitle').textContent = view.startsWith('app-') ? appInfo(view.slice(4)).name : (headerTitles[view] || '');
   $('sidebar').classList.remove('open'); $('sidebarBackdrop').classList.remove('open');
+  document.querySelectorAll('.tabbar .tb').forEach(b => b.classList.toggle('on', b.dataset.tb === view));
   if (view === 'ogx') loadOGX(); else if (view === 'users') loadUsers();
+  if (view === 'notifications') loadNotifications();
   else if (view === 'poly') loadPoly();
   else if (view.startsWith('app-')) loadAppView(view.slice(4));
   else if (view === 'jmap') loadJmap();
@@ -2228,6 +2414,13 @@ function navigate(view) {
   else if (view === 'appconfig') loadAppConfig();
   else if (view === 'projects') loadProjectsView(); else if (view === 'dashboard') loadDashboard();
 }
+
+// 하단 탭바 · 바로가기
+document.querySelectorAll('.tabbar .tb').forEach(b => b.addEventListener('click', () => {
+  if (b.dataset.tb === '__more') { $('sidebar').classList.add('open'); $('sidebarBackdrop').classList.add('open'); }
+  else navigate(b.dataset.tb);
+}));
+document.querySelectorAll('[data-goto]').forEach(a => a.addEventListener('click', () => navigate(a.dataset.goto)));
 
 // ── 푸시 발송 ──
 async function pushAuthHeader() {
@@ -2391,6 +2584,25 @@ $('burgerBtn').addEventListener('click', () => { $('sidebar').classList.toggle('
 $('sidebarBackdrop').addEventListener('click', () => { $('sidebar').classList.remove('open'); $('sidebarBackdrop').classList.remove('open'); });
 
 checkSession();
+
+/* ── 디자인 프리뷰(?design=1): 로그인 없이 목업 데이터로 레이아웃 확인용 ── */
+if (new URLSearchParams(location.search).has('design')) {
+  const D = o => new Date(Date.now() - o*86400000).toISOString();
+  const mk = (n,e,p,apps,dt) => ({ id: 'm'+Math.random().toString(36).slice(2), display_name:n, email:e, signup_provider:p, created_at:dt, last_sign_in_at:dt, signup_app:apps[0]||null, apps: apps.map(k=>({key:k,name:k,first_seen:dt})) });
+  const mock = [
+    mk('홍길동','hong@example.com','kakao',['pray'],D(1)),
+    mk('김철수','kim@example.com','kakao',['pray'],D(1)),
+    mk('이영희','lee@example.com','kakao',['travel-globe'],D(1)),
+    mk(null,'apple@privaterelay.example.com','apple',['travel-globe'],D(1)),
+    mk('믿음','pray-demo1@neoix.kr','email',['pray'],D(1)),
+    mk('소망','pray-demo2@neoix.kr','email',['pray'],D(1)),
+    mk('관리자','admin@example.com','kakao',['travel-globe','pray'],D(5)),
+  ].concat(Array.from({length:30},(_,i)=>mk('사용자'+(i+1),'user'+i+'@users.neoix.kr','email',['ogx'],D(3+(i%25)))));
+  currentUser = { id:'demo', email:'wjdrua7315@users.neoix.kr', user_metadata:{ username:'wjdrua7315' } };
+  isAdmin = true;
+  fetchDirectory = async () => { cachedUsers = mock; };
+  enterApp();
+}
 </script>
 </body>
 </html>
