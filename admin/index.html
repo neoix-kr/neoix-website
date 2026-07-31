@@ -8,7 +8,7 @@
 <link rel="apple-touch-icon" href="/admin/icons/apple-touch-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="theme-color" content="#4A3DD6">
+<meta name="theme-color" content="#4f46e5">
 <link rel="icon" href="../logo_168x168.png">
 <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" rel="stylesheet">
 <style>
@@ -689,7 +689,7 @@ tbody tr:hover { background:#fafbfc; }
       <section id="notificationsView" style="display:none">
         <h1 class="page-title">알림</h1>
         <p class="page-desc">신규 가입과 앱 사용 시작이 시간순으로 쌓입니다</p>
-        <div style="margin-bottom:16px"><button class="btn-sm btn-primary-sm" id="btnEnablePush2">이 기기에서 푸시 알림 받기</button></div>
+        <div style="margin-bottom:16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap"><button class="btn-sm btn-primary-sm" id="btnEnablePush2">이 기기에서 푸시 알림 받기</button><span id="pushState2" style="font-size:12.5px;color:var(--muted)"></span></div>
         <div class="feed" id="notifFeed"><div class="empty">불러오는 중...</div></div>
       </section>
 
@@ -1165,6 +1165,40 @@ function b64uToU8(s) {
   return Uint8Array.from(atob(s), (c) => c.charCodeAt(0));
 }
 
+/** 이 기기에서 웹푸시 켜기 — 어느 화면의 버튼에서 눌러도 같은 동작 + 결과를 눈에 보이게 */
+async function enablePushHere(stateEl) {
+  const say = (msg, ok) => { if (stateEl) stateEl.textContent = msg; toast(msg, ok ? 'success' : 'error'); };
+  try {
+    if (!currentUser) return say('먼저 로그인해 주세요', false);
+    if (!('Notification' in window) || !('serviceWorker' in navigator) || !('PushManager' in window))
+      return say('이 브라우저는 푸시를 지원하지 않아요', false);
+    const standalone = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone;
+    if (/iPhone|iPad|iPod/.test(navigator.userAgent) && !standalone)
+      return say('아이폰은 홈 화면에 추가한 아이콘으로 열어야 알림을 켤 수 있어요 → 폰에 설치 안내 참고', false);
+    if (Notification.permission === 'denied')
+      return say('브라우저에서 알림이 차단돼 있어요. 사이트 설정에서 알림을 허용해 주세요', false);
+
+    if (stateEl) stateEl.textContent = '알림 권한 요청 중…';
+    const perm = await Notification.requestPermission();
+    if (perm !== 'granted') return say('알림 권한이 허용되지 않았어요', false);
+
+    if (stateEl) stateEl.textContent = '등록 중…';
+    const reg = await navigator.serviceWorker.register('/admin/sw.js').catch(() => null)
+             || await navigator.serviceWorker.ready;
+    await navigator.serviceWorker.ready;
+    let sub = await reg.pushManager.getSubscription();
+    if (!sub) sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: b64uToU8(VAPID_PUBLIC) });
+    const raw = sub.toJSON();
+    const { error } = await supabase.from('neoix_webpush_subs').upsert({
+      user_id: currentUser.id, endpoint: sub.endpoint, p256dh: raw.keys.p256dh, auth: raw.keys.auth,
+    }, { onConflict: 'endpoint' });
+    if (error) return say('저장 실패: ' + error.message, false);
+    say('✅ 이 기기에서 알림을 받습니다', true);
+  } catch (e) {
+    say('실패: ' + (e && e.message ? e.message : e), false);
+  }
+}
+
 async function setupPushButtons() {
   const state = document.getElementById('pushSetupState');
   const standalone = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone;
@@ -1174,31 +1208,7 @@ async function setupPushButtons() {
     if (deferredInstall) { deferredInstall.prompt(); return; }
     location.href = '/admin/install';
   };
-  document.getElementById('btnEnablePush').onclick = async () => {
-    try {
-      if (!standalone && /iPhone|iPad/.test(navigator.userAgent)) {
-        alert('아이폰은 홈 화면에 설치한 앱에서만 알림을 켤 수 있어요.\n먼저 "폰에 설치하는 법"을 따라 설치한 뒤, 그 아이콘으로 열어서 다시 눌러주세요.');
-        return;
-      }
-      const perm = await Notification.requestPermission();
-      if (perm !== 'granted') { state.textContent = '알림 권한이 거부됐어요'; return; }
-      const reg = await navigator.serviceWorker.ready;
-      const sub = await reg.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: b64uToU8(VAPID_PUBLIC),
-      });
-      const raw = sub.toJSON();
-      const { error } = await supabase.from('neoix_webpush_subs').upsert({
-        user_id: currentUser.id,
-        endpoint: sub.endpoint,
-        p256dh: raw.keys.p256dh,
-        auth: raw.keys.auth,
-      }, { onConflict: 'endpoint' });
-      state.textContent = error ? ('저장 실패: ' + error.message) : '✅ 이 기기 알림 켜짐';
-    } catch (e) {
-      state.textContent = '실패: ' + (e.message || e);
-    }
-  };
+  document.getElementById('btnEnablePush').onclick = () => enablePushHere(state);
   document.getElementById('btnWpSend').onclick = async () => {
     const title = document.getElementById('wpTitle').value.trim();
     const body = document.getElementById('wpBody').value.trim();
@@ -2423,6 +2433,7 @@ document.querySelectorAll('.tabbar .tb').forEach(b => b.addEventListener('click'
   else navigate(b.dataset.tb);
 }));
 document.querySelectorAll('[data-goto]').forEach(a => a.addEventListener('click', () => navigate(a.dataset.goto)));
+$('btnEnablePush2').addEventListener('click', () => enablePushHere($('pushState2')));
 
 // ── 푸시 발송 ──
 async function pushAuthHeader() {

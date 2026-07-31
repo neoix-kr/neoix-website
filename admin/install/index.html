@@ -21,52 +21,56 @@ h1{font-size:21px;font-weight:800;letter-spacing:-.02em;}
 .btn.ghost{background:#fff;color:#4e5968;border:1px solid #eceef1;font-weight:700;font-size:14.5px;height:48px;line-height:46px;margin-top:10px;}
 .note{font-size:12px;color:#8b95a1;line-height:1.75;margin-top:20px;text-align:left;background:#fff;border:1px solid #eceef1;border-radius:14px;padding:14px 16px;}
 .note b{color:#4e5968;}
-.wait{display:none;font-size:13px;color:#8b95a1;margin-top:24px;line-height:1.7;}
+.steps{margin:24px 0 18px;text-align:left;}
+.step{display:flex;gap:12px;align-items:flex-start;background:#fff;border:1px solid #eceef1;border-radius:14px;padding:15px 16px;margin-bottom:9px;}
+.sn{width:23px;height:23px;flex:0 0 auto;border-radius:50%;background:#191f28;color:#fff;font-size:12.5px;font-weight:800;display:flex;align-items:center;justify-content:center;margin-top:1px;}
+.sx{font-size:14.5px;line-height:1.55;color:#191f28;}
+.sx b{font-weight:800;}
+.hint{font-size:12px;color:#8b95a1;margin-top:4px;line-height:1.6;}
+.ii{display:inline-flex;vertical-align:-5px;width:21px;height:21px;margin:0 2px;color:#1d6fd6;}
+.ii svg{width:100%;height:100%;}
+.done{background:#ecfdf5;border:1px solid rgba(5,150,105,.25);color:#047857;border-radius:14px;padding:18px;font-size:15px;font-weight:800;text-align:center;}
+.done .dn{font-size:13px;font-weight:600;color:#4e5968;margin-top:8px;line-height:1.65;}
+.warn{background:#fffbeb;border:1px solid rgba(217,119,6,.28);color:#92400e;border-radius:14px;padding:16px;font-size:13.5px;line-height:1.7;text-align:left;}
 </style>
 </head>
 <body>
 <div class="box">
   <div class="ic"><img src="/admin/icons/icon-512.png" alt="NEOIX Admin"></div>
   <h1>NEOIX Admin</h1>
-  <div class="sub">관리 콘솔을 폰에 설치합니다.<br>신규 가입이 생기면 바로 알림이 옵니다.</div>
+  <div class="sub" id="sub">폰 홈 화면에 추가하면 앱처럼 열리고,<br>신규 가입 알림을 받을 수 있어요.</div>
 
-  <a class="btn" id="btnInstall" href="#">설치하기</a>
+  <div id="steps" class="steps"></div>
+
   <a class="btn ghost" href="/admin/">웹으로 열기</a>
-
-  <div class="wait" id="wait">설치가 시작되면 홈 화면에 아이콘이 나타납니다.<br>완료 후 아이콘을 눌러 실행하고 <b>알림 허용</b>을 눌러주세요.</div>
-  <div class="note" id="note" style="display:none"></div>
 </div>
 
 <script>
-const PLIST = 'https://neoix.kr/admin/install/app.plist';
-const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
-const btn = document.getElementById('btnInstall');
-const note = document.getElementById('note');
+const ua = navigator.userAgent;
+const isIOS = /iPhone|iPad|iPod/.test(ua);
+const inApp = /Instagram|FBAN|FBAV|FB_IAB|KAKAOTALK|Line\//i.test(ua);
+const standalone = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone;
+const el = document.getElementById('steps');
 
-async function ready() {
-  // 빌드가 올라와 있는지 확인 (app.plist 존재 여부)
-  try {
-    const r = await fetch(PLIST, { method: 'HEAD', cache: 'no-store' });
-    return r.ok;
-  } catch (e) { return false; }
+const step = (n, html) => `<div class="step"><div class="sn">${n}</div><div class="sx">${html}</div></div>`;
+const shareIcon = '<span class="ii"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V3"/><path d="M8 7l4-4 4 4"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/></svg></span>';
+const plusIcon = '<span class="ii"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><rect x="3.5" y="3.5" width="17" height="17" rx="4"/><path d="M12 8v8M8 12h8"/></svg></span>';
+
+if (standalone) {
+  el.innerHTML = '<div class="done">✓ 이미 설치되어 있어요<div class="dn">홈 화면 아이콘으로 잘 열렸습니다. 어드민 → 알림에서 <b>푸시 알림 받기</b>를 켜주세요.</div></div>';
+} else if (inApp) {
+  el.innerHTML = '<div class="warn">이 화면은 앱 안의 브라우저예요.<br>오른쪽 위 <b>⋯ 메뉴 → 외부 브라우저(Safari)로 열기</b> 후 다시 시도해 주세요.</div>';
+} else if (isIOS) {
+  el.innerHTML =
+    step(1, '아래 <b>공유 버튼</b> ' + shareIcon + ' 을 누르세요<div class="hint">Safari 하단 가운데(가로 화면이면 상단)</div>') +
+    step(2, '목록을 내려 <b>홈 화면에 추가</b> ' + plusIcon + ' 를 누르세요') +
+    step(3, '오른쪽 위 <b>추가</b>를 누르면 끝<div class="hint">홈 화면 아이콘으로 열어야 알림을 켤 수 있어요</div>');
+} else {
+  el.innerHTML =
+    step(1, '브라우저 <b>메뉴(⋮)</b>를 누르세요') +
+    step(2, '<b>앱 설치</b> 또는 <b>홈 화면에 추가</b>를 누르세요') +
+    step(3, '<b>설치</b>를 누르면 끝');
 }
-
-(async () => {
-  if (!isIOS) {
-    btn.textContent = '홈 화면에 추가';
-    btn.onclick = (e) => { e.preventDefault(); note.style.display='block';
-      note.innerHTML = '<b>안드로이드</b> — 브라우저 메뉴(⋮) → <b>홈 화면에 추가</b>를 누르면 앱처럼 설치됩니다.'; };
-    return;
-  }
-  if (await ready()) {
-    btn.href = 'itms-services://?action=download-manifest&url=' + encodeURIComponent(PLIST);
-    btn.addEventListener('click', () => { document.getElementById('wait').style.display = 'block'; });
-  } else {
-    btn.textContent = '홈 화면에 추가 (임시)';
-    btn.onclick = (e) => { e.preventDefault(); note.style.display='block';
-      note.innerHTML = '앱 설치 파일을 준비 중입니다.<br><br>지금은 <b>Safari 공유 버튼(□↑) → 홈 화면에 추가</b>로 설치해 주세요. 준비되면 이 화면에서 바로 설치할 수 있게 됩니다.'; };
-  }
-})();
 </script>
 </body>
 </html>

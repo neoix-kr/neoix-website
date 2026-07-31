@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+<title>NEOIX Admin — 새 디자인 시안</title>
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+:root{
+  --bg:#f4f5f7; --card:#fff; --line:#eceef1; --line2:#e2e5ea;
+  --tx:#191f28; --t2:#4e5968; --t3:#8b95a1; --t4:#b0b8c1;
+  --acc:#4f46e5; --acc-soft:#eef0fe; --up:#059669; --up-soft:#ecfdf5;
+  --warn:#d97706; --danger:#dc2626;
+}
+html,body{height:100%;}
+body{background:var(--bg);color:var(--tx);font-family:'Pretendard Variable',-apple-system,system-ui,sans-serif;-webkit-font-smoothing:antialiased;max-width:520px;margin:0 auto;padding-bottom:calc(76px + env(safe-area-inset-bottom));}
+
+/* ══ 데스크탑: 사이드바 + 2컬럼 ══ */
+.sidebar{display:none;}
+@media (min-width:900px){
+  body{max-width:none;margin:0;padding-bottom:0;display:grid;grid-template-columns:240px 1fr;min-height:100vh;}
+  .tabbar{display:none!important;}
+  .sidebar{display:flex;flex-direction:column;background:var(--card);border-right:1px solid var(--line);padding:22px 14px;position:sticky;top:0;height:100vh;}
+  .sb-logo{display:flex;align-items:center;gap:10px;padding:0 10px 20px;}
+  .sb-logo .m{width:34px;height:34px;border-radius:10px;background:var(--tx);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;}
+  .sb-logo b{font-size:15px;font-weight:800;letter-spacing:-.01em;}
+  .sb-logo small{display:block;font-size:11px;color:var(--t3);font-weight:600;margin-top:1px;}
+  .sb-sec{font-size:11px;font-weight:700;color:var(--t4);letter-spacing:.06em;padding:14px 10px 6px;}
+  .sb-item{display:flex;align-items:center;gap:11px;padding:10px 10px;border-radius:11px;font-size:14px;font-weight:600;color:var(--t2);cursor:pointer;position:relative;}
+  .sb-item svg{width:19px;height:19px;flex:0 0 auto;}
+  .sb-item:hover{background:var(--bg);}
+  .sb-item.on{background:var(--acc-soft);color:var(--acc);font-weight:700;}
+  .sb-item .cnt{margin-left:auto;font-size:12px;font-weight:700;color:var(--t3);}
+  .sb-item .dot{margin-left:auto;width:7px;height:7px;border-radius:50%;background:var(--danger);}
+  .sb-foot{margin-top:auto;display:flex;align-items:center;gap:10px;padding:12px 10px 0;border-top:1px solid var(--line);}
+  .sb-foot .a{width:34px;height:34px;border-radius:50%;background:var(--tx);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;}
+  .sb-foot .n{font-size:13.5px;font-weight:700;} .sb-foot .r{font-size:11.5px;color:var(--t3);}
+
+  .main{padding:8px 34px 44px;max-width:1080px;}
+  .head{padding:24px 0 4px;}
+  .hero{margin:16px 0 0;display:grid;grid-template-columns:260px 1fr;gap:28px;align-items:center;padding:24px 28px;}
+  .hero .spark{margin-top:0;grid-row:1/3;grid-column:2;}
+  .hero .spark svg{height:88px;}
+  .sec{margin:26px 0 0;}
+  .apps{grid-template-columns:repeat(4,1fr);}
+  .cols2{display:grid;grid-template-columns:1.1fr .9fr;gap:22px;align-items:start;margin-top:26px;}
+  .cols2 .sec{margin:0;}
+  .search{margin:14px 0 0;}
+  .filters{margin:10px 0 0;}
+  .mobile-only{display:none;}
+}
+
+/* 헤더 */
+.head{padding:18px 20px 6px;display:flex;align-items:center;justify-content:space-between;}
+.head .hi{font-size:13px;color:var(--t3);font-weight:600;}
+.head .tt{font-size:22px;font-weight:800;letter-spacing:-.02em;margin-top:3px;}
+.head .av{width:38px;height:38px;border-radius:50%;background:var(--tx);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;}
+
+/* 섹션 */
+.sec{margin:22px 20px 0;}
+.sec .st{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:10px;}
+.sec .st h2{font-size:15px;font-weight:800;letter-spacing:-.01em;}
+.sec .st a{font-size:12.5px;color:var(--t3);text-decoration:none;font-weight:600;}
+
+/* 히어로 카드 — 핵심 지표 */
+.hero{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:20px;margin:14px 20px 0;}
+.hero .lb{font-size:13px;color:var(--t2);font-weight:600;}
+.hero .num{font-size:34px;font-weight:800;letter-spacing:-.03em;margin-top:4px;}
+.hero .num small{font-size:15px;font-weight:700;color:var(--t3);margin-left:2px;}
+.hero .delta{display:inline-flex;align-items:center;gap:4px;background:var(--up-soft);color:var(--up);font-size:12.5px;font-weight:700;padding:4px 10px;border-radius:99px;margin-top:10px;}
+.hero .spark{margin-top:16px;}
+.hero .spark svg{width:100%;height:56px;display:block;}
+.hero .axis{display:flex;justify-content:space-between;font-size:11px;color:var(--t4);margin-top:6px;}
+
+/* 앱 카드 그리드 */
+.apps{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.app{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;}
+.app .r{display:flex;align-items:center;gap:9px;}
+.app .ic{width:34px;height:34px;border-radius:10px;overflow:hidden;background:#f2f4f6;flex:0 0 auto;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:var(--t2);}
+.app .ic img{width:100%;height:100%;object-fit:cover;display:block;}
+.app .nm{font-size:13.5px;font-weight:700;color:var(--t2);}
+.app .n{font-size:24px;font-weight:800;letter-spacing:-.02em;margin-top:10px;}
+.app .d{font-size:12px;font-weight:700;color:var(--up);margin-top:3px;}
+.app .d.zero{color:var(--t4);}
+
+/* 최근 가입 피드 */
+.feed{background:var(--card);border:1px solid var(--line);border-radius:20px;overflow:hidden;}
+.frow{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--line);}
+.frow:last-child{border-bottom:0;}
+.fav{width:40px;height:40px;border-radius:50%;flex:0 0 auto;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;color:#fff;}
+.fbody{flex:1;min-width:0;}
+.fn{font-size:14.5px;font-weight:700;display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+.chip{font-size:10.5px;font-weight:700;padding:2.5px 7px;border-radius:6px;}
+.chip.sw{background:#eef0fe;color:#4f46e5;} .chip.pr{background:#e8f3ff;color:#1d6fd6;} .chip.kk{background:#fdf3d0;color:#8a6d00;} .chip.ap{background:#f2f4f6;color:#4e5968;} .chip.internal{background:#fff1f0;color:#c2410c;}
+.fs{font-size:12px;color:var(--t3);margin-top:3px;}
+.ft{font-size:11.5px;color:var(--t4);white-space:nowrap;}
+
+/* 사용자 화면 */
+.search{display:flex;gap:8px;margin:14px 20px 0;}
+.search input{flex:1;height:46px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:0 16px;font-size:15px;font-family:inherit;color:var(--tx);}
+.search input::placeholder{color:var(--t4);}
+.search input:focus{outline:none;border-color:var(--acc);}
+.filters{display:flex;gap:6px;margin:10px 20px 0;overflow-x:auto;scrollbar-width:none;padding-bottom:2px;}
+.filters::-webkit-scrollbar{display:none;}
+.fc{flex:0 0 auto;font-size:13px;font-weight:700;padding:8px 14px;border-radius:99px;background:var(--card);border:1px solid var(--line);color:var(--t2);}
+.fc.on{background:var(--tx);border-color:var(--tx);color:#fff;}
+
+/* 하단 탭 */
+.tabbar{position:fixed;left:0;right:0;bottom:0;max-width:520px;margin:0 auto;background:rgba(255,255,255,.92);backdrop-filter:blur(16px);border-top:1px solid var(--line);display:flex;padding:8px 8px calc(8px + env(safe-area-inset-bottom));z-index:10;}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 0;border:0;background:none;color:var(--t4);font-family:inherit;}
+.tab svg{width:23px;height:23px;}
+.tab span{font-size:10.5px;font-weight:700;}
+.tab.on{color:var(--tx);}
+.badge-dot{position:absolute;margin-left:22px;width:7px;height:7px;border-radius:50%;background:var(--danger);}
+
+/* 데모 라벨 */
+.demo-note{margin:26px 20px 8px;text-align:center;font-size:11.5px;color:var(--t4);}
+</style>
+</head>
+<body>
+
+<!-- 데스크탑 사이드바 -->
+<aside class="sidebar">
+  <div class="sb-logo"><div class="m">N</div><div><b>NEOIX Admin</b><small>관리 콘솔</small></div></div>
+  <div class="sb-sec">개요</div>
+  <div class="sb-item on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>대시보드</div>
+  <div class="sb-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>사용자<span class="cnt">69</span></div>
+  <div class="sb-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0112 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 003.4 0"/></svg>알림<span class="dot"></span></div>
+  <div class="sb-sec">앱</div>
+  <div class="sb-item"><img src="/link/icon-swoong.png" style="width:19px;height:19px;border-radius:5px">슈웅<span class="cnt">9</span></div>
+  <div class="sb-item"><img src="/link/icon-pray.png" style="width:19px;height:19px;border-radius:5px">프레이위드<span class="cnt">4</span></div>
+  <div class="sb-item"><img src="/link/icon-poly.png" style="width:19px;height:19px;border-radius:5px">폴리<span class="cnt">1</span></div>
+  <div class="sb-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>OGX 찬양팀<span class="cnt">27</span></div>
+  <div class="sb-sec">도구</div>
+  <div class="sb-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4z"/></svg>푸시 발송</div>
+  <div class="sb-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 11-4 0v-.09a1.65 1.65 0 00-1-1.51 1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 110-4h.09a1.65 1.65 0 001.51-1 1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33h0a1.65 1.65 0 001-1.51V3a2 2 0 114 0v.09a1.65 1.65 0 001 1.51h0a1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82v0a1.65 1.65 0 001.51 1H21a2 2 0 110 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>설정</div>
+  <div class="sb-foot"><div class="a">W</div><div><div class="n">wjdrua7315</div><div class="r">관리자</div></div></div>
+</aside>
+
+<div class="main">
+<div class="head">
+  <div>
+    <div class="hi">2026년 8월 1일 토요일</div>
+    <div class="tt">대시보드</div>
+  </div>
+  <div class="av">W</div>
+</div>
+
+<!-- 핵심 지표 -->
+<div class="hero">
+  <div class="lb">전체 가입자</div>
+  <div class="num">69<small>명</small></div>
+  <span class="delta">▲ 이번 주 +14</span>
+  <div class="spark">
+    <svg viewBox="0 0 320 56" preserveAspectRatio="none">
+      <defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4f46e5" stop-opacity=".14"/><stop offset="1" stop-color="#4f46e5" stop-opacity="0"/></linearGradient></defs>
+      <path d="M0,50 L23,49 L46,49 L69,47 L92,47 L115,46 L138,44 L161,44 L184,42 L207,41 L230,38 L253,34 L276,22 L299,10 L320,4 L320,56 L0,56 Z" fill="url(#g)"/>
+      <path d="M0,50 L23,49 L46,49 L69,47 L92,47 L115,46 L138,44 L161,44 L184,42 L207,41 L230,38 L253,34 L276,22 L299,10 L320,4" fill="none" stroke="#4f46e5" stroke-width="2.5" stroke-linecap="round"/>
+      <circle cx="320" cy="4" r="4" fill="#4f46e5"/>
+    </svg>
+    <div class="axis"><span>7월 18일</span><span>7월 25일</span><span>오늘</span></div>
+  </div>
+</div>
+
+<!-- 앱별 -->
+<div class="sec">
+  <div class="st"><h2>앱별 사용자</h2><a href="#">전체 보기 ›</a></div>
+  <div class="apps">
+    <div class="app"><div class="r"><div class="ic"><img src="/link/icon-swoong.png"></div><div class="nm">슈웅</div></div><div class="n">9</div><div class="d">이번 주 +8</div></div>
+    <div class="app"><div class="r"><div class="ic"><img src="/link/icon-pray.png"></div><div class="nm">프레이위드</div></div><div class="n">4</div><div class="d">이번 주 +3 · 내부 5 제외</div></div>
+    <div class="app"><div class="r"><div class="ic"><img src="/link/icon-poly.png"></div><div class="nm">폴리</div></div><div class="n">1</div><div class="d zero">이번 주 +0</div></div>
+    <div class="app"><div class="r"><div class="ic">OGX</div><div class="nm">OGX 찬양팀</div></div><div class="n">27</div><div class="d zero">이번 주 +0</div></div>
+  </div>
+</div>
+
+<div class="cols2">
+<!-- 최근 가입 -->
+<div class="sec">
+  <div class="st"><h2>최근 가입</h2><a href="#">알림 설정 ›</a></div>
+  <div class="feed">
+    <div class="frow">
+      <div class="fav" style="background:#4f46e5">박</div>
+      <div class="fbody"><div class="fn">박준엽 <span class="chip pr">프레이위드</span><span class="chip kk">카카오</span></div><div class="fs">ubesta13@naver.com</div></div>
+      <div class="ft">어제 12:25</div>
+    </div>
+    <div class="frow">
+      <div class="fav" style="background:#0ea5e9">강</div>
+      <div class="fbody"><div class="fn">강석민 <span class="chip pr">프레이위드</span><span class="chip kk">카카오</span></div><div class="fs">tjrals58@gmail.com</div></div>
+      <div class="ft">어제 11:50</div>
+    </div>
+    <div class="frow">
+      <div class="fav" style="background:#059669">송</div>
+      <div class="fbody"><div class="fn">송기원 <span class="chip sw">슈웅</span><span class="chip kk">카카오</span></div><div class="fs">dhrl****@naver.com</div></div>
+      <div class="ft">어제 11:34</div>
+    </div>
+    <div class="frow">
+      <div class="fav" style="background:#64748b">애</div>
+      <div class="fbody"><div class="fn">Apple 사용자 <span class="chip sw">슈웅</span><span class="chip ap">Apple</span></div><div class="fs">vnms****@privaterelay.appleid.com</div></div>
+      <div class="ft">어제 12:48</div>
+    </div>
+    <div class="frow">
+      <div class="fav" style="background:#c2410c">믿</div>
+      <div class="fbody"><div class="fn">믿음 <span class="chip pr">프레이위드</span><span class="chip internal">내부 · 데모</span></div><div class="fs">pray-demo1@neoix.kr</div></div>
+      <div class="ft">어제 13:45</div>
+    </div>
+  </div>
+</div>
+
+<div><!-- 우측 컬럼: 사용자 -->
+<div class="sec">
+  <div class="st"><h2>사용자 (검색·필터 화면)</h2></div>
+</div>
+<div class="search"><input placeholder="이름, 이메일, 전화번호 검색"></div>
+<div class="filters">
+  <button class="fc on">전체 69</button><button class="fc">슈웅 9</button><button class="fc">프레이위드 9</button><button class="fc">폴리 1</button><button class="fc">OGX 27</button><button class="fc">내부 제외</button>
+</div>
+<div class="sec" style="margin-top:12px">
+  <div class="feed">
+    <div class="frow">
+      <div class="fav" style="background:#4f46e5">박</div>
+      <div class="fbody"><div class="fn">박준엽</div><div class="fs">ubesta13@naver.com · 카카오 · 어제 가입</div></div>
+      <div class="ft">›</div>
+    </div>
+    <div class="frow">
+      <div class="fav" style="background:#0ea5e9">강</div>
+      <div class="fbody"><div class="fn">강석민</div><div class="fs">tjrals58@gmail.com · 카카오 · 어제 가입</div></div>
+      <div class="ft">›</div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /우측 컬럼 -->
+</div><!-- /cols2 -->
+
+<div class="demo-note">— 디자인 시안 (실데이터 연결 전) —</div>
+</div><!-- /main -->
+
+<!-- 하단 탭바 -->
+<div class="tabbar">
+  <button class="tab on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg><span>홈</span></button>
+  <button class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg><span>사용자</span></button>
+  <button class="tab"><span class="badge-dot"></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/></svg><span>앱</span></button>
+  <button class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0112 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 003.4 0"/></svg><span>알림</span></button>
+  <button class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1.6"/><circle cx="5" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg><span>더보기</span></button>
+</div>
+
+</body>
+</html>
