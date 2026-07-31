@@ -12,3 +12,7 @@ neoix-otp/
 *.bin
 worker.js
 wrangler.toml
+.next/
+.wrangler/
+ChatGPT*
+bgm-studio/cards.html
