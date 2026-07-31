@@ -3,108 +3,208 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>NEOIX — 앱과 서비스</title>
-<meta name="description" content="네오익스가 만드는 앱과 서비스를 한곳에서.">
-<meta property="og:title" content="NEOIX — 앱과 서비스">
-<meta property="og:description" content="네오익스가 만드는 앱과 서비스를 한곳에서.">
-<meta property="og:type" content="website">
+<title>NEOIX 링크</title>
+<meta name="description" content="네오익스 앱과 서비스">
 <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
-:root{ --bg:#000; --card:#0e0e10; --line:rgba(255,255,255,.1); --tx:#fff; --t2:rgba(255,255,255,.55); --t3:rgba(255,255,255,.32); }
-body{background:var(--bg);color:var(--tx);font-family:'Pretendard Variable',-apple-system,system-ui,sans-serif;-webkit-font-smoothing:antialiased;min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;align-items:center;padding:28px 20px calc(28px + env(safe-area-inset-bottom));}
-.wrap{width:100%;max-width:420px;display:flex;flex-direction:column;flex:1;}
+:root{
+  --outer:#000; --page:#0b0b0d; --card:#121216; --card2:#17171c;
+  --line:rgba(255,255,255,.09); --line2:rgba(255,255,255,.2);
+  --tx:#fff; --t2:rgba(255,255,255,.6); --t3:rgba(255,255,255,.32);
+  --acc:#fff; --acc-tx:#000; --ring:rgba(255,255,255,.14);
+  --shadow:0 10px 34px rgba(0,0,0,.55); --frame:rgba(255,255,255,.07);
+}
+html,body{height:100%;}
+body{background:var(--outer);color:var(--tx);font-family:'Pretendard Variable',-apple-system,system-ui,sans-serif;-webkit-font-smoothing:antialiased;display:flex;justify-content:center;visibility:hidden;}
+body.ready{visibility:visible;}
 
-/* ── 상단: 앱 ── */
-.sec{font-size:11.5px;font-weight:700;letter-spacing:.14em;color:var(--t3);margin:26px 0 10px 2px;}
-.sec:first-child{margin-top:0;}
-.card{display:flex;align-items:center;gap:14px;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;margin-bottom:10px;text-decoration:none;color:var(--tx);transition:background .15s;}
-.card:active{background:#17171a;}
-.card.featured{border-color:rgba(255,255,255,.35);}
-.card .ic{width:52px;height:52px;border-radius:13px;flex:0 0 auto;overflow:hidden;background:#1a1a1d;}
-.card .ic img{width:100%;height:100%;display:block;object-fit:cover;}
-.card .ic.tx{display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:800;color:var(--tx);}
-.card .tt{flex:1;min-width:0;}
-.card .nm{font-size:16px;font-weight:700;line-height:1.25;}
-.card .ds{font-size:12.5px;color:var(--t2);margin-top:3px;line-height:1.45;}
-.card .go{flex:0 0 auto;font-size:12.5px;font-weight:700;padding:8px 13px;border-radius:99px;white-space:nowrap;}
-.card .go.get{background:#fff;color:#000;}
-.card .go.soon{background:rgba(255,255,255,.08);color:var(--t2);}
-.card .go.open{border:1px solid rgba(255,255,255,.25);color:var(--tx);}
+/* ── 항상 모바일 폭 — 데스크톱에서도 폰 화면 그대로 ── */
+.page{width:100%;max-width:430px;min-height:100vh;min-height:100dvh;background:var(--page);display:flex;flex-direction:column;padding:24px 22px calc(30px + env(safe-area-inset-bottom));position:relative;transition:background .2s;}
+@media (min-width:520px){
+  body{padding:28px 0;}
+  .page{min-height:calc(100vh - 56px);border:1px solid var(--frame);border-radius:28px;}
+}
 
-/* ── 하단: NEOIX ── */
-.foot{margin-top:auto;padding-top:44px;text-align:center;}
-.foot .logo{height:22px;margin:0 auto 10px;color:#fff;}
-.foot .logo svg{height:22px;width:auto;display:block;margin:0 auto;}
-.foot .tag{font-size:12.5px;color:var(--t2);}
-.foot .links{margin-top:14px;font-size:11.5px;color:var(--t3);}
-.foot .links a{color:var(--t3);text-decoration:none;}
-.foot .links a:active{color:var(--t2);}
-.foot .sep{margin:0 7px;}
+/* 상단 바: 공유 */
+.bar{display:flex;justify-content:flex-end;height:34px;}
+.share{border:1px solid var(--line);background:none;color:var(--t2);width:34px;height:34px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:color .15s,border-color .15s;}
+.share:hover{color:var(--tx);border-color:var(--line2);}
+.share svg{width:15px;height:15px;}
+
+/* 프로필 */
+.prof{text-align:center;margin:24px 0 28px;}
+.prof .av{width:96px;height:96px;border-radius:28px;margin:0 auto 18px;overflow:hidden;background:var(--card);border:1px solid var(--ring);box-shadow:var(--shadow);}
+.prof .av img{width:100%;height:100%;display:block;object-fit:cover;}
+.prof .av.tx{display:flex;align-items:center;justify-content:center;font-size:34px;font-weight:800;}
+.prof h1{font-size:24px;font-weight:800;letter-spacing:-.02em;}
+.prof .bio{font-size:14.5px;color:var(--t2);margin-top:8px;line-height:1.55;}
+
+/* 소개(홍보) 카드 */
+.about{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px;margin-bottom:22px;}
+.about img{width:100%;border-radius:12px;display:block;margin-bottom:14px;}
+.about .at{font-size:15.5px;font-weight:800;letter-spacing:-.01em;}
+.about .ab{font-size:13.5px;color:var(--t2);line-height:1.7;margin-top:8px;white-space:pre-line;}
+
+/* 링크 버튼 */
+.lk{display:block;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 20px;margin-bottom:12px;text-decoration:none;color:var(--tx);text-align:center;transition:background .15s,border-color .15s,transform .12s;}
+.lk:hover{background:var(--card2);border-color:var(--line2);transform:translateY(-1px);}
+.lk:active{transform:scale(.98);}
+.lk .lb{font-size:15.5px;font-weight:700;letter-spacing:-.01em;}
+.lk .sb{font-size:12.5px;color:var(--t2);margin-top:4px;}
+.lk.pri{background:var(--acc);border-color:var(--acc);color:var(--acc-tx);}
+.lk.pri .sb{color:var(--acc-tx);opacity:.65;}
+.lk.pri:hover{background:var(--acc);filter:brightness(1.05);}
+.lk.off{pointer-events:none;border-style:dashed;background:transparent;}
+.lk.off .lb,.lk.off .sb{color:var(--t3);}
+.empty{text-align:center;color:var(--t3);font-size:14px;padding:70px 0;}
+
+/* 하단 NEOIX */
+.foot{margin-top:auto;padding-top:52px;text-align:center;}
+.foot a{color:var(--tx);text-decoration:none;display:inline-block;opacity:.85;}
+.foot a:hover{opacity:1;}
+.foot .logo svg{height:17px;width:auto;display:block;margin:0 auto;}
+.foot .tg{font-size:11px;color:var(--t3);margin-top:10px;letter-spacing:.01em;}
+
+/* 토스트 */
+.toast{position:fixed;left:50%;bottom:34px;transform:translateX(-50%) translateY(90px);background:#111;color:#fff;font-size:13px;font-weight:700;padding:10px 18px;border-radius:99px;transition:transform .25s;z-index:9;box-shadow:0 6px 24px rgba(0,0,0,.25);}
+.toast.on{transform:translateX(-50%) translateY(0);}
 </style>
 </head>
 <body>
-<div class="wrap">
-  <div id="apps">
-    <div class="sec">APP</div>
-    <!-- 앱 카드는 JS(CONFIG)로 렌더 -->
+<div class="page">
+  <div class="bar">
+    <button class="share" id="share" aria-label="링크 복사" title="링크 복사">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+    </button>
   </div>
 
-  <div class="sec">WEB</div>
-  <a class="card" href="https://neoix.kr/ogx" >
-    <div class="ic tx">OGX</div>
-    <div class="tt"><div class="nm">OGX 찬양팀</div><div class="ds">찬양팀 악보·반주·콘티 도구</div></div>
-    <div class="go open">열기</div>
-  </a>
-  <a class="card" href="https://neoix.kr/travel">
-    <div class="ic tx">TR</div>
-    <div class="tt"><div class="nm">트레블</div><div class="ds">여행 날짜 맞추기</div></div>
-    <div class="go open">열기</div>
-  </a>
-  <a class="card" href="https://neoix.kr/account">
-    <div class="ic tx">N</div>
-    <div class="tt"><div class="nm">네오익스 계정</div><div class="ds">하나의 계정으로 모든 서비스</div></div>
-    <div class="go open">열기</div>
-  </a>
+  <div class="prof" id="prof" style="display:none">
+    <div class="av" id="av"></div>
+    <h1 id="title"></h1>
+    <div class="bio" id="bio" style="display:none"></div>
+  </div>
+  <div id="about"></div>
+  <div id="links"></div>
 
   <div class="foot">
     <a href="https://neoix.kr" class="logo" aria-label="NEOIX">
       <svg viewBox="0 0 857 256" xmlns="http://www.w3.org/2000/svg"><path d="M170.032 203L105.169 128.038V203H59.6084V48.5869H102.925L167.787 124.671V48.5869H213.348V203H170.032ZM239.834 48.5869H373.374V85.6191H289.434V106.941H361.254V142.402H289.434V165.968H374.945V203H239.834V48.5869ZM471.83 45.8937C498.463 45.8937 519.037 52.7016 533.55 66.3175C548.064 79.9334 555.321 99.7587 555.321 125.793C555.321 151.828 548.064 171.654 533.55 185.269C519.037 198.885 498.463 205.693 471.83 205.693C445.197 205.693 424.623 198.96 410.11 185.494C395.746 171.878 388.564 151.978 388.564 125.793C388.564 99.6091 395.746 79.7838 410.11 66.3175C424.623 52.7016 445.197 45.8937 471.83 45.8937ZM471.83 82.9259C461.207 82.9259 453.127 86.1428 447.591 92.5767C442.055 99.0106 439.287 107.689 439.287 118.611V132.975C439.287 143.898 442.055 152.576 447.591 159.01C453.127 165.444 461.207 168.661 471.83 168.661C482.453 168.661 490.533 165.444 496.069 159.01C501.755 152.576 504.598 143.898 504.598 132.975V118.611C504.598 107.689 501.755 99.0106 496.069 92.5767C490.533 86.1428 482.453 82.9259 471.83 82.9259ZM577.542 203V48.5869H627.143V203H577.542ZM813.801 203H753.652L725.148 154.97H724.251L695.747 203H640.086L695.298 121.305L645.473 48.5869H705.398L728.739 88.0879H729.637L753.203 48.5869H808.639L758.589 121.529L813.801 203Z" fill="currentColor"/></svg>
     </a>
-    <div class="tag">사람들이 매일 쓰는 서비스를 만듭니다</div>
-    <div class="links">
-      <a href="https://neoix.kr">neoix.kr</a><span class="sep">·</span><a href="/terms/">이용약관</a><span class="sep">·</span><a href="/privacy/">개인정보처리방침</a>
-    </div>
+    <div class="tg">사람들이 매일 쓰는 서비스를 만듭니다</div>
   </div>
 </div>
+<div class="toast" id="toast"></div>
 
-<script>
-/* ── 앱 목록 — 스토어 출시되면 ios/android에 URL만 채우면 '받기' 버튼으로 바뀜 ── */
-const CONFIG = [
-  { key:'swoong', name:'슈웅',      desc:'전 세계 여행 기록',        icon:'icon-swoong.png', ios:'', android:'' },
-  { key:'pray',   name:'프레이위드', desc:'교회 중보기도',            icon:'icon-pray.png',   ios:'', android:'' },
-  { key:'poly',   name:'폴리',      desc:'우리 지역 정치, 쉽게',      icon:'icon-poly.png',   ios:'', android:'' },
-];
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+const sb = createClient('https://nroddjekdjwnwguwkudl.supabase.co','sb_publishable_Uygr7NmVn1wmqopNrb4FRw_CRWw7Xeg');
+const $ = id => document.getElementById(id);
+const esc = s => String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const toast = t => {const el=$('toast');el.textContent=t;el.classList.add('on');clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('on'),2000);};
 
-/* ?app=swoong → 그 앱을 맨 위로 + 강조 테두리 (앱별 인스타 계정 프로필에 각각 사용) */
-const featured = new URLSearchParams(location.search).get('app');
-const list = [...CONFIG].sort((a,b)=>(b.key===featured)-(a.key===featured));
-
-const storeUrl = a => {
-  const ua = navigator.userAgent;
-  if (/android/i.test(ua)) return a.android || a.ios;
-  return a.ios || a.android;
+/* ── 앱별 톤 테마 ── */
+const THEMES = {
+  neoix: {}, // 기본(블랙) — :root 값 그대로
+  swoong: { /* 슈웅: 아이콘의 파스텔 블루·퍼플 */
+    '--outer':'#e7ebf8','--page':'#f3f5fe','--card':'#ffffff','--card2':'#f7f8ff',
+    '--line':'rgba(72,86,180,.13)','--line2':'rgba(72,86,180,.3)',
+    '--tx':'#232a52','--t2':'rgba(35,42,82,.62)','--t3':'rgba(35,42,82,.36)',
+    '--acc':'#6d7dff','--acc-tx':'#fff','--ring':'rgba(72,86,180,.18)',
+    '--shadow':'0 12px 30px rgba(90,105,220,.18)','--frame':'rgba(72,86,180,.14)',
+  },
+  pray: { /* 프레이위드: 하늘·구름 */
+    '--outer':'#ddebfa','--page':'#eef6ff','--card':'#ffffff','--card2':'#f4faff',
+    '--line':'rgba(40,100,170,.13)','--line2':'rgba(40,100,170,.3)',
+    '--tx':'#173a5e','--t2':'rgba(23,58,94,.62)','--t3':'rgba(23,58,94,.36)',
+    '--acc':'#3f8ede','--acc-tx':'#fff','--ring':'rgba(40,100,170,.18)',
+    '--shadow':'0 12px 30px rgba(63,142,222,.2)','--frame':'rgba(40,100,170,.14)',
+  },
+  poly: { /* 폴리: 네이비 */
+    '--outer':'#e6e9ee','--page':'#f4f6f9','--card':'#ffffff','--card2':'#f2f4f8',
+    '--line':'rgba(22,35,61,.12)','--line2':'rgba(22,35,61,.3)',
+    '--tx':'#16233d','--t2':'rgba(22,35,61,.62)','--t3':'rgba(22,35,61,.36)',
+    '--acc':'#16233d','--acc-tx':'#fff','--ring':'rgba(22,35,61,.16)',
+    '--shadow':'0 12px 30px rgba(22,35,61,.14)','--frame':'rgba(22,35,61,.12)',
+  },
 };
+/* 커스텀 톤: 포인트색 + 라이트/다크 → 팔레트 자동 파생 */
+function hexToHsl(hex){const m=hex.replace('#','');const n=m.length===3?m.split('').map(c=>c+c).join(''):m;
+  const r=parseInt(n.slice(0,2),16)/255,g=parseInt(n.slice(2,4),16)/255,b=parseInt(n.slice(4,6),16)/255;
+  const mx=Math.max(r,g,b),mn=Math.min(r,g,b);let h=0,s=0;const l=(mx+mn)/2;
+  if(mx!==mn){const d=mx-mn;s=l>.5?d/(2-mx-mn):d/(mx+mn);
+    h=mx===r?((g-b)/d+(g<b?6:0)):mx===g?((b-r)/d+2):((r-g)/d+4);h*=60;}
+  return [h,s*100,l*100];}
+function lumOf(hex){const m=hex.replace('#','');const n=m.length===3?m.split('').map(c=>c+c).join(''):m;
+  return (0.299*parseInt(n.slice(0,2),16)+0.587*parseInt(n.slice(2,4),16)+0.114*parseInt(n.slice(4,6),16))/255;}
+function customTheme(cfg){
+  const acc=(cfg&&cfg.accent)||'#6d7dff';
+  const accTx=lumOf(acc)>0.62?'#111':'#fff';
+  if(cfg&&cfg.mode==='dark'){
+    return {'--acc':acc,'--acc-tx':accTx}; // 다크 베이스는 기본 블랙 팔레트 + 포인트색만
+  }
+  const [h,s]=hexToHsl(acc);const S=Math.min(s,50);
+  const hs=(sat,l,a)=>a==null?`hsl(${h} ${sat}% ${l}%)`:`hsl(${h} ${sat}% ${l}% / ${a})`;
+  return {
+    '--outer':hs(Math.min(s,40),91),'--page':hs(S,97),'--card':'#ffffff','--card2':hs(S,97.5),
+    '--line':hs(40,25,.13),'--line2':hs(40,25,.3),
+    '--tx':hs(S,19),'--t2':hs(40,22,.62),'--t3':hs(40,22,.36),
+    '--acc':acc,'--acc-tx':accTx,'--ring':hs(40,25,.18),
+    '--shadow':`0 12px 30px ${hs(55,50,.18)}`,'--frame':hs(40,25,.14),
+  };
+}
+function applyTheme(name,custom){
+  const t = name==='custom' ? customTheme(custom) : (THEMES[name] || {});
+  for (const [k,v] of Object.entries(t)) document.documentElement.style.setProperty(k,v);
+}
 
-document.getElementById('apps').innerHTML = '<div class="sec">APP</div>' + list.map(a => {
-  const url = storeUrl(a);
-  const tag = url ? '<div class="go get">받기</div>' : '<div class="go soon">곧 출시</div>';
-  const open = url ? `href="${url}"` : 'href="javascript:void(0)" style="cursor:default"';
-  return `<a class="card${a.key===featured?' featured':''}" ${open}>
-    <div class="ic"><img src="${a.icon}" alt="${a.name}"></div>
-    <div class="tt"><div class="nm">${a.name}</div><div class="ds">${a.desc}</div></div>
-    ${tag}</a>`;
-}).join('');
+/* 슬러그: /link/슬러그 (배포) 또는 ?p=슬러그 (로컬) */
+let slug = new URLSearchParams(location.search).get('p') || '';
+if (!slug) { const m = location.pathname.match(/\/link\/([^\/?#]+)\/?$/); if (m && m[1] !== 'index.html') slug = decodeURIComponent(m[1]); }
+if (!slug) slug = 'neoix';
+
+$('share').addEventListener('click', async () => {
+  const url = location.hostname === 'localhost' ? location.href : `https://neoix.kr/link/${slug}`;
+  try { await navigator.clipboard.writeText(url); toast('링크가 복사되었습니다'); }
+  catch { toast(url); }
+});
+
+const { data } = await sb.from('link_pages').select('*').eq('slug', slug).maybeSingle();
+if (!data) {
+  $('links').innerHTML = '<div class="empty">페이지를 찾을 수 없어요</div>';
+} else {
+  applyTheme(data.theme || 'neoix', data.theme_custom);
+  document.title = data.title + ' — 링크';
+  $('prof').style.display = '';
+  if (data.avatar_url) $('av').innerHTML = `<img src="${esc(data.avatar_url)}" alt="">`;
+  else { $('av').classList.add('tx'); $('av').textContent = (data.title||'N')[0]; }
+  $('title').textContent = data.title;
+  if (data.bio) { $('bio').style.display=''; $('bio').textContent = data.bio; }
+
+  /* 앱 소개(홍보) 카드 */
+  const ab = data.about;
+  if (ab && (ab.title || ab.body || ab.image)) {
+    $('about').innerHTML = `<div class="about">
+      ${ab.image?`<img src="${esc(ab.image)}" alt="">`:''}
+      ${ab.title?`<div class="at">${esc(ab.title)}</div>`:''}
+      ${ab.body?`<div class="ab">${esc(ab.body)}</div>`:''}
+    </div>`;
+  }
+
+  /* 링크 — 첫 번째 활성 링크는 강조(accent) 버튼 */
+  const links = Array.isArray(data.links) ? data.links : [];
+  let priDone = false;
+  $('links').innerHTML = links.map(l => {
+    const off = !l.url;
+    let cls = 'lk';
+    if (off) cls += ' off';
+    else if (!priDone) { cls += ' pri'; priDone = true; }
+    return `<a class="${cls}" ${off?'':`href="${esc(l.url)}"`}>
+      <div class="lb">${esc(l.label)}</div>${l.sub?`<div class="sb">${esc(l.sub)}</div>`:''}
+    </a>`;
+  }).join('') || '<div class="empty">아직 링크가 없어요</div>';
+}
+document.body.classList.add('ready');
 </script>
 </body>
 </html>

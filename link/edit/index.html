@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>링크 관리 — NEOIX</title>
+<meta name="robots" content="noindex">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{ --bg:#000; --panel:#0c0c0e; --card:#131316; --line:rgba(255,255,255,.1); --line2:rgba(255,255,255,.06); --tx:#fff; --t2:rgba(255,255,255,.55); --t3:rgba(255,255,255,.3); --ok:#4ade80; }
+body{background:var(--bg);color:var(--tx);font-family:'Pretendard Variable',-apple-system,system-ui,sans-serif;-webkit-font-smoothing:antialiased;min-height:100vh;}
+input,textarea,button,select{font-family:inherit;}
+
+/* 로그인 */
+.gate{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;}
+.gate .box{width:100%;max-width:340px;text-align:center;}
+.gate h1{font-size:19px;font-weight:800;margin-bottom:6px;}
+.gate p{font-size:13px;color:var(--t2);margin-bottom:24px;}
+.gate input{width:100%;height:48px;background:var(--card);border:1px solid var(--line);border-radius:12px;color:#fff;font-size:15px;padding:0 16px;margin-bottom:10px;}
+.gate input:focus{outline:none;border-color:rgba(255,255,255,.4);}
+.gate button{width:100%;height:48px;border:0;border-radius:12px;background:#fff;color:#000;font-size:15px;font-weight:700;cursor:pointer;}
+.gate .err{margin-top:14px;font-size:13px;color:#ff9a9a;min-height:18px;}
+
+/* 앱 레이아웃 */
+.app{display:none;min-height:100vh;}
+.top{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--line2);}
+.top .t{font-size:15px;font-weight:800;}
+.top .t small{color:var(--t3);font-weight:600;margin-left:8px;}
+.top button{border:1px solid var(--line);background:none;color:var(--t2);font-size:12.5px;font-weight:600;padding:7px 13px;border-radius:9px;cursor:pointer;}
+.cols{display:grid;grid-template-columns:220px 1fr 400px;min-height:calc(100vh - 57px);}
+@media (max-width:1080px){ .cols{grid-template-columns:200px 1fr;} .pv{display:none;} }
+
+/* 좌: 페이지 목록 */
+.side{border-right:1px solid var(--line2);padding:16px 12px;}
+.side .new{width:100%;border:1px dashed var(--line);background:none;color:var(--t2);font-size:13px;font-weight:600;padding:11px;border-radius:11px;cursor:pointer;margin-bottom:12px;}
+.side .new:hover{color:#fff;border-color:rgba(255,255,255,.3);}
+.pgitem{display:flex;align-items:center;gap:10px;padding:10px 10px;border-radius:11px;cursor:pointer;margin-bottom:2px;}
+.pgitem:hover{background:var(--card);}
+.pgitem.on{background:var(--card);}
+.pgitem .pa{width:30px;height:30px;border-radius:9px;background:#1b1b1f;overflow:hidden;flex:0 0 auto;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;}
+.pgitem .pa img{width:100%;height:100%;object-fit:cover;display:block;}
+.pgitem .pn{flex:1;min-width:0;font-size:13.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.pgitem .ps{font-size:11px;color:var(--t3);}
+
+/* 중앙: 편집 폼 */
+.main{padding:26px 30px;max-width:620px;}
+.main .hint{color:var(--t3);font-size:13.5px;padding:80px 0;text-align:center;}
+.fld{margin-bottom:16px;}
+.fld label{display:block;font-size:12px;font-weight:700;color:var(--t2);margin-bottom:7px;}
+.fld input,.fld textarea{width:100%;background:var(--card);border:1px solid var(--line);border-radius:11px;color:#fff;font-size:14.5px;padding:12px 14px;}
+.fld input:focus,.fld textarea:focus{outline:none;border-color:rgba(255,255,255,.4);}
+.fld .ro{color:var(--t2);}
+.urlrow{display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:11px;padding:11px 14px;font-size:13.5px;}
+.urlrow .u{flex:1;color:var(--t2);font-weight:600;word-break:break-all;}
+.urlrow button{border:1px solid var(--line);background:none;color:#fff;font-size:12px;font-weight:600;padding:6px 11px;border-radius:8px;cursor:pointer;white-space:nowrap;}
+.avrow{display:flex;gap:8px;align-items:center;}
+.avrow input{flex:1;}
+.avpick{width:42px;height:42px;border-radius:11px;overflow:hidden;border:1.5px solid var(--line);background:var(--card);cursor:pointer;padding:0;flex:0 0 auto;}
+.avpick img{width:100%;height:100%;object-fit:cover;display:block;}
+.sechead{display:flex;align-items:center;justify-content:space-between;margin:26px 0 12px;}
+.sechead .st{font-size:13px;font-weight:800;}
+.sechead button{border:1px solid var(--line);background:none;color:#fff;font-size:12.5px;font-weight:600;padding:7px 13px;border-radius:9px;cursor:pointer;}
+.lrow{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:13px;margin-bottom:9px;}
+.lrow .r1{display:flex;gap:8px;margin-bottom:8px;}
+.lrow input{background:#09090b;border:1px solid var(--line2);border-radius:9px;color:#fff;font-size:13.5px;padding:9px 12px;}
+.lrow input:focus{outline:none;border-color:rgba(255,255,255,.35);}
+.lrow .in-label{flex:1;}
+.lrow .in-sub{flex:1;}
+.lrow .in-url{width:100%;}
+.lrow .r2{display:flex;gap:6px;margin-top:8px;justify-content:flex-end;}
+.lrow .r2 button{border:1px solid var(--line2);background:none;color:var(--t2);font-size:12px;padding:5px 10px;border-radius:8px;cursor:pointer;}
+.lrow .r2 button:hover{color:#fff;}
+.lrow .r2 .del{color:#ff8b80;border-color:rgba(255,120,110,.25);}
+.actions{display:flex;gap:10px;margin-top:26px;align-items:center;}
+.save{border:0;background:#fff;color:#000;font-size:14.5px;font-weight:800;padding:13px 26px;border-radius:12px;cursor:pointer;}
+.save:disabled{opacity:.4;cursor:default;}
+.delpage{border:1px solid rgba(255,120,110,.3);background:none;color:#ff8b80;font-size:13px;font-weight:600;padding:12px 18px;border-radius:12px;cursor:pointer;}
+.saved{font-size:13px;color:var(--ok);font-weight:600;opacity:0;transition:opacity .2s;}
+.saved.on{opacity:1;}
+
+/* 우: 미리보기 */
+.pv{border-left:1px solid var(--line2);padding:26px 0;display:flex;flex-direction:column;align-items:center;gap:14px;}
+.pv .pvt{font-size:12px;font-weight:700;color:var(--t3);letter-spacing:.08em;}
+.phone{width:340px;height:660px;border:1px solid var(--line);border-radius:36px;overflow:hidden;background:#000;}
+.phone iframe{width:340px;height:660px;border:0;display:block;}
+
+/* 모달/토스트 */
+.ov{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;padding:24px;}
+.ov.on{display:flex;}
+.ov .box{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:22px;max-width:340px;width:100%;}
+.ov h3{font-size:16px;font-weight:800;margin-bottom:8px;}
+.ov p{font-size:13.5px;color:var(--t2);line-height:1.6;}
+.ov input{width:100%;background:var(--card);border:1px solid var(--line);border-radius:10px;color:#fff;font-size:14px;padding:11px 13px;margin-top:12px;}
+.ov input:focus{outline:none;border-color:rgba(255,255,255,.4);}
+.ov .btns{display:flex;gap:8px;margin-top:18px;}
+.ov .btns button{flex:1;height:44px;border-radius:11px;font-size:14px;font-weight:700;cursor:pointer;}
+.ov .no{border:1px solid var(--line);background:none;color:var(--t2);}
+.ov .yes{border:0;background:#fff;color:#000;}
+.ov .yes.danger{background:#e5484d;color:#fff;}
+.toast{position:fixed;left:50%;bottom:30px;transform:translateX(-50%) translateY(80px);background:#fff;color:#000;font-size:13.5px;font-weight:700;padding:11px 18px;border-radius:99px;transition:transform .25s;z-index:60;}
+.toast.on{transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+
+<!-- 로그인 -->
+<div class="gate" id="gate">
+  <div class="box">
+    <h1>링크 관리</h1>
+    <p>네오익스 관리자 계정으로 로그인하세요.</p>
+    <input id="g-id" placeholder="아이디" autocomplete="username">
+    <input id="g-pw" type="password" placeholder="비밀번호" autocomplete="current-password">
+    <button id="g-in">로그인</button>
+    <div class="err" id="g-err"></div>
+  </div>
+</div>
+
+<!-- 관리 화면 -->
+<div class="app" id="app">
+  <div class="top">
+    <div class="t">NEOIX 링크 관리<small id="who"></small></div>
+    <button id="signout">로그아웃</button>
+  </div>
+  <div class="cols">
+    <div class="side">
+      <button class="new" id="newPage">+ 새 페이지</button>
+      <div id="pageList"></div>
+    </div>
+    <div class="main" id="main">
+      <div class="hint">왼쪽에서 페이지를 선택하거나 새로 만드세요.</div>
+    </div>
+    <div class="pv">
+      <div class="pvt">미리보기</div>
+      <div class="phone"><iframe id="pvFrame" src="about:blank"></iframe></div>
+    </div>
+  </div>
+</div>
+
+<div class="ov" id="ov"></div>
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+const sb = createClient('https://nroddjekdjwnwguwkudl.supabase.co','sb_publishable_Uygr7NmVn1wmqopNrb4FRw_CRWw7Xeg');
+const $ = id => document.getElementById(id);
+const esc = s => String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const AUTH_DOMAIN='users.neoix.kr';
+const idToEmail = id => id.includes('@') ? id.trim() : `${id.trim().toLowerCase()}@${AUTH_DOMAIN}`;
+let pages=[], cur=null, draft=null, dirty=false;
+
+function toastMsg(t){const el=$('toast');el.textContent=t;el.classList.add('on');clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('on'),2200);}
+
+/* ── 인증 ── */
+async function checkSession(){
+  const {data:{session}} = await sb.auth.getSession();
+  if(session){ enter(session); }
+}
+async function enter(session){
+  $('gate').style.display='none';$('app').style.display='block';
+  $('who').textContent = (session.user.email||'').split('@')[0];
+  await loadPages();
+}
+$('g-in').addEventListener('click',async()=>{
+  $('g-err').textContent='';
+  const {error} = await sb.auth.signInWithPassword({email:idToEmail($('g-id').value),password:$('g-pw').value});
+  if(error){$('g-err').textContent='로그인 실패 — 아이디/비밀번호 확인';return;}
+  const {data:{session}} = await sb.auth.getSession(); enter(session);
+});
+$('g-pw').addEventListener('keydown',e=>{if(e.key==='Enter')$('g-in').click();});
+$('signout').addEventListener('click',async()=>{await sb.auth.signOut();location.reload();});
+
+/* ── 페이지 목록 ── */
+async function loadPages(){
+  const {data,error} = await sb.from('link_pages').select('*').order('created_at');
+  if(error){toastMsg('불러오기 실패 — SQL 설정 확인');return;}
+  pages = data||[];
+  renderList();
+}
+function renderList(){
+  $('pageList').innerHTML = pages.map(p=>`
+    <div class="pgitem${cur===p.slug?' on':''}" data-s="${esc(p.slug)}">
+      <div class="pa">${p.avatar_url?`<img src="${esc(p.avatar_url)}">`:esc((p.title||'?')[0])}</div>
+      <div><div class="pn">${esc(p.title)}</div><div class="ps">/${esc(p.slug)}</div></div>
+    </div>`).join('');
+  document.querySelectorAll('.pgitem').forEach(el=>el.addEventListener('click',()=>select(el.dataset.s)));
+}
+function select(slug){
+  cur=slug; draft=JSON.parse(JSON.stringify(pages.find(p=>p.slug===slug))); dirty=false;
+  draft.theme=draft.theme||'neoix'; draft.about=draft.about||{title:'',body:'',image:''};
+  renderList(); renderForm(); refreshPreview();
+}
+
+/* ── 편집 폼 ── */
+function markDirty(){dirty=true;$('savedTag')&&$('savedTag').classList.remove('on');}
+function renderForm(){
+  const publicUrl=`https://neoix.kr/link/${draft.slug}`;
+  $('main').innerHTML=`
+    <div class="fld"><label>페이지 주소</label>
+      <div class="urlrow"><span class="u">${esc(publicUrl)}</span><button id="openPv">새 탭에서 열기</button></div></div>
+    <div class="fld"><label>제목</label><input id="f-title" value="${esc(draft.title)}" maxlength="24"></div>
+    <div class="fld"><label>소개 (선택)</label><input id="f-bio" value="${esc(draft.bio||'')}" maxlength="60" placeholder="한 줄 소개"></div>
+    <div class="fld"><label>프로필 이미지 URL</label>
+      <div class="avrow">
+        <input id="f-avatar" value="${esc(draft.avatar_url||'')}" placeholder="https://… 또는 /link/icon-….png">
+        <button class="avpick" data-u="/link/icon-swoong.png" title="슈웅"><img src="../icon-swoong.png"></button>
+        <button class="avpick" data-u="/link/icon-pray.png" title="프레이위드"><img src="../icon-pray.png"></button>
+        <button class="avpick" data-u="/link/icon-poly.png" title="폴리"><img src="../icon-poly.png"></button>
+      </div></div>
+    <div class="fld"><label>디자인 톤</label>
+      <select id="f-theme" style="width:100%;background:var(--card);border:1px solid var(--line);border-radius:11px;color:#fff;font-size:14.5px;padding:12px 14px;">
+        <option value="neoix"${draft.theme==='neoix'?' selected':''}>네오익스 — 블랙</option>
+        <option value="swoong"${draft.theme==='swoong'?' selected':''}>슈웅 — 파스텔 블루·퍼플</option>
+        <option value="pray"${draft.theme==='pray'?' selected':''}>프레이위드 — 하늘</option>
+        <option value="poly"${draft.theme==='poly'?' selected':''}>폴리 — 네이비</option>
+        <option value="custom"${draft.theme==='custom'?' selected':''}>커스텀 — 색 직접 지정</option>
+      </select></div>
+    <div class="fld" id="customTone" style="display:${draft.theme==='custom'?'block':'none'}">
+      <label>커스텀 톤 — 포인트색을 정하면 배경·글자색이 자동으로 맞춰집니다</label>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <input type="color" id="f-accent" value="${esc((draft.theme_custom&&draft.theme_custom.accent)||'#6d7dff')}" style="width:46px;height:42px;padding:2px;background:var(--card);border:1px solid var(--line);border-radius:10px;cursor:pointer;">
+        <input id="f-accent-hex" value="${esc((draft.theme_custom&&draft.theme_custom.accent)||'#6d7dff')}" maxlength="7" style="width:110px;">
+        <select id="f-mode" style="flex:1;background:var(--card);border:1px solid var(--line);border-radius:11px;color:#fff;font-size:14px;padding:11px 12px;">
+          <option value="light"${(!draft.theme_custom||draft.theme_custom.mode!=='dark')?' selected':''}>라이트 배경</option>
+          <option value="dark"${(draft.theme_custom&&draft.theme_custom.mode==='dark')?' selected':''}>다크 배경</option>
+        </select>
+      </div></div>
+    <div class="sechead"><div class="st">앱 소개 (홍보 카드)</div></div>
+    <div class="fld"><label>소개 제목</label><input id="f-abt" value="${esc(draft.about.title||'')}" maxlength="40" placeholder="예: 여행을 슈웅, 기록은 한곳에"></div>
+    <div class="fld"><label>소개 내용</label><textarea id="f-abb" rows="3" placeholder="줄바꿈 그대로 표시됩니다">${esc(draft.about.body||'')}</textarea></div>
+    <div class="fld"><label>소개 이미지 URL (선택)</label><input id="f-abi" value="${esc(draft.about.image||'')}" placeholder="스크린샷·배너 이미지 주소"></div>
+    <div class="sechead"><div class="st">링크 (${draft.links.length})</div><button id="addLink">+ 링크 추가</button></div>
+    <div id="linkRows"></div>
+    <div class="actions">
+      <button class="save" id="save">저장</button>
+      <span class="saved" id="savedTag">저장됨 ✓ 미리보기 갱신</span>
+      <span style="flex:1"></span>
+      <button class="delpage" id="delPage">페이지 삭제</button>
+    </div>`;
+  renderLinkRows();
+  $('f-title').addEventListener('input',e=>{draft.title=e.target.value;markDirty();});
+  $('f-bio').addEventListener('input',e=>{draft.bio=e.target.value;markDirty();});
+  $('f-avatar').addEventListener('input',e=>{draft.avatar_url=e.target.value;markDirty();});
+  $('f-theme').addEventListener('change',e=>{draft.theme=e.target.value;$('customTone').style.display=e.target.value==='custom'?'block':'none';markDirty();});
+  const setAccent=v=>{if(!/^#[0-9a-fA-F]{6}$/.test(v))return;draft.theme_custom={...(draft.theme_custom||{mode:'light'}),accent:v};$('f-accent').value=v;$('f-accent-hex').value=v;markDirty();};
+  $('f-accent').addEventListener('input',e=>setAccent(e.target.value));
+  $('f-accent-hex').addEventListener('input',e=>setAccent(e.target.value.trim()));
+  $('f-mode').addEventListener('change',e=>{draft.theme_custom={...(draft.theme_custom||{accent:'#6d7dff'}),mode:e.target.value};markDirty();});
+  $('f-abt').addEventListener('input',e=>{draft.about.title=e.target.value;markDirty();});
+  $('f-abb').addEventListener('input',e=>{draft.about.body=e.target.value;markDirty();});
+  $('f-abi').addEventListener('input',e=>{draft.about.image=e.target.value;markDirty();});
+  document.querySelectorAll('.avpick').forEach(b=>b.addEventListener('click',()=>{draft.avatar_url=b.dataset.u;$('f-avatar').value=b.dataset.u;markDirty();}));
+  $('addLink').addEventListener('click',()=>{draft.links.push({label:'',sub:'',url:''});markDirty();renderForm();});
+  $('save').addEventListener('click',savePage);
+  $('delPage').addEventListener('click',confirmDelete);
+  $('openPv').addEventListener('click',()=>window.open(pvUrl(),'_blank'));
+}
+function renderLinkRows(){
+  $('linkRows').innerHTML=draft.links.map((l,i)=>`
+    <div class="lrow" data-i="${i}">
+      <div class="r1">
+        <input class="in-label" placeholder="라벨 (예: 앱 다운로드)" value="${esc(l.label)}">
+        <input class="in-sub" placeholder="부가설명 (선택)" value="${esc(l.sub||'')}">
+      </div>
+      <input class="in-url" placeholder="URL — 비워두면 '준비 중'(비활성)으로 표시" value="${esc(l.url||'')}">
+      <div class="r2">
+        <button class="up">↑</button><button class="dn">↓</button><button class="del">삭제</button>
+      </div>
+    </div>`).join('')||'<div style="color:var(--t3);font-size:13px;padding:14px 2px">링크가 없습니다 — 위 "+ 링크 추가"를 누르세요.</div>';
+  document.querySelectorAll('.lrow').forEach(row=>{
+    const i=+row.dataset.i;
+    row.querySelector('.in-label').addEventListener('input',e=>{draft.links[i].label=e.target.value;markDirty();});
+    row.querySelector('.in-sub').addEventListener('input',e=>{draft.links[i].sub=e.target.value;markDirty();});
+    row.querySelector('.in-url').addEventListener('input',e=>{draft.links[i].url=e.target.value;markDirty();});
+    row.querySelector('.up').addEventListener('click',()=>{if(i>0){[draft.links[i-1],draft.links[i]]=[draft.links[i],draft.links[i-1]];markDirty();renderForm();}});
+    row.querySelector('.dn').addEventListener('click',()=>{if(i<draft.links.length-1){[draft.links[i+1],draft.links[i]]=[draft.links[i],draft.links[i+1]];markDirty();renderForm();}});
+    row.querySelector('.del').addEventListener('click',()=>{draft.links.splice(i,1);markDirty();renderForm();});
+  });
+}
+
+/* ── 저장/삭제/생성 ── */
+async function savePage(){
+  if(!draft.title.trim())return toastMsg('제목을 입력하세요');
+  $('save').disabled=true;
+  const ab={title:(draft.about.title||'').trim(),body:(draft.about.body||'').trim(),image:(draft.about.image||'').trim()};
+  const row={slug:draft.slug,title:draft.title.trim(),bio:(draft.bio||'').trim()||null,avatar_url:(draft.avatar_url||'').trim()||null,theme:draft.theme||'neoix',theme_custom:draft.theme==='custom'?(draft.theme_custom||{mode:'light',accent:'#6d7dff'}):null,about:(ab.title||ab.body||ab.image)?ab:null,links:draft.links.filter(l=>l.label.trim()),updated_at:new Date().toISOString()};
+  const {error}=await sb.from('link_pages').upsert(row);
+  $('save').disabled=false;
+  if(error){toastMsg('저장 실패 — 관리자 권한 확인');return;}
+  dirty=false;
+  const idx=pages.findIndex(p=>p.slug===draft.slug);
+  if(idx>=0)pages[idx]={...pages[idx],...row};else pages.push(row);
+  renderList();$('savedTag').classList.add('on');refreshPreview();
+}
+function confirmDelete(){
+  openModal(`<h3>페이지 삭제</h3><p><b>/${esc(draft.slug)}</b> 페이지를 삭제할까요?<br>인스타 프로필에 걸어둔 링크가 있다면 열리지 않게 됩니다.</p>
+    <div class="btns"><button class="no">취소</button><button class="yes danger">삭제</button></div>`,async box=>{
+    box.querySelector('.yes').addEventListener('click',async()=>{
+      const {error}=await sb.from('link_pages').delete().eq('slug',draft.slug);
+      closeModal();
+      if(error){toastMsg('삭제 실패');return;}
+      pages=pages.filter(p=>p.slug!==draft.slug);cur=null;draft=null;
+      renderList();$('main').innerHTML='<div class="hint">왼쪽에서 페이지를 선택하거나 새로 만드세요.</div>';$('pvFrame').src='about:blank';
+      toastMsg('페이지를 삭제했습니다');
+    });
+  });
+}
+$('newPage').addEventListener('click',()=>{
+  openModal(`<h3>새 페이지</h3><p>주소에 쓸 슬러그(영문 소문자·숫자·하이픈)를 정하세요.<br>예: swoong → neoix.kr/link/swoong</p>
+    <input id="m-slug" placeholder="슬러그" maxlength="24">
+    <div class="btns"><button class="no">취소</button><button class="yes">만들기</button></div>`,box=>{
+    const inp=box.querySelector('#m-slug');inp.focus();
+    box.querySelector('.yes').addEventListener('click',async()=>{
+      const slug=inp.value.trim().toLowerCase();
+      if(!/^[a-z0-9-]{2,24}$/.test(slug))return toastMsg('영문 소문자·숫자·하이픈 2~24자');
+      if(pages.some(p=>p.slug===slug))return toastMsg('이미 있는 주소입니다');
+      const row={slug,title:slug,bio:null,avatar_url:null,links:[]};
+      const {error}=await sb.from('link_pages').insert(row);
+      if(error){toastMsg('생성 실패 — 관리자 권한 확인');return;}
+      closeModal();pages.push(row);select(slug);toastMsg('페이지가 생성됐습니다');
+    });
+  });
+});
+
+/* ── 미리보기 ── */
+function pvUrl(){return `../?p=${encodeURIComponent(draft.slug)}&v=${Date.now()}`;}
+function refreshPreview(){$('pvFrame').src=pvUrl();}
+
+/* ── 모달 ── */
+function openModal(html,setup){const ov=$('ov');ov.innerHTML=`<div class="box">${html}</div>`;ov.classList.add('on');
+  const box=ov.querySelector('.box');const no=box.querySelector('.no');if(no)no.addEventListener('click',closeModal);
+  ov.addEventListener('click',e=>{if(e.target===ov)closeModal();},{once:true});setup&&setup(box);}
+function closeModal(){$('ov').classList.remove('on');}
+
+checkSession();
+</script>
+</body>
+</html>
