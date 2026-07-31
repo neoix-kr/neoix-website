@@ -72,6 +72,14 @@ input,textarea,button,select{font-family:inherit;}
 .lrow .r2 button{border:1px solid var(--line2);background:none;color:var(--t2);font-size:12px;padding:5px 10px;border-radius:8px;cursor:pointer;}
 .lrow .r2 button:hover{color:#fff;}
 .lrow .r2 .del{color:#ff8b80;border-color:rgba(255,120,110,.25);}
+.upbtn{border:1px solid var(--line);background:none;color:#fff;font-size:12.5px;font-weight:600;padding:0 14px;height:42px;border-radius:10px;cursor:pointer;white-space:nowrap;flex:0 0 auto;}
+.upbtn:hover{border-color:rgba(255,255,255,.35);}
+.phgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;}
+.phitem{position:relative;aspect-ratio:1;border-radius:10px;overflow:hidden;border:1px solid var(--line);background:var(--card);}
+.phitem img{width:100%;height:100%;object-fit:cover;display:block;}
+.phitem .phdel{position:absolute;top:4px;right:4px;width:22px;height:22px;border-radius:50%;border:0;background:rgba(0,0,0,.65);color:#fff;font-size:11px;cursor:pointer;line-height:1;}
+.phadd{aspect-ratio:1;border:1px dashed var(--line);border-radius:10px;background:none;color:var(--t2);font-size:22px;cursor:pointer;}
+.phadd:hover{color:#fff;border-color:rgba(255,255,255,.35);}
 .actions{display:flex;gap:10px;margin-top:26px;align-items:center;}
 .save{border:0;background:#fff;color:#000;font-size:14.5px;font-weight:800;padding:13px 26px;border-radius:12px;cursor:pointer;}
 .save:disabled{opacity:.4;cursor:default;}
@@ -187,7 +195,7 @@ function renderList(){
 }
 function select(slug){
   cur=slug; draft=JSON.parse(JSON.stringify(pages.find(p=>p.slug===slug))); dirty=false;
-  draft.theme=draft.theme||'neoix'; draft.about=draft.about||{title:'',body:'',image:''};
+  draft.theme=draft.theme||'neoix'; draft.about=draft.about||{title:'',body:'',image:''}; draft.photos=draft.photos||[];
   renderList(); renderForm(); refreshPreview();
 }
 
@@ -203,6 +211,7 @@ function renderForm(){
     <div class="fld"><label>프로필 이미지 URL</label>
       <div class="avrow">
         <input id="f-avatar" value="${esc(draft.avatar_url||'')}" placeholder="https://… 또는 /link/icon-….png">
+        <button class="upbtn" id="up-avatar">업로드</button>
         <button class="avpick" data-u="/link/icon-swoong.png" title="슈웅"><img src="../icon-swoong.png"></button>
         <button class="avpick" data-u="/link/icon-pray.png" title="프레이위드"><img src="../icon-pray.png"></button>
         <button class="avpick" data-u="/link/icon-poly.png" title="폴리"><img src="../icon-poly.png"></button>
@@ -228,7 +237,10 @@ function renderForm(){
     <div class="sechead"><div class="st">앱 소개 (홍보 카드)</div></div>
     <div class="fld"><label>소개 제목</label><input id="f-abt" value="${esc(draft.about.title||'')}" maxlength="40" placeholder="예: 여행을 슈웅, 기록은 한곳에"></div>
     <div class="fld"><label>소개 내용</label><textarea id="f-abb" rows="3" placeholder="줄바꿈 그대로 표시됩니다">${esc(draft.about.body||'')}</textarea></div>
-    <div class="fld"><label>소개 이미지 URL (선택)</label><input id="f-abi" value="${esc(draft.about.image||'')}" placeholder="스크린샷·배너 이미지 주소"></div>
+    <div class="fld"><label>소개 이미지 (선택)</label>
+      <div class="avrow"><input id="f-abi" value="${esc(draft.about.image||'')}" placeholder="스크린샷·배너 이미지 주소"><button class="upbtn" id="up-about">업로드</button></div></div>
+    <div class="sechead"><div class="st">사진 (${draft.photos.length})</div></div>
+    <div class="phgrid" id="phGrid"></div>
     <div class="sechead"><div class="st">링크 (${draft.links.length})</div><button id="addLink">+ 링크 추가</button></div>
     <div id="linkRows"></div>
     <div class="actions">
@@ -241,6 +253,9 @@ function renderForm(){
   $('f-title').addEventListener('input',e=>{draft.title=e.target.value;markDirty();});
   $('f-bio').addEventListener('input',e=>{draft.bio=e.target.value;markDirty();});
   $('f-avatar').addEventListener('input',e=>{draft.avatar_url=e.target.value;markDirty();});
+  renderPhotoGrid();
+  $('up-avatar').addEventListener('click',()=>pickFiles(false,async fs=>{const u=await uploadImage(fs[0]);if(u){draft.avatar_url=u;$('f-avatar').value=u;markDirty();}}));
+  $('up-about').addEventListener('click',()=>pickFiles(false,async fs=>{const u=await uploadImage(fs[0]);if(u){draft.about.image=u;$('f-abi').value=u;markDirty();}}));
   $('f-theme').addEventListener('change',e=>{draft.theme=e.target.value;$('customTone').style.display=e.target.value==='custom'?'block':'none';markDirty();});
   const setAccent=v=>{if(!/^#[0-9a-fA-F]{6}$/.test(v))return;draft.theme_custom={...(draft.theme_custom||{mode:'light'}),accent:v};$('f-accent').value=v;$('f-accent-hex').value=v;markDirty();};
   $('f-accent').addEventListener('input',e=>setAccent(e.target.value));
@@ -278,12 +293,48 @@ function renderLinkRows(){
   });
 }
 
+/* ── 사진 갤러리 편집 ── */
+function renderPhotoGrid(){
+  const g=$('phGrid');if(!g)return;
+  g.innerHTML=draft.photos.map((u,i)=>`<div class="phitem"><img src="${esc(u)}"><button class="phdel" data-i="${i}">✕</button></div>`).join('')+'<button class="phadd" id="phAdd" title="사진 추가">+</button>';
+  g.querySelectorAll('.phdel').forEach(b=>b.addEventListener('click',()=>{draft.photos.splice(+b.dataset.i,1);markDirty();renderPhotoGrid();}));
+  $('phAdd').addEventListener('click',()=>pickFiles(true,async fs=>{
+    for(const f of fs){const u=await uploadImage(f);if(u)draft.photos.push(u);}
+    markDirty();renderPhotoGrid();
+  }));
+}
+
+/* ── 이미지 업로드 (링크 전용 공개 버킷 link-assets) ── */
+function pickFiles(multi,cb){
+  const inp=document.createElement('input');inp.type='file';inp.accept='image/*';inp.multiple=multi;
+  inp.addEventListener('change',()=>{if(inp.files.length)cb([...inp.files]);});inp.click();
+}
+async function shrink(file,max){
+  const img=await new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=rej;i.src=URL.createObjectURL(file);});
+  const sc=Math.min(1,max/Math.max(img.width,img.height));
+  const c=document.createElement('canvas');c.width=Math.round(img.width*sc);c.height=Math.round(img.height*sc);
+  c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+  return new Promise(res=>c.toBlob(res,'image/jpeg',.86));
+}
+async function uploadImage(file){
+  try{
+    toastMsg('업로드 중…');
+    const blob=await shrink(file,1600);
+    const path=`${draft.slug}/${Date.now()}_${Math.random().toString(36).slice(2,7)}.jpg`;
+    const {error}=await sb.storage.from('link-assets').upload(path,blob,{contentType:'image/jpeg'});
+    if(error)throw error;
+    const {data:{publicUrl}}=sb.storage.from('link-assets').getPublicUrl(path);
+    toastMsg('업로드 완료');
+    return publicUrl;
+  }catch(e){console.error(e);toastMsg('업로드 실패 — 관리자 권한 확인');return null;}
+}
+
 /* ── 저장/삭제/생성 ── */
 async function savePage(){
   if(!draft.title.trim())return toastMsg('제목을 입력하세요');
   $('save').disabled=true;
   const ab={title:(draft.about.title||'').trim(),body:(draft.about.body||'').trim(),image:(draft.about.image||'').trim()};
-  const row={slug:draft.slug,title:draft.title.trim(),bio:(draft.bio||'').trim()||null,avatar_url:(draft.avatar_url||'').trim()||null,theme:draft.theme||'neoix',theme_custom:draft.theme==='custom'?(draft.theme_custom||{mode:'light',accent:'#6d7dff'}):null,about:(ab.title||ab.body||ab.image)?ab:null,links:draft.links.filter(l=>l.label.trim()),updated_at:new Date().toISOString()};
+  const row={slug:draft.slug,title:draft.title.trim(),bio:(draft.bio||'').trim()||null,avatar_url:(draft.avatar_url||'').trim()||null,theme:draft.theme||'neoix',theme_custom:draft.theme==='custom'?(draft.theme_custom||{mode:'light',accent:'#6d7dff'}):null,about:(ab.title||ab.body||ab.image)?ab:null,photos:draft.photos||[],links:draft.links.filter(l=>l.label.trim()),updated_at:new Date().toISOString()};
   const {error}=await sb.from('link_pages').upsert(row);
   $('save').disabled=false;
   if(error){toastMsg('저장 실패 — 관리자 권한 확인');return;}
