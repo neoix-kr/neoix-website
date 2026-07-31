@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>NEOIX — 앱과 서비스</title>
+<meta name="description" content="네오익스가 만드는 앱과 서비스를 한곳에서.">
+<meta property="og:title" content="NEOIX — 앱과 서비스">
+<meta property="og:description" content="네오익스가 만드는 앱과 서비스를 한곳에서.">
+<meta property="og:type" content="website">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{ --bg:#000; --card:#0e0e10; --line:rgba(255,255,255,.1); --tx:#fff; --t2:rgba(255,255,255,.55); --t3:rgba(255,255,255,.32); }
+body{background:var(--bg);color:var(--tx);font-family:'Pretendard Variable',-apple-system,system-ui,sans-serif;-webkit-font-smoothing:antialiased;min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;align-items:center;padding:28px 20px calc(28px + env(safe-area-inset-bottom));}
+.wrap{width:100%;max-width:420px;display:flex;flex-direction:column;flex:1;}
+
+/* ── 상단: 앱 ── */
+.sec{font-size:11.5px;font-weight:700;letter-spacing:.14em;color:var(--t3);margin:26px 0 10px 2px;}
+.sec:first-child{margin-top:0;}
+.card{display:flex;align-items:center;gap:14px;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;margin-bottom:10px;text-decoration:none;color:var(--tx);transition:background .15s;}
+.card:active{background:#17171a;}
+.card.featured{border-color:rgba(255,255,255,.35);}
+.card .ic{width:52px;height:52px;border-radius:13px;flex:0 0 auto;overflow:hidden;background:#1a1a1d;}
+.card .ic img{width:100%;height:100%;display:block;object-fit:cover;}
+.card .ic.tx{display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:800;color:var(--tx);}
+.card .tt{flex:1;min-width:0;}
+.card .nm{font-size:16px;font-weight:700;line-height:1.25;}
+.card .ds{font-size:12.5px;color:var(--t2);margin-top:3px;line-height:1.45;}
+.card .go{flex:0 0 auto;font-size:12.5px;font-weight:700;padding:8px 13px;border-radius:99px;white-space:nowrap;}
+.card .go.get{background:#fff;color:#000;}
+.card .go.soon{background:rgba(255,255,255,.08);color:var(--t2);}
+.card .go.open{border:1px solid rgba(255,255,255,.25);color:var(--tx);}
+
+/* ── 하단: NEOIX ── */
+.foot{margin-top:auto;padding-top:44px;text-align:center;}
+.foot .logo{height:22px;margin:0 auto 10px;color:#fff;}
+.foot .logo svg{height:22px;width:auto;display:block;margin:0 auto;}
+.foot .tag{font-size:12.5px;color:var(--t2);}
+.foot .links{margin-top:14px;font-size:11.5px;color:var(--t3);}
+.foot .links a{color:var(--t3);text-decoration:none;}
+.foot .links a:active{color:var(--t2);}
+.foot .sep{margin:0 7px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div id="apps">
+    <div class="sec">APP</div>
+    <!-- 앱 카드는 JS(CONFIG)로 렌더 -->
+  </div>
+
+  <div class="sec">WEB</div>
+  <a class="card" href="https://neoix.kr/ogx" >
+    <div class="ic tx">OGX</div>
+    <div class="tt"><div class="nm">OGX 찬양팀</div><div class="ds">찬양팀 악보·반주·콘티 도구</div></div>
+    <div class="go open">열기</div>
+  </a>
+  <a class="card" href="https://neoix.kr/travel">
+    <div class="ic tx">TR</div>
+    <div class="tt"><div class="nm">트레블</div><div class="ds">여행 날짜 맞추기</div></div>
+    <div class="go open">열기</div>
+  </a>
+  <a class="card" href="https://neoix.kr/account">
+    <div class="ic tx">N</div>
+    <div class="tt"><div class="nm">네오익스 계정</div><div class="ds">하나의 계정으로 모든 서비스</div></div>
+    <div class="go open">열기</div>
+  </a>
+
+  <div class="foot">
+    <a href="https://neoix.kr" class="logo" aria-label="NEOIX">
+      <svg viewBox="0 0 857 256" xmlns="http://www.w3.org/2000/svg"><path d="M170.032 203L105.169 128.038V203H59.6084V48.5869H102.925L167.787 124.671V48.5869H213.348V203H170.032ZM239.834 48.5869H373.374V85.6191H289.434V106.941H361.254V142.402H289.434V165.968H374.945V203H239.834V48.5869ZM471.83 45.8937C498.463 45.8937 519.037 52.7016 533.55 66.3175C548.064 79.9334 555.321 99.7587 555.321 125.793C555.321 151.828 548.064 171.654 533.55 185.269C519.037 198.885 498.463 205.693 471.83 205.693C445.197 205.693 424.623 198.96 410.11 185.494C395.746 171.878 388.564 151.978 388.564 125.793C388.564 99.6091 395.746 79.7838 410.11 66.3175C424.623 52.7016 445.197 45.8937 471.83 45.8937ZM471.83 82.9259C461.207 82.9259 453.127 86.1428 447.591 92.5767C442.055 99.0106 439.287 107.689 439.287 118.611V132.975C439.287 143.898 442.055 152.576 447.591 159.01C453.127 165.444 461.207 168.661 471.83 168.661C482.453 168.661 490.533 165.444 496.069 159.01C501.755 152.576 504.598 143.898 504.598 132.975V118.611C504.598 107.689 501.755 99.0106 496.069 92.5767C490.533 86.1428 482.453 82.9259 471.83 82.9259ZM577.542 203V48.5869H627.143V203H577.542ZM813.801 203H753.652L725.148 154.97H724.251L695.747 203H640.086L695.298 121.305L645.473 48.5869H705.398L728.739 88.0879H729.637L753.203 48.5869H808.639L758.589 121.529L813.801 203Z" fill="currentColor"/></svg>
+    </a>
+    <div class="tag">사람들이 매일 쓰는 서비스를 만듭니다</div>
+    <div class="links">
+      <a href="https://neoix.kr">neoix.kr</a><span class="sep">·</span><a href="/terms/">이용약관</a><span class="sep">·</span><a href="/privacy/">개인정보처리방침</a>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ── 앱 목록 — 스토어 출시되면 ios/android에 URL만 채우면 '받기' 버튼으로 바뀜 ── */
+const CONFIG = [
+  { key:'swoong', name:'슈웅',      desc:'전 세계 여행 기록',        icon:'icon-swoong.png', ios:'', android:'' },
+  { key:'pray',   name:'프레이위드', desc:'교회 중보기도',            icon:'icon-pray.png',   ios:'', android:'' },
+  { key:'poly',   name:'폴리',      desc:'우리 지역 정치, 쉽게',      icon:'icon-poly.png',   ios:'', android:'' },
+];
+
+/* ?app=swoong → 그 앱을 맨 위로 + 강조 테두리 (앱별 인스타 계정 프로필에 각각 사용) */
+const featured = new URLSearchParams(location.search).get('app');
+const list = [...CONFIG].sort((a,b)=>(b.key===featured)-(a.key===featured));
+
+const storeUrl = a => {
+  const ua = navigator.userAgent;
+  if (/android/i.test(ua)) return a.android || a.ios;
+  return a.ios || a.android;
+};
+
+document.getElementById('apps').innerHTML = '<div class="sec">APP</div>' + list.map(a => {
+  const url = storeUrl(a);
+  const tag = url ? '<div class="go get">받기</div>' : '<div class="go soon">곧 출시</div>';
+  const open = url ? `href="${url}"` : 'href="javascript:void(0)" style="cursor:default"';
+  return `<a class="card${a.key===featured?' featured':''}" ${open}>
+    <div class="ic"><img src="${a.icon}" alt="${a.name}"></div>
+    <div class="tt"><div class="nm">${a.name}</div><div class="ds">${a.desc}</div></div>
+    ${tag}</a>`;
+}).join('');
+</script>
+</body>
+</html>
