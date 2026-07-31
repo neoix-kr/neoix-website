@@ -46,11 +46,10 @@ body.ready{visibility:visible;}
 .about .at{font-size:15.5px;font-weight:800;letter-spacing:-.01em;}
 .about .ab{font-size:13.5px;color:var(--t2);line-height:1.7;margin-top:8px;white-space:pre-line;}
 
-/* 사진 갤러리 — 가로 스와이프 카드 */
-.ph{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;margin-bottom:22px;padding-bottom:4px;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+/* 사진 갤러리 — 작은 카드, 옆으로 넘기며 보기 */
+.ph{display:flex;gap:8px;overflow-x:auto;scroll-snap-type:x mandatory;margin-bottom:22px;padding-bottom:4px;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
 .ph::-webkit-scrollbar{display:none;}
-.ph img{width:80%;max-width:320px;flex:0 0 auto;aspect-ratio:4/5;object-fit:cover;border-radius:16px;scroll-snap-align:center;border:1px solid var(--line);background:var(--card);}
-.ph.single img{width:100%;max-width:none;aspect-ratio:auto;}
+.ph img{width:132px;height:132px;flex:0 0 auto;object-fit:cover;border-radius:14px;scroll-snap-align:start;border:1px solid var(--line);background:var(--card);}
 
 /* 링크 버튼 */
 .lk{display:block;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 20px;margin-bottom:12px;text-decoration:none;color:var(--tx);text-align:center;transition:background .15s,border-color .15s,transform .12s;}
@@ -200,7 +199,7 @@ if (!data) {
 
   /* 사진 갤러리 */
   const ph = Array.isArray(data.photos) ? data.photos : [];
-  if (ph.length) $('photos').innerHTML = `<div class="ph${ph.length===1?' single':''}">${ph.map(u=>`<img src="${esc(u)}" alt="" loading="lazy">`).join('')}</div>`;
+  if (ph.length) $('photos').innerHTML = `<div class="ph">${ph.map(u=>`<img src="${esc(u)}" alt="" loading="lazy">`).join('')}</div>`;
 
   /* 링크 — 첫 번째 활성 링크는 강조(accent) 버튼 */
   const links = Array.isArray(data.links) ? data.links : [];
