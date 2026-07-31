@@ -97,7 +97,7 @@ body.ready{visibility:visible;}
     <a href="https://neoix.kr" class="logo" aria-label="NEOIX">
       <svg viewBox="0 0 857 256" xmlns="http://www.w3.org/2000/svg"><path d="M170.032 203L105.169 128.038V203H59.6084V48.5869H102.925L167.787 124.671V48.5869H213.348V203H170.032ZM239.834 48.5869H373.374V85.6191H289.434V106.941H361.254V142.402H289.434V165.968H374.945V203H239.834V48.5869ZM471.83 45.8937C498.463 45.8937 519.037 52.7016 533.55 66.3175C548.064 79.9334 555.321 99.7587 555.321 125.793C555.321 151.828 548.064 171.654 533.55 185.269C519.037 198.885 498.463 205.693 471.83 205.693C445.197 205.693 424.623 198.96 410.11 185.494C395.746 171.878 388.564 151.978 388.564 125.793C388.564 99.6091 395.746 79.7838 410.11 66.3175C424.623 52.7016 445.197 45.8937 471.83 45.8937ZM471.83 82.9259C461.207 82.9259 453.127 86.1428 447.591 92.5767C442.055 99.0106 439.287 107.689 439.287 118.611V132.975C439.287 143.898 442.055 152.576 447.591 159.01C453.127 165.444 461.207 168.661 471.83 168.661C482.453 168.661 490.533 165.444 496.069 159.01C501.755 152.576 504.598 143.898 504.598 132.975V118.611C504.598 107.689 501.755 99.0106 496.069 92.5767C490.533 86.1428 482.453 82.9259 471.83 82.9259ZM577.542 203V48.5869H627.143V203H577.542ZM813.801 203H753.652L725.148 154.97H724.251L695.747 203H640.086L695.298 121.305L645.473 48.5869H705.398L728.739 88.0879H729.637L753.203 48.5869H808.639L758.589 121.529L813.801 203Z" fill="currentColor"/></svg>
     </a>
-    <div class="tg">사람들이 매일 쓰는 서비스를 만듭니다</div>
+    <div class="tg">사람들이 매일 쓰는 서비스를 만듭니다 <span id="ver" style="opacity:.4">v6</span></div>
   </div>
 </div>
 <div class="toast" id="toast"></div>
@@ -204,6 +204,10 @@ if (!data) {
   /* 링크 — 첫 번째 활성 링크는 강조(accent) 버튼
      인스타 등 인앱 브라우저는 새 탭을 차단하므로 기본은 같은 탭 이동.
      에디터 미리보기(iframe) 안에서만 새 탭(앱스토어 등 프레임 차단 사이트 대응). */
+  /* 스토어 링크는 우리 도메인 /go 리다이렉트 경유 — 같은 도메인 이동이라
+     인앱 브라우저(인스타 등)가 못 막고, 302는 엔진 레벨이라 무조건 따라감 */
+  const isStore = u => /^https:\/\/(apps\.apple\.com|itunes\.apple\.com|play\.google\.com)\//.test(u);
+  const hrefOf = u => isStore(u) ? `/go?u=${encodeURIComponent(u)}` : u;
   const inFrame = window.self !== window.top;
   const links = Array.isArray(data.links) ? data.links : [];
   let priDone = false;
@@ -212,26 +216,10 @@ if (!data) {
     let cls = 'lk';
     if (off) cls += ' off';
     else if (!priDone) { cls += ' pri'; priDone = true; }
-    return `<a class="${cls}" ${off?'':`href="${esc(l.url)}"${inFrame?' target="_blank" rel="noopener"':''}`}>
+    return `<a class="${cls}" ${off?'':`href="${esc(hrefOf(l.url))}"${inFrame?' target="_blank" rel="noopener"':''}`}>
       <div class="lb">${esc(l.label)}</div>${l.sub?`<div class="sb">${esc(l.sub)}</div>`:''}
     </a>`;
   }).join('') || '<div class="empty">아직 링크가 없어요</div>';
-
-  /* 인스타/페북/카톡 인앱 브라우저: 앱스토어 유니버설 링크를 무시하는 경우가 있어
-     ① itms-appss:// 스킴으로 앱스토어 앱 강제 오픈 시도
-     ② 스킴까지 막히면 0.7초 뒤 앱스토어 웹페이지로 이동(웹에서 '받기' 가능) */
-  const inApp = /Instagram|FBAN|FBAV|FB_IAB|KAKAOTALK|Line\//i.test(navigator.userAgent);
-  if (inApp) {
-    document.querySelectorAll('a.lk[href^="https://apps.apple.com/"]').forEach(a => {
-      a.addEventListener('click', e => {
-        e.preventDefault();
-        const web = a.href;
-        const t = setTimeout(() => { location.href = web; }, 700);
-        window.addEventListener('pagehide', () => clearTimeout(t), { once: true });
-        location.href = web.replace('https://', 'itms-appss://');
-      });
-    });
-  }
 }
 document.body.classList.add('ready');
 </script>
