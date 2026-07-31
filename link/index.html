@@ -97,7 +97,7 @@ body.ready{visibility:visible;}
     <a href="https://neoix.kr" class="logo" aria-label="NEOIX">
       <svg viewBox="0 0 857 256" xmlns="http://www.w3.org/2000/svg"><path d="M170.032 203L105.169 128.038V203H59.6084V48.5869H102.925L167.787 124.671V48.5869H213.348V203H170.032ZM239.834 48.5869H373.374V85.6191H289.434V106.941H361.254V142.402H289.434V165.968H374.945V203H239.834V48.5869ZM471.83 45.8937C498.463 45.8937 519.037 52.7016 533.55 66.3175C548.064 79.9334 555.321 99.7587 555.321 125.793C555.321 151.828 548.064 171.654 533.55 185.269C519.037 198.885 498.463 205.693 471.83 205.693C445.197 205.693 424.623 198.96 410.11 185.494C395.746 171.878 388.564 151.978 388.564 125.793C388.564 99.6091 395.746 79.7838 410.11 66.3175C424.623 52.7016 445.197 45.8937 471.83 45.8937ZM471.83 82.9259C461.207 82.9259 453.127 86.1428 447.591 92.5767C442.055 99.0106 439.287 107.689 439.287 118.611V132.975C439.287 143.898 442.055 152.576 447.591 159.01C453.127 165.444 461.207 168.661 471.83 168.661C482.453 168.661 490.533 165.444 496.069 159.01C501.755 152.576 504.598 143.898 504.598 132.975V118.611C504.598 107.689 501.755 99.0106 496.069 92.5767C490.533 86.1428 482.453 82.9259 471.83 82.9259ZM577.542 203V48.5869H627.143V203H577.542ZM813.801 203H753.652L725.148 154.97H724.251L695.747 203H640.086L695.298 121.305L645.473 48.5869H705.398L728.739 88.0879H729.637L753.203 48.5869H808.639L758.589 121.529L813.801 203Z" fill="currentColor"/></svg>
     </a>
-    <div class="tg">사람들이 매일 쓰는 서비스를 만듭니다 <span id="ver" style="opacity:.4">v6</span></div>
+    <div class="tg">사람들이 매일 쓰는 서비스를 만듭니다 <span id="ver" style="opacity:.4">v7</span></div>
   </div>
 </div>
 <div class="toast" id="toast"></div>
@@ -108,6 +108,12 @@ const sb = createClient('https://nroddjekdjwnwguwkudl.supabase.co','sb_publishab
 const $ = id => document.getElementById(id);
 const esc = s => String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const toast = t => {const el=$('toast');el.textContent=t;el.classList.add('on');clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('on'),2000);};
+
+/* 임시 진단 로그 — 인앱 브라우저 무반응 원인 추적용 (원인 확인 후 제거 예정) */
+const diag = (ev, detail) => { try { fetch(`/diag?ev=${encodeURIComponent(ev)}&d=${encodeURIComponent(detail||'')}&v=7`, { keepalive: true }); } catch(e){} };
+diag('load', location.pathname);
+document.addEventListener('click', e => { const a = e.target.closest('a.lk'); if (a) diag('click', a.getAttribute('href')||'(no-href)'); }, true);
+window.addEventListener('pagehide', () => diag('pagehide', ''));
 
 /* ── 앱별 톤 테마 ── */
 const THEMES = {

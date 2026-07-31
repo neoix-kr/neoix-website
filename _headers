@@ -8,3 +8,15 @@
 # 이미지·정적 자산은 캐시해도 됨
 /songsan/escape/assets/*
   Cache-Control: public, max-age=86400
+
+# 링크인바이오 — 인앱 브라우저(인스타 등)가 옛 버전을 물고 있지 않게 항상 최신
+/link/*
+  Cache-Control: no-store
+/shuung
+  Cache-Control: no-store
+/pray
+  Cache-Control: no-store
+/poly
+  Cache-Control: no-store
+/neoix
+  Cache-Control: no-store

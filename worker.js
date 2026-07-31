@@ -5,10 +5,17 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
 
+    // 임시 진단: 링크 페이지가 보내는 이벤트를 로그로 남김 (wrangler tail로 실시간 확인)
+    if (url.pathname === '/diag') {
+      console.log('DIAG', url.search, '|UA:', (request.headers.get('user-agent') || '').slice(0, 120));
+      return new Response('ok', { headers: { 'cache-control': 'no-store' } });
+    }
+
     // 앱스토어 리다이렉트: /go?u=<스토어 URL> — 같은 도메인 이동이라 인앱 브라우저가 못 막고,
     // 302는 엔진 레벨이라 무조건 따라감. 스토어 도메인만 허용(오픈 리다이렉트 방지).
     if (url.pathname === '/go') {
       const u = url.searchParams.get('u') || '';
+      console.log('GO', u.slice(0, 80), '|UA:', (request.headers.get('user-agent') || '').slice(0, 120));
       if (/^https:\/\/(apps\.apple\.com|itunes\.apple\.com|play\.google\.com)\//.test(u)) {
         return Response.redirect(u, 302);
       }
