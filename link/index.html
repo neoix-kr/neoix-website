@@ -158,13 +158,13 @@ function applyTheme(name,custom){
   for (const [k,v] of Object.entries(t)) document.documentElement.style.setProperty(k,v);
 }
 
-/* 슬러그: /link/슬러그 (배포) 또는 ?p=슬러그 (로컬) */
+/* 슬러그: neoix.kr/슬러그 (짧은 주소) · /link/슬러그 · ?p=슬러그 (로컬) */
 let slug = new URLSearchParams(location.search).get('p') || '';
-if (!slug) { const m = location.pathname.match(/\/link\/([^\/?#]+)\/?$/); if (m && m[1] !== 'index.html') slug = decodeURIComponent(m[1]); }
+if (!slug) { const m = location.pathname.match(/^\/(?:link\/)?([^\/?#]+)\/?$/); if (m && m[1] !== 'index.html' && m[1] !== 'link') slug = decodeURIComponent(m[1]); }
 if (!slug) slug = 'neoix';
 
 $('share').addEventListener('click', async () => {
-  const url = location.hostname === 'localhost' ? location.href : `https://neoix.kr/link/${slug}`;
+  const url = location.hostname === 'localhost' ? location.href : `https://neoix.kr/${slug}`;
   try { await navigator.clipboard.writeText(url); toast('링크가 복사되었습니다'); }
   catch { toast(url); }
 });

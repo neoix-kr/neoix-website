@@ -194,7 +194,7 @@ function select(slug){
 /* ── 편집 폼 ── */
 function markDirty(){dirty=true;$('savedTag')&&$('savedTag').classList.remove('on');}
 function renderForm(){
-  const publicUrl=`https://neoix.kr/link/${draft.slug}`;
+  const publicUrl=`https://neoix.kr/${draft.slug}`;
   $('main').innerHTML=`
     <div class="fld"><label>페이지 주소</label>
       <div class="urlrow"><span class="u">${esc(publicUrl)}</span><button id="openPv">새 탭에서 열기</button></div></div>
@@ -306,7 +306,7 @@ function confirmDelete(){
   });
 }
 $('newPage').addEventListener('click',()=>{
-  openModal(`<h3>새 페이지</h3><p>주소에 쓸 슬러그(영문 소문자·숫자·하이픈)를 정하세요.<br>예: swoong → neoix.kr/link/swoong</p>
+  openModal(`<h3>새 페이지</h3><p>주소에 쓸 슬러그(영문 소문자·숫자·하이픈)를 정하세요.<br>예: shuung → neoix.kr/shuung</p>
     <input id="m-slug" placeholder="슬러그" maxlength="24">
     <div class="btns"><button class="no">취소</button><button class="yes">만들기</button></div>`,box=>{
     const inp=box.querySelector('#m-slug');inp.focus();
