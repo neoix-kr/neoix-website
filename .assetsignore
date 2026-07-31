@@ -18,3 +18,8 @@ ChatGPT*
 bgm-studio/cards.html
 .git/
 .github/
+개발/
+*.tar.gz
+*.sql
+*.md
+admin/preview-v2.html

@@ -2586,7 +2586,7 @@ $('sidebarBackdrop').addEventListener('click', () => { $('sidebar').classList.re
 checkSession();
 
 /* ── 디자인 프리뷰(?design=1): 로그인 없이 목업 데이터로 레이아웃 확인용 ── */
-if (new URLSearchParams(location.search).has('design')) {
+if (new URLSearchParams(location.search).has('design') && /^(localhost|127\.0\.0\.1)$/.test(location.hostname)) {
   const D = o => new Date(Date.now() - o*86400000).toISOString();
   const mk = (n,e,p,apps,dt) => ({ id: 'm'+Math.random().toString(36).slice(2), display_name:n, email:e, signup_provider:p, created_at:dt, last_sign_in_at:dt, signup_app:apps[0]||null, apps: apps.map(k=>({key:k,name:k,first_seen:dt})) });
   const mock = [
