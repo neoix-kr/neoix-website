@@ -209,7 +209,7 @@ if (!data) {
     let cls = 'lk';
     if (off) cls += ' off';
     else if (!priDone) { cls += ' pri'; priDone = true; }
-    return `<a class="${cls}" ${off?'':`href="${esc(l.url)}"`}>
+    return `<a class="${cls}" ${off?'':`href="${esc(l.url)}" target="_blank" rel="noopener"`}>
       <div class="lb">${esc(l.label)}</div>${l.sub?`<div class="sb">${esc(l.sub)}</div>`:''}
     </a>`;
   }).join('') || '<div class="empty">아직 링크가 없어요</div>';
