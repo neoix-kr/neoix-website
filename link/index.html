@@ -201,7 +201,10 @@ if (!data) {
   const ph = Array.isArray(data.photos) ? data.photos : [];
   if (ph.length) $('photos').innerHTML = `<div class="ph">${ph.map(u=>`<img src="${esc(u)}" alt="" loading="lazy">`).join('')}</div>`;
 
-  /* 링크 — 첫 번째 활성 링크는 강조(accent) 버튼 */
+  /* 링크 — 첫 번째 활성 링크는 강조(accent) 버튼
+     인스타 등 인앱 브라우저는 새 탭을 차단하므로 기본은 같은 탭 이동.
+     에디터 미리보기(iframe) 안에서만 새 탭(앱스토어 등 프레임 차단 사이트 대응). */
+  const inFrame = window.self !== window.top;
   const links = Array.isArray(data.links) ? data.links : [];
   let priDone = false;
   $('links').innerHTML = links.map(l => {
@@ -209,7 +212,7 @@ if (!data) {
     let cls = 'lk';
     if (off) cls += ' off';
     else if (!priDone) { cls += ' pri'; priDone = true; }
-    return `<a class="${cls}" ${off?'':`href="${esc(l.url)}" target="_blank" rel="noopener"`}>
+    return `<a class="${cls}" ${off?'':`href="${esc(l.url)}"${inFrame?' target="_blank" rel="noopener"':''}`}>
       <div class="lb">${esc(l.label)}</div>${l.sub?`<div class="sb">${esc(l.sub)}</div>`:''}
     </a>`;
   }).join('') || '<div class="empty">아직 링크가 없어요</div>';
