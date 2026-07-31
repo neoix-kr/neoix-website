@@ -1,3 +1,10 @@
 name = "neoix-push"
 main = "worker.js"
 compatibility_date = "2025-06-01"
+
+[[kv_namespaces]]
+binding = "WEBPUSH_KV"
+id = "a829d94d9a5742d89183d7c675195c8f"
+
+[triggers]
+crons = ["*/2 * * * *"]
