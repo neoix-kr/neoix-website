@@ -216,6 +216,15 @@ if (!data) {
       <div class="lb">${esc(l.label)}</div>${l.sub?`<div class="sb">${esc(l.sub)}</div>`:''}
     </a>`;
   }).join('') || '<div class="empty">아직 링크가 없어요</div>';
+
+  /* 인스타/페북/카톡 인앱 브라우저: 앱스토어 유니버설 링크를 무시하는 경우가 있어
+     itms-appss:// 스킴으로 강제 오픈 (앱스토어 앱이 바로 뜸) */
+  const inApp = /Instagram|FBAN|FBAV|FB_IAB|KAKAOTALK|Line\//i.test(navigator.userAgent);
+  if (inApp) {
+    document.querySelectorAll('a.lk[href^="https://apps.apple.com/"]').forEach(a => {
+      a.addEventListener('click', e => { e.preventDefault(); location.href = a.href.replace('https://', 'itms-appss://'); });
+    });
+  }
 }
 document.body.classList.add('ready');
 </script>
