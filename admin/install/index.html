@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>NEOIX Admin 설치</title>
+<meta name="robots" content="noindex">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+body{background:#f4f5f7;color:#191f28;font-family:'Pretendard Variable',-apple-system,system-ui,sans-serif;-webkit-font-smoothing:antialiased;
+  min-height:100vh;min-height:100dvh;display:flex;align-items:center;justify-content:center;padding:24px;}
+.box{width:100%;max-width:360px;text-align:center;}
+.ic{width:88px;height:88px;border-radius:22px;margin:0 auto 20px;overflow:hidden;border:1px solid rgba(0,0,0,.06);box-shadow:0 8px 28px rgba(0,0,0,.1);}
+.ic img{width:100%;height:100%;display:block;object-fit:cover;}
+h1{font-size:21px;font-weight:800;letter-spacing:-.02em;}
+.sub{font-size:13.5px;color:#4e5968;margin-top:7px;line-height:1.6;}
+.btn{display:block;width:100%;height:54px;line-height:54px;border-radius:14px;background:#191f28;color:#fff;
+  font-size:16px;font-weight:800;text-decoration:none;margin-top:26px;}
+.btn:active{opacity:.85;}
+.btn.ghost{background:#fff;color:#4e5968;border:1px solid #eceef1;font-weight:700;font-size:14.5px;height:48px;line-height:46px;margin-top:10px;}
+.note{font-size:12px;color:#8b95a1;line-height:1.75;margin-top:20px;text-align:left;background:#fff;border:1px solid #eceef1;border-radius:14px;padding:14px 16px;}
+.note b{color:#4e5968;}
+.wait{display:none;font-size:13px;color:#8b95a1;margin-top:24px;line-height:1.7;}
+</style>
+</head>
+<body>
+<div class="box">
+  <div class="ic"><img src="/admin/icons/icon-512.png" alt="NEOIX Admin"></div>
+  <h1>NEOIX Admin</h1>
+  <div class="sub">관리 콘솔을 폰에 설치합니다.<br>신규 가입이 생기면 바로 알림이 옵니다.</div>
+
+  <a class="btn" id="btnInstall" href="#">설치하기</a>
+  <a class="btn ghost" href="/admin/">웹으로 열기</a>
+
+  <div class="wait" id="wait">설치가 시작되면 홈 화면에 아이콘이 나타납니다.<br>완료 후 아이콘을 눌러 실행하고 <b>알림 허용</b>을 눌러주세요.</div>
+  <div class="note" id="note" style="display:none"></div>
+</div>
+
+<script>
+const PLIST = 'https://neoix.kr/admin/install/app.plist';
+const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
+const btn = document.getElementById('btnInstall');
+const note = document.getElementById('note');
+
+async function ready() {
+  // 빌드가 올라와 있는지 확인 (app.plist 존재 여부)
+  try {
+    const r = await fetch(PLIST, { method: 'HEAD', cache: 'no-store' });
+    return r.ok;
+  } catch (e) { return false; }
+}
+
+(async () => {
+  if (!isIOS) {
+    btn.textContent = '홈 화면에 추가';
+    btn.onclick = (e) => { e.preventDefault(); note.style.display='block';
+      note.innerHTML = '<b>안드로이드</b> — 브라우저 메뉴(⋮) → <b>홈 화면에 추가</b>를 누르면 앱처럼 설치됩니다.'; };
+    return;
+  }
+  if (await ready()) {
+    btn.href = 'itms-services://?action=download-manifest&url=' + encodeURIComponent(PLIST);
+    btn.addEventListener('click', () => { document.getElementById('wait').style.display = 'block'; });
+  } else {
+    btn.textContent = '홈 화면에 추가 (임시)';
+    btn.onclick = (e) => { e.preventDefault(); note.style.display='block';
+      note.innerHTML = '앱 설치 파일을 준비 중입니다.<br><br>지금은 <b>Safari 공유 버튼(□↑) → 홈 화면에 추가</b>로 설치해 주세요. 준비되면 이 화면에서 바로 설치할 수 있게 됩니다.'; };
+  }
+})();
+</script>
+</body>
+</html>

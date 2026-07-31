@@ -1168,9 +1168,11 @@ function b64uToU8(s) {
 async function setupPushButtons() {
   const state = document.getElementById('pushSetupState');
   const standalone = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone;
+  // 폰에 설치 — iOS는 앱(ad-hoc) 원탭 설치, 안드로이드는 PWA 설치 프롬프트
   document.getElementById('btnInstallPwa').onclick = async () => {
+    if (/iPhone|iPad/.test(navigator.userAgent)) { location.href = '/admin/install'; return; }
     if (deferredInstall) { deferredInstall.prompt(); return; }
-    alert('아이폰 설치 방법\n\n1. Safari로 neoix.kr/admin 접속\n2. 공유 버튼(□↑) 탭\n3. "홈 화면에 추가" 선택\n\n설치된 아이콘으로 열어야 알림을 켤 수 있어요.');
+    location.href = '/admin/install';
   };
   document.getElementById('btnEnablePush').onclick = async () => {
     try {

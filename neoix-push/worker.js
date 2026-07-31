@@ -112,46 +112,79 @@ export default {
     return json({ sent, ok: sent - errors.length, errors: errors.slice(0, 5) }, 200, cors);
   },
 
-  // ── cron: 신규 가입·돌파 감지 ──
+  // ── cron: 신규 가입 감지 (profiles 기준) ──
+  // 이전 구현은 GoTrue admin API의 j.total을 봤는데 그 필드가 없어 매번 조기 종료됐다.
+  // 이제 profiles의 최신 created_at을 기준점으로 삼아 "새로 생긴 계정"을 직접 찾는다.
   async scheduled(event, env) {
     const key = env.SUPABASE_SERVICE_KEY;
     if (!key) return; // 시크릿 미설정 시 조용히 통과
     const svc = { apikey: key, Authorization: `Bearer ${key}` };
-    // 총 가입자 수 (auth admin API)
-    const r = await fetch(`${SUPABASE_URL}/auth/v1/admin/users?page=1&per_page=1`, { headers: svc });
+
+    const r = await fetch(
+      `${SUPABASE_URL}/rest/v1/profiles?select=id,email,display_name,signup_provider,created_at&order=created_at.desc&limit=20`,
+      { headers: { ...svc, Prefer: 'count=exact' } });
     if (!r.ok) return;
-    const j = await r.json().catch(() => null);
-    const total = j?.total ?? null;
-    if (total === null) return;
-    const prevRaw = await env.WEBPUSH_KV.get('user_count');
-    const prev = prevRaw === null ? null : parseInt(prevRaw, 10);
-    await env.WEBPUSH_KV.put('user_count', String(total));
-    if (prev === null || total <= prev) return; // 첫 실행/변화 없음
+    const rows = await r.json().catch(() => []);
+    if (!Array.isArray(rows) || !rows.length) return;
+    const total = parseInt((r.headers.get('content-range') || '').split('/')[1], 10) || null;
 
-    const subs = await fetchSubs(svc);
-    if (!subs.length) return;
+    const lastTs = await env.WEBPUSH_KV.get('last_signup_ts');
+    const newest = rows[0].created_at;
+    if (!lastTs) { // 첫 실행 — 기준점만 잡고 종료(과거 가입 폭탄 방지)
+      await env.WEBPUSH_KV.put('last_signup_ts', newest);
+      if (total) await env.WEBPUSH_KV.put('user_count', String(total));
+      return;
+    }
+    const fresh = rows.filter((u) => new Date(u.created_at) > new Date(lastTs));
+    await env.WEBPUSH_KV.put('last_signup_ts', newest);
 
-    // 돌파 알림이 우선, 아니면 신규 가입 알림
-    const crossed = MILESTONES.find((m) => prev < m && total >= m);
+    const prevTotal = parseInt(await env.WEBPUSH_KV.get('user_count'), 10);
+    if (total) await env.WEBPUSH_KV.put('user_count', String(total));
+    if (!fresh.length) return;
+
+    // 새 가입자가 쓰는 앱 이름 붙이기
+    let appOf = {};
+    try {
+      const ids = fresh.map((u) => u.id).join(',');
+      const mr = await fetch(`${SUPABASE_URL}/rest/v1/service_memberships?select=user_id,service_name&user_id=in.(${ids})`, { headers: svc });
+      if (mr.ok) for (const m of (await mr.json().catch(() => []))) appOf[m.user_id] = m.service_name;
+    } catch {}
+
+    const nameOf = (u) => u.display_name || (u.email || '').split('@')[0] || '새 사용자';
+    const provOf = (p) => ({ kakao: '카카오', apple: 'Apple', google: 'Google' }[p] || '이메일');
+    const crossed = total && !isNaN(prevTotal) ? MILESTONES.find((m) => prevTotal < m && total >= m) : null;
+
     let title, body;
     if (crossed) {
       title = `🎉 가입자 ${crossed}명 돌파!`;
       body = `네오익스 통합 가입자가 ${total}명이 됐어요.`;
+    } else if (fresh.length === 1) {
+      const u = fresh[0];
+      title = `신규 가입 · ${appOf[u.id] || '네오익스'}`;
+      body = `${nameOf(u)}님이 ${provOf(u.signup_provider)}로 가입했어요${total ? ` (전체 ${total}명)` : ''}`;
     } else {
-      // 최신 가입자 이름 조회
-      let who = '';
-      try {
-        const nr = await fetch(`${SUPABASE_URL}/auth/v1/admin/users?page=1&per_page=${total - prev}`, { headers: svc });
-        const nj = await nr.json();
-        const names = (nj?.users || []).map((u) =>
-          u.user_metadata?.name || u.user_metadata?.nickname || (u.email || '').split('@')[0] || '새 사용자');
-        who = names.slice(0, 3).join(', ');
-      } catch {}
-      title = '새 가입자가 있어요';
-      body = who ? `${who}님이 가입했어요 (전체 ${total}명)` : `가입자 +${total - prev} (전체 ${total}명)`;
+      title = `신규 가입 ${fresh.length}명`;
+      body = `${fresh.slice(0, 3).map(nameOf).join(', ')}님${fresh.length > 3 ? ' 외' : ''} 가입${total ? ` (전체 ${total}명)` : ''}`;
     }
+
     await env.WEBPUSH_KV.put('latest', JSON.stringify({ title, body, ts: Date.now() }));
-    await pushAll(env, subs, null);
+
+    // ① 관리자 웹푸시(PWA)
+    try { const subs = await fetchSubs(svc); if (subs.length) await pushAll(env, subs, null); } catch {}
+
+    // ② 관리자 폰 네이티브 푸시 — KV 'notify_uids'(콤마 구분 계정 id)의 앱 토큰으로 발송
+    try {
+      const uids = ((await env.WEBPUSH_KV.get('notify_uids')) || '').split(',').map((s) => s.trim()).filter(Boolean);
+      if (uids.length) {
+        const tr = await fetch(`${SUPABASE_URL}/rest/v1/neoix_push_tokens?select=token&user_id=in.(${uids.join(',')})`, { headers: svc });
+        const toks = tr.ok ? await tr.json().catch(() => []) : [];
+        const tokens = [...new Set((toks || []).map((x) => x.token))].filter((t) => typeof t === 'string' && t.startsWith('ExponentPushToken'));
+        if (tokens.length) await fetch('https://exp.host/--/api/v2/push/send', {
+          method: 'POST', headers: { 'content-type': 'application/json' },
+          body: JSON.stringify(tokens.map((to) => ({ to, title, body, sound: 'default' }))),
+        });
+      }
+    } catch {}
   },
 };
 

@@ -1,0 +1,48 @@
+{
+  "expo": {
+    "name": "NEOIX Admin",
+    "slug": "neoix-admin",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "scheme": "neoixadmin",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "kr.neoix.admin",
+      "buildNumber": "1",
+      "infoPlist": {
+        "CFBundleDisplayName": "NEOIX Admin",
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    },
+    "android": {
+      "package": "kr.neoix.admin",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      }
+    },
+    "plugins": [
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/icon.png",
+          "color": "#4f46e5"
+        }
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "eac11ba0-f9a5-4a2c-b5f3-445343076a7d"
+      }
+    },
+    "owner": "neoix"
+  }
+}
