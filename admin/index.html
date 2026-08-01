@@ -1356,6 +1356,12 @@ const isInternalU = u => /@neoix\.kr$/i.test(u.email || '');
 const AVA_COLORS = ['#4f46e5','#0ea5e9','#059669','#d97706','#dc2626','#7c3aed','#0891b2','#64748b'];
 const avaColor = s => AVA_COLORS[[...String(s||'?')].reduce((a,c)=>a+c.charCodeAt(0),0)%AVA_COLORS.length];
 const APP_ICONS = { 'travel-globe':'/link/icon-swoong.png', 'pray':'/link/icon-pray.png', 'poly':'/link/icon-poly.png' };
+/* XSS 방지 — 사용자가 넣은 값(이름·이메일·방 이름·민원 내용 등)은 반드시 esc()로 감싼다.
+   profiles.display_name은 본인이 자유롭게 바꿀 수 있어(RLS profiles_self_update),
+   이스케이프 없이 innerHTML에 넣으면 아무 가입자나 관리자 화면에서 코드를 실행시킬 수 있다. */
+const esc = v => String(v == null ? '' : v)
+  .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+  .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 const nameOfU = u => u.display_name || (u.email ? u.email.split('@')[0] : '이름 없음');
 const provChipU = p => { const m={kakao:['카카오','badge-kakao'],apple:['Apple','badge-gray'],email:['이메일','badge-gray'],google:['Google','badge-danger']}; const x=m[p]||[p||'이메일','badge-gray']; return `<span class="chip ${x[1]}">${x[0]}</span>`; };
 const fmtAgo = d => { const t=(Date.now()-new Date(d))/1000; if(t<3600) return Math.max(1,Math.round(t/60))+'분 전'; if(t<86400) return Math.round(t/3600)+'시간 전'; if(t<86400*2) return '어제'; return new Date(d).toLocaleDateString('ko-KR',{month:'numeric',day:'numeric'}); };
@@ -1364,8 +1370,8 @@ function frowHTML(u){
   const chips = membershipKeysOf(u).map(k=>{const i=appInfo(k);return `<span class="chip ${i.cls}">${i.name}</span>`;}).join('')
     + provChipU(u.signup_provider) + (isInternalU(u)?'<span class="chip chip-internal">내부</span>':'');
   return `<div class="frow" onclick="openUserModal('${u.id}')">
-    <div class="fav" style="background:${avaColor(u.id)}">${nameOfU(u)[0].toUpperCase()}</div>
-    <div class="fbody"><div class="fn">${nameOfU(u)} ${chips}</div><div class="fs">${u.email||'-'}</div></div>
+    <div class="fav" style="background:${avaColor(u.id)}">${esc(nameOfU(u)[0].toUpperCase())}</div>
+    <div class="fbody"><div class="fn">${esc(nameOfU(u))} ${chips}</div><div class="fs">${esc(u.email||'-')}</div></div>
     <div class="ft">${fmtAgo(u.created_at)}</div></div>`;
 }
 
@@ -1465,10 +1471,10 @@ function renderProjectCards() {
     return `<div class="project-card">
       <div class="project-header">
         <span class="project-icon">${p.icon || '📦'}</span>
-        <span class="project-name">${p.name}</span>
+        <span class="project-name">${esc(p.name)}</span>
         <span class="project-status"><span class="badge ${badgeClass}">${statusLabel}</span></span>
       </div>
-      <div class="project-desc">${p.description || ''}</div>
+      <div class="project-desc">${esc(p.description || '')}</div>
       <div class="project-meta">
         <span class="meta-tag">${catLabels[p.category] || p.category}</span>
         ${p.infra ? `<span class="meta-tag">${p.infra}</span>` : ''}
@@ -1508,7 +1514,7 @@ function renderRooms(filter = '') {
     const mc = cachedMembers.filter(m => m.room_id === r.id).length;
     const owner = cachedMembers.find(m => m.user_id === r.owner_id && m.room_id === r.id);
     const conti = Array.isArray(r.conti) ? r.conti.length : 0;
-    return `<tr><td class="td-mono">${r.code||'-'}</td><td class="td-bold">${r.name||'이름 없음'}</td><td>${owner?.display_name||'-'}</td><td>${mc}명${conti?` / 곡 ${conti}`:''}</td><td style="color:var(--light)">${fmt(r.created_at)}</td></tr>`;
+    return `<tr><td class="td-mono">${esc(r.code||'-')}</td><td class="td-bold">${esc(r.name||'이름 없음')}</td><td>${esc(owner?.display_name||'-')}</td><td>${mc}명${conti?` / 곡 ${conti}`:''}</td><td style="color:var(--light)">${fmt(r.created_at)}</td></tr>`;
   }).join('');
 }
 
@@ -1517,7 +1523,7 @@ function renderMembers(filter = '') {
   if (!filtered.length) { $('membersBody').innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--light);padding:40px">멤버가 없습니다</td></tr>'; return; }
   $('membersBody').innerHTML = filtered.map(m => {
     const room = cachedRooms.find(r => r.id === m.room_id);
-    return `<tr><td class="td-bold">${m.display_name||'-'}</td><td><span class="badge ${m.role==='leader'?'badge-info':'badge-gray'}">${m.role||'member'}</span></td><td>${room?.name||room?.code||'-'}</td><td style="color:var(--light)">${fmt(m.joined_at)}</td></tr>`;
+    return `<tr><td class="td-bold">${esc(m.display_name||'-')}</td><td><span class="badge ${m.role==='leader'?'badge-info':'badge-gray'}">${esc(m.role||'member')}</span></td><td>${esc(room?.name||room?.code||'-')}</td><td style="color:var(--light)">${fmt(m.joined_at)}</td></tr>`;
   }).join('');
 }
 
@@ -1614,15 +1620,15 @@ function renderUsers(filter = '') {
       ? mk.map(k => { const i = appInfo(k); const a = (u.apps||[]).find(x => x.key === k); return `<span class="app-chip ${i.cls}"${a ? ` title="첫 사용 ${fmt(a.first_seen)}"` : ''}>${i.name}</span>`; }).join('')
       : '<span style="color:var(--light)">-</span>';
     return `<tr onclick="openUserModal('${u.id}')" style="cursor:pointer">
-      <td class="td-bold">${nameOf(u)}</td>
-      <td class="td-mono">${u.email||'-'}</td>
-      <td class="td-mono">${fmtPhone(u.phone)}</td>
+      <td class="td-bold">${esc(nameOf(u))}</td>
+      <td class="td-mono">${esc(u.email||'-')}</td>
+      <td class="td-mono">${esc(fmtPhone(u.phone))}</td>
       <td>${saBadge}</td>
       <td><span class="badge ${pClass}">${pLabel}</span></td>
       <td>${usedApps}</td>
       <td style="color:var(--light)">${fmt(u.created_at)}</td>
       <td style="color:var(--light)">${fmtFull(u.last_sign_in_at)}</td>
-      <td><button class="btn-sm user-del-btn" data-uid="${u.id || u.user_id || ''}" data-uname="${nameOf(u)}"
+      <td><button class="btn-sm user-del-btn" data-uid="${esc(u.id || u.user_id || '')}" data-uname="${esc(nameOf(u))}"
         style="padding:5px 10px;font-size:11.5px;color:#d0312d;background:#fdf0ef" onclick="event.stopPropagation()">삭제</button></td>
     </tr>`;
   }).join('');
@@ -1669,15 +1675,15 @@ function renderAppViewUsers() {
     const saKey = appOf(u);
     const saBadge = saKey ? (() => { const i = appInfo(saKey); return `<span class="badge ${i.cls}">${i.name}</span>`; })() : '<span style="color:var(--light)">-</span>';
     return `<tr onclick="openUserModal('${u.id}')" style="cursor:pointer">
-      <td class="td-bold">${nameOf(u)}</td>
-      <td class="td-mono">${u.email||'-'}</td>
+      <td class="td-bold">${esc(nameOf(u))}</td>
+      <td class="td-mono">${esc(u.email||'-')}</td>
       <td class="td-mono">${fmtPhone(phoneOfApp(u, key))}</td>
       <td>${saBadge}</td>
       <td><span class="badge ${pClass}">${pLabel}</span></td>
       <td style="color:var(--light)">${fmt(firstSeenOf(u))}</td>
       <td style="color:var(--light)">${fmt(u.created_at)}</td>
       <td style="color:var(--light)">${fmtFull(u.last_sign_in_at)}</td>
-      <td><button class="btn-sm user-del-btn" data-uid="${u.id || u.user_id || ''}" data-uname="${nameOf(u)}"
+      <td><button class="btn-sm user-del-btn" data-uid="${esc(u.id || u.user_id || '')}" data-uname="${esc(nameOf(u))}"
         style="padding:5px 10px;font-size:11.5px;color:#d0312d;background:#fdf0ef" onclick="event.stopPropagation()">삭제</button></td>
     </tr>`;
   }).join('');
@@ -1692,10 +1698,10 @@ async function loadProjectsView() {
     const [statusLabel, badgeClass] = statusMap[p.status] || ['알 수 없음','badge-gray'];
     return `<div style="background:#fff;border:1px solid var(--border);border-radius:16px;padding:20px;margin-bottom:12px;display:flex;align-items:center;gap:16px">
       <span style="font-size:28px">${p.icon||'📦'}</span>
-      <div style="flex:1;min-width:0"><div style="font-size:14px;font-weight:700">${p.name}</div><div style="font-size:12px;color:var(--muted);margin-top:2px">${p.description||''}</div></div>
+      <div style="flex:1;min-width:0"><div style="font-size:14px;font-weight:700">${esc(p.name)}</div><div style="font-size:12px;color:var(--muted);margin-top:2px">${esc(p.description||'')}</div></div>
       <span class="badge ${badgeClass}" style="flex-shrink:0">${statusLabel}</span>
       <button class="btn-sm btn-outline" onclick="editProject('${p.id}')">편집</button>
-      <button class="btn-sm btn-danger-outline" onclick="deleteProject('${p.id}','${p.name}')">삭제</button>
+      <button class="btn-sm btn-danger-outline" onclick="deleteProject('${esc(p.id)}','${esc(String(p.name).replace(/'/g,''))}')">삭제</button>
     </div>`;
   }).join('') || '<div class="empty"><div class="empty-text">등록된 프로젝트가 없습니다</div></div>';
 }
@@ -1733,7 +1739,7 @@ async function saveProject() {
 let cachedJmap = [];
 async function loadJmap() {
   const { data, error } = await supabase.from('jmap_preorders').select('*').order('created_at', { ascending: false });
-  if (error) { $('jmapBody').innerHTML = `<tr><td colspan="5" style="color:var(--text-light)">불러오기 실패 — jmap-setup.sql 실행 여부를 확인하세요 (${error.message})</td></tr>`; return; }
+  if (error) { $('jmapBody').innerHTML = `<tr><td colspan="5" style="color:var(--text-light)">불러오기 실패 — jmap-setup.sql 실행 여부를 확인하세요 (${esc(error.message)})</td></tr>`; return; }
   cachedJmap = data || [];
   const today = new Date(); today.setHours(0,0,0,0);
   const todayCount = cachedJmap.filter(r => new Date(r.created_at) >= today).length;
@@ -1748,10 +1754,10 @@ function renderJmap(q) {
   const rows = cachedJmap.filter(r => !q || (r.phone||'').includes(q));
   $('jmapBody').innerHTML = rows.length ? rows.map(r => `
     <tr>
-      <td style="font-weight:600">${(r.phone||'').replace(/(\d{3})(\d{3,4})(\d{4})/, '$1-$2-$3')}</td>
-      <td>${r.source||'-'}</td>
-      <td>${r.church||'-'}</td>
-      <td>${r.denomination||'-'}</td>
+      <td style="font-weight:600">${esc((r.phone||'').replace(/(\d{3})(\d{3,4})(\d{4})/, '$1-$2-$3'))}</td>
+      <td>${esc(r.source||'-')}</td>
+      <td>${esc(r.church||'-')}</td>
+      <td>${esc(r.denomination||'-')}</td>
       <td>${new Date(r.created_at).toLocaleString('ko-KR')}</td>
     </tr>`).join('') : '<tr><td colspan="5" style="color:var(--text-light)">아직 신청자가 없습니다</td></tr>';
 }
@@ -1781,13 +1787,13 @@ function renderPolyVoters(filter = '') {
   if (!list.length) { $('polyVotersBody').innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--light);padding:40px">폴리 가입자가 없습니다</td></tr>'; return; }
   const providerLabel = p => ({ email:'이메일', kakao:'카카오', apple:'Apple', google:'Google' }[p] || p || '이메일');
   $('polyVotersBody').innerHTML = list.map(u => `<tr>
-    <td class="td-bold">${nameOf(u)}</td>
-    <td class="td-mono">${u.email||'-'}</td>
-    <td class="td-mono">${fmtPhone(u.phone)}</td>
+    <td class="td-bold">${esc(nameOf(u))}</td>
+    <td class="td-mono">${esc(u.email||'-')}</td>
+    <td class="td-mono">${esc(fmtPhone(u.phone))}</td>
     <td>${providerLabel(u.signup_provider)}</td>
     <td style="color:var(--light)">${fmt(u.created_at)}</td>
     <td style="color:var(--light)">${fmtFull(u.last_sign_in_at)}</td>
-    <td><button class="btn-sm user-del-btn" data-uid="${u.id || u.user_id || ''}" data-uname="${nameOf(u)}"
+    <td><button class="btn-sm user-del-btn" data-uid="${esc(u.id || u.user_id || '')}" data-uname="${esc(nameOf(u))}"
       style="padding:5px 10px;font-size:11.5px;color:#d0312d;background:#fdf0ef">삭제</button></td>
   </tr>`).join('');
 }
@@ -1827,7 +1833,7 @@ async function loadPolyVerifs() {
     .select('id, doc_type, doc_path, status, note, created_at, profile_id, poly_pages(name, slug, verified)')
     .order('created_at', { ascending: false });
   if (error) {
-    $('polyVerifsBody').innerHTML = `<tr><td colspan="7" style="text-align:center;color:var(--light);padding:40px">불러오기 실패 — poly-setup.sql / poly_is_admin 확장 실행 여부를 확인하세요 (${error.message})</td></tr>`;
+    $('polyVerifsBody').innerHTML = `<tr><td colspan="7" style="text-align:center;color:var(--light);padding:40px">불러오기 실패 — poly-setup.sql / poly_is_admin 확장 실행 여부를 확인하세요 (${esc(error.message)})</td></tr>`;
     return;
   }
   cachedPolyVerifs = data || [];
@@ -1851,9 +1857,9 @@ function renderPolyVerifs(filter = '') {
       ? `<button class="btn-sm btn-danger-outline" onclick="polyReviewVerif('${v.id}',false)">인증 취소</button>`
       : `<button class="btn-sm btn-primary-sm" onclick="polyReviewVerif('${v.id}',true)">승인</button> <button class="btn-sm btn-danger-outline" onclick="polyReviewVerif('${v.id}',false)">반려</button>`;
     return `<tr>
-      <td class="td-bold">${pg.name || '(프로필 없음)'}${verifiedTag}</td>
-      <td class="td-mono">${pg.slug ? 'polyx.kr/' + pg.slug : '-'}</td>
-      <td>${doc}</td>
+      <td class="td-bold">${esc(pg.name || '(프로필 없음)')}${verifiedTag}</td>
+      <td class="td-mono">${esc(pg.slug ? 'polyx.kr/' + pg.slug : '-')}</td>
+      <td>${esc(doc)}</td>
       <td style="color:var(--light)">${fmt(v.created_at)}</td>
       <td><span class="badge ${sClass}">${sLabel}</span></td>
       <td>${v.doc_path ? `<button class="btn-sm" onclick="polyViewDoc('${encodeURIComponent(v.doc_path)}')">서류 열기</button>` : '-'}</td>
@@ -1882,7 +1888,7 @@ async function loadPolyStats() {
   const { data, error } = await supabase.rpc('poly_admin_stats');
   if (error) {
     $('polyStats').innerHTML = '';
-    return toast(`폴리 통계 로드 실패 — admin/poly-admin-setup.sql 실행 여부를 확인하세요 (${error.message})`, 'error');
+    return toast(`폴리 통계 로드 실패 — admin/poly-admin-setup.sql 실행 여부를 확인하세요 (${esc(error.message)})`, 'error');
   }
   const s = data || {};
   const pending = s.pending_verification || 0;
@@ -1898,7 +1904,7 @@ async function loadPolyStats() {
 // 정치인 인증
 async function loadPolyPoliticians() {
   const { data, error } = await supabase.rpc('poly_admin_list_politicians');
-  if (error) { $('polyPoliticiansBody').innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--light);padding:40px">불러오기 실패 — poly-admin-setup.sql 실행 여부를 확인하세요 (${error.message})</td></tr>`; return; }
+  if (error) { $('polyPoliticiansBody').innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--light);padding:40px">불러오기 실패 — poly-admin-setup.sql 실행 여부를 확인하세요 (${esc(error.message)})</td></tr>`; return; }
   cachedPolyPoliticians = data || [];
   renderPolyPoliticians($('polyPoliticianSearch').value.toLowerCase());
 }
@@ -1915,9 +1921,9 @@ function renderPolyPoliticians(filter = '') {
       ? `<button class="btn-sm btn-primary-sm" onclick="polySetVerification('${p.id}','approved')">승인</button>`
       : `<button class="btn-sm btn-primary-sm" onclick="polySetVerification('${p.id}','approved')">승인</button> <button class="btn-sm btn-danger-outline" onclick="polySetVerification('${p.id}','rejected')">반려</button>`;
     return `<tr>
-      <td class="td-bold">${p.name || '-'}</td>
-      <td class="td-mono">${p.email || '-'}</td>
-      <td>${region}</td>
+      <td class="td-bold">${esc(p.name || '-')}</td>
+      <td class="td-mono">${esc(p.email || '-')}</td>
+      <td>${esc(region)}</td>
       <td><span class="badge ${sClass}">${sLabel}</span></td>
       <td style="color:var(--light)">${fmt(p.created_at)}</td>
       <td style="white-space:nowrap">${actions}</td>
@@ -1941,7 +1947,7 @@ window.polySetVerification = async function(userId, status) {
 // 민원
 async function loadPolyComplaints() {
   const { data, error } = await supabase.rpc('poly_admin_list_complaints');
-  if (error) { $('polyComplaintsBody').innerHTML = `<tr><td colspan="7" style="text-align:center;color:var(--light);padding:40px">불러오기 실패 — poly-admin-setup.sql 실행 여부를 확인하세요 (${error.message})</td></tr>`; return; }
+  if (error) { $('polyComplaintsBody').innerHTML = `<tr><td colspan="7" style="text-align:center;color:var(--light);padding:40px">불러오기 실패 — poly-admin-setup.sql 실행 여부를 확인하세요 (${esc(error.message)})</td></tr>`; return; }
   cachedPolyComplaints = data || [];
   renderPolyComplaints($('polyComplaintSearch').value.toLowerCase());
 }
@@ -1953,10 +1959,10 @@ function renderPolyComplaints(filter = '') {
     const target = c.politician_name || ([c.target_province, c.target_city].filter(Boolean).join(' ') ? `${[c.target_province, c.target_city].filter(Boolean).join(' ')} 지역구` : '-');
     const options = Object.entries(polyComplaintStatusLabels).map(([v, l]) => `<option value="${v}"${c.status === v ? ' selected' : ''}>${l}</option>`).join('');
     return `<tr>
-      <td class="td-bold">${c.title || '-'}</td>
-      <td>${c.user_name || '-'}</td>
-      <td>${target}</td>
-      <td>${c.category || '-'}</td>
+      <td class="td-bold">${esc(c.title || '-')}</td>
+      <td>${esc(c.user_name || '-')}</td>
+      <td>${esc(target)}</td>
+      <td>${esc(c.category || '-')}</td>
       <td>${c.agree_count || 0}</td>
       <td><select onchange="polySetComplaintStatus('${c.id}', this)" style="padding:6px 10px;border:1px solid var(--border);border-radius:8px;font-size:12px;color:var(--text);background:#fff;outline:none">${options}</select></td>
       <td style="color:var(--light)">${fmt(c.created_at)}</td>
