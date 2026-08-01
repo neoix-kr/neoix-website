@@ -66,6 +66,7 @@ body{background:var(--outer);color:var(--tx);font-family:'Pretendard Variable',-
 .lk.off .lb,.lk.off .sb{color:var(--t3);}
 .empty{text-align:center;color:var(--t3);font-size:14px;padding:70px 0;}
 /* 앱 스토어 배지 버튼 */
+.stitle{font-size:13px;font-weight:800;color:var(--t2);letter-spacing:-.01em;margin:0 2px 9px;}
 .stores{display:flex;gap:9px;margin-bottom:12px;}
 .store{flex:1;min-width:0;display:flex;align-items:center;justify-content:center;gap:9px;
   background:var(--card);border:1px solid var(--line2);border-radius:15px;padding:13px 10px;
@@ -77,17 +78,19 @@ body{background:var(--outer);color:var(--tx);font-family:'Pretendard Variable',-
 .store .s1{display:block;font-size:9.5px;opacity:.62;letter-spacing:.01em;white-space:nowrap;}
 .store .s2{display:block;font-size:14.5px;font-weight:800;letter-spacing:-.01em;white-space:nowrap;margin-top:1px;}
 /* 인앱 브라우저 대안 안내 시트 */
-.sheet{position:fixed;inset:0;z-index:20;background:rgba(0,0,0,.5);display:none;align-items:flex-end;justify-content:center;}
+.sheet{position:fixed;inset:0;z-index:20;background:rgba(0,0,0,.45);display:none;align-items:flex-end;justify-content:center;}
 .sheet.on{display:flex;}
-.sh{background:var(--page);width:100%;max-width:430px;border-radius:22px 22px 0 0;padding:24px 22px calc(22px + env(safe-area-inset-bottom));}
-.shh{font-size:18px;font-weight:800;letter-spacing:-.02em;}
-.shd{font-size:13.5px;color:var(--t2);line-height:1.65;margin-top:8px;}
-.shm{display:flex;gap:12px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:15px 16px;margin-top:12px;}
-.shm .shn{width:22px;height:22px;flex:0 0 auto;border-radius:50%;background:var(--acc);color:var(--acc-tx);font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;}
-.shm b{font-size:14.5px;font-weight:800;}
-.shm span{font-size:12.5px;color:var(--t2);line-height:1.7;}
-.shm .kw{background:var(--acc);color:var(--acc-tx);padding:1px 7px;border-radius:6px;font-size:13.5px;}
-.shx{width:100%;height:48px;margin-top:16px;border:1px solid var(--line);background:none;color:var(--t2);font-size:14.5px;font-weight:700;border-radius:13px;font-family:inherit;cursor:pointer;}
+.sh{background:var(--page);width:100%;max-width:430px;border-radius:24px 24px 0 0;padding:10px 22px calc(22px + env(safe-area-inset-bottom));text-align:center;}
+.grab{width:38px;height:4px;border-radius:99px;background:var(--line2);opacity:.5;margin:0 auto 18px;}
+.shh{font-size:19px;font-weight:800;letter-spacing:-.02em;}
+.shd{font-size:13.5px;color:var(--t2);line-height:1.6;margin-top:7px;}
+.shcard{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px 18px;margin-top:18px;}
+.shk{font-size:12px;font-weight:800;color:var(--t3);letter-spacing:.02em;}
+.shq{display:inline-block;background:var(--acc);color:var(--acc-tx);font-size:22px;font-weight:800;letter-spacing:-.02em;padding:7px 20px;border-radius:12px;margin-top:10px;}
+.shs{font-size:12.5px;color:var(--t2);line-height:1.6;margin-top:12px;}
+.shalt{font-size:12px;color:var(--t3);line-height:1.7;margin-top:14px;}
+.shalt b{color:var(--t2);}
+.shx{width:100%;height:50px;margin-top:18px;border:0;background:var(--acc);color:var(--acc-tx);font-size:15px;font-weight:800;border-radius:14px;font-family:inherit;cursor:pointer;}
 
 /* 하단 NEOIX */
 .foot{margin-top:auto;padding-top:52px;text-align:center;}
@@ -267,7 +270,9 @@ function render(data){
       <div class="lb">${esc(l.label)}</div>${l.sub?`<div class="sb">${esc(l.sub)}</div>`:''}
     </a>`;
   }).join('');
-  const storeHtml = stores.length ? `<div class="stores">${stores.map(storeBadge).join('')}</div>` : '';
+  const storeHtml = stores.length
+    ? `<div class="stitle">${esc(data.title || '앱')} 다운로드 받기</div><div class="stores">${stores.map(storeBadge).join('')}</div>`
+    : '';
   $('links').innerHTML = (storeHtml + restHtml) || '<div class="empty">아직 링크가 없어요</div>';
 
   /* 인앱 브라우저(인스타·스레드·카톡)는 앱스토어 전환을 조용히 취소한다 —
@@ -286,15 +291,21 @@ function render(data){
 
 /* 인앱 브라우저에서 앱스토어 전환이 실패했을 때 뜨는 대안 안내 */
 function showHelp(){
-  if (document.getElementById('helpSheet')) { document.getElementById('helpSheet').classList.add('on'); return; }
+  const ex = document.getElementById('helpSheet');
+  if (ex) { ex.classList.add('on'); return; }
   const el = document.createElement('div');
   el.id = 'helpSheet'; el.className = 'sheet on';
   el.innerHTML = '<div class="sh">' +
-    '<div class="shh">App Store가 열리지 않았나요?</div>' +
-    '<div class="shd">인스타그램 안에서는 App Store를 열 수 없어요.<br>아래 두 가지 중 하나로 설치해 주세요.</div>' +
-    '<div class="shm"><div class="shn">1</div><div><b>Safari로 열기</b><br><span>오른쪽 위 <b>⋯</b> → <b>외부 브라우저에서 열기</b> → 다시 다운로드</span></div></div>' +
-    '<div class="shm"><div class="shn">2</div><div><b>App Store에서 검색</b><br><span>App Store 앱을 열고 <b class="kw">' + esc(appName) + '</b> 를 검색하세요</span></div></div>' +
-    '<button class="shx">닫기</button></div>';
+    '<div class="grab"></div>' +
+    '<div class="shh">' + esc(appName) + ' 설치하기</div>' +
+    '<div class="shd">인스타그램 안에서는 App Store로 이동할 수 없어요.</div>' +
+    '<div class="shcard">' +
+      '<div class="shk">App Store에서 검색</div>' +
+      '<div class="shq">' + esc(appName) + '</div>' +
+      '<div class="shs">App Store 앱을 열고 위 이름을 검색하면 바로 나와요</div>' +
+    '</div>' +
+    '<div class="shalt">또는 오른쪽 위 <b>⋯</b> → <b>외부 브라우저에서 열기</b> 후 다시 다운로드</div>' +
+    '<button class="shx">확인</button></div>';
   document.body.appendChild(el);
   el.querySelector('.shx').addEventListener('click', () => el.classList.remove('on'));
   el.addEventListener('click', e => { if (e.target === el) el.classList.remove('on'); });
