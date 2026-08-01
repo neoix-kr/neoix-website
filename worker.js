@@ -5,12 +5,6 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
 
-    // 임시 진단(/iabtest 전용): 어떤 방식이 인앱에서 통하는지 폰에서 판별하기 위한 로그
-    if (url.pathname === '/diag') {
-      console.log('IABTEST', url.search, '|UA:', (request.headers.get('user-agent') || '').slice(0, 110));
-      return new Response('ok', { headers: { 'cache-control': 'no-store' } });
-    }
-
     // 스토어 리다이렉트: /go?u=<스토어 URL> — 스토어 도메인만 허용(오픈 리다이렉트 방지).
     // 인앱 브라우저용 중간 페이지는 제거했다: x-safari-https:// · itms-appss:// 같은 커스텀 스킴은
     // 인스타/페북 웹뷰가 에러 없이 조용히 취소해서 "아무 반응 없음"의 원인이었다.
