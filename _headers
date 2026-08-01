@@ -9,6 +9,12 @@
 /songsan/escape/assets/*
   Cache-Control: public, max-age=86400
 
+# 어드민 — 홈화면 PWA가 옛 화면을 물고 있지 않게
+/admin/
+  Cache-Control: no-store
+/admin/index.html
+  Cache-Control: no-store
+
 # 링크인바이오 — 인앱 브라우저(인스타 등)가 옛 버전을 물고 있지 않게 항상 최신
 /link/
   Cache-Control: no-store
