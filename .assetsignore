@@ -23,3 +23,9 @@ bgm-studio/cards.html
 *.sql
 *.md
 admin/preview-v2.html
+dev.nosync/
+dev/
+dev 2/
+poly-build/
+neoix-admin-app/
+my-app/
