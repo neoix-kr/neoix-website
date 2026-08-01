@@ -16,8 +16,10 @@
   --shadow:0 10px 34px rgba(0,0,0,.55); --frame:rgba(255,255,255,.07);
 }
 html,body{height:100%;}
-body{background:var(--outer);color:var(--tx);font-family:'Pretendard Variable',-apple-system,system-ui,sans-serif;-webkit-font-smoothing:antialiased;display:flex;justify-content:center;visibility:hidden;}
-body.ready{visibility:visible;}
+body{background:var(--outer);color:var(--tx);font-family:'Pretendard Variable',-apple-system,system-ui,sans-serif;-webkit-font-smoothing:antialiased;display:flex;justify-content:center;}
+.spin{display:flex;align-items:center;justify-content:center;padding:60px 0;}
+.spin i{width:26px;height:26px;border:2.5px solid var(--line);border-top-color:var(--t2);border-radius:50%;animation:sp .7s linear infinite;display:block;}
+@keyframes sp{to{transform:rotate(360deg)}}
 
 /* ── 항상 모바일 폭 — 데스크톱에서도 폰 화면 그대로 ── */
 .page{width:100%;max-width:430px;min-height:100vh;min-height:100dvh;background:var(--page);display:flex;flex-direction:column;padding:24px 22px calc(30px + env(safe-area-inset-bottom));position:relative;transition:background .2s;}
@@ -63,8 +65,12 @@ body.ready{visibility:visible;}
 .lk.off{pointer-events:none;border-style:dashed;background:transparent;}
 .lk.off .lb,.lk.off .sb{color:var(--t3);}
 .empty{text-align:center;color:var(--t3);font-size:14px;padding:70px 0;}
-.iabtip{font-size:12.5px;color:var(--t3);line-height:1.65;text-align:center;margin:14px 2px 0;}
-.iabtip b{color:var(--t2);}
+.iabbox{background:var(--card);border:1.5px solid var(--acc);border-radius:16px;padding:16px 18px;margin-bottom:14px;}
+.iabbox .t{font-size:14.5px;font-weight:800;color:var(--tx);display:flex;align-items:center;gap:7px;}
+.iabbox .t svg{width:17px;height:17px;color:var(--acc);flex:0 0 auto;}
+.iabbox ol{margin:10px 0 0;padding-left:19px;}
+.iabbox li{font-size:13px;color:var(--t2);line-height:1.7;}
+.iabbox li b{color:var(--tx);font-weight:800;}
 
 /* 하단 NEOIX */
 .foot{margin-top:auto;padding-top:52px;text-align:center;}
@@ -104,11 +110,16 @@ body.ready{visibility:visible;}
 </div>
 <div class="toast" id="toast"></div>
 
-<script type="module">
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
-const sb = createClient('https://nroddjekdjwnwguwkudl.supabase.co','sb_publishable_Uygr7NmVn1wmqopNrb4FRw_CRWw7Xeg');
+<script>
+/* CDN(esm.sh) 의존 제거 — Supabase JS SDK 없이 REST fetch만 사용한다.
+   예전엔 외부 모듈 로딩이 느리거나 실패하면 body{visibility:hidden}이 안 풀려
+   인앱 브라우저에서 "검은 화면"이 됐다. 이제 서버가 데이터를 미리 심어주고(window.__PAGE__),
+   실패해도 화면은 항상 보인다. */
+(function(){
+const SB='https://nroddjekdjwnwguwkudl.supabase.co';
+const KEY='sb_publishable_Uygr7NmVn1wmqopNrb4FRw_CRWw7Xeg';
 const $ = id => document.getElementById(id);
-const esc = s => String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const esc = s => String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const toast = t => {const el=$('toast');el.textContent=t;el.classList.add('on');clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('on'),2000);};
 
 /* ── 앱별 톤 테마 ── */
@@ -174,11 +185,11 @@ if (!slug) slug = 'neoix';
 $('share').addEventListener('click', async () => {
   const url = location.hostname === 'localhost' ? location.href : `https://neoix.kr/${slug}`;
   try { await navigator.clipboard.writeText(url); toast('링크가 복사되었습니다'); }
-  catch { toast(url); }
+  catch (e) { toast(url); }
 });
 
-const { data } = await sb.from('link_pages').select('*').eq('slug', slug).maybeSingle();
-if (!data) {
+function render(data){
+  if (!data) {
   $('links').innerHTML = '<div class="empty">페이지를 찾을 수 없어요</div>';
 } else {
   applyTheme(data.theme || 'neoix', data.theme_custom);
@@ -228,11 +239,28 @@ if (!data) {
      자동 이동·타이머·스킴 없음 — 사용자가 직접 누르는 경로만 남긴다. */
   if (/Instagram|FBAN|FBAV|FB_IAB|KAKAOTALK|Line\//i.test(navigator.userAgent)
       && links.some(l => l.url && isStore(l.url))) {
-    $('links').insertAdjacentHTML('afterend',
-      '<div class="iabtip">앱이 안 열리면 오른쪽 위 <b>⋯</b> → <b>외부 브라우저에서 열기</b>(Safari)로 다시 눌러 주세요.</div>');
+    $('links').insertAdjacentHTML('beforebegin',
+      '<div class="iabbox"><div class="t">' +
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v5"/><path d="M12 16.5v.01"/></svg>' +
+      '앱 설치는 Safari에서만 가능해요</div>' +
+      '<ol><li>오른쪽 위 <b>⋯</b> 를 누르세요</li>' +
+      '<li><b>외부 브라우저에서 열기</b>(Safari)를 선택</li>' +
+      '<li>거기서 아래 <b>다운로드</b> 버튼을 누르면 App Store가 열려요</li></ol></div>');
   }
 }
-document.body.classList.add('ready');
+}
+
+/* 서버가 심어준 데이터가 있으면 즉시 렌더(네트워크 0회) — 없으면 직접 조회 */
+if (typeof window.__PAGE__ !== 'undefined') {
+  render(window.__PAGE__);
+} else {
+  $('links').innerHTML = '<div class="spin"><i></i></div>';
+  fetch(SB + '/rest/v1/link_pages?slug=eq.' + encodeURIComponent(slug) + '&select=*', { headers: { apikey: KEY } })
+    .then(r => r.ok ? r.json() : [])
+    .then(j => render((j && j[0]) || null))
+    .catch(() => { $('links').innerHTML = '<div class="empty">연결이 불안정해요. 새로고침해 주세요.</div>'; });
+}
+})();
 </script>
 </body>
 </html>
