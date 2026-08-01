@@ -27,8 +27,8 @@ h1{font-size:19px;font-weight:800;}
 </head>
 <body>
 <div class="wrap">
-  <h1>앱스토어 링크 진단<span class="v">T1</span></h1>
-  <div class="sub">아래 버튼을 <b>1번부터 차례대로</b> 눌러 보세요.<br>App Store가 열리는 버튼이 나오면 거기서 멈추고 알려주세요.</div>
+  <h1>앱스토어 링크 진단<span class="v">T2</span></h1>
+  <div class="sub">아래 버튼을 <b>차례대로</b> 눌러 보세요.<br>App Store가 열리는 버튼이 나오면 거기서 멈추고 번호만 알려주세요.<br><b style="color:#facc15">7~9번은 이번에 새로 추가한 방식입니다 — 여기부터 눌러보셔도 됩니다.</b></div>
 
   <div class="env" id="env">확인 중…</div>
 
@@ -62,6 +62,24 @@ h1{font-size:19px;font-weight:800;}
     <div class="r">눌렀음 · 안 열렸으면 6번으로</div>
   </button>
 
+  <a class="btn" id="b7" href="itms-apps://apps.apple.com/kr/app/id6788460774">
+    <div class="n">7. 앱스토어 앱 직접 열기 (앵커)</div>
+    <div class="d">링크 자체를 앱스토어 앱 주소로 — window.open 안 씀 (새 방식)</div>
+    <div class="r">눌렀음 · 안 열렸으면 8번으로</div>
+  </a>
+
+  <a class="btn" id="b8" href="itms-appss://apps.apple.com/kr/app/id6788460774">
+    <div class="n">8. 앱스토어 앱 직접 열기 (앵커·애플형)</div>
+    <div class="d">애플이 실제로 쓰는 스킴을 링크에 직접 (새 방식)</div>
+    <div class="r">눌렀음 · 안 열렸으면 9번으로</div>
+  </a>
+
+  <button class="btn" id="b9">
+    <div class="n">9. 누르는 순간 전환</div>
+    <div class="d">클릭 그 순간 location으로 앱스토어 앱 호출 (새 방식)</div>
+    <div class="r">눌렀음 · 안 열렸으면 6번(대조군)으로</div>
+  </button>
+
   <a class="btn" id="b6" href="https://neoix.kr/ogx">
     <div class="n">6. 대조군 — 일반 사이트</div>
     <div class="d">앱스토어가 아닌 평범한 페이지. <b>이것도 안 열리면</b> 앱스토어 문제가 아니라 링크 자체 문제</div>
@@ -70,7 +88,7 @@ h1{font-size:19px;font-weight:800;}
 
   <div class="tip">
     안 열리는 버튼도 <b>눌렀다는 기록은 서버에 남습니다</b> — 몇 번까지 눌렀는지만 알려주셔도 됩니다.<br>
-    화면 위 초록색 <b>T1</b> 표시가 안 보이면 옛 페이지가 캐시된 것이니 알려주세요.
+    화면 위 초록색 <b>T2</b> 표시가 안 보이면 옛 페이지가 캐시된 것이니 알려주세요.
   </div>
 </div>
 
@@ -106,6 +124,15 @@ tryOpen('b2', '2-open-https', STORE);
 tryOpen('b3', '3-open-itms-apps', 'itms-apps://apps.apple.com/kr/app/id6788460774');
 tryOpen('b4', '4-open-itms-appss', 'itms-appss://apps.apple.com/kr/app/id6788460774');
 tryOpen('b5', '5-open-safari', 'x-safari-' + STORE);
+
+/* 새 방식: 앵커 스킴 · 제스처 내 location 전환 (window.open 미사용) */
+document.getElementById('b7').addEventListener('click', function () { log('7-anchor-itms-apps'); mark('b7'); });
+document.getElementById('b8').addEventListener('click', function () { log('8-anchor-itms-appss'); mark('b8'); });
+document.getElementById('b9').addEventListener('click', function () {
+  log('9-location-itms-apps'); mark('b9');
+  try { location.href = 'itms-apps://apps.apple.com/kr/app/id6788460774'; }
+  catch (e) { log('9-location-err', String(e && e.message || e)); }
+});
 </script>
 </body>
 </html>
