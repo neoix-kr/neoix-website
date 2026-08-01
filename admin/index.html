@@ -835,9 +835,10 @@ tbody tr:hover { background:#fafbfc; }
               <button class="btn-sm" id="btnAppUsersCsv" style="background:var(--bg);color:var(--text);white-space:nowrap">⬇ 엑셀</button>
             </div>
           </div>
-          <div style="overflow-x:auto">
+          <div style="overflow-x:auto" class="d-only">
             <table><thead><tr><th>이름/아이디</th><th>이메일</th><th>연락처</th><th>가입 앱</th><th>가입경로</th><th>첫 사용</th><th>가입일</th><th>최근 로그인</th></tr></thead><tbody id="appUsersBody"></tbody></table>
           </div>
+          <div class="m-only" id="appUsersCards"></div>
         </div>
       </section>
 
@@ -1768,12 +1769,16 @@ async function loadAppView(key) {
 function renderAppViewUsers() {
   const key = currentAppKey; if (!key) return;
   const filter = ($('appUserSearch').value || '').toLowerCase();
-  const nameOf = u => u.display_name || u.username || '-';
+  const nameOf = u => u.display_name || u.username || (u.email ? u.email.split('@')[0] : '이름 없음');
   const firstSeenOf = u => { const a = (u.apps || []).find(x => x.key === key); if (a) return a.first_seen; return (key === 'ogx' && isOgxAlias(u)) ? u.created_at : null; };
   let list = cachedUsers.filter(u => membershipKeysOf(u).includes(key));
   if (filter) list = list.filter(u => nameOf(u).toLowerCase().includes(filter) || (u.email||'').toLowerCase().includes(filter));
   list.sort((a,b) => new Date(firstSeenOf(b) || b.created_at) - new Date(firstSeenOf(a) || a.created_at));
-  if (!list.length) { $('appUsersBody').innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--light);padding:40px">사용자가 없습니다</td></tr>'; return; }
+  if (!list.length) {
+    $('appUsersBody').innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--light);padding:40px">사용자가 없습니다</td></tr>';
+    const c0 = $('appUsersCards'); if (c0) c0.innerHTML = '<div class="empty">사용자가 없습니다</div>';
+    return;
+  }
   $('appUsersBody').innerHTML = list.map(u => {
     const [pLabel, pClass] = providerBadge[u.signup_provider] || [u.signup_provider ? u.signup_provider : '이메일','badge-gray'];
     const saKey = appOf(u);
@@ -1791,8 +1796,21 @@ function renderAppViewUsers() {
         style="padding:5px 10px;font-size:11.5px;color:#d0312d;background:#fdf0ef" onclick="event.stopPropagation()">삭제</button></td>
     </tr>`;
   }).join('');
-  const uc = $('usersCards');
-  if (uc) uc.innerHTML = `<div class="feed" style="border:0;border-radius:0">${list.map(frowHTML).join('')}</div>`;
+  // 모바일: 표 대신 카드 (가로 스크롤 없이 한눈에)
+  const cards = $('appUsersCards');
+  if (cards) cards.innerHTML = `<div class="feed" style="border:0;border-radius:0">${list.map(u => {
+    const ph = fmtPhone(phoneOfApp(u, key));
+    const fs = firstSeenOf(u);
+    const sub = [u.email || '', (ph && ph !== '-') ? ph : ''].filter(Boolean).join(' · ');
+    return `<div class="frow" onclick="openUserModal('${esc(u.id)}')">
+      <div class="fav" style="background:${avaColor(u.id)}">${esc(nameOf(u)[0].toUpperCase())}</div>
+      <div class="fbody">
+        <div class="fn">${esc(nameOf(u))} ${provChipU(u.signup_provider)}${isInternalU(u) ? '<span class="chip chip-internal">내부</span>' : ''}</div>
+        <div class="fs">${esc(sub || '-')}</div>
+      </div>
+      <div class="ft">${fs ? fmt(fs) : fmt(u.created_at)}</div>
+    </div>`;
+  }).join('')}</div>`;
 }
 
 // ── Projects CRUD ──
@@ -2522,7 +2540,7 @@ function cfgGuardLeave(view) {
   return true;
 }
 
-function navigate(view) {
+window.navigate = function navigate(view) {
   if (cfgGuardLeave(view)) return;
   cfgLeaveArmed = false;
   const sectionOf = v => v.startsWith('app-') ? 'app' : v; // app-pray 등은 공용 appView 사용
