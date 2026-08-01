@@ -10,7 +10,11 @@
   Cache-Control: public, max-age=86400
 
 # 링크인바이오 — 인앱 브라우저(인스타 등)가 옛 버전을 물고 있지 않게 항상 최신
+/link/
+  Cache-Control: no-store
 /link/*
+  Cache-Control: no-store
+/iabtest/*
   Cache-Control: no-store
 /shuung
   Cache-Control: no-store
