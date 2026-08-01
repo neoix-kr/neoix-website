@@ -518,6 +518,8 @@ tbody tr:hover { background:#fafbfc; }
     </div>
     <div class="login-sub">Admin Console</div>
 
+    <button class="btn-login" id="btnPasskeyLogin" style="display:none;margin-bottom:12px">Face ID로 로그인</button>
+    <div id="pkOr" style="display:none;text-align:center;font-size:12px;color:var(--light);margin-bottom:12px;cursor:pointer">또는 아이디로 로그인</div>
     <div id="loginForm">
       <div class="field">
         <label>아이디</label>
@@ -1049,6 +1051,17 @@ tbody tr:hover { background:#fafbfc; }
           <div class="settings-row"><span class="settings-label">User ID</span><span class="settings-value td-mono" id="settingUid" style="font-size:12px;word-break:break-all"></span></div>
           <div class="settings-row"><span class="settings-label">권한</span><span class="settings-value">관리자 (admin)</span></div>
         </div>
+        <div class="settings-card" id="passkeyCard" style="display:none">
+          <h3>Face ID 로그인 (패스키)</h3>
+          <p style="font-size:12px;color:var(--muted);line-height:1.65;margin-bottom:14px">
+            이 기기의 Face ID / Touch ID로 비밀번호 없이 로그인합니다. <b>기기마다 한 번씩</b> 등록하세요.<br>
+            비밀번호 로그인은 그대로 남아 있어, 기기를 잃어도 잠기지 않습니다.</p>
+          <div id="passkeyList" style="margin-bottom:14px"></div>
+          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+            <button class="btn-sm btn-primary-sm" id="btnPasskeyAdd" style="padding:9px 16px;font-size:13px">이 기기 등록</button>
+            <span id="passkeyState" style="font-size:12.5px;color:var(--muted)"></span>
+          </div>
+        </div>
         <div class="settings-card">
           <h3>홈 히어로 단어</h3>
           <p style="font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:14px">홈페이지 첫 화면 <b>"새로운 [단어] 무한한 확장"</b>에서 가운데 타이핑되는 단어들입니다. 한 줄에 하나씩 입력하세요. 저장하면 홈에 바로 반영됩니다.</p>
@@ -1136,12 +1149,14 @@ tbody tr:hover { background:#fafbfc; }
 <div class="toast" id="toast"></div>
 
 <script type="module">
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.111.0';
 
 const SUPABASE_URL = 'https://nroddjekdjwnwguwkudl.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_Uygr7NmVn1wmqopNrb4FRw_CRWw7Xeg';
 const AUTH_DOMAIN = 'users.neoix.kr';
-const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY, {
+  auth: { experimental: { passkey: true } },   // 패스키(Face ID) — 이 플래그 없으면 메서드가 throw
+});
 
 const $ = id => document.getElementById(id);
 const idToEmail = id => `${id.trim().toLowerCase()}@${AUTH_DOMAIN}`;
@@ -1292,6 +1307,58 @@ async function verifyAdmin() {
   showLoginInfo(`관리자 권한이 없습니다.\n\nSupabase SQL Editor에서 실행:\nINSERT INTO admin_users (user_id) VALUES ('${currentUser.id}');`);
 }
 
+async function passkeyLogin() {
+  const btn = $('btnPasskeyLogin');
+  btn.disabled = true; btn.textContent = '인증 중…';
+  try {
+    const { data, error } = await supabase.auth.signInWithPasskey();
+    if (error) throw error;
+    if (!data || !data.user) throw new Error('세션을 받지 못했어요');
+    currentUser = data.user;
+    localStorage.setItem(PASSKEY_MARK, '1');
+    await verifyAdmin();
+  } catch (e) {
+    showLoginError(pkErrMsg(e));
+    $('loginForm').style.display = '';   // 실패해도 비밀번호 경로는 항상 열어둔다
+    $('pkOr').style.display = 'none';
+  } finally {
+    btn.disabled = false; btn.textContent = 'Face ID로 로그인';
+  }
+}
+
+async function passkeyRegister() {
+  const st = $('passkeyState'); st.textContent = '인증 창을 여는 중…';
+  try {
+    const { data, error } = await supabase.auth.registerPasskey();
+    if (error) throw error;
+    const ua = navigator.userAgent;
+    const label = `${/iPhone|iPad/.test(ua) ? '아이폰' : /Mac/.test(ua) ? '맥' : '기기'} · ${new Date().toLocaleDateString('ko-KR')}`;
+    if (data && data.id) { try { await supabase.auth.passkey.update({ passkeyId: data.id, friendlyName: label }); } catch (e) {} }
+    localStorage.setItem(PASSKEY_MARK, '1');
+    toast('이 기기에 Face ID 로그인이 등록됐어요', 'success');
+    await loadPasskeys();
+  } catch (e) { toast('등록 실패: ' + pkErrMsg(e), 'error'); }
+  finally { st.textContent = ''; }
+}
+
+async function loadPasskeys() {
+  const el = $('passkeyList'); if (!el) return;
+  try {
+    const { data, error } = await supabase.auth.passkey.list();
+    if (error) throw error;
+    const items = data || [];
+    el.innerHTML = items.length ? items.map(pk => `
+      <div class="settings-row">
+        <span class="settings-label">${esc(pk.friendly_name || '이름 없는 기기')}</span>
+        <span class="settings-value" style="display:flex;gap:10px;align-items:center">
+          <span style="font-size:11.5px;color:var(--light)">${pk.last_used_at ? '최근 ' + fmt(pk.last_used_at) : fmt(pk.created_at) + ' 등록'}</span>
+          <button class="btn-sm passkey-del" data-pk="${esc(pk.id)}" style="padding:4px 10px;font-size:11.5px;color:#d0312d;background:#fdf0ef">삭제</button>
+        </span>
+      </div>`).join('')
+      : '<div style="font-size:12.5px;color:var(--light)">등록된 기기가 없습니다</div>';
+  } catch (e) { el.innerHTML = `<div style="font-size:12.5px;color:var(--danger)">${esc(pkErrMsg(e))}</div>`; }
+}
+
 async function login() {
   const id = $('loginId').value.trim(), pw = $('loginPw').value;
   if (!id || !pw) return showLoginError('아이디와 비밀번호를 입력하세요');
@@ -1307,7 +1374,7 @@ async function register() {
   if (!/^[a-zA-Z0-9._-]{3,20}$/.test(id)) return showLoginError('아이디: 영문/숫자/._- 3~20자');
   if (pw.length < 6) return showLoginError('비밀번호는 6자 이상');
   $('btnRegister').disabled = true; $('btnRegister').textContent = '가입 중...';
-  const { data, error } = await supabase.auth.signUp({ email: idToEmail(id), password: pw, options: { data: { username: id } } });
+  const { data, error } = await supabase.auth.signUp({ email: idToEmail(id), password: pw, options: { data: { username: id, name: id } } });
   if (error) showLoginError(error.message);
   else if (data?.user) { currentUser = data.user; await verifyAdmin(); }
   $('btnRegister').disabled = false; $('btnRegister').textContent = '회원가입';
@@ -1331,6 +1398,9 @@ function enterApp() {
   loadDashboard();
   loadHeroWords();
   $('tabbar').style.display = '';
+  // Face ID 시트에 이메일 대신 아이디가 보이도록 (없을 때만 1회)
+  if (!currentUser.user_metadata?.name) supabase.auth.updateUser({ data: { name: username } }).catch(() => {});
+  passkeyUsable().then(ok => { if (ok) { $('passkeyCard').style.display = ''; loadPasskeys(); } });
 }
 
 // ── 홈 히어로 단어 ──
@@ -1363,6 +1433,25 @@ const esc = v => String(v == null ? '' : v)
   .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
   .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 const nameOfU = u => u.display_name || (u.email ? u.email.split('@')[0] : '이름 없음');
+
+/* ── 패스키(Face ID) ── */
+const PASSKEY_MARK = 'neoix_admin_passkey_registered';  // UI 힌트용, 보안값 아님
+const IN_WRAPPER = !!window.ReactNativeWebView;         // 래퍼 앱 웹뷰는 AASA 없이는 패스키 불가
+async function passkeyUsable() {
+  if (IN_WRAPPER) return false;
+  try {
+    if (!window.isSecureContext || !window.PublicKeyCredential) return false;
+    if (!PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable) return false;
+    return await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
+  } catch (e) { return false; }
+}
+const pkErrMsg = e => {
+  const n = e && e.name, c = e && e.code;
+  if (n === 'NotAllowedError' || c === 'ERROR_CEREMONY_ABORTED') return '취소됐어요. 다시 시도하거나 아이디/비밀번호로 로그인하세요.';
+  if (c === 'ERROR_INVALID_DOMAIN' || c === 'ERROR_INVALID_RP_ID') return '이 주소에서는 패스키를 쓸 수 없어요. https://neoix.kr/admin/ 으로 접속하세요.';
+  if (c === 'ERROR_AUTHENTICATOR_PREVIOUSLY_REGISTERED') return '이 기기는 이미 등록돼 있어요.';
+  return (e && e.message) || '패스키 처리에 실패했어요';
+};
 const provChipU = p => { const m={kakao:['카카오','badge-kakao'],apple:['Apple','badge-gray'],email:['이메일','badge-gray'],google:['Google','badge-danger']}; const x=m[p]||[p||'이메일','badge-gray']; return `<span class="chip ${x[1]}">${x[0]}</span>`; };
 const fmtAgo = d => { const t=(Date.now()-new Date(d))/1000; if(t<3600) return Math.max(1,Math.round(t/60))+'분 전'; if(t<86400) return Math.round(t/3600)+'시간 전'; if(t<86400*2) return '어제'; return new Date(d).toLocaleDateString('ko-KR',{month:'numeric',day:'numeric'}); };
 
@@ -2509,6 +2598,26 @@ function toast(msg, type='') { const el=$('toast'); el.textContent=msg; el.class
 
 // ── Events ──
 $('btnLogin').addEventListener('click', login);
+$('btnPasskeyLogin').addEventListener('click', passkeyLogin);
+$('btnPasskeyAdd').addEventListener('click', passkeyRegister);
+$('pkOr').addEventListener('click', () => { $('loginForm').style.display = ''; $('pkOr').style.display = 'none'; });
+document.addEventListener('click', async (e) => {
+  const b = e.target.closest && e.target.closest('.passkey-del'); if (!b) return;
+  b.disabled = true;
+  const { error } = await supabase.auth.passkey.delete({ passkeyId: b.dataset.pk });
+  if (error) { toast('삭제 실패: ' + error.message, 'error'); b.disabled = false; return; }
+  localStorage.removeItem(PASSKEY_MARK);
+  toast('패스키를 삭제했습니다', 'success');
+  await loadPasskeys();
+});
+(async () => {
+  if (!(await passkeyUsable())) return;          // 미지원 기기·래퍼앱이면 버튼 자체를 안 띄운다
+  $('btnPasskeyLogin').style.display = '';
+  if (localStorage.getItem(PASSKEY_MARK)) {      // 등록했던 기기면 패스키를 1순위로
+    $('loginForm').style.display = 'none';
+    $('pkOr').style.display = '';
+  }
+})();
 $('loginPw').addEventListener('keydown', e => e.key==='Enter' && login());
 $('loginId').addEventListener('keydown', e => e.key==='Enter' && $('loginPw').focus());
 $('btnRegister').addEventListener('click', register);
