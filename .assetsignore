@@ -54,3 +54,6 @@ google-services.json
 keystores/
 *.keystore
 *.jks
+deploy.sh
+deploy.log
+.last-deploy
