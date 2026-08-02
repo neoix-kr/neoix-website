@@ -30,6 +30,7 @@ jobs:
           missing=0
           for p in index.html songsan/index.html songsan/escape/index.html \
                    songsan/escape/admin.html songsan/escape/print.html \
+                   songsan/escape/print-a3.html songsan/escape/print-teacher.html \
                    travel/index.html ogx/index.html admin/index.html; do
             if [ ! -f "$p" ]; then echo "::error::누락: $p"; missing=1; fi
           done

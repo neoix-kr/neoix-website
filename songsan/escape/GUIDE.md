@@ -497,6 +497,12 @@ neoix.kr/songsan/escape/admin
 
 ### 인쇄해서 준비하는 것
 
+> **인쇄 파일이 규격별로 나뉘어 있습니다. 여백 설정 없이 인쇄 버튼만 누르시면 됩니다.**
+> - **A4 준비물 (5장)** — neoix.kr/songsan/escape/print
+> - **A3 대형 인쇄물 (3장)** — neoix.kr/songsan/escape/print-a3
+> - **A4 교사 안내서 (14장, 정답 포함)** — neoix.kr/songsan/escape/print-teacher
+
+
 | ✓ | 무엇 | 어디에 | 몇 개 |
 |---|---|---|---|
 | ☐ | 승선 서약문 (크게 인쇄) | 부두 이젤·보면대 | 1장 |

@@ -8,8 +8,12 @@
 <style>
   *{margin:0;padding:0;box-sizing:border-box}
   body{font-family:'Gowun Batang',serif;background:#4A4238;color:#241C06;padding:20px}
-  .sheet{width:210mm;min-height:297mm;background:#fff;margin:0 auto 18px;padding:14mm 12mm;
-    box-shadow:0 4px 20px rgba(0,0,0,.35);page-break-after:always;position:relative}
+  /* ── 인쇄 규격: A4 세로. 인쇄 버튼만 눌러도 그대로 나오게 ── */
+  @page{ size:A4 portrait; margin:0 }
+  .sheet{width:210mm;height:297mm;background:#fff;margin:0 auto 18px;padding:13mm 12mm;
+    box-shadow:0 4px 20px rgba(0,0,0,.35);page-break-after:always;break-after:page;
+    position:relative;overflow:hidden}
+  .sheet:last-of-type{page-break-after:auto;break-after:auto}
   h1{font-family:'Jua';font-size:22pt;text-align:center;letter-spacing:2px}
   h2{font-family:'Jua';font-size:15pt;margin:0 0 4mm;padding-bottom:2mm;border-bottom:2px solid #241C06}
   .lead{text-align:center;font-size:10pt;color:#5C513A;margin-top:2mm}
@@ -40,15 +44,16 @@
   .toolbar button{font-family:'Jua';font-size:11pt;padding:8px 16px;border:0;border-radius:8px;
     background:#C29A2B;color:#241C06;cursor:pointer}
   @media print{
-    body{background:#fff;padding:0}
-    .sheet{box-shadow:none;margin:0;width:auto;min-height:auto}
+    html,body{background:#fff;padding:0;margin:0;width:210mm}
+    .sheet{box-shadow:none;margin:0;width:210mm;height:297mm}
     .toolbar{display:none}
+    *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
   }
 </style>
 </head>
 <body>
 
-<div class="toolbar"><button onclick="window.print()">🖨 인쇄 / PDF로 저장</button></div>
+<div class="toolbar"><button onclick="window.print()">🖨 A4로 인쇄 / PDF 저장</button></div>
 
 <!-- 표지 -->
 <section class="sheet">
