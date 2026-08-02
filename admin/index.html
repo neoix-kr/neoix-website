@@ -356,6 +356,9 @@ tbody tr:hover { background:#fafbfc; }
 .cfg-switch input:checked + .track::after { transform:translateX(18px); }
 .cfg-switch .sw-label { font-size:13px; font-weight:600; color:var(--muted); }
 .cfg-switch input:checked ~ .sw-label { color:var(--danger); }
+/* 메뉴 표시 토글 — 켜짐=파랑 (점검모드의 빨강과 반대 의미라 변형) */
+.menu-switch input:checked + .track { background:var(--primary); }
+.menu-switch input:checked ~ .sw-label { color:var(--text); }
 
 /* 상태 배너 */
 .cfg-state { display:flex; align-items:flex-start; gap:12px; padding:16px 18px; border-radius:14px; margin-bottom:18px; border:1px solid transparent; }
@@ -457,17 +460,21 @@ tbody tr:hover { background:#fafbfc; }
 
 /* ── 결제 관리 ── */
 #bilStats { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:14px; }
-.bil-grid2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:14px; }
-.bil-grid2 .settings-card { margin-bottom:0; }
+.bil-grid3 { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:14px; }
+.bil-grid3 .settings-card { margin-bottom:0; min-width:0; }
+#billingView .settings-card { max-width:none; } /* 설정 카드의 520px 제한 해제 — 결제 화면은 전체 폭 사용 */
+.bil-ping-chip { display:inline-flex; align-items:center; gap:7px; border:1px solid var(--border); border-radius:99px; padding:6px 12px; font-size:12px; font-weight:600; background:#fff; }
+.bil-ping-chip .ms { font-weight:400; color:var(--light); font-size:11px; }
 .bil-row { display:flex; align-items:center; gap:10px; padding:9px 0; border-bottom:1px solid var(--border); font-size:13px; }
 .bil-row:last-child { border-bottom:none; }
 .bil-amt { margin-left:auto; font-weight:700; white-space:nowrap; }
 .bil-sub { font-size:11px; color:var(--light); }
 .bil-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
 .bil-card-item { background:#fff; border:1px solid var(--border); border-radius:16px; padding:14px 16px; margin-bottom:10px; }
+@media (max-width:1100px) { .bil-grid3 { grid-template-columns:1fr 1fr; } }
 @media (max-width:768px) {
   #bilStats { grid-template-columns:repeat(2,1fr); gap:8px; }
-  .bil-grid2 { grid-template-columns:1fr; }
+  .bil-grid3 { grid-template-columns:1fr; }
 }
 .cols2 { display:grid; grid-template-columns:1.1fr .9fr; gap:20px; align-items:start; }
 
@@ -1090,14 +1097,15 @@ tbody tr:hover { background:#fafbfc; }
         <div id="bilHint" style="display:none;background:#fef3c7;border:1px solid #fde68a;border-radius:12px;padding:12px 16px;font-size:12.5px;color:#92400e;margin-bottom:14px"></div>
         <div id="bilStats"></div>
         <div id="bilReview" style="margin-bottom:14px"></div>
-        <div class="bil-grid2">
-          <div class="settings-card"><h3>💳 카드별 월 지출</h3><div id="bilCards"></div></div>
-          <div class="settings-card"><h3>📅 다가오는 결제</h3><div id="bilUpcoming"></div></div>
+        <div class="bil-grid3">
+          <div class="settings-card"><h3>서비스별 유지비</h3><div id="bilServices"></div></div>
+          <div class="settings-card"><h3>카드별 월 지출</h3><div id="bilCards"></div></div>
+          <div class="settings-card"><h3>다가오는 결제</h3><div id="bilUpcoming"></div></div>
         </div>
         <div class="settings-card">
-          <h3 style="display:flex;align-items:center;gap:10px">🩺 서비스 생존 점검
+          <h3 style="display:flex;align-items:center;gap:10px">서비스 생존 점검
             <button class="btn-sm btn-outline" id="btnBilPing" style="margin-left:auto">다시 점검</button></h3>
-          <div id="bilPing" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px"></div>
+          <div id="bilPing" style="display:flex;flex-wrap:wrap;gap:8px"></div>
         </div>
         <div style="display:flex;align-items:center;gap:12px;margin:18px 0 10px">
           <h3 style="font-size:15px;font-weight:800">전체 구독 <span id="bilCount" style="color:var(--muted);font-weight:600"></span></h3>
@@ -1105,7 +1113,7 @@ tbody tr:hover { background:#fafbfc; }
         </div>
         <div class="d-only" style="background:#fff;border:1px solid var(--border);border-radius:16px;overflow:hidden">
           <div style="overflow-x:auto">
-          <table><thead><tr><th>서비스</th><th>분류</th><th>금액</th><th>월 환산</th><th>결제일</th><th>카드</th><th>상태</th><th>관리</th></tr></thead><tbody id="bilBody"></tbody></table>
+          <table><thead><tr><th>이름</th><th>서비스</th><th>금액</th><th>월 환산</th><th>결제일</th><th>카드</th><th>상태</th><th>관리</th></tr></thead><tbody id="bilBody"></tbody></table>
           </div>
         </div>
         <div class="m-only" id="bilMobile"></div>
@@ -1140,6 +1148,13 @@ tbody tr:hover { background:#fafbfc; }
             <button class="btn-sm btn-primary-sm" id="btnPasskeyAdd" style="padding:9px 16px;font-size:13px">이 기기 등록</button>
             <span id="passkeyState" style="font-size:12.5px;color:var(--muted)"></span>
           </div>
+        </div>
+        <div class="settings-card">
+          <h3>메뉴 표시</h3>
+          <p style="font-size:12px;color:var(--muted);line-height:1.65;margin-bottom:6px">
+            안 쓰는 서비스 메뉴를 끄면 사이드바(모바일 탭바 포함)에서 숨겨집니다.
+            <b>데이터는 지워지지 않고</b>, 다시 켜면 그대로 돌아와요. 모든 기기에 함께 적용됩니다.</p>
+          <div id="menuToggleList"></div>
         </div>
         <div class="settings-card">
           <h3>홈 히어로 단어</h3>
@@ -1189,8 +1204,9 @@ tbody tr:hover { background:#fafbfc; }
 <div class="modal-overlay" id="subModal">
   <div class="modal">
     <h3 id="subModalTitle">구독 추가</h3>
-    <div class="field"><label>서비스 이름</label><input type="text" id="sName" placeholder="예: Claude Max 구독"></div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+    <div class="field"><label>이름</label><input type="text" id="sName" placeholder="예: Claude Max 구독"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
+      <div class="field"><label>서비스(앱)</label><input type="text" id="sService" list="svcList" placeholder="공통"><datalist id="svcList"></datalist></div>
       <div class="field"><label>분류</label><select id="sCategory"><option>인프라</option><option>AI</option><option>스토어</option><option>도메인</option><option>기타</option></select></div>
       <div class="field"><label>상태</label><select id="sStatus"><option value="active">운영 중</option><option value="review">확인 필요</option><option value="cancel_pending">해지 예정</option><option value="cancelled">해지 완료</option><option value="free">무료</option></select></div>
     </div>
@@ -1507,11 +1523,67 @@ function enterApp() {
   $('welcomeDate').textContent = dateStr;
   loadDashboard();
   loadHeroWords();
+  loadMenuPrefs();
   $('tabbar').style.display = '';
   // Face ID 시트에 이메일 대신 아이디가 보이도록 (없을 때만 1회)
   if (!currentUser.user_metadata?.name) supabase.auth.updateUser({ data: { name: username } }).catch(() => {});
   passkeyUsable().then(ok => { if (ok) { $('passkeyCard').style.display = ''; loadPasskeys(); } });
 }
+
+// ── 메뉴 표시 설정 — 사이드바·탭바 메뉴를 설정에서 켜고 끔 (site_settings에 저장, 전 기기 공통) ──
+const MENU_TOGGLES = [
+  ['users', '통합 사용자'], ['notifications', '알림'], ['poly', '폴리'],
+  ['app-pray', '기도해요'], ['app-travel-globe', '슈웅'], ['ogx', 'OGX 찬양팀'],
+  ['jmap', 'J맵'], ['church', '우리교회 앱'], ['push', '푸시 발송'],
+  ['appconfig', '앱 원격설정'], ['linkedit', '링크 페이지'], ['billing', '결제 관리'], ['projects', '프로젝트 관리'],
+];
+let hiddenMenus = new Set(['jmap']); // 저장값이 없을 때 기본: J맵 숨김 (서비스 종료)
+
+function applyMenuVisibility() {
+  document.querySelectorAll('.nav-item').forEach(n => {
+    const key = n.dataset.view || (n.dataset.href === '/link/edit/' ? 'linkedit' : null);
+    if (!key || key === 'dashboard' || key === 'settings') return; // 대시보드·설정은 항상 표시
+    n.style.display = hiddenMenus.has(key) ? 'none' : '';
+  });
+  document.querySelectorAll('.tabbar .tb').forEach(b => {
+    const k = b.dataset.tb;
+    if (k && k !== 'dashboard' && k !== '__more') b.style.display = hiddenMenus.has(k) ? 'none' : '';
+  });
+  // 지금 보고 있는 화면이 숨겨졌으면 대시보드로
+  const active = document.querySelector('.nav-item.active');
+  if (active && active.dataset.view && hiddenMenus.has(active.dataset.view)) navigate('dashboard');
+}
+
+async function loadMenuPrefs() {
+  try {
+    const { data } = await supabase.from('site_settings').select('value').eq('key', 'admin_hidden_menus').maybeSingle();
+    if (data && Array.isArray(data.value)) hiddenMenus = new Set(data.value);
+  } catch (_) { /* 기본값 유지 */ }
+  applyMenuVisibility();
+  renderMenuToggles();
+}
+
+function renderMenuToggles() {
+  const el = $('menuToggleList'); if (!el) return;
+  el.innerHTML = MENU_TOGGLES.map(([k, label]) => `
+    <div class="settings-row">
+      <span class="settings-label">${label}</span>
+      <label class="cfg-switch menu-switch">
+        <input type="checkbox" data-menukey="${k}" ${hiddenMenus.has(k) ? '' : 'checked'}>
+        <span class="track"></span>
+      </label>
+    </div>`).join('');
+}
+
+$('menuToggleList').addEventListener('change', async e => {
+  const k = e.target.dataset.menukey; if (!k) return;
+  if (e.target.checked) hiddenMenus.delete(k); else hiddenMenus.add(k);
+  applyMenuVisibility();
+  const { error } = await supabase.from('site_settings').upsert({ key: 'admin_hidden_menus', value: [...hiddenMenus], updated_at: new Date().toISOString() });
+  if (error) { toast('저장 실패: ' + error.message, 'error'); return; }
+  const label = (MENU_TOGGLES.find(([key]) => key === k) || [])[1] || k;
+  toast(e.target.checked ? `'${label}' 메뉴를 켰어요` : `'${label}' 메뉴를 숨겼어요 (데이터는 그대로)`, 'success');
+});
 
 // ── 홈 히어로 단어 ──
 async function loadHeroWords() {
@@ -2021,7 +2093,7 @@ async function loadBilling() {
 function bilAmtLabel(s) {
   const a = Number(s.amount) || 0;
   if (!a) return s.status === 'free' ? '무료' : '<span style="color:var(--light)">미확인</span>';
-  if (s.currency === 'USD') return `$${a.toLocaleString('en-US')}`;
+  if (s.currency === 'USD') return `$${a.toLocaleString('en-US')} <span class="bil-sub">≈ ${won(a * bilFxRate)}</span>`;
   return won(a);
 }
 
@@ -2047,29 +2119,42 @@ function bilRender() {
 
   // 확인 필요 배너 — 바로 열어볼 링크
   $('bilReview').innerHTML = reviewRows.length ? `
-    <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:14px;padding:13px 16px">
-      <div style="font-size:12.5px;font-weight:700;color:#92400e;margin-bottom:8px">🔍 확인이 필요한 항목 — 눌러서 청구 화면을 열고, 확인 후 편집으로 금액·상태를 저장하세요</div>
-      <div style="display:flex;flex-wrap:wrap;gap:8px">${reviewRows.map(s => {
+    <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:14px;padding:11px 14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+      <span style="font-size:12px;font-weight:700;color:#92400e">확인 필요 ${reviewRows.length}건</span>
+      <span style="font-size:11.5px;color:#b45309">눌러서 청구 화면 확인 → 편집으로 금액 저장</span>
+      <span style="display:flex;flex-wrap:wrap;gap:6px">${reviewRows.map(s => {
         const u = /^https?:\/\//.test(s.url || '') ? s.url : null;
-        const inner = `${esc(s.name)} ↗`;
-        return u ? `<a href="${esc(u)}" target="_blank" rel="noopener" style="font-size:12px;font-weight:600;color:#92400e;background:#fff;border:1px solid #fde68a;border-radius:8px;padding:5px 10px;text-decoration:none">${inner}</a>` : `<span style="font-size:12px;color:#92400e">${esc(s.name)}</span>`;
-      }).join('')}</div></div>` : '';
+        return u ? `<a href="${esc(u)}" target="_blank" rel="noopener" style="font-size:11.5px;font-weight:600;color:#92400e;background:#fff;border:1px solid #fde68a;border-radius:99px;padding:4px 11px;text-decoration:none;white-space:nowrap">${esc(s.name)} ↗</a>` : `<span style="font-size:11.5px;color:#92400e">${esc(s.name)}</span>`;
+      }).join('')}</span></div>` : '';
+
+  // 서비스(앱)별 유지비 — 이 앱을 유지하는 데 매달 얼마가 드는가
+  const bySvc = {};
+  cachedSubs.filter(s => s.status !== 'cancelled').forEach(s => { const k = (s.service || '').trim() || '공통'; (bySvc[k] = bySvc[k] || []).push(s); });
+  const svcSum = k => bySvc[k].reduce((t, s) => t + bilMonthlyKRW(s), 0);
+  const svcKeys = Object.keys(bySvc).sort((a, b) => svcSum(b) - svcSum(a));
+  $('bilServices').innerHTML = svcKeys.length ? svcKeys.map(k => {
+    const rows = bySvc[k]; const sum = svcSum(k);
+    const names = rows.slice(0, 3).map(s => esc(s.name)).join(' · ') + (rows.length > 3 ? ` 외 ${rows.length - 3}개` : '');
+    return `<div class="bil-row"><div style="min-width:0"><div style="font-weight:700">${esc(k)}</div><div class="bil-sub" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${names}</div></div><span class="bil-amt">${sum ? won(sum) + '<span style="font-weight:500;color:var(--light);font-size:11px">/월</span>' : '<span style="font-weight:600;color:var(--light);font-size:12px">무료</span>'}</span></div>`;
+  }).join('') : '<div class="bil-sub">항목이 없습니다</div>';
 
   // 카드별 월 지출
   const byCard = {};
-  paying.forEach(s => { const k = (s.card || '').trim() || '❓ 카드 미입력'; (byCard[k] = byCard[k] || []).push(s); });
-  const cardKeys = Object.keys(byCard).sort((a, b) => byCard[b].reduce((t, s) => t + bilMonthlyKRW(s), 0) - byCard[a].reduce((t, s) => t + bilMonthlyKRW(s), 0));
+  paying.forEach(s => { const k = (s.card || '').trim() || '카드 미입력'; (byCard[k] = byCard[k] || []).push(s); });
+  const cardSum = k => byCard[k].reduce((t, s) => t + bilMonthlyKRW(s), 0);
+  const cardKeys = Object.keys(byCard).sort((a, b) => cardSum(b) - cardSum(a));
   $('bilCards').innerHTML = cardKeys.length ? cardKeys.map(k => {
-    const rows = byCard[k]; const sum = rows.reduce((t, s) => t + bilMonthlyKRW(s), 0);
-    return `<div class="bil-row"><div style="min-width:0"><div style="font-weight:700">${esc(k)}</div><div class="bil-sub">${rows.map(s => esc(s.name)).join(' · ')}</div></div><span class="bil-amt">${won(sum)}<span style="font-weight:500;color:var(--light);font-size:11px">/월</span></span></div>`;
-  }).join('') + (byCard['❓ 카드 미입력'] ? `<div class="bil-sub" style="padding-top:8px">카드 미입력 항목은 각 행의 <b>편집</b>에서 카드를 골라주세요 — 실제 카드 명세와 맞춰보는 용도예요.</div>` : '') : '<div class="bil-sub">지출 항목이 없습니다</div>';
+    const rows = byCard[k]; const miss = k === '카드 미입력';
+    const names = rows.slice(0, 3).map(s => esc(s.name)).join(' · ') + (rows.length > 3 ? ` 외 ${rows.length - 3}개` : '');
+    return `<div class="bil-row"><div style="min-width:0"><div style="font-weight:700;${miss ? 'color:var(--light)' : ''}">${esc(k)} <span style="font-weight:500;font-size:11px;color:var(--light)">${rows.length}건</span></div><div class="bil-sub" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${names}</div></div><span class="bil-amt">${won(cardSum(k))}<span style="font-weight:500;color:var(--light);font-size:11px">/월</span></span></div>`;
+  }).join('') + (byCard['카드 미입력'] ? `<div class="bil-sub" style="padding-top:8px">각 행의 <b>편집</b>에서 카드를 입력하면 실제 카드 명세와 맞춰볼 수 있어요.</div>` : '') : '<div class="bil-sub">지출 항목이 없습니다</div>';
 
   // 다가오는 결제
   $('bilUpcoming').innerHTML = upcoming.length ? upcoming.slice(0, 8).map(({ s, d }) => {
     const dd = Math.round((d - new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate())) / 86400000);
     const ddLabel = dd === 0 ? '오늘' : `D-${dd}`;
     let a = Number(s.amount) || 0; if (s.currency === 'USD') a *= bilFxRate;
-    return `<div class="bil-row"><span style="font-size:11.5px;font-weight:800;color:${dd <= 3 ? '#b91c1c' : 'var(--primary)'};min-width:38px">${ddLabel}</span><div style="min-width:0"><div style="font-weight:600">${esc(s.name)}</div><div class="bil-sub">${d.getMonth() + 1}/${d.getDate()} · ${esc((s.card || '').trim() || '카드 미입력')}</div></div><span class="bil-amt">${won(a)}</span></div>`;
+    return `<div class="bil-row"><span style="font-size:11.5px;font-weight:800;color:${dd <= 3 ? '#b91c1c' : 'var(--primary)'};min-width:38px;flex-shrink:0">${ddLabel}</span><div style="min-width:0;flex:1"><div style="font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(s.name)}</div><div class="bil-sub" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${d.getMonth() + 1}/${d.getDate()} · ${esc((s.card || '').trim() || '카드 미입력')}</div></div><span class="bil-amt">${won(a)}</span></div>`;
   }).join('') : '<div class="bil-sub">결제일이 등록된 항목이 없습니다 — 편집에서 결제일을 넣으면 여기에 떠요</div>';
 
   // 전체 목록 (데스크탑 표 + 모바일 카드)
@@ -2083,7 +2168,7 @@ function bilRender() {
     const nm = /^https?:\/\//.test(s.url || '') ? `<a href="${esc(s.url)}" target="_blank" rel="noopener" style="color:var(--text);text-decoration:none;font-weight:700">${esc(s.name)} <span style="color:var(--light);font-weight:400">↗</span></a>` : `<span style="font-weight:700">${esc(s.name)}</span>`;
     return `<tr${s.status === 'cancelled' ? ' style="opacity:.45"' : ''}>
       <td>${nm}${s.memo ? `<div class="bil-sub">${esc(s.memo)}</div>` : ''}</td>
-      <td style="white-space:nowrap">${esc(s.category || '기타')}</td>
+      <td style="white-space:nowrap">${esc((s.service || '').trim() || '공통')}</td>
       <td style="white-space:nowrap">${bilAmtLabel(s)}<span class="bil-sub"> ${BIL_CYCLE[s.cycle] || ''}</span></td>
       <td style="font-weight:700;white-space:nowrap">${m ? won(m) : '—'}</td>
       <td style="white-space:nowrap">${dayLabel(s)}</td>
@@ -2097,13 +2182,15 @@ function bilRender() {
     const m = bilMonthlyKRW(s);
     return `<div class="bil-card-item"${s.status === 'cancelled' ? ' style="opacity:.45"' : ''}>
       <div style="display:flex;align-items:center;gap:8px"><span style="font-weight:800;font-size:14px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(s.name)}</span>${stChip(s)}<span class="bil-amt">${m ? won(m) + '<span style="font-weight:500;font-size:10.5px;color:var(--light)">/월</span>' : bilAmtLabel(s)}</span></div>
-      <div class="bil-sub" style="margin-top:5px">${bilAmtLabel(s)} ${BIL_CYCLE[s.cycle] || ''} · ${esc((s.card || '').trim() || '카드 미입력')}${s.memo ? ' · ' + esc(s.memo) : ''}</div>
+      <div class="bil-sub" style="margin-top:5px">${esc((s.service || '').trim() || '공통')} · ${bilAmtLabel(s)} ${BIL_CYCLE[s.cycle] || ''} · ${esc((s.card || '').trim() || '카드 미입력')}${s.memo ? ' · ' + esc(s.memo) : ''}</div>
       <div style="display:flex;gap:8px;margin-top:9px"><button class="btn-sm btn-outline" style="flex:1" onclick="editSub('${esc(s.id)}')">편집</button><button class="btn-sm btn-danger-outline" onclick="delSub('${esc(s.id)}', this)">삭제</button></div>
     </div>`;
   }).join('') || '<div class="empty"><div class="empty-text">항목이 없습니다</div></div>';
 
-  // 카드 자동완성 채우기
+  // 카드·서비스 자동완성 채우기
   $('cardList').innerHTML = [...new Set(cachedSubs.map(s => (s.card || '').trim()).filter(Boolean))].map(c => `<option value="${esc(c)}">`).join('');
+  const svcDefaults = ['공통', '바른문자', '폴리', '기도해요', '슈웅', '고양정', 'OGX'];
+  $('svcList').innerHTML = [...new Set(svcDefaults.concat(cachedSubs.map(s => (s.service || '').trim()).filter(Boolean)))].map(c => `<option value="${esc(c)}">`).join('');
 }
 
 // 서비스 생존 점검 — no-cors 핑 (닿기만 하면 초록)
@@ -2126,12 +2213,12 @@ async function bilPingOne(url) {
 }
 async function bilPingAll() {
   if (bilPingBusy) return; bilPingBusy = true;
-  $('bilPing').innerHTML = BIL_PINGS.map(([n]) => `<div class="bil-row" style="border:none;padding:5px 0"><span class="bil-dot" style="background:#e2e8f0"></span><span style="font-size:12.5px">${esc(n)}</span><span class="bil-sub" style="margin-left:auto">…</span></div>`).join('');
+  $('bilPing').innerHTML = BIL_PINGS.map(([n]) => `<span class="bil-ping-chip"><span class="bil-dot" style="background:#e2e8f0"></span>${esc(n)}<span class="ms">…</span></span>`).join('');
   const results = await Promise.all(BIL_PINGS.map(([, u]) => bilPingOne(u)));
   $('bilPing').innerHTML = BIL_PINGS.map(([n], i) => {
     const ms = results[i];
     const ok = ms >= 0;
-    return `<div class="bil-row" style="border:none;padding:5px 0"><span class="bil-dot" style="background:${ok ? '#22c55e' : '#ef4444'}"></span><span style="font-size:12.5px">${esc(n)}</span><span class="bil-sub" style="margin-left:auto;color:${ok ? 'var(--light)' : '#b91c1c'};font-weight:${ok ? 400 : 700}">${ok ? ms + 'ms' : '응답 없음'}</span></div>`;
+    return `<span class="bil-ping-chip" style="${ok ? '' : 'border-color:#fecaca;background:#fef2f2'}"><span class="bil-dot" style="background:${ok ? '#22c55e' : '#ef4444'}"></span>${esc(n)}<span class="ms" style="${ok ? '' : 'color:#b91c1c;font-weight:700'}">${ok ? ms + 'ms' : '응답 없음'}</span></span>`;
   }).join('');
   bilPingBusy = false;
 }
@@ -2140,6 +2227,7 @@ function openSubModal(s) {
   $('subModalTitle').textContent = s ? '구독 편집' : '구독 추가';
   $('sId').value = s ? s.id : '';
   $('sName').value = s ? s.name || '' : '';
+  $('sService').value = s ? s.service || '공통' : '공통';
   $('sCategory').value = s ? s.category || '기타' : '인프라';
   $('sStatus').value = s ? s.status || 'active' : 'active';
   $('sAmount').value = s ? (Number(s.amount) || '') : '';
@@ -2172,6 +2260,7 @@ async function saveSub() {
   const id = $('sId').value;
   const payload = {
     name: $('sName').value.trim(),
+    service: $('sService').value.trim() || '공통',
     category: $('sCategory').value,
     status: $('sStatus').value,
     amount: Number($('sAmount').value) || 0,
@@ -3150,17 +3239,19 @@ if (new URLSearchParams(location.search).has('design') && /^(localhost|127\.0\.0
   // 결제 관리 목업 — billing-setup.sql 시드와 동일한 구성
   loadBilling = async function () {
     if (!bilFxLive) await bilLoadFx();
-    const S = (name, category, amount, currency, cycle, billing_day, billing_month, card, status, url, memo, i) =>
-      ({ id: 'bm' + i, name, category, amount, currency, cycle, billing_day, billing_month, card, status, url, memo, sort_order: i });
+    const S = (name, service, category, amount, currency, cycle, billing_day, billing_month, card, status, url, memo, i) =>
+      ({ id: 'bm' + i, name, service, category, amount, currency, cycle, billing_day, billing_month, card, status, url, memo, sort_order: i });
     cachedSubs = [
-      S('Claude Max 구독','AI',200,'USD','monthly',5,null,'신한 개인','active','https://claude.ai/settings/billing','개발 전반 · $200/월',1),
-      S('AWS (바른문자+폴리 인프라)','인프라',220000,'KRW','usage',4,null,'국민 사업자','active','https://console.aws.amazon.com/billing/home','변동비 · 7월 실청구 약 22만원',2),
-      S('Netlify','인프라',9,'USD','monthly',12,null,'신한 개인','cancel_pending','https://app.netlify.com','미사용 — 해지 예정',3),
-      S('Cloudflare Workers Paid','인프라',5,'USD','monthly',null,null,'','review','https://dash.cloudflare.com','가입 여부 미확인',4),
-      S('Apple Developer Program','스토어',99,'USD','yearly',13,7,'신한 개인','active','https://developer.apple.com/account','연 $99',5),
-      S('Expo EAS','인프라',0,'USD','monthly',null,null,'','review','https://expo.dev/settings/billing','플랜 미확인 — 유료면 월 $99',6),
-      S('가비아 — neoix.kr','도메인',23100,'KRW','yearly',13,3,'국민 사업자','active','https://my.gabia.com','2028-03 만료',7),
-      S('Supabase','인프라',0,'KRW','monthly',null,null,'','free','https://supabase.com/dashboard','무료 티어',8),
+      S('Claude Max 구독','공통','AI',200,'USD','monthly',5,null,'신한 개인','active','https://claude.ai/settings/billing','개발 전반 · $200/월',1),
+      S('AWS — 바른문자 서버','바른문자','인프라',142000,'KRW','usage',4,null,'국민 사업자','active','https://console.aws.amazon.com/billing/home','Fargate+RDS+ALB · 공용 인프라 포함',2),
+      S('AWS — 폴리랩','폴리','인프라',36000,'KRW','usage',4,null,'국민 사업자','review','https://console.aws.amazon.com/billing/home','거의 무사용 — 중지 검토',3),
+      S('AWS — 고양정 서버','고양정','인프라',20000,'KRW','usage',4,null,'국민 사업자','review','https://console.aws.amazon.com/billing/home','고객사 비용 청구 검토',4),
+      S('Netlify','공통','인프라',9,'USD','monthly',12,null,'신한 개인','cancel_pending','https://app.netlify.com','미사용 — 해지 예정',5),
+      S('Cloudflare Workers Paid','공통','인프라',5,'USD','monthly',null,null,'','review','https://dash.cloudflare.com','가입 여부 미확인',6),
+      S('Apple Developer Program','공통','스토어',99,'USD','yearly',13,7,'신한 개인','active','https://developer.apple.com/account','연 $99',7),
+      S('Google Maps Platform','슈웅','인프라',0,'USD','usage',null,null,'','review','https://console.cloud.google.com/billing','크레딧 내 무료 예상',8),
+      S('가비아 — neoix.kr','공통','도메인',23100,'KRW','yearly',13,3,'국민 사업자','active','https://my.gabia.com','2028-03 만료',9),
+      S('Supabase','공통','인프라',0,'KRW','monthly',null,null,'','free','https://supabase.com/dashboard','무료 티어',10),
     ];
     $('bilHint').style.display = 'none';
     bilRender(); bilPingAll();
