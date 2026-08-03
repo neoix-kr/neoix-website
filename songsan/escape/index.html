@@ -134,7 +134,12 @@ h1.title{font-size:42px;color:var(--parch);letter-spacing:1px;text-align:center;
 .act-intro .ai-story{font-family:'Gowun Batang',serif;font-size:16px;line-height:1.85;color:var(--chalk);margin-top:12px}
 .act-intro .ai-goal{margin-top:16px;padding:12px 14px;border:1px solid rgba(194,154,43,.4);border-radius:9px;background:rgba(194,154,43,.1);font-family:'Gowun Batang',serif;font-size:15px;line-height:1.6;color:var(--chalk)}
 .act-intro .ai-goal span{display:block;font-family:'Jua';font-size:12px;letter-spacing:2px;color:var(--brass-lt);margin-bottom:4px}
-.ex-feedback.fb-note{position:relative;padding-right:44px;border-color:rgba(194,154,43,.45);background:rgba(24,38,58,.82)}
+.ex-feedback.fb-note{position:absolute;left:12px;right:12px;top:auto;transform:none;width:auto;
+  bottom:calc(96px + env(safe-area-inset-bottom));padding:12px 44px 12px 16px;z-index:9;
+  border:1px solid rgba(194,154,43,.45);border-radius:12px;background:rgba(24,38,58,.92);
+  backdrop-filter:blur(5px);text-align:left;overflow:visible;cursor:default;pointer-events:auto}
+.ex-goal.fb-note .goal-tab{display:none}
+.ex-goal.fb-note .goal-body{display:block}
 .fb-x{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:32px;height:32px;border-radius:50%;
   background:rgba(233,237,240,.1);border:1px solid var(--sea-line);color:var(--chalk);font-size:15px;line-height:1;cursor:pointer}
 .fb-x:active{background:rgba(233,237,240,.2)}
@@ -186,22 +191,50 @@ body.demo .demo-badge{display:block}
   color:var(--chalk);background:rgba(10,20,32,.5);border:1px solid rgba(194,154,43,.35);border-radius:20px;padding:5px 11px}
 .td i{font-style:normal;font-family:'Jua';font-size:11px;color:#241C06;background:var(--brass);border-radius:10px;padding:1px 7px}
 .ex-goal b{color:var(--brass-lt);font-weight:400;margin-right:6px}
-/* 목표 배너 — 상단바 아래에 얇게. 누르면 펼쳐진다 */
-.ex-goal{position:absolute;left:12px;right:12px;top:calc(58px + env(safe-area-inset-top));
-  z-index:7;max-height:96px;overflow:hidden;cursor:pointer;opacity:.95;transition:max-height .2s;
-  margin:0;background:rgba(10,20,32,.82);backdrop-filter:blur(4px);
-  border:1px solid rgba(194,154,43,.32);border-radius:10px;padding:8px 13px}
-.ex-goal.open{max-height:46vh;overflow-y:auto;opacity:1;pointer-events:auto}
-/* 접힌 상태에선 뒤의 사물이 눌리도록 클릭을 통과시킨다 */
-.ex-goal:not(.open):not(.phys-active){pointer-events:none}
-.ex-goal:not(.open) .todo,.ex-goal:not(.open) b{pointer-events:auto}
-.ex-goal .todo{max-height:none}
+/* 목표 배너 — 화면 맨 왼쪽에 붙은 세로 띠. 누르면 오른쪽으로 펼쳐진다 */
+.ex-goal{position:absolute;left:0;top:50%;transform:translateY(-50%);right:auto;
+  z-index:7;width:38px;max-height:none;overflow:hidden;cursor:pointer;opacity:.96;
+  margin:0;padding:0;text-align:left;min-height:0;
+  background:rgba(10,20,32,.88);backdrop-filter:blur(5px);
+  border:1px solid rgba(194,154,43,.34);border-left:0;
+  border-radius:0 12px 12px 0;box-shadow:2px 0 16px rgba(0,0,0,.35);
+  transition:width .18s ease, background .18s}
+/* 접힘: 세로로 쓴 「지금 할 일」만 보인다 */
+.goal-tab{display:flex;align-items:center;justify-content:center;gap:8px;
+  width:38px;height:auto;min-height:150px;padding:16px 0;
+  writing-mode:vertical-rl;text-orientation:mixed;
+  font-family:'Jua',sans-serif;font-size:13px;letter-spacing:2px;color:var(--brass-lt)}
+.goal-tab em{font-style:normal;font-family:'Jua';font-size:11px;color:#241C06;
+  background:var(--brass);border-radius:9px;padding:3px 5px;writing-mode:horizontal-tb;line-height:1}
+.goal-body{display:none}
+.ex-goal.open{width:268px;max-width:64vw;padding:12px 14px;overflow-y:auto;max-height:76%;opacity:1;
+  background:rgba(8,16,26,.95);pointer-events:auto}
+.ex-goal.open .goal-tab{display:none}
+.ex-goal.open .goal-body{display:block}
+.goal-body b{display:block;color:var(--brass-lt);font-family:'Jua';font-size:14px;
+  letter-spacing:1px;margin:0 0 9px}
+.goal-tell{font-family:'Gowun Batang',serif;font-size:14px;line-height:1.7;color:var(--chalk)}
+/* 세로 배너에선 할 일을 한 줄씩 쌓는다 */
+.ex-goal .todo{flex-direction:column;align-items:stretch;gap:7px;margin-top:0;max-height:none}
+.ex-goal .td{width:100%;border-radius:9px;padding:8px 10px;font-size:13px;line-height:1.5;
+  align-items:flex-start;word-break:keep-all}
+.ex-goal .td i{flex:0 0 auto;margin-top:1px}
+/* 접힌 상태에선 탭만 클릭을 받고, 나머지 영역은 뒤의 사물이 눌리게 */
+.ex-goal:not(.open):not(.phys-active){pointer-events:none;background:transparent;
+  backdrop-filter:none;border-color:transparent;box-shadow:none}
+.ex-goal:not(.open) .goal-tab{pointer-events:auto;background:rgba(10,20,32,.88);
+  backdrop-filter:blur(5px);border:1px solid rgba(194,154,43,.34);border-left:0;
+  border-radius:0 12px 12px 0;box-shadow:2px 0 16px rgba(0,0,0,.35)}
+@media (max-height:520px){ .goal-tab{min-height:112px;padding:10px 0;font-size:12px} }
 /* 미션(코드·리듬·확인)이 열리면 목표 배너가 아니라 '작업창'이 된다 —
    접힘 해제하고 화면 가운데 아래로 내려 충분히 크게 */
-.ex-feedback.phys-active{position:absolute;left:12px;right:12px;top:auto;
-  bottom:calc(96px + env(safe-area-inset-bottom));max-height:64vh;overflow-y:auto;
+.ex-feedback.phys-active{position:absolute;left:12px;right:12px;top:auto;transform:none;
+  width:auto;bottom:calc(96px + env(safe-area-inset-bottom));max-height:64vh;overflow-y:auto;
   cursor:default;opacity:1;z-index:9;background:rgba(8,16,26,.94);
-  border-color:rgba(194,154,43,.5);padding:14px 16px}
+  border:1.5px solid rgba(194,154,43,.5);border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,.5);
+  padding:14px 16px;text-align:left}
+.ex-goal.phys-active .goal-tab{display:none}
+.ex-goal.phys-active .goal-body{display:block}
 
 .ship-act{font-size:26px;color:var(--brass-lt);letter-spacing:2px}
 .ship-tell{font-family:'Gowun Batang',serif;font-size:16px;line-height:1.7;color:var(--chalk-dim);margin-top:10px}
@@ -535,6 +568,10 @@ body.demo .demo-badge{display:block}
 .rhy-target.flash{background:rgba(255,238,170,.55);color:#241C06}
 .rhy-target .rhy-hint{color:var(--chalk-dim);font-size:13px}
 #rhyPlay{margin-top:8px;width:100%}
+.rhy-sep{display:inline-block;color:var(--brass);font-weight:400;margin:0 5px;opacity:.7}
+.rhy-count{display:inline-block;margin-left:9px;font-family:'Jua';font-size:12px;color:var(--chalk-dim)}
+.rhy-btns{display:flex;gap:6px;flex-wrap:wrap}
+.rhy-btns .btn{flex:1 1 auto;min-width:84px}
 .rhy-got{min-height:34px;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:10px;padding:6px;border-radius:8px;border:1px dashed var(--sea-line)}
 .rhy-got .rhy-empty{color:var(--chalk-dim);font-size:13px;font-family:'Gowun Batang',serif}
 .rhy-got i{display:inline-block;background:var(--brass-lt);border-radius:6px}
@@ -1219,8 +1256,8 @@ const ROOMS = {
     {id:'helm', x:22, y:34, w:45, h:42, name:'조타륜', text:'거대한 조타륜. 지금은 아무도 잡고 있지 않다.'},
     {id:'binnacle', x:74, y:45, w:25, h:43, name:'나침반함', text:'나침반이 든 조타 등불함. 바늘은 흔들림 없이 북을 가리킨다.'},
     {id:'navchest', x:10, y:78, w:32, h:20, name:'항해 궤', subtle:true, trace:{x:16,y:78},
-      phys:{ kind:'rhythm', pattern:['L','S','S','L'], unlocks:'secret', effect:'advance', label:'폭풍 침로',
-        prompt:'🔦 <b>폭풍이 배를 흔든다. 침로를 알리는 빛 신호를 재현해야 한다.</b><br>복도 끝 신호수 선생님이 손전등으로 <b>긴·짧은 빛</b>을 보낸다. (없으면 아래 <b>빛 신호 재생</b>으로 확인)<br>한 사람은 받아 적고, 다른 사람이 그 <b>리듬 그대로</b> 아래 두드림판을 눌러라.<br><span class="ph-small">길게 누르면 긴 신호, 짧게 누르면 짧은 신호.</span>',
+      phys:{ kind:'rhythm', pattern:['L','S','S','L','S','L','L','S'], plays:3, unlocks:'secret', effect:'advance', label:'폭풍 침로',
+        prompt:'🔦 <b>폭풍이 배를 흔든다. 침로를 알리는 빛 신호를 재현해야 한다.</b><br>복도 끝 신호수 선생님이 손전등으로 <b>긴·짧은 빛</b>을 보낸다. (없으면 아래 <b>빛 신호 재생</b>으로 확인)<br>신호는 <b>두 마디</b>로 온다. 한 사람은 앞마디, 다른 사람은 뒷마디를 받아 적고 <b>이어 붙여</b> 두드려라.<br><span class="ph-small">길게 누르면 긴 신호, 짧게 누르면 짧은 신호. <b>재생은 세 번만</b> 할 수 있다 — 신호수도 세 번만 보낸다.</span>',
         done:'리듬이 맞자 폭풍음이 뚝 그친다. 「잠잠하라 고요하라」 — 눅 8:24<br>궤가 열리며 해도 조각이 나온다. <b>비밀 선창</b>으로 가는 길이다.' } },
     {id:'lantern', x:11, y:14, w:15, h:20, name:'오일 랜턴', look:true, text:'기름 등이 흔들리며 겨우 버틴다. 이 작은 불빛 하나가 조타실을 지키고 있다.'},
     {id:'curtain', x:0, y:10, w:11, h:28, name:'낡은 커튼', text:'소금기에 삭은 커튼이 늘어져 있다. 걷어 보아도 그 뒤엔 젖은 나무벽뿐이다.'},
@@ -1634,16 +1671,18 @@ const Rhythm = {
       <div class="rhy-got" id="rhyGot"><span class="rhy-empty">아래를 눌러 리듬을 재현하라</span></div>
       <button class="rhy-pad" id="rhyPad">두드림판<br><span>짧게 · 길게</span></button>
       <div class="rhy-btns">
-        <button class="btn ghost small" onclick="Rhythm.reset()">지우기</button>
+        <button class="btn ghost small" onclick="Rhythm.undo()">← 한 칸</button>
+        <button class="btn ghost small" onclick="Rhythm.reset()">전부 지우기</button>
         <button class="btn ink small" onclick="Rhythm.check()">확인</button>
       </div></div>`;
   },
   init(roomId,hsId){
     const hs=ROOMS[roomId].hotspots.find(h=>h.id===hsId);
     this.target=(hs.phys.pattern||['S']).slice(); this.got=[]; this.room=roomId; this.hs=hsId;
-    // 목표는 개수만 힌트로 (긴·짧음은 신호로 알아내야)
-    const t=document.getElementById('rhyTarget');
-    if(t) t.innerHTML='신호는 '+this.target.length+'번. <span class="rhy-hint">재생을 눌러 들어 보라.</span>';
+    // 재생 횟수 제한 — 신호수 선생님도 딱 세 번만 보낸다
+    this.playsLeft = hs.phys.plays || 3;
+    this.heard = false;
+    this.renderTarget();
     this.renderGot();
     const pad=document.getElementById('rhyPad'); if(!pad) return;
     const down=e=>{ e.preventDefault(); this.downAt=Date.now(); pad.classList.add('on'); };
@@ -1655,12 +1694,41 @@ const Rhythm = {
     pad.addEventListener('pointerup',up);
     pad.addEventListener('pointerleave',()=>{ if(this.downAt){ up({preventDefault(){}}); } });
   },
+  renderTarget(){
+    const t=document.getElementById('rhyTarget'); if(!t) return;
+    const n=this.target.length;
+    // 듣기 전에는 개수도 알려주지 않는다
+    t.innerHTML = this.heard
+      ? `신호는 <b>${n}번</b> · 두 마디로 끊어 온다. <span class="rhy-hint">남은 재생 ${this.playsLeft}회</span>`
+      : `<span class="rhy-hint">아직 신호를 듣지 않았다. <b>재생</b>을 눌러 들어 보라. (세 번만 들을 수 있다)</span>`;
+    const b=document.getElementById('rhyPlay');
+    if(b){
+      if(this.playsLeft<=0){ b.disabled=true; b.textContent='🔦 재생 횟수를 다 썼다'; b.style.opacity=.5; }
+      else b.textContent=`🔦 빛 신호 재생 (남은 ${this.playsLeft}회)`;
+    }
+  },
+  undo(){
+    if(!this.got.length) return;
+    this.got.pop(); Sound.tone(300,.06,0,'sine',.15); this.renderGot();
+    const e=document.getElementById('physErr'); if(e) e.textContent='';
+  },
   renderGot(){
     const g=document.getElementById('rhyGot'); if(!g) return;
-    g.innerHTML=this.got.length? this.got.map(x=>x==='S'?'<i class="s"></i>':'<i class="l"></i>').join('')
+    // 두 마디로 끊어 보여 준다 — 여덟 개를 그냥 늘어놓으면 셀 수 없다
+    const half=Math.ceil(this.target.length/2);
+    const mark=x=>x==='S'?'<i class="s"></i>':'<i class="l"></i>';
+    g.innerHTML=this.got.length
+      ? this.got.map((x,i)=>(i===half&&this.got.length>half?'<b class="rhy-sep">|</b>':'')+mark(x)).join('')
+        +`<span class="rhy-count">${this.got.length}/${this.target.length}</span>`
       : '<span class="rhy-empty">아래를 눌러 리듬을 재현하라</span>';
   },
   play(){
+    if(this.playsLeft<=0){
+      const e=document.getElementById('physErr');
+      if(e) e.textContent='재생 횟수를 다 썼다. 받아 적은 것으로 두드려 보라.';
+      return;
+    }
+    this.playsLeft--; this.heard=true; this.renderTarget();
     let t=0;
     this.target.forEach(x=>{
       const dur=x==='S'?150:450;
@@ -1673,7 +1741,11 @@ const Rhythm = {
   check(){
     const t=this.target, g=this.got;
     const ok = g.length===t.length && g.every((x,i)=>x===t[i]);
-    if(!ok){ Sound.bad(); const e=document.getElementById('physErr'); if(e)e.textContent='리듬이 맞지 않는다. 다시 들어 보라.'; this.reset(); return; }
+    if(!ok){ Sound.bad(); const e=document.getElementById('physErr');
+      if(e)e.textContent = g.length!==t.length
+        ? `신호 수가 맞지 않는다. ${t.length}번이어야 한다.`
+        : '순서가 맞지 않는다. 앞마디와 뒷마디를 다시 맞춰 보라.';
+      this.got=[]; this.renderGot(); return; }
     Explore.physWin(this.room,this.hs);
   },
 };
@@ -2055,9 +2127,12 @@ function actTodo(){
 function goalHtml(){
   const a=ACTS[S.act]; if(!a) return '';
   const todo=actTodo();
-  if(!todo.length) return `<b>지금 할 일</b> ${a.tell}`;
-  return `<b>지금 할 일 · ${a.name}</b>`+
-    `<div class="todo">${todo.map(x=>`<span class="td"><i>${x.t}</i>${x.s}</span>`).join('')}</div>`;
+  // 왼쪽 세로 탭(접힘) + 펼침 본문. 탭에 남은 개수를 달아 둔다.
+  const tab=`<span class="goal-tab">지금 할 일${todo.length?`<em>${todo.length}</em>`:''}</span>`;
+  const body=todo.length
+    ? `<b>${a.name}</b><div class="todo">${todo.map(x=>`<span class="td"><i>${x.t}</i>${x.s}</span>`).join('')}</div>`
+    : `<b>${a.name}</b><p class="goal-tell">${a.tell}</p>`;
+  return tab+`<div class="goal-body">${body}</div>`;
 }
 function pzById(id){
   for(const st of STAGES) for(const p of st.puzzles) if(p.id===id) return p;
