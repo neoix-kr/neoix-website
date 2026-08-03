@@ -167,6 +167,15 @@ body.demo .demo-tag{font-size:11.5px;line-height:1.25;font-family:'Gowun Batang'
 .demo-answer{margin-bottom:10px;padding:9px 13px;border:2px solid #E5484D;border-radius:8px;
   background:rgba(229,72,77,.12);color:#E5484D;font-family:'Gowun Batang',serif;font-size:15px}
 .demo-answer b{font-size:18px;font-weight:700}
+/* 교육 모드 · 정답 자동 입력 버튼 */
+.demo-fill{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.demo-fill .df-btn{flex:1 1 auto;min-width:130px;font-family:'Jua',sans-serif;font-size:14px;
+  padding:10px 14px;border-radius:8px;border:2px solid #E5484D;background:#FFF3F1;color:#8A2F1E;
+  cursor:pointer;letter-spacing:.5px}
+.demo-fill .df-btn:active{transform:translateY(1px)}
+.demo-fill .df-btn.go{background:#C0362F;border-color:#C0362F;color:#FFF1EC}
+.demo-filled{border-color:#E5484D !important;background:#FFF3F1 !important;color:#8A2F1E !important;
+  font-weight:700;box-shadow:0 0 0 3px rgba(229,72,77,.16)}
 body.demo #topbar{box-shadow:inset 0 -3px 0 #E5484D}
 .demo-badge{position:fixed;left:50%;transform:translateX(-50%);top:0;z-index:300;
   background:#E5484D;color:#fff;font-size:12.5px;letter-spacing:1px;padding:3px 14px;border-radius:0 0 9px 9px;
@@ -326,6 +335,8 @@ body.demo .demo-badge{display:block}
 .permit-line{height:1px;background:rgba(94,74,26,.35);margin:14px 10%}
 .uv-stage.on .uv-base{filter:brightness(.32) contrast(1.05) saturate(.5)}
 .uv-hidden{position:absolute;inset:0;display:none;pointer-events:none;z-index:2}
+/* 교육 모드: 손전등 마스크 없이 숨은 글씨 전체 노출 */
+.uv-stage.on.uv-all .uv-hidden{-webkit-mask-image:none !important;mask-image:none !important}
 .uv-stage.on .uv-hidden{
   display:block;
   -webkit-mask-image:radial-gradient(circle 95px at var(--ux,50%) var(--uy,45%), #000 50%, transparent 92%);
@@ -1053,6 +1064,13 @@ const UVX = {
     st.classList.toggle('on');
     Sound.ac();
     if(btn) btn.textContent=st.classList.contains('on')?'등불 끄기':'자외선 등불 켜기';
+  },
+  // 교육 모드 — 등불을 켜고 마스크를 통째로 걷어 숨은 글씨를 한 번에 다 보여준다
+  revealAll(){
+    const st=document.getElementById('uvStage');
+    if(!st) return;
+    st.classList.add('on','uv-all');
+    const btn=document.getElementById('uvBtn'); if(btn) btn.textContent='등불 끄기';
   }
 };
 
@@ -1088,6 +1106,15 @@ const ScratchX = {
       cv.addEventListener('touchstart',scratch,{passive:true});
       cv.addEventListener('touchmove',scratch,{passive:true});
     });
+  },
+  // 교육 모드 — 덧칠을 한 번에 전부 벗겨낸다
+  revealAll(){
+    const cv=document.getElementById('scCanvas');
+    if(!cv) return;
+    const ctx=cv.getContext('2d');
+    ctx.globalCompositeOperation='destination-out';
+    ctx.fillRect(0,0,cv.width,cv.height);
+    ctx.globalCompositeOperation='source-over';
   }
 };
 
@@ -1555,6 +1582,7 @@ const Explore = {
       ${Demo.on()?`<div class="demo-answer">정답 &nbsp;<b>${Demo.physAnswer(hs)}</b></div>`:''}
       <div class="phys-prompt">${hs.phys.prompt}</div>
       ${body}
+      ${Demo.fillPhysBtns(roomId,hsId,kind)}
       <div id="physErr" class="phys-err"></div>
       <button class="phys-cancel" onclick="Explore.render()">← 나중에</button>`;
     if(kind==='rhythm') Rhythm.init(roomId,hsId);
@@ -1928,6 +1956,70 @@ const Demo = {
     if(pz.answerDial&&pz.symbolNames) return pz.answerDial.map(i=>pz.symbolNames[i]).join('→');
     if(pz.metaFields) return pz.metaFields.map(f=>f.answers[0]).join(' / ');
     return '?';
+  },
+  // 교육 모드 · 정답 자동 입력. submit=true 면 넣고 바로 통과까지.
+  fill(submit){
+    const pz=Puzzle.cur; if(!pz) return;
+    const set=(id,v)=>{ const e=document.getElementById(id); if(!e) return;
+      e.value=v; e.classList.add('demo-filled');
+      e.dispatchEvent(new Event('input',{bubbles:true})); };
+    if(pz.type==='text'||pz.type==='number'){
+      set('ans', pz.answers[0]);
+      if(submit) setTimeout(()=>Puzzle.checkText(), 260);
+    } else if(pz.type==='multiinput'){
+      pz.fields.forEach((f,i)=>set('mf'+i, f.answers[0]));
+      if(submit) setTimeout(()=>Puzzle.checkMulti(), 260);
+    } else if(pz.type==='meta'){
+      pz.metaFields.forEach((f,i)=>set('mf'+i, f.answers[0]));
+      if(submit) setTimeout(()=>Puzzle.checkMeta(), 260);
+    } else if(pz.type==='dial'){
+      Puzzle.dialPos = pz.answerDial.slice();
+      Puzzle.renderDials();
+      document.querySelectorAll('.dial-window').forEach(e=>e.classList.add('demo-filled'));
+      if(submit) setTimeout(()=>Puzzle.checkDial(), 260);
+    }
+    // 자외선 등불·긁어내기처럼 손으로 해야 하는 연출은 한 번에 다 벗겨 준다
+    try{ if(pz.custom==='uvPermit'&&typeof UVX!=='undefined'&&UVX.revealAll) UVX.revealAll(); }catch(e){}
+    try{ if(pz.custom==='thiefNote'&&typeof ScratchX!=='undefined'&&ScratchX.revealAll) ScratchX.revealAll(); }catch(e){}
+    const fb=document.getElementById('fb');
+    if(fb&&!submit) fb.innerHTML='<span style="color:#C0362F">교육 모드 — 정답을 넣었습니다. 「확인」을 누르면 통과됩니다.</span>';
+  },
+  fillBtns(){
+    if(!this.on()) return '';
+    return `<div class="demo-fill">
+      <button class="df-btn" onclick="Demo.fill(false)">🖍 정답 넣기</button>
+      <button class="df-btn go" onclick="Demo.fill(true)">⏭ 넣고 바로 통과</button>
+    </div>`;
+  },
+  // 현장 미션(단어·리듬·확인)용 자동 통과
+  fillPhysBtns(roomId,hsId,kind){
+    if(!this.on()) return '';
+    const g=`Demo.fillPhys('${roomId}','${hsId}',true)`;
+    return `<div class="demo-fill">
+      ${kind==='word'||kind==='code'?`<button class="df-btn" onclick="Demo.fillPhys('${roomId}','${hsId}',false)">🖍 정답 넣기</button>`:''}
+      ${kind==='rhythm'?`<button class="df-btn" onclick="Demo.fillPhys('${roomId}','${hsId}',false)">🖍 리듬 넣기</button>`:''}
+      <button class="df-btn go" onclick="${g}">⏭ 이 미션 통과</button>
+    </div>`;
+  },
+  fillPhys(roomId,hsId,submit){
+    const hs=ROOMS[roomId].hotspots.find(h=>h.id===hsId);
+    if(!hs||!hs.phys) return;
+    const kind=hs.phys.kind||'code';
+    if(kind==='word'||kind==='code'){
+      const inp=document.getElementById('physInput');
+      if(inp){ inp.value = kind==='word' ? (hs.phys.answer||[''])[0] : String(physCode(hs));
+        inp.classList.add('demo-filled'); }
+      if(submit) setTimeout(()=>Explore.physSubmit(roomId,hsId), 260);
+      return;
+    }
+    if(kind==='rhythm'){
+      Rhythm.got=(hs.phys.pattern||[]).slice(); Rhythm.renderGot();
+      const g=document.getElementById('rhyGot'); if(g) g.classList.add('demo-filled');
+      if(submit) setTimeout(()=>Rhythm.check(), 260);
+      return;
+    }
+    // confirm — 교사 PIN까지 건너뛰고 통과시킨다 (시연용)
+    if(submit) Explore.physWin(roomId,hsId);
   },
   physAnswer(hs){
     const k=hs.phys.kind;
@@ -2908,6 +3000,7 @@ const UI = {
         ${pz.bible?`<p style="text-align:center;margin-top:10px;color:var(--ink-soft);font-size:13px;letter-spacing:1px"><svg class="ic" width="14" height="14" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="7"><path d="M24 20 h40 a8 8 0 0 1 8 8 v52 h-44 a8 8 0 0 1 -8 -8 V24 a6 6 0 0 1 4 -4 Z"/><path d="M28 80 h44 M46 36 v20 M38 44 h16"/></svg> 성경책이 필요한 관문</p>`:''}
         ${(pz.type==='text'||pz.type==='number')?'':((pz.type==='multiinput'&&!pz.verse)?'':(pz.type==='multiinput')?'':artHtml)}
         ${body}
+        ${Demo.fillBtns()}
         <p class="feedback" id="fb"></p>
       </div>
       <div class="hint-bar">
