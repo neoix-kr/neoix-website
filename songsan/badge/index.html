@@ -6,45 +6,38 @@
 <title>믿음의 항해 명찰 (100×67mm) — 송산제일교회 2026 교육부서 연합수련회</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Jua&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Do+Hyeon&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
 <style>
 :root{
-  --navy:#1e5799;
-  --navy-dk:#17436f;
-  --blue:#2f6db4;
-  --pink:#d94f8e;
-  --ink:#3f2a1a;
-  --parch:#f7eed8;
-  --parch-line:#d8c69a;
+  --navy:#123B5B;
+  --navy-dk:#0F2E45;
+  --red:#E1533D;
+  --line:#DDE4EA;
+  --mute:#8A99A8;
+  --wash:#F1F5F8;
 }
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{background:#e9eef5;font-family:'Noto Sans KR',sans-serif;color:#233}
 
-/* ── 화면용 조작 바 ───────────────────────── */
-.toolbar{
-  position:sticky;top:0;z-index:20;background:#fff;border-bottom:1px solid #dde4ee;
-  padding:14px 20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;
-}
+/* ── 조작 바 ───────────────────────────── */
+.toolbar{position:sticky;top:0;z-index:20;background:#fff;border-bottom:1px solid #dde4ee;
+  padding:14px 20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
 .toolbar h1{font-size:16px;font-weight:900;white-space:nowrap}
 .toolbar h1 small{font-weight:500;color:#7a8598;font-size:13px;margin-left:6px}
 .toolbar .grow{flex:1}
-.toolbar button{
-  border:0;background:var(--navy);color:#fff;font-weight:700;
-  font-size:14px;padding:11px 22px;border-radius:10px;cursor:pointer;font-family:inherit;
-}
+.toolbar button{border:0;background:var(--navy);color:#fff;font-weight:700;font-size:14px;
+  padding:11px 22px;border-radius:10px;cursor:pointer;font-family:inherit}
 .toolbar button.ghost{background:#eef2f8;color:#33445c}
-.toolbar button:hover{filter:brightness(1.06)}
+.toolbar button:hover{filter:brightness(1.08)}
 
 .panel{max-width:1180px;margin:0 auto;padding:22px 20px 4px}
 .panel h2{font-size:14px;font-weight:900;color:#33445c;margin-bottom:8px}
 .panel .hint{font-size:12.5px;color:#6b7688;line-height:1.7;margin-bottom:10px}
 .panel .hint b{color:#c33}
-.panel textarea{
-  width:100%;min-height:132px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
-  font-size:13.5px;line-height:1.85;padding:13px 15px;border:1px solid #cfd8e6;
-  border-radius:10px;background:#fff;color:#233;resize:vertical;
-}
-.panel textarea:focus{outline:none;border-color:var(--navy);box-shadow:0 0 0 3px rgba(30,87,153,.13)}
+.panel textarea{width:100%;min-height:132px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+  font-size:13.5px;line-height:1.85;padding:13px 15px;border:1px solid #cfd8e6;border-radius:10px;
+  background:#fff;color:#233;resize:vertical}
+.panel textarea:focus{outline:none;border-color:var(--navy);box-shadow:0 0 0 3px rgba(18,59,91,.13)}
 .count{font-size:12.5px;color:#6b7688;margin-top:7px}
 .count b{color:var(--navy);font-weight:900}
 
@@ -55,104 +48,74 @@ html,body{background:#e9eef5;font-family:'Noto Sans KR',sans-serif;color:#233}
   border:1px solid #cfd8e6;border-radius:8px;background:#fff;color:#233}
 .backedit input:focus{outline:none;border-color:var(--navy)}
 
-.previewbar{max-width:1180px;margin:26px auto 0;padding:0 20px;
-  display:flex;align-items:center;gap:10px}
+.previewbar{max-width:1180px;margin:26px auto 0;padding:0 20px;display:flex;align-items:center;gap:10px}
 .previewbar h2{font-size:14px;font-weight:900;color:#33445c}
 .previewbar span{font-size:12.5px;color:#6b7688}
 
-/* ── 명찰 카드 (100 × 67 mm 가로) ─────────── */
-.badge{
-  width:100mm;height:67mm;position:relative;overflow:hidden;background:var(--parch);
-  border-radius:2.6mm;box-shadow:0 5px 20px rgba(20,40,80,.16);
-  background-image:url('parch.webp');background-size:cover;background-position:center;
-}
+/* ── 명찰 100 × 67 mm 「승선권」 ─────────── */
+.badge{width:100mm;height:67mm;position:relative;overflow:hidden;background:#fff;
+  border-radius:2.4mm;box-shadow:0 5px 20px rgba(20,40,80,.16);font-family:'Noto Sans KR',sans-serif}
 
 /* 앞면 */
-.front .boat{
-  position:absolute;right:-4mm;bottom:5.2mm;width:38mm;opacity:.22;
-  pointer-events:none;user-select:none;
-}
-.front .sea{
-  position:absolute;left:0;right:0;bottom:6.6mm;height:7mm;width:100%;
-  object-fit:cover;opacity:.34;pointer-events:none;
-}
-.front .top{
-  position:absolute;left:5mm;right:5mm;top:4mm;height:20mm;
-  display:flex;align-items:center;gap:3.4mm;
-}
-.front .plaque{height:20mm;width:auto;flex:0 0 auto}
-.chips{display:flex;flex-direction:column;gap:1.8mm;align-items:flex-start}
-.chip{
-  font-family:'Jua',sans-serif;color:#fff;font-size:5.2mm;line-height:1;
-  padding:1.9mm 4mm 2.3mm;border-radius:99px;letter-spacing:.2mm;white-space:nowrap;
-  box-shadow:0 .7mm 0 rgba(0,0,0,.13);
-}
-.chip.team{background:var(--blue)}
-.chip.grade{background:var(--pink)}
-.front .name{
-  position:absolute;left:4mm;right:4mm;top:25.5mm;height:27mm;
-  display:flex;align-items:center;justify-content:center;overflow:hidden;
-}
-.front .name span{
-  font-family:'Jua',sans-serif;font-size:17mm;color:var(--ink);line-height:1.05;
-  letter-spacing:1.2mm;text-align:center;white-space:nowrap;
-  text-shadow:0 .6mm 0 rgba(255,255,255,.7);
-}
-.front .footer{
-  position:absolute;left:0;right:0;bottom:0;height:6.6mm;
-  background:var(--navy);display:flex;align-items:center;justify-content:center;
-}
-.front .footer span{
-  color:#fff;font-size:3.1mm;font-weight:700;letter-spacing:.1mm;white-space:nowrap;
-}
+.front .stub{position:absolute;left:0;top:0;bottom:0;width:26mm;background:var(--navy);color:#fff;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.5mm}
+.front .stub .mark{width:9mm;height:9mm;object-fit:contain;opacity:.9;margin-bottom:.4mm}
+.front .stub .lbl{font-size:2mm;letter-spacing:1.2mm;color:#7FA8C6;text-indent:1.2mm}
+.front .stub .big{font-family:'Black Han Sans',sans-serif;font-size:9mm;line-height:1;letter-spacing:.2mm}
+.front .stub .gr{font-family:'Do Hyeon',sans-serif;font-size:4mm;background:var(--red);
+  border-radius:99px;padding:.9mm 3mm 1.1mm;white-space:nowrap}
+.front .perf{position:absolute;left:26mm;top:0;bottom:0;border-left:.4mm dashed #7FA8C6;opacity:.55}
+.front .main{position:absolute;left:26mm;right:0;top:0;bottom:0;padding:5mm 5mm 0}
+.front .hdr{display:flex;justify-content:space-between;align-items:flex-start}
+.front .hdr .t{font-family:'Do Hyeon',sans-serif;font-size:3.8mm;color:var(--navy);letter-spacing:.4mm}
+.front .hdr .t small{display:block;font-family:'Noto Sans KR',sans-serif;font-size:2.1mm;
+  color:var(--mute);letter-spacing:1mm;margin-top:.4mm;font-weight:500}
+.front .hdr .no{font-size:2.1mm;color:#A9B6C2;letter-spacing:.5mm;text-align:right;line-height:1.6}
+.front .nm{position:absolute;left:5mm;right:5mm;top:17.5mm;height:28mm;display:flex;
+  align-items:center;overflow:hidden}
+.front .nm span{font-family:'Black Han Sans',sans-serif;font-size:15mm;color:var(--navy-dk);
+  letter-spacing:.8mm;line-height:1;white-space:nowrap}
+.front .boat{position:absolute;right:3.5mm;bottom:12.5mm;width:31mm;opacity:.95;pointer-events:none}
+.front .tag{position:absolute;left:5mm;bottom:13.4mm;display:flex;gap:1.4mm}
+.front .tag span{font-size:2.2mm;letter-spacing:.4mm;color:#7B8A99;border:.25mm solid var(--line);
+  border-radius:99px;padding:.7mm 2.2mm;white-space:nowrap}
+.front .line{position:absolute;left:5mm;right:5mm;bottom:9mm;height:.3mm;background:var(--line)}
+.front .meta{position:absolute;left:5mm;right:5mm;bottom:3.4mm;display:flex;
+  justify-content:space-between;font-size:2.3mm;color:#6B7B8A}
+.front .meta b{color:var(--navy)}
 
 /* 뒷면 */
-.back{
-  background:linear-gradient(158deg,#faf3e2 0%,#f4e8ca 62%,#eddeba 100%);
-  border:1mm solid var(--navy);display:flex;flex-direction:column;
-  padding:0;background-image:none;
-}
-.back .b-top{
-  background:var(--navy);color:#fff;text-align:center;padding:1.3mm 2mm 1.5mm;flex:0 0 auto;
-}
-.back .b-top .t1{font-family:'Jua',sans-serif;font-size:4.1mm;letter-spacing:.4mm;line-height:1}
-.back .b-top .t2{font-size:2.3mm;opacity:.9;margin-top:.5mm;font-weight:500}
-.back .b-body{flex:1;padding:1.6mm 3.6mm 1.6mm;display:flex;flex-direction:column;gap:1.1mm;min-height:0;overflow:hidden}
-.b-sec{background:rgba(255,255,255,.7);border:.35mm solid var(--parch-line);
-  border-radius:1.8mm;padding:1.2mm 2.6mm}
-.b-sec h3{font-size:2.7mm;color:var(--pink);font-weight:900;letter-spacing:.15mm;
-  display:flex;align-items:center;gap:1.3mm;margin-bottom:.8mm}
-.b-sec h3::after{content:"";flex:1;height:.3mm;background:var(--parch-line)}
-.row{display:flex;justify-content:space-between;align-items:baseline;padding:.05mm 0}
-.row .k{color:#7a6a4c;font-weight:700;font-size:2.8mm;flex-shrink:0;margin-right:3mm}
-.row .v{color:var(--ink);font-weight:700;font-size:3.1mm;text-align:right;line-height:1.3}
-.b-line{font-size:2.9mm;color:var(--ink);font-weight:700;line-height:1.4;
-  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.b-line em{font-style:normal;color:#7a6a4c;font-weight:700;font-size:2.7mm;margin-right:2mm}
-.back .b-foot{
-  flex:0 0 auto;background:var(--navy-dk);color:#fff;text-align:center;padding:1.1mm 2mm 1.3mm;
-}
-.back .b-foot .l1{font-size:2.7mm;font-weight:700;letter-spacing:.1mm}
-.back .b-foot .l2{font-size:2.2mm;opacity:.85;margin-top:.3mm}
+.back .top{height:10mm;background:var(--navy);color:#fff;display:flex;align-items:center;
+  justify-content:space-between;padding:0 5mm}
+.back .top .t{font-family:'Do Hyeon',sans-serif;font-size:3.8mm;letter-spacing:.6mm}
+.back .top .s{font-size:2.1mm;color:#9CBBD3;letter-spacing:.4mm}
+.back .tb{position:absolute;left:5mm;right:5mm;top:13.4mm;bottom:9.6mm;overflow:hidden}
+.back .r{display:flex;align-items:baseline;padding:1.5mm 0;border-bottom:.3mm solid #E6EBF0}
+.back .r:last-child{border-bottom:0}
+.back .k{width:22mm;flex:0 0 auto;font-size:2.5mm;color:var(--mute);letter-spacing:.2mm}
+.back .v{font-size:3.1mm;font-weight:700;color:var(--navy);line-height:1.35}
+.back .fo{position:absolute;left:0;right:0;bottom:0;height:9.6mm;background:var(--wash);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.3mm;
+  border-top:.3mm solid var(--line)}
+.back .fo .a{font-size:2.5mm;font-weight:700;color:var(--navy)}
+.back .fo .b{font-size:2.1mm;color:#7B8A99}
 
-/* ── 화면 미리보기 배치 ───────────────────── */
-.preview{max-width:1180px;margin:12px auto 40px;padding:0 20px;
-  display:flex;gap:26px;flex-wrap:wrap;align-items:flex-start}
+/* ── 화면 미리보기 ────────────────────────── */
+.preview{max-width:1180px;margin:12px auto 40px;padding:0 20px;display:flex;gap:26px;
+  flex-wrap:wrap;align-items:flex-start}
 .pv-item .lab{text-align:center;font-size:12.5px;font-weight:700;color:#889;margin-bottom:9px}
 
-/* ── 인쇄: A4 세로 1장에 8개(2열×4행) ────── */
+/* ── 인쇄: A4 한 장에 8개 ─────────────────── */
 .sheets{display:none}
 @media print{
   @page{size:A4 portrait;margin:0}
   html,body{background:#fff;margin:0;padding:0}
   .toolbar,.panel,.backedit,.previewbar,.preview{display:none !important}
   .sheets{display:block}
-  .sheet{
-    width:210mm;height:297mm;padding:14.5mm 5mm;
+  .sheet{width:210mm;height:297mm;padding:14.5mm 5mm;
     display:grid;grid-template-columns:100mm 100mm;grid-template-rows:repeat(4,67mm);
     justify-content:center;align-content:start;gap:0;
-    page-break-after:always;break-after:page;
-  }
+    page-break-after:always;break-after:page}
   .sheet:last-child{page-break-after:auto;break-after:auto}
   .sheet .badge{box-shadow:none;border-radius:0;outline:.2mm dashed #c7cdd6;outline-offset:-.1mm}
   *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
@@ -163,7 +126,7 @@ body{-webkit-print-color-adjust:exact;print-color-adjust:exact}
 <body>
 
 <div class="toolbar">
-  <h1>⚓ 믿음의 항해 명찰 <small>100 × 67 mm 가로 · A4 한 장에 8개</small></h1>
+  <h1>⚓ 믿음의 항해 명찰 <small>승선권 · 100 × 67 mm · A4 한 장에 8개</small></h1>
   <span class="grow"></span>
   <button class="ghost" onclick="fillSample()">예시 명단 넣기</button>
   <button onclick="window.print()">🖨 인쇄 / PDF 저장</button>
@@ -180,14 +143,14 @@ body{-webkit-print-color-adjust:exact;print-color-adjust:exact}
 </div>
 
 <div class="backedit">
-  <h2 style="font-size:14px;font-weight:900;color:#33445c;margin-bottom:8px">뒷면 정보 <span style="font-weight:500;color:#7a8598;font-size:12.5px">— 모든 명찰 뒷면에 똑같이 들어갑니다</span></h2>
+  <h2 style="font-size:14px;font-weight:900;color:#33445c;margin-bottom:8px">공통 정보 <span style="font-weight:500;color:#7a8598;font-size:12.5px">— 앞면 아래와 뒷면에 똑같이 들어갑니다</span></h2>
   <div class="grid">
     <div><label>교회 사무실</label><input id="f_office" value="000-0000-0000" oninput="render()"></div>
     <div><label>담당 교역자</label><input id="f_pastor" value="010-0000-0000" oninput="render()"></div>
     <div><label>인솔 교사</label><input id="f_teacher" value="010-0000-0000" oninput="render()"></div>
-    <div><label>교회 주소</label><input id="f_addr" value="교회 주소를 입력하세요" oninput="render()"></div>
-    <div><label>수련회 장소</label><input id="f_place" value="미산제일침례교회 (충남 보령)" oninput="render()"></div>
-    <div><label>수련회 기간</label><input id="f_date" value="2026. 8. 6(목) ~ 8. 8(토)" oninput="render()"></div>
+    <div><label>수련회 장소</label><input id="f_place" value="미산제일침례교회 · 충남 보령" oninput="render()"></div>
+    <div><label>기간</label><input id="f_date" value="2026. 8. 6(목) ~ 8. 8(토)" oninput="render()"></div>
+    <div><label>기간 요약 (앞면 태그)</label><input id="f_short" value="2026. 8. 6 ~ 8. 8" oninput="render()"></div>
   </div>
 </div>
 
@@ -209,57 +172,54 @@ const SAMPLE = `박정겸, 3조, 중2
 오지호, 2조, 고1
 서수아, 4조, 중3`;
 
-function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+const esc = s => String(s==null?'':s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const v = id => esc(document.getElementById(id).value);
 
 function parseRoster(){
   return document.getElementById('roster').value
     .split('\n').map(l=>l.trim()).filter(Boolean)
-    .map(line=>{
-      const p=line.split(/[,\t]/).map(x=>x.trim());
-      return { name:p[0]||'', team:p[1]||'', grade:p[2]||'' };
-    })
+    .map(line=>{ const p=line.split(/[,\t]/).map(x=>x.trim());
+      return { name:p[0]||'', team:p[1]||'', grade:p[2]||'' }; })
     .filter(x=>x.name);
 }
 
 function frontHtml(p){
-  const chips =
-    (p.team  ? `<span class="chip team">${esc(p.team)}</span>` : '') +
-    (p.grade ? `<span class="chip grade">${esc(p.grade)}</span>` : '');
+  const num = (p.team.match(/\d+/) || [p.team.replace(/조/g,'')])[0] || '–';
   return `<div class="badge front">
-    <img class="sea" src="waves.webp" alt="">
-    <img class="boat" src="boat.webp" alt="">
-    <div class="top">
-      <img class="plaque" src="logo.webp" alt="믿음의 항해">
-      <div class="chips">${chips}</div>
+    <div class="stub">
+      <img class="mark" src="boat-mark.png" alt="" onerror="this.remove()">
+      <span class="lbl">TEAM</span>
+      <span class="big">${esc(num)}</span>
+      ${p.grade?`<span class="gr">${esc(p.grade)}</span>`:''}
     </div>
-    <div class="name"><span>${esc(p.name)}</span></div>
-    <div class="footer"><span>송산제일교회 2026 교육부서 연합수련회</span></div>
+    <div class="perf"></div>
+    <div class="main">
+      <div class="hdr">
+        <div class="t">믿음의 항해<small>BOARDING PASS</small></div>
+        <div class="no">송산제일교회<br>2026 연합수련회</div>
+      </div>
+      <div class="nm"><span>${esc(p.name)}</span></div>
+      <img class="boat" src="boat-cutout.png" alt="" onerror="this.remove()">
+      <div class="tag"><span>${v('f_short')}</span><span>2박 3일</span></div>
+      <div class="line"></div>
+      <div class="meta"><span>${v('f_place')}</span><span><b>히브리서 12:2</b></span></div>
+    </div>
   </div>`;
 }
 
 function backHtml(){
-  const v=id=>esc(document.getElementById(id).value);
   return `<div class="badge back">
-    <div class="b-top">
-      <div class="t1">⚓ 비상 연락처</div>
-      <div class="t2">예수님과 함께하는 믿음의 항해 · 히브리서 12:2</div>
+    <div class="top"><span class="t">비상 연락처</span><span class="s">EMERGENCY CONTACT</span></div>
+    <div class="tb">
+      <div class="r"><span class="k">교회 사무실</span><span class="v">${v('f_office')}</span></div>
+      <div class="r"><span class="k">담당 교역자</span><span class="v">${v('f_pastor')}</span></div>
+      <div class="r"><span class="k">인솔 교사</span><span class="v">${v('f_teacher')}</span></div>
+      <div class="r"><span class="k">수련회 장소</span><span class="v">${v('f_place')}</span></div>
+      <div class="r"><span class="k">기간</span><span class="v">${v('f_date')}</span></div>
     </div>
-    <div class="b-body">
-      <div class="b-sec">
-        <h3>📞 연락처</h3>
-        <div class="row"><span class="k">교회 사무실</span><span class="v">${v('f_office')}</span></div>
-        <div class="row"><span class="k">담당 교역자</span><span class="v">${v('f_pastor')}</span></div>
-        <div class="row"><span class="k">인솔 교사</span><span class="v">${v('f_teacher')}</span></div>
-      </div>
-      <div class="b-sec">
-        <h3>🧭 장소</h3>
-        <div class="b-line"><em>교회</em>${v('f_addr')}</div>
-        <div class="b-line" style="margin-top:.8mm"><em>수련회</em>${v('f_place')} · ${v('f_date')}</div>
-      </div>
-    </div>
-    <div class="b-foot">
-      <div class="l1">송산제일교회 2026 교육부서 연합수련회</div>
-      <div class="l2">이 명찰을 습득하시면 위 연락처로 연락 부탁드립니다</div>
+    <div class="fo">
+      <span class="a">송산제일교회 2026 교육부서 연합수련회</span>
+      <span class="b">이 명찰을 습득하시면 위 연락처로 연락 부탁드립니다</span>
     </div>
   </div>`;
 }
@@ -267,66 +227,62 @@ function backHtml(){
 const PER_PAGE = 8;
 
 function render(){
-  const list=parseRoster();
-  document.getElementById('cnt').textContent=list.length;
-  const pages=Math.ceil(list.length/PER_PAGE)||0;
-  document.getElementById('pg').textContent=pages;
-  document.getElementById('pgb').textContent=pages;
+  const list = parseRoster();
+  document.getElementById('cnt').textContent = list.length;
+  const pages = Math.ceil(list.length/PER_PAGE) || 0;
+  document.getElementById('pg').textContent = pages;
+  document.getElementById('pgb').textContent = pages;
 
-  // 미리보기 — 첫 사람 앞면 + 공통 뒷면
-  const first = list[0] || {name:'이름', team:'0조', grade:'학년'};
+  const first = list[0] || { name:'이름', team:'0조', grade:'학년' };
   document.getElementById('preview').innerHTML =
-    `<div class="pv-item"><div class="lab">앞면 (사람마다 다름)</div>${frontHtml(first)}</div>`+
+    `<div class="pv-item"><div class="lab">앞면 (사람마다 다름)</div>${frontHtml(first)}</div>` +
     `<div class="pv-item"><div class="lab">뒷면 (전원 공통)</div>${backHtml()}</div>`;
 
-  // 인쇄용 — 앞면 페이지들을 먼저, 그 뒤에 같은 수의 뒷면 페이지
-  let html='';
-  for(let i=0;i<pages;i++){
-    const slice=list.slice(i*PER_PAGE,(i+1)*PER_PAGE);
-    html+=`<div class="sheet">${slice.map(frontHtml).join('')}</div>`;
+  let html = '';
+  for (let i=0; i<pages; i++){
+    html += `<div class="sheet">${list.slice(i*PER_PAGE,(i+1)*PER_PAGE).map(frontHtml).join('')}</div>`;
   }
-  const back=backHtml();
-  for(let i=0;i<pages;i++){
-    const n=Math.min(PER_PAGE, list.length-i*PER_PAGE);
-    html+=`<div class="sheet">${back.repeat(n)}</div>`;
+  const back = backHtml();
+  for (let i=0; i<pages; i++){
+    html += `<div class="sheet">${back.repeat(Math.min(PER_PAGE, list.length - i*PER_PAGE))}</div>`;
   }
-  document.getElementById('sheets').innerHTML=html;
+  document.getElementById('sheets').innerHTML = html;
+
   fitNames();
   fitBacks();
 }
 
-/* 주소·장소가 길어도 아래 띠를 밀지 않게, 넘치면 글자를 줄인다 */
+/* 이름이 칸을 넘으면 넘지 않을 때까지 글자를 줄인다 */
+function fitNames(){
+  document.querySelectorAll('.front .nm').forEach(box=>{
+    const sp = box.firstElementChild; if(!sp) return;
+    let size = 15;
+    sp.style.fontSize = size+'mm';
+    sp.style.letterSpacing = '.8mm';
+    let guard = 0;
+    while (sp.scrollWidth > box.clientWidth && size > 6 && guard++ < 40){
+      size -= 0.5;
+      sp.style.fontSize = size+'mm';
+      if (size < 11) sp.style.letterSpacing = '.2mm';
+    }
+  });
+}
+
+/* 주소가 길어도 아래 띠를 밀지 않게 글자를 줄인다 */
 function fitBacks(){
   document.querySelectorAll('.badge.back').forEach(b=>{
-    const body=b.querySelector('.b-body'); if(!body) return;
-    const lines=body.querySelectorAll('.b-line');
-    let size=2.9, guard=0;
-    lines.forEach(l=>l.style.fontSize=size+'mm');
-    while(body.scrollHeight>body.clientHeight+1 && size>2.1 && guard++<20){
-      size-=0.1;
-      lines.forEach(l=>l.style.fontSize=size+'mm');
+    const tb = b.querySelector('.tb'); if(!tb) return;
+    const vs = tb.querySelectorAll('.v');
+    let size = 3.1, guard = 0;
+    vs.forEach(x=>x.style.fontSize = size+'mm');
+    while (tb.scrollHeight > tb.clientHeight + 1 && size > 2.2 && guard++ < 20){
+      size -= 0.1;
+      vs.forEach(x=>x.style.fontSize = size+'mm');
     }
   });
 }
 
-/* 이름이 칸을 넘으면 넘지 않을 때까지 글자를 줄인다 — 성이 두 자여도 안 잘린다 */
-function fitNames(){
-  document.querySelectorAll('.front .name').forEach(box=>{
-    const sp=box.firstElementChild; if(!sp) return;
-    let size=17;                       // mm
-    sp.style.fontSize=size+'mm';
-    sp.style.letterSpacing='1.2mm';
-    let guard=0;
-    while(sp.scrollWidth>box.clientWidth && size>7 && guard++<40){
-      size-=0.6;
-      sp.style.fontSize=size+'mm';
-      if(size<13) sp.style.letterSpacing='.4mm';
-    }
-  });
-}
-
-function fillSample(){ document.getElementById('roster').value=SAMPLE; render(); }
-
+function fillSample(){ document.getElementById('roster').value = SAMPLE; render(); }
 fillSample();
 </script>
 
