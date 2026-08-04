@@ -6,7 +6,7 @@
 <title>믿음의 항해 명찰 (100×67mm) — 송산제일교회 2026 교육부서 연합수련회</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Do+Hyeon&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Do+Hyeon&family=Gowun+Batang:wght@400;700&family=Jua&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
 <style>
 :root{
   --navy:#123B5B;
@@ -100,6 +100,69 @@ html,body{background:#e9eef5;font-family:'Noto Sans KR',sans-serif;color:#233}
 .back .fo .a{font-size:2.5mm;font-weight:700;color:var(--navy)}
 .back .fo .b{font-size:2.1mm;color:#7B8A99}
 
+
+/* ══════════════════════════════════════════════════════════
+   v2 「포스터」 — 하늘·양피지·바다. 포스터 결을 그대로 따른다
+   ══════════════════════════════════════════════════════════ */
+.p2{background:linear-gradient(180deg,#CDE9F8 0%,#A6D6F0 38%,#7FC3E6 52%)}
+.p2 .sky{position:absolute;left:0;right:0;top:0;height:30mm;pointer-events:none}
+.p2 .sea{position:absolute;left:0;right:0;bottom:0;width:100mm;height:24mm;pointer-events:none}
+/* 나무 간판 */
+.p2 .sign{position:absolute;left:5mm;top:4mm;padding:1.6mm 4mm 2mm;border-radius:1.6mm;
+  background:linear-gradient(180deg,#F0DCB4,#E2C48C);border:.7mm solid #A9762F;
+  box-shadow:0 .6mm 0 #8A5C22, inset 0 0 0 .3mm rgba(255,255,255,.5);text-align:center}
+.p2 .sign .t{font-family:'Jua',sans-serif;font-size:4.6mm;color:#7A3E10;letter-spacing:.5mm;line-height:1.05}
+.p2 .sign .s{font-family:'Gowun Batang',serif;font-size:2.2mm;color:#96682C;margin-bottom:.5mm;letter-spacing:.3mm}
+/* 조·학년 나무 태그 */
+.p2 .tags{position:absolute;right:5mm;top:5.2mm;display:flex;gap:1.6mm;align-items:center}
+.p2 .tags span{font-family:'Jua',sans-serif;font-size:4mm;line-height:1;color:#fff;
+  padding:1.5mm 3.4mm 1.8mm;border-radius:99px;box-shadow:0 .5mm 0 rgba(0,0,0,.18)}
+.p2 .tags .tm{background:#1E6FA8}
+.p2 .tags .gd{background:#D8542F}
+/* 찢긴 양피지 명패 */
+.p2 .plate{position:absolute;left:5.5mm;right:5.5mm;top:17.5mm;height:21.5mm;
+  background:linear-gradient(160deg,#FDF6E4,#F5E8C8);
+  box-shadow:0 1mm 2.4mm rgba(20,50,80,.22);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  clip-path:polygon(0% 5%,2% 1%,7% 4%,13% 0%,20% 4%,27% 1%,35% 4%,43% 0%,51% 4%,59% 1%,67% 4%,75% 0%,83% 4%,90% 1%,96% 4%,100% 6%,
+    99% 20%,100% 34%,99% 48%,100% 62%,99% 76%,100% 92%,97% 96%,91% 99%,84% 96%,76% 100%,68% 96%,60% 99%,52% 96%,44% 100%,36% 96%,
+    28% 99%,20% 96%,13% 100%,7% 96%,2% 99%,0% 94%,1% 80%,0% 66%,1% 52%,0% 38%,1% 24%)}
+.p2 .plate .who{font-family:'Jua',sans-serif;font-size:2.9mm;color:#A8762C;letter-spacing:.6mm;margin-bottom:.8mm}
+.p2 .plate .nm{display:flex;align-items:center;justify-content:center;width:100%;height:16mm;overflow:hidden}
+.p2 .plate .nm span{font-family:'Jua',sans-serif;font-size:13.5mm;line-height:1;color:#4A2E12;
+  letter-spacing:1.4mm;white-space:nowrap;text-shadow:0 .5mm 0 rgba(255,255,255,.7)}
+.p2 .boat2{position:absolute;right:3mm;bottom:6.4mm;width:28mm;pointer-events:none}
+.p2 .ftr{position:absolute;left:0;right:0;bottom:0;height:6.4mm;background:rgba(11,58,94,.86);
+  display:flex;align-items:center;justify-content:space-between;padding:0 5mm}
+.p2 .ftr .a{font-size:2.5mm;font-weight:700;color:#fff;letter-spacing:.1mm}
+.p2 .ftr .b{font-family:'Gowun Batang',serif;font-size:2.4mm;color:#BFE2F5;letter-spacing:.3mm}
+
+/* v2 뒷면 — 양피지 바탕 + 나무 머리띠 */
+.p2b{background:linear-gradient(160deg,#FDF6E4,#F3E5C4)}
+.p2b .hd{position:absolute;left:0;right:0;top:0;height:10.6mm;
+  background:linear-gradient(180deg,#C08A3C,#A9762F);
+  display:flex;align-items:center;justify-content:center;gap:1.8mm;
+  box-shadow:inset 0 -.3mm 0 rgba(0,0,0,.18)}
+.p2b .hd .t{font-family:'Jua',sans-serif;font-size:4.2mm;color:#FFF6E0;letter-spacing:.7mm}
+.p2b .hd .s{font-family:'Gowun Batang',serif;font-size:2.2mm;color:#F2DEB4}
+.p2b .tb{position:absolute;left:5mm;right:5mm;top:13.6mm;bottom:9.4mm;overflow:hidden}
+.p2b .r{display:flex;align-items:baseline;padding:1.5mm 0;border-bottom:.3mm dashed #D6BE8C}
+.p2b .r:last-child{border-bottom:0}
+.p2b .k{width:22mm;flex:0 0 auto;font-family:'Jua',sans-serif;font-size:2.6mm;color:#A8762C;letter-spacing:.2mm}
+.p2b .v{font-size:3.1mm;font-weight:700;color:#4A2E12;line-height:1.35}
+.p2b .fo{position:absolute;left:0;right:0;bottom:0;height:9.4mm;background:rgba(11,58,94,.9);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.3mm}
+.p2b .fo .a{font-size:2.5mm;font-weight:700;color:#fff}
+.p2b .fo .b{font-size:2.1mm;color:#BFE2F5}
+
+/* 디자인 선택 */
+.pick{max-width:1180px;margin:16px auto 0;padding:0 20px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.pick .lb{font-size:14px;font-weight:900;color:#33445c}
+.pick label{display:inline-flex;align-items:center;gap:7px;font-size:14px;font-weight:700;color:#33445c;
+  background:#fff;border:1px solid #cfd8e6;border-radius:99px;padding:9px 16px;cursor:pointer}
+.pick label:has(input:checked){border-color:var(--navy);background:#eaf1f8;box-shadow:0 0 0 2px rgba(18,59,91,.12)}
+.pick .note{font-size:12.5px;color:#6b7688}
+
 /* ── 화면 미리보기 ────────────────────────── */
 .preview{max-width:1180px;margin:12px auto 40px;padding:0 20px;display:flex;gap:26px;
   flex-wrap:wrap;align-items:flex-start}
@@ -154,9 +217,16 @@ body{-webkit-print-color-adjust:exact;print-color-adjust:exact}
   </div>
 </div>
 
+<div class="pick">
+  <span class="lb">디자인</span>
+  <label><input type="radio" name="design" value="pass" onchange="setDesign('pass')"> ① 승선권</label>
+  <label><input type="radio" name="design" value="poster" checked onchange="setDesign('poster')"> ② 포스터</label>
+  <span class="note">체크한 쪽만 인쇄됩니다. 아래에서 둘을 나란히 비교하세요.</span>
+</div>
+
 <div class="previewbar">
   <h2>미리보기</h2>
-  <span>첫 번째 사람의 앞면과, 모두 공통인 뒷면입니다</span>
+  <span>두 디자인을 나란히 놓았습니다 · 위 앞면 / 아래 뒷면</span>
 </div>
 <div class="preview" id="preview"></div>
 
@@ -224,6 +294,63 @@ function backHtml(){
   </div>`;
 }
 
+
+/* ── v2 「포스터」 ─────────────────────────────── */
+const SKY = `<svg class="sky" viewBox="0 0 400 120" preserveAspectRatio="none">
+  <g fill="#ffffff" opacity=".62">
+    <ellipse cx="58" cy="34" rx="30" ry="13"/><ellipse cx="84" cy="28" rx="22" ry="11"/><ellipse cx="34" cy="30" rx="18" ry="9"/>
+    <ellipse cx="300" cy="24" rx="34" ry="14"/><ellipse cx="330" cy="30" rx="24" ry="11"/><ellipse cx="272" cy="30" rx="20" ry="9"/>
+    <ellipse cx="196" cy="16" rx="24" ry="9"/>
+  </g>
+  <g fill="#FFF6D2" opacity=".45"><circle cx="184" cy="4" r="22"/></g>
+</svg>`;
+
+const SEA = `<svg class="sea" viewBox="0 0 400 96" preserveAspectRatio="none">
+  <path d="M0 26 C 46 8, 88 44, 138 28 C 188 12, 220 46, 268 30 C 312 16, 352 40, 400 22 L400 96 L0 96 Z" fill="#8FCBE8"/>
+  <path d="M0 42 C 50 24, 92 60, 144 44 C 196 28, 226 62, 274 48 C 318 35, 356 56, 400 40 L400 96 L0 96 Z" fill="#3E93C9"/>
+  <path d="M0 60 C 52 46, 96 78, 148 64 C 200 50, 230 80, 278 68 C 322 57, 358 74, 400 60 L400 96 L0 96 Z" fill="#1E6FA8"/>
+  <path d="M0 76 C 54 64, 98 92, 152 80 C 204 68, 234 94, 282 84 C 326 75, 360 88, 400 78 L400 96 L0 96 Z" fill="#125A8C"/>
+</svg>`;
+
+function frontHtml2(p){
+  return `<div class="badge p2">
+    ${SKY}
+    <div class="sign"><div class="s">예수님과 함께하는</div><div class="t">믿음의 항해</div></div>
+    <div class="tags">
+      ${p.team?`<span class="tm">${esc(p.team)}</span>`:''}
+      ${p.grade?`<span class="gd">${esc(p.grade)}</span>`:''}
+    </div>
+    <div class="plate">
+      <div class="nm"><span>${esc(p.name)}</span></div>
+    </div>
+    ${SEA}
+    <img class="boat2" src="boat-cutout.png" alt="" onerror="this.remove()">
+    <div class="ftr"><span class="a">송산제일교회 2026 교육부서 연합수련회</span><span class="b">히브리서 12:2</span></div>
+  </div>`;
+}
+
+function backHtml2(){
+  return `<div class="badge p2b">
+    <div class="hd"><span class="t">⚓ 비상 연락처</span><span class="s">· 히브리서 12:2</span></div>
+    <div class="tb">
+      <div class="r"><span class="k">교회 사무실</span><span class="v">${v('f_office')}</span></div>
+      <div class="r"><span class="k">담당 교역자</span><span class="v">${v('f_pastor')}</span></div>
+      <div class="r"><span class="k">인솔 교사</span><span class="v">${v('f_teacher')}</span></div>
+      <div class="r"><span class="k">수련회 장소</span><span class="v">${v('f_place')}</span></div>
+      <div class="r"><span class="k">기간</span><span class="v">${v('f_date')}</span></div>
+    </div>
+    <div class="fo">
+      <span class="a">송산제일교회 2026 교육부서 연합수련회</span>
+      <span class="b">이 명찰을 습득하시면 위 연락처로 연락 부탁드립니다</span>
+    </div>
+  </div>`;
+}
+
+let DESIGN = 'poster';
+function setDesign(d){ DESIGN = d; render(); }
+const F = p => DESIGN === 'poster' ? frontHtml2(p) : frontHtml(p);
+const B = () => DESIGN === 'poster' ? backHtml2() : backHtml();
+
 const PER_PAGE = 8;
 
 function render(){
@@ -234,15 +361,18 @@ function render(){
   document.getElementById('pgb').textContent = pages;
 
   const first = list[0] || { name:'이름', team:'0조', grade:'학년' };
+  const mark = d => DESIGN===d ? ' <b style="color:#123B5B">← 인쇄</b>' : '';
   document.getElementById('preview').innerHTML =
-    `<div class="pv-item"><div class="lab">앞면 (사람마다 다름)</div>${frontHtml(first)}</div>` +
-    `<div class="pv-item"><div class="lab">뒷면 (전원 공통)</div>${backHtml()}</div>`;
+    `<div class="pv-item"><div class="lab">① 승선권${mark('pass')}</div>${frontHtml(first)}
+       <div style="height:14px"></div>${backHtml()}</div>` +
+    `<div class="pv-item"><div class="lab">② 포스터${mark('poster')}</div>${frontHtml2(first)}
+       <div style="height:14px"></div>${backHtml2()}</div>`;
 
   let html = '';
   for (let i=0; i<pages; i++){
-    html += `<div class="sheet">${list.slice(i*PER_PAGE,(i+1)*PER_PAGE).map(frontHtml).join('')}</div>`;
+    html += `<div class="sheet">${list.slice(i*PER_PAGE,(i+1)*PER_PAGE).map(F).join('')}</div>`;
   }
-  const back = backHtml();
+  const back = B();
   for (let i=0; i<pages; i++){
     html += `<div class="sheet">${back.repeat(Math.min(PER_PAGE, list.length - i*PER_PAGE))}</div>`;
   }
@@ -254,6 +384,7 @@ function render(){
 
 /* 이름이 칸을 넘으면 넘지 않을 때까지 글자를 줄인다 */
 function fitNames(){
+  // 승선권
   document.querySelectorAll('.front .nm').forEach(box=>{
     const sp = box.firstElementChild; if(!sp) return;
     let size = 15;
@@ -266,11 +397,24 @@ function fitNames(){
       if (size < 11) sp.style.letterSpacing = '.2mm';
     }
   });
+  // 포스터 명패
+  document.querySelectorAll('.p2 .plate .nm').forEach(box=>{
+    const sp = box.firstElementChild; if(!sp) return;
+    let size = 13.5;
+    sp.style.fontSize = size+'mm';
+    sp.style.letterSpacing = '1.4mm';
+    let guard = 0;
+    while (sp.scrollWidth > box.clientWidth && size > 6 && guard++ < 40){
+      size -= 0.5;
+      sp.style.fontSize = size+'mm';
+      if (size < 10) sp.style.letterSpacing = '.4mm';
+    }
+  });
 }
 
 /* 주소가 길어도 아래 띠를 밀지 않게 글자를 줄인다 */
 function fitBacks(){
-  document.querySelectorAll('.badge.back').forEach(b=>{
+  document.querySelectorAll('.badge.back, .badge.p2b').forEach(b=>{
     const tb = b.querySelector('.tb'); if(!tb) return;
     const vs = tb.querySelectorAll('.v');
     let size = 3.1, guard = 0;
