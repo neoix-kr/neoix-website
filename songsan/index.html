@@ -1652,6 +1652,15 @@ function startRoomPoll(){
     if (sig !== rmSig){ rmSig = sig; rmHost ? renderHost() : renderPlayer(); }
   };
   tick(); rmTimer = setInterval(tick, 1200);
+  /* 폰이 잠기거나 다른 앱에 갔다 오면 브라우저가 타이머를 늦춘다.
+     돌아오는 즉시 한 번 당겨서 밀린 진행을 따라잡는다. */
+  if (!startRoomPoll._vis){
+    startRoomPoll._vis = true;
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden && rmTimer) tick();
+    });
+    window.addEventListener('focus', () => { if (rmTimer) tick(); });
+  }
 }
 
 const saveRoom = p => sb.from('songsan_rooms')
@@ -1678,7 +1687,10 @@ function drawBar(){
 
 /* ── 승리 판정 ───────────────────────────────────────── */
 function winCheck(){
+  const G = inGame();
+  if (!G.length || G.some(p => !p.role)) return null;   // 아직 역할이 다 안 깔림 — 판정 보류
   const A = alive();
+  if (!A.length) return null;
   const maf = A.filter(p => MF_ROLES[p.role]?.team === 'mafia').length;
   const oth = A.length - maf;
   if (maf === 0) return { w:'citizen', d:'마피아가 모두 잡혔습니다' };
@@ -1699,6 +1711,8 @@ function winHint(){
 /* ── 자동 진행 (사회자 기기가 심판을 본다) ───────────── */
 async function autoAdvance(){
   if (busy || RM.status !== 'playing') return;
+  const G0 = inGame();
+  if (!G0.length || G0.some(p => !p.role)) return;   // 역할 배정이 끝나기 전에는 진행하지 않는다
   const st = RM.state || {};
   const over = st.deadline && new Date(st.deadline) <= Date.now();
   const A = alive();
@@ -1897,8 +1911,8 @@ function renderHost(){
     body.innerHTML = head + `
       <div class="card">
         <div class="hs-t">시작 인원</div>
-        <div class="hs-seats"><button class="sq" id="s-">−</button><b>${seats}</b>
-          <button class="sq" id="s+">＋</button><span class="hs-hint">참가 켠 사람 ${inGame().length}명</span></div>
+        <div class="hs-seats"><button class="sq" id="sMinus">−</button><b>${seats}</b>
+          <button class="sq" id="sPlus">＋</button><span class="hs-hint">참가 켠 사람 ${inGame().length}명</span></div>
 
         <div class="hs-t" style="margin-top:18px">직업 <span class="hs-sub">켜고 끄기 · 시민 ${Math.max(0,seats-sum)}명 자동</span></div>
         <div class="hs-roles">${ROLE_KEYS.map(k=>`
@@ -1924,8 +1938,8 @@ function renderHost(){
       <p class="desc" style="margin-top:8px">이름을 눌러 참가/불참을 바꿀 수 있어요.</p>`;
 
     const put = o => saveRoom({ settings: { ...cfg, seats, on, roles, ...o } });
-    $('#s-').addEventListener('click', () => saveRoom({ settings:{...cfg,on,roles,seats:Math.max(3,seats-1)} }));
-    $('#s+').addEventListener('click', () => saveRoom({ settings:{...cfg,on,roles,seats:Math.min(30,seats+1)} }));
+    $('#sMinus').addEventListener('click', () => saveRoom({ settings:{...cfg,on,roles,seats:Math.max(3,seats-1)} }));
+    $('#sPlus').addEventListener('click', () => saveRoom({ settings:{...cfg,on,roles,seats:Math.min(30,seats+1)} }));
     $$('#rec-body [data-on]').forEach(b => b.addEventListener('click', () => {
       const k = b.dataset.on, nx = !on[k];
       saveRoom({ settings:{ ...cfg, seats, on:{...on,[k]:nx},
@@ -2023,22 +2037,32 @@ function renderHost(){
 const later = ms => new Date(Date.now() + ms).toISOString();
 
 async function startGame(seats, roles, on){
-  const pool = shuffle(inGame().slice()).slice(0, seats);
-  if (pool.length < 3) return toast('3명 이상 필요해요', 1);
+  /* 폴링이 RMEM 을 갈아끼우는 사이에 실행되면 객체 참조가 어긋난다.
+     항상 최신 명단을 직접 읽고, 비교는 반드시 id 로 한다. */
+  const { data: fresh } = await sb.from('songsan_room_members').select('*').eq('room', ROOM).order('joined_at');
+  const all = fresh || [];
+  const joined = all.filter(p => p.playing);
+  if (joined.length < 3) return toast('참가 인원이 3명 이상이어야 해요', 1);
+
+  const pool = shuffle(joined.slice()).slice(0, Math.max(3, seats || joined.length));
+  const poolIds = new Set(pool.map(p => p.id));
   const deck = [];
   ROLE_KEYS.forEach(k => { if (on[k]) for (let i=0;i<(roles[k]||0);i++) deck.push(k); });
   while (deck.length < pool.length) deck.push('citizen');
   shuffle(deck);
+
   await Promise.all(pool.map((p,i) => sb.from('songsan_room_members').update({
-    role: deck[i], alive:true, seen_card:false, vote:null, night_target:null, night_result:null,
-    shield: deck[i]==='soldier' ? 1 : 0 }).eq('id', p.id)));
-  const out = inGame().filter(p => !pool.includes(p));
+    role: deck[i], playing:true, alive:true, seen_card:false, vote:null,
+    night_target:null, night_result:null, shield: deck[i]==='soldier' ? 1 : 0 }).eq('id', p.id)));
+
+  const out = all.filter(p => !poolIds.has(p.id));
   if (out.length) await Promise.all(out.map(p =>
-    sb.from('songsan_room_members').update({ playing:false }).eq('id', p.id)));
+    sb.from('songsan_room_members').update({ playing:false, role:null }).eq('id', p.id)));
+
   await saveRoom({ status:'playing', settings:{ ...RM.settings, seats, roles, on },
     state:{ phase:'night', round:1, used:{}, robbed:false, notice:'첫 번째 밤이 시작됐어요.',
       deadline: later((RM.settings.nightLen||60)*1000) } });
-  toast('역할을 나눠줬어요 🎴');
+  toast(`${pool.length}명에게 역할을 나눠줬어요 🎴`);
 }
 
 const clearNight = () => Promise.all(inGame().map(p =>
@@ -2106,7 +2130,7 @@ async function resolveNight(){
   await Promise.all(ups);
   await clearNight();
   const { data: mem } = await sb.from('songsan_room_members').select('*').eq('room', ROOM);
-  RMEM = mem || RMEM;
+  if (mem && mem.length) RMEM = mem;
   const notice = (killed ? `${killed.name}님이 밤사이 세상을 떠났습니다.` : '조용한 밤이었습니다.') + extra;
   const w = winCheck(); if (w) return endGame(w);
   await saveRoom({ state:{ ...st, phase:'day', round:st.round||1, used, notice, scoop,
@@ -2136,7 +2160,7 @@ async function resolveTrial(){
     if (t.role === 'clown')
       return endGame({ w:'clown', d:`${t.name}님(광대)이 투표로 처형되어 혼자 승리했습니다.` });
     const { data: mem } = await sb.from('songsan_room_members').select('*').eq('room', ROOM);
-    RMEM = mem || RMEM;
+    if (mem && mem.length) RMEM = mem;
     const w = winCheck(); if (w) return endGame(w);
     return toNight((st.round||1)+1, `${t.name}님이 처형됐습니다. (${MF_ROLES[t.role]?.n||'시민'})`);
   }
