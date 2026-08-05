@@ -599,12 +599,6 @@
   .mf-bar .tm.warn{background:#c0392b;color:#fff;animation:mfpulse .7s infinite}
   @keyframes mfpulse{50%{opacity:.55}}
 
-  /* 카드 위 이름·설명 캡션 */
-  .mf-card{position:relative}
-  .mf-cap{position:absolute;left:0;right:0;bottom:0;padding:10px 12px 12px;text-align:center;
-    background:linear-gradient(180deg,rgba(20,12,4,0),rgba(20,12,4,.88) 40%)}
-  .mf-cap b{display:block;font-family:'Jua',sans-serif;font-size:19px;color:#ffe9b0;letter-spacing:1px}
-  .mf-cap span{display:block;font-size:11.5px;color:#f0e2c4;line-height:1.5;margin-top:3px;font-weight:600}
   .mf-card.big{width:min(74vw,300px);aspect-ratio:5/7;border-radius:14px;overflow:hidden;margin:0 auto}
   .mf-card.big img{width:100%;height:100%;object-fit:cover}
   .mf-cardview .in{text-align:center;max-width:340px}
@@ -1566,7 +1560,7 @@ const MF_ROLES = {
 };
 const ROLE_KEYS   = ['mafia','doctor','police','soldier','spy','clown','robber','reporter','priest'];
 const NIGHT_ACTORS = ROLE_KEYS.filter(k => MF_ROLES[k].act);
-const HAS_CARD = ['mafia','doctor','police','soldier','spy','clown'];  // 새 카드 받으면 여기에 추가
+const HAS_CARD = ROLE_KEYS.concat('citizen');   // 11장 전부 있음
 const cardSrc = r => `assets/mafia/card-${HAS_CARD.includes(r) ? MF_ROLES[r].img : 'back'}.jpg`;
 const ROOM = 'main';
 
@@ -1780,8 +1774,7 @@ function renderPlayer(){
     const flip = () => {
       const el = $('#mf-flip'); el.classList.add('flip');
       setTimeout(() => {
-        el.innerHTML = `<img src="${cardSrc(me.role)}" alt="">` +
-          `<div class="mf-cap"><b>${MF_ROLES[me.role].n}</b><span>${esc(MF_ROLES[me.role].d)}</span></div>`;
+        el.innerHTML = `<img src="${cardSrc(me.role)}" alt="${MF_ROLES[me.role].n}">`;
         el.classList.remove('flip');
         const o = $('#mf-open'); o.textContent = '확인했어요'; o.onclick = () => saveMe({ seen_card: true });
       }, 260);
@@ -1845,8 +1838,7 @@ function showCard(role){
   const R = MF_ROLES[role] || MF_ROLES.citizen;
   const d = document.createElement('div');
   d.className = 'mf-cardview';
-  d.innerHTML = `<div class="in"><div class="mf-card big"><img src="${cardSrc(role)}" alt="">
-    <div class="mf-cap"><b>${R.n}</b><span>${esc(R.d)}</span></div></div>
+  d.innerHTML = `<div class="in"><div class="mf-card big"><img src="${cardSrc(role)}" alt="${R.n}"></div>
     <button class="ghost-btn" style="margin-top:14px">닫기</button></div>`;
   d.addEventListener('click', () => { d.remove(); mfCardOpen = false; });
   document.body.appendChild(d);
