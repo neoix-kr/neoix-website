@@ -1665,9 +1665,14 @@ function startRoomPoll(){
   }
 }
 
+/* Supabase 쿼리 빌더는 thenable 이라 await/then 하기 전엔 요청이 나가지 않는다.
+   버튼 핸들러에서 await 없이 부르는 곳이 많으므로, 여기서 반드시 실행시킨다. */
 const saveRoom = p => sb.from('songsan_rooms')
-  .update({ ...p, updated_at: new Date().toISOString() }).eq('code', ROOM);
-const saveMe = p => sb.from('songsan_room_members').update(p).eq('room', ROOM).eq('device', deviceId());
+  .update({ ...p, updated_at: new Date().toISOString() }).eq('code', ROOM)
+  .then(r => { if (r.error) console.error('saveRoom', r.error); return r; });
+const saveMe = p => sb.from('songsan_room_members')
+  .update(p).eq('room', ROOM).eq('device', deviceId())
+  .then(r => { if (r.error) console.error('saveMe', r.error); return r; });
 
 /* ── 모두의 화면 상단 중앙 타이머 ────────────────────── */
 let barT = null;
