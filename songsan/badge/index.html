@@ -102,51 +102,77 @@ html,body{background:#e9eef5;font-family:'Noto Sans KR',sans-serif;color:#233}
 
 
 /* ══════════════════════════════════════════════════════════
-   v2 「포스터」 — 실제 포스터 배경 위에 글자만 얹는다
+   v2 「포스터」 — 실제 포스터 배경 + 고문서 타이포
    양피지 실측 영역: 가로 6.8~93.4mm · 세로 5.6~61.6mm
    ══════════════════════════════════════════════════════════ */
 .p2{background:#F6E7C4 url('bg-front.jpg') center/cover no-repeat;font-family:'Noto Sans KR',sans-serif}
-.p2 .hd{position:absolute;left:10mm;top:8.6mm}
-.p2 .hd .s{display:block;font-family:'Gowun Batang',serif;font-size:2.5mm;color:#9A7233;letter-spacing:.6mm}
-.p2 .hd .t{display:block;font-family:'Jua',sans-serif;font-size:5.4mm;color:#6B4212;letter-spacing:.7mm;
-  line-height:1.05;margin-top:.3mm;text-shadow:0 .4mm 0 rgba(255,255,255,.55)}
-.p2 .tags{position:absolute;right:9mm;top:9.4mm;display:flex;gap:1.6mm;align-items:center}
-.p2 .tags span{font-family:'Jua',sans-serif;font-size:3.9mm;line-height:1;color:#fff;
-  padding:1.4mm 3.2mm 1.7mm;border-radius:99px;box-shadow:0 .5mm 0 rgba(0,0,0,.22)}
-.p2 .tags .tm{background:#1E6FA8}
-.p2 .tags .gd{background:#C9502C}
-.p2 .rule{position:absolute;left:10mm;right:9mm;top:19.4mm;height:.35mm;
-  background:linear-gradient(90deg,transparent,#C4A268 12%,#C4A268 88%,transparent)}
-.p2 .nm{position:absolute;left:8mm;right:8mm;top:23mm;height:21mm;display:flex;
-  align-items:center;justify-content:center;overflow:hidden}
-.p2 .nm span{font-family:'Jua',sans-serif;font-size:15mm;line-height:1;color:#4A2E12;
-  letter-spacing:1.6mm;white-space:nowrap;text-shadow:0 .5mm 0 rgba(255,255,255,.6)}
-.p2 .boat2{position:absolute;right:5mm;bottom:2.6mm;width:25mm;pointer-events:none;
-  filter:drop-shadow(0 .4mm .6mm rgba(30,50,70,.25))}
-.p2 .ftr{position:absolute;left:10mm;bottom:6.4mm;max-width:58mm}
-.p2 .ftr .a{display:block;font-size:2.6mm;font-weight:700;color:#6B4212;letter-spacing:.1mm}
-.p2 .ftr .b{display:block;font-family:'Gowun Batang',serif;font-size:2.5mm;color:#9A7233;
-  letter-spacing:.4mm;margin-top:.5mm}
+.p2::after{content:'';position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(120% 90% at 50% 42%, transparent 52%, rgba(92,62,20,.13) 100%)}
 
-/* v2 뒷면 — 실제 배경(나무 머리띠 + 양피지 + 바다) 위에 표만 */
+/* 머리말 — 작은 닻 + 두 줄 */
+.p2 .hd{position:absolute;left:9.5mm;top:7.6mm;display:flex;align-items:flex-start;gap:2.2mm}
+.p2 .hd .anc{width:5.2mm;height:5.2mm;flex:0 0 auto;margin-top:1.4mm;opacity:.85}
+.p2 .hd .s{display:block;font-family:'Gowun Batang',serif;font-size:2.4mm;color:#9C7638;
+  letter-spacing:.9mm;line-height:1}
+.p2 .hd .t{display:block;font-family:'Jua',sans-serif;font-size:5.6mm;color:#5E3A0E;
+  letter-spacing:.6mm;line-height:1.1;margin-top:.9mm;
+  text-shadow:0 .35mm 0 rgba(255,255,255,.65), 0 -.15mm 0 rgba(94,58,14,.16)}
+
+/* 조 = 밀랍 인장 · 학년 = 리본 */
+.p2 .seal{position:absolute;right:8.5mm;top:6mm;width:15.4mm;height:15.4mm;border-radius:50%;
+  background:radial-gradient(circle at 34% 30%, #C4553A, #9B3320 62%, #7C2617);
+  box-shadow:0 .6mm 1.2mm rgba(60,20,10,.4), inset 0 0 0 .45mm rgba(255,255,255,.28),
+    inset 0 -.7mm 1.2mm rgba(0,0,0,.28);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;color:#FFF0E6}
+.p2 .seal .n{font-family:'Jua',sans-serif;font-size:6.6mm;line-height:1;
+  text-shadow:0 .3mm .5mm rgba(60,15,5,.5)}
+.p2 .seal .u{font-family:'Gowun Batang',serif;font-size:2.1mm;letter-spacing:.4mm;opacity:.92;
+  margin-top:.6mm;padding-top:.6mm;border-top:.25mm solid rgba(255,255,255,.35);
+  min-width:8mm;text-align:center}
+
+/* 장식 구분선 — 선 · 마름모 · 선 */
+.p2 .orn{position:absolute;left:10mm;right:27mm;top:22.4mm;display:flex;align-items:center;gap:1.6mm}
+.p2 .orn i{flex:1;height:.3mm;background:linear-gradient(90deg,transparent,#B8945A 22%,#B8945A 78%,transparent)}
+.p2 .orn b{width:1.7mm;height:1.7mm;background:#B8945A;transform:rotate(45deg);flex:0 0 auto;
+  box-shadow:0 0 0 .5mm rgba(184,148,90,.28)}
+
+/* 이름 — 각인된 느낌 */
+.p2 .nm{position:absolute;left:8mm;right:8mm;top:25.6mm;height:20mm;display:flex;
+  align-items:center;justify-content:center;overflow:hidden}
+.p2 .nm span{font-family:'Jua',sans-serif;font-size:16mm;line-height:1;color:#452A0E;
+  letter-spacing:1.8mm;white-space:nowrap;
+  text-shadow:0 .45mm 0 rgba(255,255,255,.75), 0 -.25mm .2mm rgba(69,42,14,.22)}
+
+.p2 .boat2{position:absolute;right:4.5mm;bottom:2.4mm;width:26mm;pointer-events:none;
+  filter:drop-shadow(0 .5mm .8mm rgba(30,50,70,.3))}
+.p2 .ftr{position:absolute;left:10mm;bottom:6.2mm;max-width:56mm}
+.p2 .ftr .a{display:block;font-family:'Gowun Batang',serif;font-size:2.75mm;font-weight:700;
+  color:#5E3A0E;letter-spacing:.25mm}
+.p2 .ftr .b{display:block;font-family:'Gowun Batang',serif;font-size:2.4mm;color:#9C7638;
+  letter-spacing:.5mm;margin-top:.7mm}
+.p2 .ftr .b em{font-style:normal;color:#B8945A;margin:0 1.2mm}
+
+/* ── v2 뒷면 ── */
 .p2b{background:#F5E6C2 url('bg-back.jpg') center/cover no-repeat;font-family:'Noto Sans KR',sans-serif}
-.p2b .hd{position:absolute;left:0;right:0;top:1.6mm;display:flex;align-items:center;
+.p2b .hd{position:absolute;left:0;right:0;top:1.5mm;display:flex;align-items:center;
   justify-content:center;gap:1.8mm}
-.p2b .hd .t{font-family:'Jua',sans-serif;font-size:4mm;color:#FFF4DC;letter-spacing:.7mm;
-  text-shadow:0 .5mm 1mm rgba(60,30,0,.55)}
-.p2b .hd .s{font-family:'Gowun Batang',serif;font-size:2.2mm;color:#F0DCB0;
-  text-shadow:0 .4mm .8mm rgba(60,30,0,.5)}
-.p2b .tb{position:absolute;left:9mm;right:9mm;top:13.4mm;bottom:12mm;overflow:hidden}
-.p2b .r{display:flex;align-items:baseline;padding:1.45mm 0;border-bottom:.3mm dashed #CDB183}
-.p2b .r:last-child{border-bottom:0}
-.p2b .k{width:21mm;flex:0 0 auto;font-family:'Jua',sans-serif;font-size:2.6mm;color:#9A7233;letter-spacing:.2mm}
-.p2b .v{font-size:3.1mm;font-weight:700;color:#4A2E12;line-height:1.35}
-.p2b .fo{position:absolute;left:0;right:0;bottom:0;padding:1.3mm 4mm 1.5mm;text-align:center;
-  background:linear-gradient(180deg,rgba(8,44,74,0),rgba(8,44,74,.72) 32%,rgba(8,44,74,.86))}
-.p2b .fo .a{display:block;font-size:2.4mm;font-weight:700;color:#fff;
-  text-shadow:0 .4mm 1mm rgba(0,40,70,.75)}
-.p2b .fo .b{display:block;font-size:2.05mm;color:#DCEEF8;margin-top:.2mm;
-  text-shadow:0 .4mm 1mm rgba(0,40,70,.75)}
+.p2b .hd .anc{width:4mm;height:4mm;opacity:.95}
+.p2b .hd .t{font-family:'Jua',sans-serif;font-size:4.1mm;color:#FFF4DC;letter-spacing:.9mm;
+  text-shadow:0 .5mm 1mm rgba(50,24,0,.6)}
+.p2b .orn{position:absolute;left:12mm;right:12mm;top:12.4mm;display:flex;align-items:center;gap:1.4mm}
+.p2b .orn i{flex:1;height:.3mm;background:linear-gradient(90deg,transparent,#C0A470 22%,#C0A470 78%,transparent)}
+.p2b .orn b{width:1.5mm;height:1.5mm;background:#C0A470;transform:rotate(45deg);flex:0 0 auto}
+.p2b .tb{position:absolute;left:9mm;right:9mm;top:15.4mm;bottom:12mm;overflow:hidden}
+.p2b .r{display:flex;align-items:baseline;gap:1.6mm;padding:1.35mm 0}
+.p2b .k{flex:0 0 auto;font-family:'Gowun Batang',serif;font-size:2.6mm;color:#9C7638;letter-spacing:.3mm}
+.p2b .dot{flex:1;height:2.6mm;border-bottom:.28mm dotted #C0A470;transform:translateY(-.7mm)}
+.p2b .v{flex:0 0 auto;font-size:3.05mm;font-weight:700;color:#452A0E;line-height:1.3}
+.p2b .fo{position:absolute;left:0;right:0;bottom:0;padding:1.4mm 4mm 1.6mm;text-align:center;
+  background:linear-gradient(180deg,rgba(8,44,74,0),rgba(8,44,74,.74) 34%,rgba(8,44,74,.88))}
+.p2b .fo .a{display:block;font-size:2.4mm;font-weight:700;color:#fff;letter-spacing:.15mm;
+  text-shadow:0 .4mm 1mm rgba(0,30,55,.8)}
+.p2b .fo .b{display:block;font-size:2.05mm;color:#D8ECF8;margin-top:.25mm;
+  text-shadow:0 .4mm 1mm rgba(0,30,55,.8)}
 
 /* 디자인 선택 */
 .pick{max-width:1180px;margin:16px auto 0;padding:0 20px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
@@ -291,29 +317,33 @@ function backHtml(){
 /* ── v2 「포스터」 ─────────────────────────────── */
 
 function frontHtml2(p){
+  const num = (p.team.match(/\d+/) || [p.team.replace(/조/g,'')])[0] || '–';
   return `<div class="badge p2">
-    <div class="hd"><span class="s">예수님과 함께하는</span><span class="t">믿음의 항해</span></div>
-    <div class="tags">
-      ${p.team?`<span class="tm">${esc(p.team)}</span>`:''}
-      ${p.grade?`<span class="gd">${esc(p.grade)}</span>`:''}
+    <div class="hd">${'<svg class="anc" viewBox="0 0 100 100" fill="none" stroke="#9C7638" stroke-width="8" stroke-linecap="round"><circle cx="50" cy="15" r="8"/><path d="M50 23 V86 M27 42 H73 M16 60 c0 19 15 28 34 28 s34-9 34-28"/></svg>'}
+      <div><span class="s">예수님과 함께하는</span><span class="t">믿음의 항해</span></div>
     </div>
-    <div class="rule"></div>
+    ${(p.team||p.grade)?`<div class="seal">
+      <span class="n">${esc(p.team?num:'–')}</span>
+      <span class="u">${[p.team?'조':'',p.grade].filter(Boolean).join(' · ')}</span></div>`:''}
+    <div class="orn"><i></i><b></b><i></i></div>
     <div class="nm"><span>${esc(p.name)}</span></div>
     <img class="boat2" src="boat-cutout.png" alt="" onerror="this.remove()">
     <div class="ftr"><span class="a">송산제일교회 2026 교육부서 연합수련회</span>
-      <span class="b">히브리서 12:2 · 미산제일침례교회</span></div>
+      <span class="b">미산제일침례교회<em>·</em>히브리서 12:2</span></div>
   </div>`;
 }
 
 function backHtml2(){
+  const row = (k,val) => `<div class="r"><span class="k">${k}</span><span class="dot"></span><span class="v">${val}</span></div>`;
   return `<div class="badge p2b">
-    <div class="hd"><span class="t">⚓ 비상 연락처</span><span class="s">· 히브리서 12:2</span></div>
+    <div class="hd">${'<svg class="anc" viewBox="0 0 100 100" fill="none" stroke="#FFF4DC" stroke-width="8" stroke-linecap="round"><circle cx="50" cy="15" r="8"/><path d="M50 23 V86 M27 42 H73 M16 60 c0 19 15 28 34 28 s34-9 34-28"/></svg>'}<span class="t">비상 연락처</span></div>
+    <div class="orn"><i></i><b></b><i></i></div>
     <div class="tb">
-      <div class="r"><span class="k">교회 사무실</span><span class="v">${v('f_office')}</span></div>
-      <div class="r"><span class="k">담당 교역자</span><span class="v">${v('f_pastor')}</span></div>
-      <div class="r"><span class="k">인솔 교사</span><span class="v">${v('f_teacher')}</span></div>
-      <div class="r"><span class="k">수련회 장소</span><span class="v">${v('f_place')}</span></div>
-      <div class="r"><span class="k">기간</span><span class="v">${v('f_date')}</span></div>
+      ${row('교회 사무실', v('f_office'))}
+      ${row('담당 교역자', v('f_pastor'))}
+      ${row('인솔 교사',   v('f_teacher'))}
+      ${row('수련회 장소', v('f_place'))}
+      ${row('기간',        v('f_date'))}
     </div>
     <div class="fo">
       <span class="a">송산제일교회 2026 교육부서 연합수련회</span>
@@ -376,7 +406,7 @@ function fitNames(){
   // 포스터 명패
   document.querySelectorAll('.p2 .nm').forEach(box=>{
     const sp = box.firstElementChild; if(!sp) return;
-    let size = 15;
+    let size = 16;
     sp.style.fontSize = size+'mm';
     sp.style.letterSpacing = '1.4mm';
     let guard = 0;
