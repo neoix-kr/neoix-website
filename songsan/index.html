@@ -631,6 +631,12 @@
   .mf-card{cursor:pointer}
   #mf-open.ok{background:linear-gradient(180deg,#2f7f5c,#1f5f43)}
   .mf-bar.reveal{background:rgba(122,74,14,.94)}
+  .hs-time-ctl{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:9px}
+  .hs-time-ctl button{padding:12px 4px;border-radius:11px;border:1.5px solid #e0cfa0;background:#fffdf6;
+    font-size:13.5px;font-weight:800;color:var(--navy);cursor:pointer}
+  .hs-time-ctl button.stop{background:#8a6a12;border-color:#8a6a12;color:#fff}
+  .hs-time-ctl button.go{background:#2f6b4f;border-color:#2f6b4f;color:#fff}
+  .mf-bar .tm.pause{background:#8a6a12;color:#fff}
 </style>
 </head>
 <body class="lock">
@@ -1688,9 +1694,10 @@ function drawBar(){
   const lab = st.phase==='reveal'?'🎴 카드 확인':st.phase==='night'?'🌙 밤':st.phase==='day'?'☀️ 낮':st.phase==='vote'?'🗳 투표':'⚖️ 최후변론';
   b.className = 'mf-bar ' + st.phase;
   const paint = () => {
-    const s = st.deadline ? Math.max(0, Math.round((new Date(st.deadline) - Date.now())/1000)) : null;
+    const s = st.paused ? Math.round((st.remain||0)/1000)
+      : (st.deadline ? Math.max(0, Math.round((new Date(st.deadline) - Date.now())/1000)) : null);
     b.innerHTML = `<span class="ph">${lab}</span><span class="rd">${st.round||1}일차</span>` +
-      (s === null ? '' : `<span class="tm ${s<=10?'warn':''}">${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}</span>`);
+      (s === null ? '' : `<span class="tm ${st.paused?'pause':(s<=10?'warn':'')}">${st.paused?'⏸ ':''}${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}</span>`);
   };
   clearInterval(barT); paint(); barT = setInterval(paint, 500);
 }
@@ -1725,6 +1732,7 @@ async function autoAdvance(){
   if (!G0.length || G0.some(p => !p.role)) return;   // 역할 배정이 끝나기 전에는 진행하지 않는다
   const st = RM.state || {};
   if (st.phase === 'reveal') return;          // 카드 확인이 끝날 때까지 진행 정지
+  if (st.paused) return;                      // 사회자가 멈춰 둔 상태
   const over = st.deadline && new Date(st.deadline) <= Date.now();
   const A = alive();
 
@@ -2032,6 +2040,19 @@ function renderHost(){
   h += `<div class="hs-script"><div class="sc-h">📖 대본</div>${
     lines.map(l => `<p>${esc(l)}</p>`).join('')}</div>`;
 
+  if (st.phase !== 'reveal'){
+    const left = st.paused ? Math.round((st.remain||0)/1000)
+      : (st.deadline ? Math.max(0, Math.round((new Date(st.deadline)-Date.now())/1000)) : 0);
+    h += `<div class="card"><div class="hs-t">시간 조절
+        <span class="hs-sub">${st.paused?'⏸ 멈춤':'진행 중'} · ${String(Math.floor(left/60)).padStart(2,'0')}:${String(left%60).padStart(2,'0')}</span></div>
+      <div class="hs-time-ctl">
+        <button data-tm="60">＋1분</button>
+        <button data-tm="30">＋30초</button>
+        <button data-tm="-30">−30초</button>
+        <button class="${st.paused?'go':'stop'}" id="hs-pause">${st.paused?'▶ 다시 시작':'⏸ 멈추기'}</button>
+      </div></div>`;
+  }
+
   if (st.phase === 'reveal'){
     const seen = inGame().filter(p => p.seen_card);
     const wait = inGame().filter(p => !p.seen_card);
@@ -2075,6 +2096,21 @@ function renderHost(){
   const on2 = (id, fn) => { const e = $(id); if (e) e.addEventListener('click', fn); };
   $$('#rec-body [data-ms]').forEach(b => b.addEventListener('click',
     () => saveRoom({ state:{ ...st, mission: b.dataset.ms || null } })));
+  /* 시간 조작은 렌더 시점이 아니라 «누르는 순간»의 최신 상태를 기준으로 한다.
+     화면이 아직 안 갱신됐을 때 두 번 눌러도 어긋나지 않는다. */
+  $$('#rec-body [data-tm]').forEach(b => b.addEventListener('click', () => {
+    const cur = RM.state || {}, d = (+b.dataset.tm) * 1000;
+    if (cur.paused) return saveRoom({ state:{ ...cur, remain: Math.max(0, (cur.remain||0) + d) } });
+    const base = cur.deadline ? new Date(cur.deadline).getTime() : Date.now();
+    saveRoom({ state:{ ...cur, deadline: new Date(Math.max(Date.now(), base + d)).toISOString() } });
+  }));
+  on2('#hs-pause', () => {
+    const cur = RM.state || {};
+    if (cur.paused) return saveRoom({ state:{ ...cur, paused:false, remain:null,
+      deadline: later(cur.remain || 0) } });
+    const rest = cur.deadline ? Math.max(0, new Date(cur.deadline) - Date.now()) : 0;
+    saveRoom({ state:{ ...cur, paused:true, remain: rest, deadline:null } });
+  });
   on2('#hs-night', () => saveRoom({ state:{ ...st, phase:'night', notice:'첫 번째 밤이 시작됐어요.',
     deadline: later((RM.settings.nightLen||60)*1000) } }));
   on2('#hs-dawn', resolveNight); on2('#hs-vote', toVote);
@@ -2131,62 +2167,69 @@ const clearNight = () => Promise.all(inGame().map(p =>
 async function resolveNight(){
   const st = RM.state || {}, A = alive();
   const used = { ...(st.used||{}) };
-  const ups = []; let scoop = null, extra = '';
+  const ups = []; let scoop = null, extra = '', killed = null;
 
   const actor = k => A.find(p => p.role === k && p.night_target && !(MF_ROLES[k].once && used[p.id]));
+  /* 경찰 → 마피아 → 의사 는 항상 이 순서. 나머지는 매 밤 무작위 */
+  const TAIL = shuffle(['spy','reporter','robber','priest']);
+  const ORDER = ['police','mafia','doctor'].concat(TAIL);
+  const log = [];
 
-  /* 경찰 */
-  const pol = actor('police');
-  if (pol){ const t = byId(pol.night_target);
-    ups.push(sb.from('songsan_room_members').update({ night_result:
-      `${t.name}님은 ${MF_ROLES[t.role]?.team==='mafia'?'마피아입니다!':'마피아가 아닙니다.'}` }).eq('id', pol.id)); }
-
-  /* 스파이 — 마피아 찾으면 접선 */
-  const spy = actor('spy');
-  if (spy){ const t = byId(spy.night_target); const isM = MF_ROLES[t.role]?.team === 'mafia';
-    ups.push(sb.from('songsan_room_members').update({ role: isM ? 'mafia' : spy.role,
-      night_result: isM ? `${t.name}님은 마피아! 접선해 마피아팀이 됩니다.`
-                        : `${t.name}님의 직업은 ${MF_ROLES[t.role]?.n||'시민'}입니다.` }).eq('id', spy.id));
-    if (isM) extra += ' 스파이가 접선했다는 소문이 돕니다…'; }
-
-  /* 기자 — 다음 날 공개 */
-  const rep = actor('reporter');
-  if (rep){ const t = byId(rep.night_target); used[rep.id] = true;
-    scoop = `${t.name}님의 직업은 「${MF_ROLES[t.role]?.n||'시민'}」입니다.`;
-    ups.push(sb.from('songsan_room_members').update({ night_result:'취재에 성공했습니다. 내일 아침 공개됩니다.' }).eq('id', rep.id)); }
-
-  /* 마피아 공격 → 의사 보호 → 군인 방어 */
-  const mafs = A.filter(p => MF_ROLES[p.role]?.team === 'mafia' && p.night_target);
-  const doc  = actor('doctor');
-  let killed = null;
-  if (mafs.length){
-    const tal = {}; mafs.forEach(m => tal[m.night_target] = (tal[m.night_target]||0)+1);
-    const tid = Object.entries(tal).sort((a,b)=>b[1]-a[1])[0][0];
-    const t = byId(tid);
-    if (doc && doc.night_target === tid) extra += ' 의사가 한 생명을 건졌습니다.';
-    else if (t && t.shield > 0){ ups.push(sb.from('songsan_room_members').update({ shield:t.shield-1 }).eq('id', t.id));
-      extra += ' 공격이 있었지만 누군가 버텨냈습니다.'; }
-    else if (t){ killed = t; ups.push(sb.from('songsan_room_members').update({ alive:false }).eq('id', t.id)); }
-  }
-
-  /* 도굴꾼 — 첫날 밤 사망자 직업 승계 */
-  if (killed && (st.round||1) === 1){
-    const rob = A.find(p => p.role === 'robber' && p.id !== killed.id);
-    if (rob && killed.role && killed.role !== 'robber'){
+  for (const k of ORDER){
+    if (k === 'police'){
+      const p = actor('police'); if (!p) continue;
+      const t = byId(p.night_target); log.push('경찰');
+      ups.push(sb.from('songsan_room_members').update({ night_result:
+        `${t.name}님은 ${MF_ROLES[t.role]?.team==='mafia'?'마피아입니다!':'마피아가 아닙니다.'}` }).eq('id', p.id));
+    }
+    else if (k === 'mafia'){
+      const mafs = A.filter(p => MF_ROLES[p.role]?.team === 'mafia' && p.night_target);
+      if (!mafs.length) continue; log.push('마피아');
+      const tal = {}; mafs.forEach(m => tal[m.night_target] = (tal[m.night_target]||0)+1);
+      const tid = Object.entries(tal).sort((a,b)=>b[1]-a[1])[0][0];
+      const t = byId(tid);
+      if (t && t.shield > 0){
+        ups.push(sb.from('songsan_room_members').update({ shield:t.shield-1 }).eq('id', t.id));
+        extra += ' 공격이 있었지만 누군가 버텨냈습니다.';
+      } else if (t) killed = t;
+    }
+    else if (k === 'doctor'){
+      const d = actor('doctor'); if (!d) continue; log.push('의사');
+      if (killed && d.night_target === killed.id){ killed = null; extra += ' 의사가 한 생명을 건졌습니다.'; }
+    }
+    else if (k === 'spy'){
+      const p = actor('spy'); if (!p) continue; log.push('스파이');
+      const t = byId(p.night_target); const isM = MF_ROLES[t.role]?.team === 'mafia';
+      ups.push(sb.from('songsan_room_members').update({ role: isM ? 'mafia' : p.role,
+        night_result: isM ? `${t.name}님은 마피아! 접선해 마피아팀이 됩니다.`
+                          : `${t.name}님의 직업은 ${MF_ROLES[t.role]?.n||'시민'}입니다.` }).eq('id', p.id));
+      if (isM) extra += ' 스파이가 접선했다는 소문이 돕니다…';
+    }
+    else if (k === 'reporter'){
+      const p = actor('reporter'); if (!p) continue; log.push('기자');
+      const t = byId(p.night_target); used[p.id] = true;
+      scoop = `${t.name}님의 직업은 「${MF_ROLES[t.role]?.n||'시민'}」입니다.`;
+      ups.push(sb.from('songsan_room_members').update({ night_result:'취재 성공. 내일 아침 공개됩니다.' }).eq('id', p.id));
+    }
+    else if (k === 'robber'){
+      if (!killed || (st.round||1) !== 1) continue;
+      const rob = A.find(p => p.role === 'robber' && p.id !== killed.id);
+      if (!rob || !killed.role || killed.role === 'robber') continue; log.push('도굴꾼');
       ups.push(sb.from('songsan_room_members').update({ role: killed.role,
         shield: killed.role==='soldier'?1:0,
-        night_result:`도굴에 성공했습니다. 이제 당신의 직업은 「${MF_ROLES[killed.role].n}」입니다.` }).eq('id', rob.id));
+        night_result:`도굴 성공. 이제 당신의 직업은 「${MF_ROLES[killed.role].n}」입니다.` }).eq('id', rob.id));
       extra += ' 누군가 무덤을 파헤쳤다는 소문이 돕니다…';
+    }
+    else if (k === 'priest'){
+      const p = actor('priest'); if (!p) continue; log.push('성직자');
+      const t = byId(p.night_target); used[p.id] = true;
+      if (t && !t.alive){ ups.push(sb.from('songsan_room_members').update({ alive:true }).eq('id', t.id));
+        extra += ` ${t.name}님이 기적처럼 돌아왔습니다.`; }
+      ups.push(sb.from('songsan_room_members').update({ night_result:'기도를 드렸습니다.' }).eq('id', p.id));
     }
   }
 
-  /* 성직자 — 부활 */
-  const pri = actor('priest');
-  if (pri){ const t = byId(pri.night_target); used[pri.id] = true;
-    if (t && !t.alive){ ups.push(sb.from('songsan_room_members').update({ alive:true }).eq('id', t.id));
-      extra += ` ${t.name}님이 기적처럼 돌아왔습니다.`; }
-    ups.push(sb.from('songsan_room_members').update({ night_result:'기도를 드렸습니다.' }).eq('id', pri.id)); }
-
+  if (killed) ups.push(sb.from('songsan_room_members').update({ alive:false }).eq('id', killed.id));
   await Promise.all(ups);
   await clearNight();
   const { data: mem } = await sb.from('songsan_room_members').select('*').eq('room', ROOM);
@@ -2194,6 +2237,7 @@ async function resolveNight(){
   const notice = (killed ? `${killed.name}님이 밤사이 세상을 떠났습니다.` : '조용한 밤이었습니다.') + extra;
   const w = winCheck(); if (w) return endGame(w);
   await saveRoom({ state:{ ...st, phase:'day', round:st.round||1, used, notice, scoop,
+    nightLog: log.join(' → '), paused:false,
     deadline: later((RM.settings.dayLen||180)*1000) } });
 }
 
