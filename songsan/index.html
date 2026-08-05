@@ -628,6 +628,9 @@
   .hs-fit{margin-left:auto;background:#c0392b;color:#fff;border:0;border-radius:99px;
     padding:7px 13px;font-size:12.5px;font-weight:800;cursor:pointer;white-space:nowrap}
 
+  .mf-card{cursor:pointer}
+  #mf-open.ok{background:linear-gradient(180deg,#2f7f5c,#1f5f43)}
+  .mf-bar.reveal{background:rgba(122,74,14,.94)}
 </style>
 </head>
 <body class="lock">
@@ -1682,7 +1685,7 @@ function drawBar(){
   if (!RM || RM.status !== 'playing' || !st.phase || st.phase === 'lobby' || st.phase === 'end'){ killBar(); return; }
   let b = document.getElementById('mfBar');
   if (!b){ b = document.createElement('div'); b.id = 'mfBar'; b.className = 'mf-bar'; document.body.appendChild(b); }
-  const lab = st.phase==='night'?'🌙 밤':st.phase==='day'?'☀️ 낮':st.phase==='vote'?'🗳 투표':'⚖️ 최후변론';
+  const lab = st.phase==='reveal'?'🎴 카드 확인':st.phase==='night'?'🌙 밤':st.phase==='day'?'☀️ 낮':st.phase==='vote'?'🗳 투표':'⚖️ 최후변론';
   b.className = 'mf-bar ' + st.phase;
   const paint = () => {
     const s = st.deadline ? Math.max(0, Math.round((new Date(st.deadline) - Date.now())/1000)) : null;
@@ -1721,10 +1724,18 @@ async function autoAdvance(){
   const G0 = inGame();
   if (!G0.length || G0.some(p => !p.role)) return;   // 역할 배정이 끝나기 전에는 진행하지 않는다
   const st = RM.state || {};
+  if (st.phase === 'reveal') return;          // 카드 확인이 끝날 때까지 진행 정지
   const over = st.deadline && new Date(st.deadline) <= Date.now();
   const A = alive();
 
-  if (st.phase === 'night'){
+  if (st.phase === 'reveal'){
+    const seen = inGame().filter(p => p.seen_card);
+    const wait = inGame().filter(p => !p.seen_card);
+    h += `<div class="card"><div class="hs-t">역할 카드 확인 <span class="hs-sub">${seen.length} / ${inGame().length}명</span></div>
+      <div class="rm-list" style="margin-top:9px">${inGame().map(p=>`<span class="rm-chip ${p.seen_card?'on':''}">${esc(p.name)}</span>`).join('')}</div>
+      ${wait.length?`<p class="desc" style="margin-top:9px">아직 안 본 사람 — ${wait.map(p=>esc(p.name)).join(' · ')}</p>`:''}
+      <button class="big-btn" id="hs-night" style="margin-top:12px">${wait.length?`그래도 밤 시작 🌙 (${wait.length}명 미확인)`:'밤 시작 🌙'}</button></div>`;
+  } else if (st.phase === 'night'){
     const actors = A.filter(p => MF_ROLES[p.role]?.act && !(MF_ROLES[p.role].once && usedMap()[p.id]));
     const allDone = actors.length > 0 && actors.every(p => p.night_target);
     if (allDone || over){ busy = true; try { await resolveNight(); } finally { busy = false; } }
@@ -1784,22 +1795,43 @@ function renderPlayer(){
         <p class="desc" style="text-align:center;margin-bottom:12px">당신의 역할 카드예요.<br><b>혼자만 보세요.</b></p>
         <div class="mf-card" id="mf-flip"><img src="assets/mafia/card-back.jpg" alt=""></div>
         <button class="big-btn" id="mf-open" style="margin-top:14px">카드 뒤집기</button></div>`;
-    const flip = () => {
-      const el = $('#mf-flip'); el.classList.add('flip');
+    let opened = false;
+    const openCard = () => {
+      if (opened) return; opened = true;
+      const el = $('#mf-flip');
+      el.classList.add('flip');
       setTimeout(() => {
         el.innerHTML = `<img src="${cardSrc(me.role)}" alt="${MF_ROLES[me.role].n}">`;
         el.classList.remove('flip');
-        const o = $('#mf-open'); o.textContent = '확인했어요'; o.onclick = () => saveMe({ seen_card: true });
+        const o = $('#mf-open');
+        o.textContent = '확인했어요 ✓';
+        o.classList.add('ok');
       }, 260);
     };
-    $('#mf-open').addEventListener('click', flip);
-    $('#mf-flip').addEventListener('click', flip);
+    $('#mf-flip').addEventListener('click', openCard);
+    $('#mf-open').addEventListener('click', async () => {
+      if (!opened) return openCard();
+      const btn = $('#mf-open');
+      btn.disabled = true; btn.textContent = '저장 중…';
+      const r = await saveMe({ seen_card: true });
+      if (r && r.error){ btn.disabled = false; btn.textContent = '다시 시도'; return toast('저장 실패 — 다시 눌러 주세요', 1); }
+      rmSig = '';                              // 즉시 다시 그리도록
+      btn.textContent = '확인 완료';
+    });
     return bindOut();
   }
 
   const R = MF_ROLES[me.role] || MF_ROLES.citizen;
   const used = usedMap()[me.id];
   let h = head;
+  if (st.phase === 'reveal'){
+    const seen = inGame().filter(p => p.seen_card).length;
+    body.innerHTML = head + `<div class="empty"><div class="em">🎴</div>
+      <p>카드를 확인했어요.<br>다른 사람을 기다리는 중… <b>${seen} / ${inGame().length}명</b></p></div>
+      <button class="mf-mini" id="mf-mini"><img src="${cardSrc(me.role)}" alt=""></button>`;
+    $('#mf-mini').addEventListener('click', () => showCard(me.role));
+    return bindOut();
+  }
   if (st.notice)  h += `<div class="mf-notice">${esc(st.notice)}</div>`;
   if (st.scoop)   h += `<div class="mf-scoop">📰 <b>특종</b> ${esc(st.scoop)}</div>`;
   if (st.mission) h += `<div class="mf-mission">🎯 <b>미션</b> ${esc(st.mission)}</div>`;
@@ -1871,6 +1903,11 @@ sb.from('songsan_rec_missions').select('*').eq('kind','mafia').order('sort')
   .then(({data}) => { MISSIONS = data || []; }, () => {});
 
 const SCRIPT = {
+  reveal: st => [
+    `「각자 폰에서 카드를 뒤집어 자기 역할을 확인하세요.」`,
+    `「확인했으면 아래 버튼을 눌러 주세요.」`,
+    `모두 확인하면 「밤 시작」을 누릅니다.`
+  ],
   night: st => [
     `「밤이 되었습니다. 모두 눈을 감아 주세요.」`,
     `각자 폰에서 능력을 씁니다. 다 고르면 자동으로 아침이 됩니다.`,
@@ -1995,7 +2032,14 @@ function renderHost(){
   h += `<div class="hs-script"><div class="sc-h">📖 대본</div>${
     lines.map(l => `<p>${esc(l)}</p>`).join('')}</div>`;
 
-  if (st.phase === 'night'){
+  if (st.phase === 'reveal'){
+    const seen = inGame().filter(p => p.seen_card);
+    const wait = inGame().filter(p => !p.seen_card);
+    h += `<div class="card"><div class="hs-t">역할 카드 확인 <span class="hs-sub">${seen.length} / ${inGame().length}명</span></div>
+      <div class="rm-list" style="margin-top:9px">${inGame().map(p=>`<span class="rm-chip ${p.seen_card?'on':''}">${esc(p.name)}</span>`).join('')}</div>
+      ${wait.length?`<p class="desc" style="margin-top:9px">아직 안 본 사람 — ${wait.map(p=>esc(p.name)).join(' · ')}</p>`:''}
+      <button class="big-btn" id="hs-night" style="margin-top:12px">${wait.length?`그래도 밤 시작 🌙 (${wait.length}명 미확인)`:'밤 시작 🌙'}</button></div>`;
+  } else if (st.phase === 'night'){
     const actors = A.filter(p => MF_ROLES[p.role]?.act && !(MF_ROLES[p.role].once && usedMap()[p.id]));
     h += `<div class="card"><div class="hs-t">밤 행동 <span class="hs-sub">다 고르면 자동으로 아침</span></div>
       ${actors.map(p=>`<div class="hs-act"><b>${MF_ROLES[p.role].n}</b> ${esc(p.name)}
@@ -2031,6 +2075,8 @@ function renderHost(){
   const on2 = (id, fn) => { const e = $(id); if (e) e.addEventListener('click', fn); };
   $$('#rec-body [data-ms]').forEach(b => b.addEventListener('click',
     () => saveRoom({ state:{ ...st, mission: b.dataset.ms || null } })));
+  on2('#hs-night', () => saveRoom({ state:{ ...st, phase:'night', notice:'첫 번째 밤이 시작됐어요.',
+    deadline: later((RM.settings.nightLen||60)*1000) } }));
   on2('#hs-dawn', resolveNight); on2('#hs-vote', toVote);
   on2('#hs-trial', toTrial); on2('#hs-exec', resolveTrial); on2('#hs-reset', resetGame);
   $$('#rec-body [data-kill]').forEach(el => {
@@ -2074,8 +2120,8 @@ async function startGame(seats, roles, on){
     sb.from('songsan_room_members').update({ playing:false, role:null }).eq('id', p.id)));
 
   await saveRoom({ status:'playing', settings:{ ...RM.settings, seats, roles, on },
-    state:{ phase:'night', round:1, used:{}, robbed:false, notice:'첫 번째 밤이 시작됐어요.',
-      deadline: later((RM.settings.nightLen||60)*1000) } });
+    state:{ phase:'reveal', round:1, used:{}, robbed:false,
+      notice:'각자 역할 카드를 확인하세요.', deadline:null } });
   toast(`${pool.length}명에게 역할을 나눠줬어요 🎴`);
 }
 
