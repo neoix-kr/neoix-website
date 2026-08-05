@@ -1836,7 +1836,7 @@ function renderPlayer(){
     const seen = inGame().filter(p => p.seen_card).length;
     body.innerHTML = head + `<div class="empty"><div class="em">🎴</div>
       <p>카드를 확인했어요.<br>다른 사람을 기다리는 중… <b>${seen} / ${inGame().length}명</b></p></div>
-      <button class="mf-mini" id="mf-mini"><img src="${cardSrc(me.role)}" alt=""></button>`;
+      <button class="mf-mini" id="mf-mini" title="내 역할 보기"><img src="assets/mafia/card-back.jpg" alt="내 카드"></button>`;
     $('#mf-mini').addEventListener('click', () => showCard(me.role));
     return bindOut();
   }
@@ -1877,13 +1877,36 @@ function renderPlayer(){
     h += `<div class="empty"><div class="em">💬</div><p>낮이에요. 서로 이야기해 보세요.</p></div>`;
   }
 
-  h += `<button class="mf-mini" id="mf-mini"><img src="${cardSrc(me.role)}" alt=""></button>`;
+  h += `<button class="mf-mini" id="mf-mini" title="내 역할 보기"><img src="assets/mafia/card-back.jpg" alt="내 카드"></button>`;
   body.innerHTML = h;
-  $$('#rec-body [data-t]').forEach(b => b.addEventListener('click', () => saveMe({ night_target: b.dataset.t })));
+  $$('#rec-body [data-t]').forEach(b => b.addEventListener('click', () => pickTarget(b.dataset.t, me)));
   $$('#rec-body [data-v]').forEach(b => b.addEventListener('click', () => saveMe({ vote: b.dataset.v })));
   $$('#rec-body [data-j]').forEach(b => b.addEventListener('click', () => saveMe({ vote: b.dataset.j })));
   $('#mf-mini').addEventListener('click', () => showCard(me.role));
   bindOut();
+}
+
+/* 밤 지목 — 정보 계열(경찰·스파이·기자)은 누르는 즉시 결과를 보여준다 */
+async function pickTarget(tid, me){
+  const t = byId(tid); if (!t) return;
+  const R = MF_ROLES[me.role] || {};
+  const patch = { night_target: tid };
+
+  if (me.role === 'police'){
+    patch.night_result = `${t.name}님은 ${MF_ROLES[t.role]?.team==='mafia' ? '마피아입니다!' : '마피아가 아닙니다.'}`;
+  } else if (me.role === 'spy'){
+    const isM = MF_ROLES[t.role]?.team === 'mafia';
+    patch.night_result = isM ? `${t.name}님은 마피아! 접선해 마피아팀이 됩니다.`
+                             : `${t.name}님의 직업은 「${MF_ROLES[t.role]?.n||'시민'}」입니다.`;
+    if (isM) patch.role = 'mafia';
+  } else if (me.role === 'reporter'){
+    patch.night_result = `${t.name}님의 직업은 「${MF_ROLES[t.role]?.n||'시민'}」입니다. 내일 아침 모두에게 공개됩니다.`;
+    const cur = RM.state || {};
+    saveRoom({ state:{ ...cur, pendingScoop:`${t.name}님의 직업은 「${MF_ROLES[t.role]?.n||'시민'}」입니다.`,
+      used:{ ...(cur.used||{}), [me.id]: true } } });
+  }
+  await saveMe(patch);
+  rmSig = '';                        // 결과를 바로 그리게
 }
 
 function showCard(role){
@@ -2177,10 +2200,7 @@ async function resolveNight(){
 
   for (const k of ORDER){
     if (k === 'police'){
-      const p = actor('police'); if (!p) continue;
-      const t = byId(p.night_target); log.push('경찰');
-      ups.push(sb.from('songsan_room_members').update({ night_result:
-        `${t.name}님은 ${MF_ROLES[t.role]?.team==='mafia'?'마피아입니다!':'마피아가 아닙니다.'}` }).eq('id', p.id));
+      if (actor('police')) log.push('경찰');      // 결과는 지목 즉시 전달됨
     }
     else if (k === 'mafia'){
       const mafs = A.filter(p => MF_ROLES[p.role]?.team === 'mafia' && p.night_target);
@@ -2198,18 +2218,11 @@ async function resolveNight(){
       if (killed && d.night_target === killed.id){ killed = null; extra += ' 의사가 한 생명을 건졌습니다.'; }
     }
     else if (k === 'spy'){
-      const p = actor('spy'); if (!p) continue; log.push('스파이');
-      const t = byId(p.night_target); const isM = MF_ROLES[t.role]?.team === 'mafia';
-      ups.push(sb.from('songsan_room_members').update({ role: isM ? 'mafia' : p.role,
-        night_result: isM ? `${t.name}님은 마피아! 접선해 마피아팀이 됩니다.`
-                          : `${t.name}님의 직업은 ${MF_ROLES[t.role]?.n||'시민'}입니다.` }).eq('id', p.id));
-      if (isM) extra += ' 스파이가 접선했다는 소문이 돕니다…';
+      const p = A.find(x => x.role === 'mafia' && x.night_result && /접선/.test(x.night_result));
+      if (p){ log.push('스파이'); extra += ' 스파이가 접선했다는 소문이 돕니다…'; }
     }
     else if (k === 'reporter'){
-      const p = actor('reporter'); if (!p) continue; log.push('기자');
-      const t = byId(p.night_target); used[p.id] = true;
-      scoop = `${t.name}님의 직업은 「${MF_ROLES[t.role]?.n||'시민'}」입니다.`;
-      ups.push(sb.from('songsan_room_members').update({ night_result:'취재 성공. 내일 아침 공개됩니다.' }).eq('id', p.id));
+      if (st.pendingScoop){ log.push('기자'); scoop = st.pendingScoop; }
     }
     else if (k === 'robber'){
       if (!killed || (st.round||1) !== 1) continue;
@@ -2237,7 +2250,7 @@ async function resolveNight(){
   const notice = (killed ? `${killed.name}님이 밤사이 세상을 떠났습니다.` : '조용한 밤이었습니다.') + extra;
   const w = winCheck(); if (w) return endGame(w);
   await saveRoom({ state:{ ...st, phase:'day', round:st.round||1, used, notice, scoop,
-    nightLog: log.join(' → '), paused:false,
+    pendingScoop:null, nightLog: log.join(' → '), paused:false,
     deadline: later((RM.settings.dayLen||180)*1000) } });
 }
 
@@ -2266,7 +2279,7 @@ async function resolveTrial(){
     const { data: mem } = await sb.from('songsan_room_members').select('*').eq('room', ROOM);
     if (mem && mem.length) RMEM = mem;
     const w = winCheck(); if (w) return endGame(w);
-    return toNight((st.round||1)+1, `${t.name}님이 처형됐습니다. (${MF_ROLES[t.role]?.n||'시민'})`);
+    return toNight((st.round||1)+1, `${t.name}님이 처형됐습니다.`);
   }
   toNight((st.round||1)+1, `${t?t.name:'그 사람'}님은 살아남았습니다.`);
 }
