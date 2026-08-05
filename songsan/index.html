@@ -637,6 +637,40 @@
   .hs-time-ctl button.stop{background:#8a6a12;border-color:#8a6a12;color:#fff}
   .hs-time-ctl button.go{background:#2f6b4f;border-color:#2f6b4f;color:#fff}
   .mf-bar .tm.pause{background:#8a6a12;color:#fff}
+  .mf-mates{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
+  .mf-mates .mate{background:#f0e6cd;border:1.5px solid #dcc99a;border-radius:10px;padding:6px 10px;
+    font-size:12.5px;font-weight:800;color:#8a7a5c}
+  .mf-mates .mate.me{background:#123b5b;border-color:#123b5b;color:#fff}
+  .mf-mates .mate i{font-style:normal;display:block;font-size:13.5px;color:var(--navy);margin-top:2px}
+  .mf-mates .mate.me i{color:#ffd873}
+  .mf-agree{margin-top:9px;background:#fff3e0;border:1.5px solid #e0a800;border-radius:11px;
+    padding:10px 13px;font-size:13.5px;font-weight:800;color:#8a5a12;line-height:1.6}
+  .mf-agree span{display:block;font-weight:600;font-size:12.5px;color:#a08048;margin-top:2px}
+  .mf-agree b{color:#c0392b}
+  .mf-agree.ok{background:#e9f6ef;border-color:#2f6b4f;color:#0c6e4f}
+  .mf-chat{margin-top:14px;background:#12212f;border-radius:13px;padding:11px 12px}
+  .mf-chat .ch-h{font-size:12.5px;font-weight:800;color:#8fb0cc;margin-bottom:7px}
+  .ch-log{max-height:150px;overflow-y:auto;display:flex;flex-direction:column;gap:5px}
+  .ch-m{font-size:13px;color:#e7eef6;line-height:1.5;background:rgba(255,255,255,.07);
+    border-radius:9px;padding:6px 9px}
+  .ch-m.me{background:rgba(255,216,115,.16)}
+  .ch-m b{color:#ffd873;margin-right:6px;font-size:12px}
+  .ch-e{font-size:12.5px;color:#6f8399;text-align:center;padding:10px}
+  .ch-in{display:flex;gap:6px;margin-top:8px}
+  .ch-in input{flex:1;font-family:inherit;font-size:14px;background:rgba(255,255,255,.1);
+    border:1px solid rgba(255,255,255,.16);border-radius:9px;padding:9px 11px;color:#fff}
+  .ch-in input::placeholder{color:#7e93a8}
+  .ch-in button{background:#2c7bb0;border:0;color:#fff;font-weight:800;font-size:13px;
+    padding:0 14px;border-radius:9px;cursor:pointer}
+  .ms-row{display:flex;gap:6px;align-items:stretch}
+  .ms-row .ms{flex:1}
+  .ms-del{width:38px;border:1.5px solid #e0cfa0;background:#f5eee0;border-radius:11px;
+    color:#a53a2f;font-weight:800;cursor:pointer}
+  .ms-add{display:flex;gap:6px;margin-top:9px}
+  .ms-add input{flex:1;font-family:inherit;font-size:14px;border:1.5px solid #e0cfa0;
+    border-radius:10px;padding:10px 12px;color:var(--navy);background:#fffdf6}
+  .ms-add button{background:#123b5b;border:0;color:#fff;font-weight:800;font-size:13.5px;
+    padding:0 16px;border-radius:10px;cursor:pointer}
 </style>
 </head>
 <body class="lock">
@@ -1593,7 +1627,7 @@ const byId    = id => RMEM.find(p => p.id === id);
 const nm      = id => { const p = byId(id); return p ? p.name : '—'; };
 const usedMap = () => (RM.state && RM.state.used) || {};
 
-function stopRoomPoll(){ clearInterval(rmTimer); rmTimer = null; rmSig = ''; killBar(); }
+function stopRoomPoll(){ clearInterval(rmTimer); rmTimer = null; rmSig = ''; clearInterval(chatTimer); chatTimer = null; killBar(); }
 
 /* ── 메뉴 ─────────────────────────────────────────────── */
 function recMenu2(){
@@ -1851,7 +1885,23 @@ function renderPlayer(){
       const L = {kill:'누구를 제거할까요?', save:'누구를 살릴까요?', check:'누구를 조사할까요?',
                  spy:'누구의 직업을 조사할까요?', report:'누구를 취재할까요?', revive:'누구를 부활시킬까요?'}[R.act];
       const pool = R.act === 'revive' ? dead() : alive().filter(p => R.act === 'save' ? true : p.id !== me.id);
-      h += `<div class="mf-turn"><b>${R.n}</b>의 밤</div><p class="desc" style="margin:10px 0">${L}</p>`;
+      const mates = alive().filter(p => p.role === me.role);
+      const multi = mates.length > 1;
+      h += `<div class="mf-turn"><b>${R.n}</b>의 밤${multi?` · ${mates.length}명`:''}</div>`;
+      if (multi){
+        const picks = mates.filter(p => p.night_target);
+        const uniq = [...new Set(picks.map(p => p.night_target))];
+        h += `<div class="mf-mates">${mates.map(p=>`<span class="mate ${p.id===me.id?'me':''}">
+            ${esc(p.name)}${p.id===me.id?' (나)':''}<i>${p.night_target?esc(nm(p.night_target)):'—'}</i></span>`).join('')}</div>`;
+        if (uniq.length > 1){
+          const lock = (st.lock||{})[me.role];
+          h += `<div class="mf-agree">⚠ 의견을 통일하세요${lock?` <b id="mf-lockt" data-dl="${lock}">--초</b>`:''}
+            <span>시간이 지나면 고른 사람 중 <b>무작위</b>로 정해집니다</span></div>`;
+        } else if (picks.length === mates.length){
+          h += `<div class="mf-agree ok">✓ 의견이 모였습니다 — ${esc(nm(uniq[0]))}</div>`;
+        }
+      }
+      h += `<p class="desc" style="margin:10px 0">${L}</p>`;
       h += pool.length
         ? `<div class="mf-targets">${pool.map(p=>`<button class="mf-t ${me.night_target===p.id?'on':''}" data-t="${p.id}">${esc(p.name)}</button>`).join('')}</div>`
         : `<div class="empty"><div class="em">—</div><p>지금은 대상이 없어요.</p></div>`;
@@ -1877,8 +1927,17 @@ function renderPlayer(){
     h += `<div class="empty"><div class="em">💬</div><p>낮이에요. 서로 이야기해 보세요.</p></div>`;
   }
 
+  const mates2 = me.alive ? alive().filter(p => p.role === me.role) : [];
+  if (mates2.length > 1 && (st.phase === 'night' || st.phase === 'day')){
+    h += `<div class="mf-chat"><div class="ch-h">💬 ${MF_ROLES[me.role].n}끼리 이야기</div>
+      <div class="ch-log" id="ch-log"></div>
+      <div class="ch-in"><input id="ch-txt" placeholder="여기서 한 말은 같은 직업만 봅니다" maxlength="80">
+        <button id="ch-send">보내기</button></div></div>`;
+  }
   h += `<button class="mf-mini" id="mf-mini" title="내 역할 보기"><img src="assets/mafia/card-back.jpg" alt="내 카드"></button>`;
   body.innerHTML = h;
+  if (mates2.length > 1) initChat(me);
+  { const el = document.getElementById('mf-lockt'); if (el) tickLock(el); }
   $$('#rec-body [data-t]').forEach(b => b.addEventListener('click', () => pickTarget(b.dataset.t, me)));
   $$('#rec-body [data-v]').forEach(b => b.addEventListener('click', () => saveMe({ vote: b.dataset.v })));
   $$('#rec-body [data-j]').forEach(b => b.addEventListener('click', () => saveMe({ vote: b.dataset.j })));
@@ -1906,7 +1965,47 @@ async function pickTarget(tid, me){
       used:{ ...(cur.used||{}), [me.id]: true } } });
   }
   await saveMe(patch);
+  /* 같은 역할이 둘 이상이면 첫 지목 순간부터 30초 합의 시계를 건다 */
+  const mates = alive().filter(p => p.role === me.role);
+  if (mates.length > 1){
+    const cur = RM.state || {}, lock = cur.lock || {};
+    if (!lock[me.role])
+      saveRoom({ state:{ ...cur, lock:{ ...lock, [me.role]: later(30000) } } });
+  }
   rmSig = '';                        // 결과를 바로 그리게
+}
+
+/* 같은 역할끼리만 보이는 채팅 */
+let chatTimer = null, chatSig = '';
+function initChat(me){
+  const log = document.getElementById('ch-log');
+  const pull = async () => {
+    const { data } = await sb.from('songsan_room_chat').select('*')
+      .eq('room', ROOM).eq('team', me.role).order('at').limit(60);
+    const rows = data || [];
+    const sig = rows.map(r=>r.id).join(',');
+    if (sig === chatSig) return; chatSig = sig;
+    const el = document.getElementById('ch-log'); if (!el) return;
+    el.innerHTML = rows.map(r=>`<div class="ch-m ${r.member===me.id?'me':''}">
+      <b>${esc(r.name)}</b>${esc(r.body)}</div>`).join('') || '<div class="ch-e">아직 대화가 없어요</div>';
+    el.scrollTop = el.scrollHeight;
+  };
+  clearInterval(chatTimer); pull(); chatTimer = setInterval(pull, 1500);
+  const send = async () => {
+    const t = document.getElementById('ch-txt'); const v = (t.value||'').trim();
+    if (!v) return; t.value = '';
+    await sb.from('songsan_room_chat').insert({ room:ROOM, team:me.role, member:me.id, name:me.name, body:v });
+    pull();
+  };
+  const b = document.getElementById('ch-send'); if (b) b.addEventListener('click', send);
+  const t = document.getElementById('ch-txt');
+  if (t) t.addEventListener('keydown', e => { if (e.key === 'Enter') send(); });
+}
+function tickLock(el){
+  const dl = new Date(el.dataset.dl);
+  const up = () => { if (!document.body.contains(el)) return clearInterval(h);
+    const s = Math.max(0, Math.round((dl - Date.now())/1000)); el.textContent = s + '초'; };
+  up(); const h = setInterval(up, 500);
 }
 
 function showCard(role){
@@ -2105,9 +2204,14 @@ function renderHost(){
       <button class="ghost-btn" id="hs-exec" style="margin-top:12px">지금 바로 결과 공개</button></div>`;
   }
 
-  h += `<div class="card"><div class="hs-t">미션</div>
-    <div class="hs-miss">${MISSIONS.map(m=>`<button class="ms ${st.mission===m.text?'on':''}" data-ms="${esc(m.text)}">${esc(m.text)}</button>`).join('')}
-    ${st.mission?`<button class="ms clear" data-ms="">미션 끄기</button>`:''}</div></div>`;
+  h += `<div class="card"><div class="hs-t">미션 <span class="hs-sub">직접 적어서 넣으세요</span></div>
+    <div class="hs-miss">${MISSIONS.map(m=>`<div class="ms-row">
+        <button class="ms ${st.mission===m.text?'on':''}" data-ms="${esc(m.text)}">${esc(m.text)}</button>
+        <button class="ms-del" data-msdel="${m.id}">✕</button></div>`).join('')
+      ||'<p class="desc">아직 미션이 없어요. 아래에 적어 추가하세요.</p>'}
+      ${st.mission?`<button class="ms clear" data-ms="">미션 끄기</button>`:''}</div>
+    <div class="ms-add"><input id="ms-new" placeholder="새 미션을 적으세요" maxlength="60">
+      <button id="ms-plus">추가</button></div></div>`;
 
   h += `<div class="card"><div class="hs-t">참가자 (${A.length}명 생존)</div>
     <div class="hs-people">${inGame().map(p=>`<div class="hp ${p.alive?'':'dead'}" data-kill="${p.id}">
@@ -2118,7 +2222,19 @@ function renderHost(){
   body.innerHTML = h;
   const on2 = (id, fn) => { const e = $(id); if (e) e.addEventListener('click', fn); };
   $$('#rec-body [data-ms]').forEach(b => b.addEventListener('click',
-    () => saveRoom({ state:{ ...st, mission: b.dataset.ms || null } })));
+    () => saveRoom({ state:{ ...RM.state, mission: b.dataset.ms || null } })));
+  $$('#rec-body [data-msdel]').forEach(b => b.addEventListener('click', async () => {
+    await sb.from('songsan_rec_missions').delete().eq('id', b.dataset.msdel);
+    MISSIONS = MISSIONS.filter(m => m.id !== b.dataset.msdel); rmSig = ''; renderHost();
+  }));
+  on2('#ms-plus', async () => {
+    const el = $('#ms-new'), v = (el.value||'').trim();
+    if (!v) return;
+    const { data, error } = await sb.from('songsan_rec_missions')
+      .insert({ kind:'mafia', text:v, sort: MISSIONS.length+1 }).select().single();
+    if (error) return toast('추가 실패', 1);
+    MISSIONS.push(data); el.value=''; rmSig=''; renderHost(); toast('미션을 넣었어요');
+  });
   /* 시간 조작은 렌더 시점이 아니라 «누르는 순간»의 최신 상태를 기준으로 한다.
      화면이 아직 안 갱신됐을 때 두 번 눌러도 어긋나지 않는다. */
   $$('#rec-body [data-tm]').forEach(b => b.addEventListener('click', () => {
@@ -2206,7 +2322,9 @@ async function resolveNight(){
       const mafs = A.filter(p => MF_ROLES[p.role]?.team === 'mafia' && p.night_target);
       if (!mafs.length) continue; log.push('마피아');
       const tal = {}; mafs.forEach(m => tal[m.night_target] = (tal[m.night_target]||0)+1);
-      const tid = Object.entries(tal).sort((a,b)=>b[1]-a[1])[0][0];
+      const max = Math.max(...Object.values(tal));
+      const tops = Object.keys(tal).filter(k => tal[k] === max);
+      const tid = tops[Math.floor(Math.random()*tops.length)];   // 동률이면 무작위
       const t = byId(tid);
       if (t && t.shield > 0){
         ups.push(sb.from('songsan_room_members').update({ shield:t.shield-1 }).eq('id', t.id));
@@ -2285,7 +2403,7 @@ async function resolveTrial(){
 }
 
 const toNight = (round, notice) => saveRoom({ state:{ ...RM.state, phase:'night', round,
-  trial:null, notice: notice || '밤이 찾아왔습니다.', scoop:null,
+  trial:null, lock:{}, notice: notice || '밤이 찾아왔습니다.', scoop:null,
   deadline: later((RM.settings.nightLen||60)*1000) } });
 
 const endGame = w => saveRoom({ status:'ended',

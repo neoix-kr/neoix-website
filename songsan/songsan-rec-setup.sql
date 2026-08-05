@@ -96,3 +96,18 @@ returns int language sql security definer as $$
   with d as (delete from songsan_rooms where updated_at < now() - interval '12 hours' returning 1)
   select count(*)::int from d;
 $$;
+
+-- ── 8) 같은 역할끼리만 보는 채팅 (마피아 채팅 등) ───────────
+create table if not exists songsan_room_chat (
+  id     uuid primary key default gen_random_uuid(),
+  room   text not null,
+  team   text not null,          -- 역할 키 (mafia / doctor / police …)
+  member uuid,
+  name   text,
+  body   text not null,
+  at     timestamptz default now()
+);
+create index if not exists songsan_room_chat_idx on songsan_room_chat(room, team, at);
+alter table songsan_room_chat enable row level security;
+drop policy if exists "room_chat all" on songsan_room_chat;
+create policy "room_chat all" on songsan_room_chat for all using (true) with check (true);
