@@ -621,6 +621,13 @@
     border-radius:99px;border:0;cursor:pointer;background:#123b5b;color:#fff;letter-spacing:.3px}
   .hs-roles .hr.off .hr-tg{background:#c2b393}
 
+
+  .hs-sub.ok{color:#0c6e4f;font-weight:800}
+  .hs-sub.bad{color:#c0392b;font-weight:800}
+  .hs-warn{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .hs-fit{margin-left:auto;background:#c0392b;color:#fff;border:0;border-radius:99px;
+    padding:7px 13px;font-size:12.5px;font-weight:800;cursor:pointer;white-space:nowrap}
+
 </style>
 </head>
 <body class="lock">
@@ -1559,6 +1566,7 @@ const MF_ROLES = {
              d:'특별한 능력은 없습니다. 투표로 마피아를 처형시키면 승리합니다.'}
 };
 const ROLE_KEYS   = ['mafia','doctor','police','soldier','spy','clown','robber','reporter','priest'];
+const SETUP_KEYS  = ROLE_KEYS.concat('citizen');   // 대기실에서 직접 수를 정하는 목록
 const NIGHT_ACTORS = ROLE_KEYS.filter(k => MF_ROLES[k].act);
 const HAS_CARD = ROLE_KEYS.concat('citizen');   // 11장 전부 있음
 const cardSrc = r => `assets/mafia/card-${HAS_CARD.includes(r) ? MF_ROLES[r].img : 'back'}.jpg`;
@@ -1593,8 +1601,8 @@ function recMenu2(){
 
 const DEFAULT_SETTINGS = {
   seats:0, dayLen:180, nightLen:60, voteLen:60, trialLen:30,
-  on:{mafia:true,doctor:true,police:true,soldier:false,spy:false,clown:false,robber:false,reporter:false,priest:false},
-  roles:{mafia:1,doctor:1,police:1,soldier:0,spy:0,clown:0,robber:0,reporter:0,priest:0}
+  on:{mafia:true,doctor:true,police:true,soldier:false,spy:false,clown:false,robber:false,reporter:false,priest:false,citizen:true},
+  roles:{mafia:1,doctor:1,police:1,soldier:0,spy:0,clown:0,robber:0,reporter:0,priest:0,citizen:0}
 };
 
 async function makeFlow(){
@@ -1899,15 +1907,16 @@ function renderHost(){
   /* ── 대기실 ── */
   if (RM.status === 'lobby'){
     const seats = cfg.seats || inGame().length;
-    const sum = ROLE_KEYS.reduce((a,k)=>a + (on[k] ? (roles[k]||0) : 0), 0);
+    const sum = SETUP_KEYS.reduce((a,k)=>a + (on[k] ? (roles[k]||0) : 0), 0);
     body.innerHTML = head + `
       <div class="card">
         <div class="hs-t">시작 인원</div>
         <div class="hs-seats"><button class="sq" id="sMinus">−</button><b>${seats}</b>
           <button class="sq" id="sPlus">＋</button><span class="hs-hint">참가 켠 사람 ${inGame().length}명</span></div>
 
-        <div class="hs-t" style="margin-top:18px">직업 <span class="hs-sub">켜고 끄기 · 시민 ${Math.max(0,seats-sum)}명 자동</span></div>
-        <div class="hs-roles">${ROLE_KEYS.map(k=>`
+        <div class="hs-t" style="margin-top:18px">직업
+          <span class="hs-sub ${sum===seats?'ok':'bad'}">합계 ${sum}명 / 인원 ${seats}명</span></div>
+        <div class="hs-roles">${SETUP_KEYS.map(k=>`
           <div class="hr ${on[k]?'':'off'}">
             <button class="hr-tg" data-on="${k}">${on[k]?'ON':'OFF'}</button>
             <img src="${cardSrc(k)}" alt=""><span>${MF_ROLES[k].n}</span>
@@ -1915,7 +1924,8 @@ function renderHost(){
               <b>${roles[k]||0}</b>
               <button data-r="${k}" data-d="1" ${on[k]?'':'disabled'}>＋</button></div>
           </div>`).join('')}</div>
-        ${sum > seats ? `<div class="hs-warn">직업이 인원보다 ${sum-seats}명 많아요</div>` : ''}
+        ${sum !== seats ? `<div class="hs-warn">${sum>seats?`직업이 ${sum-seats}명 많아요`:`직업이 ${seats-sum}명 모자라요`}
+          <button class="hs-fit" id="hs-fit">시민으로 맞추기</button></div>` : ''}
 
         <div class="hs-t" style="margin-top:18px">시간</div>
         <div class="hs-times">
@@ -1923,7 +1933,7 @@ function renderHost(){
           <label>밤 <input type="number" id="t-night" value="${cfg.nightLen||60}" min="15" max="180"> 초</label>
           <label>투표 <input type="number" id="t-vote" value="${cfg.voteLen||60}" min="15" max="180"> 초</label>
         </div>
-        <button class="big-btn" id="hs-go" style="margin-top:16px" ${inGame().length<3||sum>seats?'disabled':''}>게임 시작 🎬</button>
+        <button class="big-btn" id="hs-go" style="margin-top:16px" ${inGame().length<3||sum!==seats?'disabled':''}>게임 시작 🎬</button>
       </div>
       <div class="hs-t" style="margin:16px 0 8px">입장한 사람 (${RMEM.length})</div>
       <div class="rm-list">${RMEM.map(p=>`<button class="rm-chip ${p.playing?'on':''}" data-tg="${p.id}">${esc(p.name)}<i>${esc(p.team||'')}</i></button>`).join('')||'<span class="desc">아직 아무도 없어요</span>'}</div>
@@ -1947,6 +1957,12 @@ function renderHost(){
     }));
     ['#t-day','#t-night','#t-vote'].forEach(sel => $(sel).addEventListener('change', () => put({
       dayLen:(+$('#t-day').value||3)*60, nightLen:+$('#t-night').value||60, voteLen:+$('#t-vote').value||60 })));
+    { const f = $('#hs-fit'); if (f) f.addEventListener('click', () => {
+        const other = SETUP_KEYS.filter(k=>k!=='citizen')
+          .reduce((a,k)=>a + (on[k]?(roles[k]||0):0), 0);
+        saveRoom({ settings:{ ...cfg, seats, on:{...on, citizen:true},
+          roles:{...roles, citizen: Math.max(0, seats - other)} } });
+      }); }
     $('#hs-go').addEventListener('click', () => startGame(seats, roles, on));
     return bindOut();
   }
@@ -2039,8 +2055,9 @@ async function startGame(seats, roles, on){
   const pool = shuffle(joined.slice()).slice(0, Math.max(3, seats || joined.length));
   const poolIds = new Set(pool.map(p => p.id));
   const deck = [];
-  ROLE_KEYS.forEach(k => { if (on[k]) for (let i=0;i<(roles[k]||0);i++) deck.push(k); });
-  while (deck.length < pool.length) deck.push('citizen');
+  SETUP_KEYS.forEach(k => { if (on[k]) for (let i=0;i<(roles[k]||0);i++) deck.push(k); });
+  if (deck.length !== pool.length)
+    return toast(`직업 ${deck.length}명 / 인원 ${pool.length}명 — 수를 맞춰 주세요`, 1);
   shuffle(deck);
 
   await Promise.all(pool.map((p,i) => sb.from('songsan_room_members').update({
