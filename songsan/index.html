@@ -671,6 +671,17 @@
     border-radius:10px;padding:10px 12px;color:var(--navy);background:#fffdf6}
   .ms-add button{background:#123b5b;border:0;color:#fff;font-weight:800;font-size:13.5px;
     padding:0 16px;border-radius:10px;cursor:pointer}
+  /* 갤러리 — 날짜 구분 · 저장 버튼 */
+  .gal-group h4{display:flex;align-items:center;gap:8px}
+  .gal-dl-all{margin-left:auto;background:#123b5b;border:0;color:#fff;font-size:12px;font-weight:800;
+    padding:6px 12px;border-radius:99px;cursor:pointer;font-family:inherit}
+  .gal-dl-all:disabled{opacity:.55}
+  .gal-i{position:relative}
+  .gal-i img{width:100%;display:block}
+  .gal-dl{position:absolute;right:6px;bottom:6px;width:30px;height:30px;border-radius:50%;
+    border:0;background:rgba(10,25,45,.72);color:#fff;font-size:15px;line-height:1;cursor:pointer;
+    backdrop-filter:blur(4px)}
+  .gal-dl:active{transform:scale(.92)}
 </style>
 </head>
 <body class="lock">
@@ -1111,9 +1122,63 @@ $('#su-terms-ov').addEventListener('click',e=>{if(e.target.id==='su-terms-ov')su
 $('#su-terms-agree').addEventListener('click',()=>{$('#su-agree').checked=true;suTermsClose();});
 
 /* ═══ 갤러리 ═══ */
-async function loadGallery(){const wrap=$('#gallery');wrap.innerHTML='<div class="spin" style="color:var(--t3)">불러오는 중…</div>';const dept=$('#g-filter').value;let q=sb.from('songsan_photos').select('*').order('created_at',{ascending:false});if(dept)q=q.eq('dept',dept);const{data,error}=await q;if(error){wrap.innerHTML=`<div class="empty" style="color:var(--t3)"><div class="em">⚙️</div><p>아직 준비 중이에요.<br>관리자 SQL 설정이 필요합니다.</p></div>`;return;}if(!data||!data.length){wrap.innerHTML=`<div class="empty" style="color:var(--t3)"><div class="em">📷</div><p>아직 올라온 사진이 없어요.</p></div>`;return;}const g={};data.forEach(p=>{(g[p.session]=g[p.session]||[]).push(p);});const order=SESSIONS.filter(s=>g[s]);Object.keys(g).forEach(s=>{if(!order.includes(s))order.push(s);});wrap.innerHTML=order.map(s=>`<div class="gal-group"><h4>📸 ${esc(s)} <span class="cnt">${g[s].length}</span></h4><div class="gal">${g[s].map(p=>`<img loading="lazy" src="${p.url}" alt="">`).join('')}</div></div>`).join('');$$('#gallery .gal img').forEach(img=>img.addEventListener('click',()=>{$('#lightbox img').src=img.src;$('#lightbox').classList.add('open');}));}
-$('#g-filter').addEventListener('change',loadGallery);
-$('#lightbox').addEventListener('click',()=>$('#lightbox').classList.remove('open'));
+async function loadGallery(){
+  const wrap=$('#gallery');
+  wrap.innerHTML='<div class="spin" style="color:var(--t3)">불러오는 중…</div>';
+  const dept=$('#g-filter').value;
+  let q=sb.from('songsan_photos').select('*').order('created_at',{ascending:false});
+  if(dept)q=q.eq('dept',dept);
+  const{data,error}=await q;
+  if(error){wrap.innerHTML=`<div class="empty" style="color:var(--t3)"><div class="em">⚙️</div><p>아직 준비 중이에요.<br>관리자 SQL 설정이 필요합니다.</p></div>`;return;}
+  if(!data||!data.length){wrap.innerHTML=`<div class="empty" style="color:var(--t3)"><div class="em">📷</div><p>아직 올라온 사진이 없어요.</p></div>`;return;}
+
+  /* 날짜별로만 묶는다 (한국 시간 기준) */
+  const dayKey=iso=>{
+    const d=new Date(iso);
+    const k=new Date(d.getTime()+9*3600*1000);   // KST
+    return k.toISOString().slice(0,10);
+  };
+  const label=key=>{
+    const [y,m,dd]=key.split('-');
+    const w=['일','월','화','수','목','금','토'][new Date(`${key}T00:00:00+09:00`).getDay()];
+    return `${+m}월 ${+dd}일 (${w})`;
+  };
+  const g={};
+  data.forEach(p=>{const k=dayKey(p.created_at);(g[k]=g[k]||[]).push(p);});
+  const days=Object.keys(g).sort().reverse();
+
+  wrap.innerHTML=days.map(k=>`<div class="gal-group">
+      <h4>📅 ${label(k)} <span class="cnt">${g[k].length}장</span>
+        <button class="gal-dl-all" data-day="${k}">전체 저장</button></h4>
+      <div class="gal">${g[k].map((p,i)=>`<div class="gal-i">
+          <img loading="lazy" src="${p.url}" alt="">
+          <button class="gal-dl" data-url="${p.url}" data-fn="${k}_${i+1}.jpg" title="저장">⤓</button>
+        </div>`).join('')}</div>
+    </div>`).join('');
+
+  $$('#gallery .gal img').forEach(img=>img.addEventListener('click',()=>{
+    $('#lightbox img').src=img.src;$('#lightbox').classList.add('open');}));
+  $$('#gallery .gal-dl').forEach(b=>b.addEventListener('click',e=>{
+    e.stopPropagation();dlPhoto(b.dataset.url,b.dataset.fn);}));
+  $$('#gallery .gal-dl-all').forEach(b=>b.addEventListener('click',async()=>{
+    const k=b.dataset.day,list=g[k];
+    b.disabled=true;
+    for(let i=0;i<list.length;i++){
+      b.textContent=`저장 중 ${i+1}/${list.length}`;
+      dlPhoto(list[i].url,`${k}_${i+1}.jpg`);
+      await new Promise(r=>setTimeout(r,600));
+    }
+    b.disabled=false;b.textContent='전체 저장';
+    toast(`${list.length}장 저장했어요`);
+  }));
+}
+/* 스토리지의 ?download= 파라미터로 실제 저장이 되게 한다 */
+function dlPhoto(url,filename){
+  const a=document.createElement('a');
+  a.href=url+(url.includes('?')?'&':'?')+'download='+encodeURIComponent(filename);
+  a.download=filename;a.rel='noopener';
+  document.body.appendChild(a);a.click();a.remove();
+}
 
 /* ═══ 선장실 (관리자) ═══ */
 let crewData=[],quizData=[];
