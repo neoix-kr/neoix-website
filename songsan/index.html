@@ -366,11 +366,89 @@
   .lightbox{ position:fixed; inset:0; z-index:70; background:rgba(0,0,0,.92); display:none; align-items:center; justify-content:center; padding:20px; } .lightbox.open{ display:flex; } .lightbox img{ max-width:100%; max-height:86vh; border-radius:10px; } .lightbox .x{ position:absolute; top:calc(14px + env(safe-area-inset-top)); right:18px; color:#fff; font-size:28px; background:none; border:0; }
   .toast{ position:fixed; left:50%; bottom:calc(30px + env(safe-area-inset-bottom)); transform:translateX(-50%) translateY(20px); z-index:90; background:#16304f; border:1.5px solid #2c4f7c; color:#fff; font-weight:600; font-size:14.5px; padding:14px 20px; border-radius:14px; box-shadow:0 8px 24px rgba(11,30,54,.3); opacity:0; transition:all .28s cubic-bezier(.32,.72,0,1); pointer-events:none; max-width:88vw; text-align:center; } .toast.show{ opacity:1; transform:translateX(-50%); } .toast.err{ background:var(--danger); border-color:#93362d; }
   @media (prefers-reduced-motion: reduce){ .hero *{ animation:none !important; } }
+
+  /* ═══ 로그인 게이트 ═══ */
+  #gate{position:fixed;inset:0;z-index:9000;display:none;align-items:center;justify-content:center;
+    padding:24px;background:linear-gradient(180deg,#0e2a47,#071a2e)}
+  #gate.on{display:flex}
+  .gate-card{width:100%;max-width:380px;background:linear-gradient(170deg,#fdf6e4,#f3e5c4);
+    border:2px solid #c9a227;border-radius:20px;padding:26px 22px 22px;
+    box-shadow:0 18px 50px rgba(0,0,0,.45)}
+  .gate-card .anc{display:block;width:38px;height:38px;margin:0 auto 8px;opacity:.85}
+  .gate-card h2{font-family:'Jua',sans-serif;font-size:23px;color:#123b5b;text-align:center;letter-spacing:.5px}
+  .gate-card .sub{text-align:center;font-size:13.5px;color:#9a7233;margin-top:6px;line-height:1.6}
+  .gate-f{margin-top:16px}
+  .gate-f label{display:block;font-size:13px;font-weight:800;color:#7a5a1e;margin-bottom:6px}
+  .gate-f input{width:100%;font-family:inherit;font-size:17px;font-weight:700;color:#123b5b;
+    background:#fffdf6;border:2px solid #e0cfa0;border-radius:12px;padding:13px 14px}
+  .gate-f input:focus{outline:none;border-color:#c9a227;box-shadow:0 0 0 3px rgba(201,162,39,.2)}
+  .gate-teams{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
+  .gate-teams button{font-family:'Jua',sans-serif;font-size:16px;color:#123b5b;background:#fffdf6;
+    border:2px solid #e0cfa0;border-radius:12px;padding:11px 0;cursor:pointer}
+  .gate-teams button.on{background:#123b5b;border-color:#123b5b;color:#fff}
+  .gate-go{width:100%;margin-top:18px;font-family:'Jua',sans-serif;font-size:18px;color:#fff;
+    background:linear-gradient(180deg,#2c7bb0,#1b5e8c);border:0;border-radius:14px;padding:15px;
+    cursor:pointer;box-shadow:0 4px 0 #144a70}
+  .gate-go:disabled{opacity:.45;box-shadow:none}
+  .gate-err{color:#c0392b;font-size:13px;font-weight:700;text-align:center;min-height:18px;margin-top:9px}
+  .gate-who{margin-top:14px;text-align:center;font-size:12.5px;color:#9a7233}
+  /* 로그인 후 헤더 배지 */
+  .me-badge{position:fixed;left:12px;top:calc(10px + env(safe-area-inset-top));z-index:60;
+    display:flex;align-items:center;gap:6px;background:rgba(9,30,52,.82);backdrop-filter:blur(6px);
+    border:1px solid rgba(201,162,39,.45);border-radius:99px;padding:6px 12px;color:#f4ecd8;
+    font-size:12.5px;font-weight:700;letter-spacing:.2px}
+  .me-badge b{color:#ffd873;font-family:'Jua',sans-serif;font-weight:400}
+
+
+  /* ═══ 퀴즈 — 구절 안내 · 금화 결과 ═══ */
+  .quiz-ref{font-size:13px;font-weight:700;color:#2f7f8c;background:#e7f3f5;border:1.5px solid #bfdfe5;
+    border-radius:10px;padding:9px 12px;margin:-8px 0 16px;line-height:1.5}
+  .quiz-result .coin-row{margin-top:14px;display:flex;justify-content:center;gap:4px;flex-wrap:wrap}
+  .quiz-result .coin{font-size:30px;filter:drop-shadow(0 2px 3px rgba(0,0,0,.35))}
+  .quiz-result .nocoin{font-size:14px;color:#9fb4cc;font-weight:700}
+  .quiz-result .coin-n{margin-top:8px;font-size:15px;color:#ffd873;font-weight:800}
+  .coin-claim{margin-top:14px;background:linear-gradient(170deg,#fff8e2,#f7e9c2);
+    border:2.5px solid var(--gold);border-radius:18px;padding:20px 18px;text-align:center;
+    box-shadow:0 6px 18px rgba(120,90,20,.18)}
+  .coin-claim .cc-t{font-family:'Jua',sans-serif;font-size:26px;color:#8a6a12}
+  .coin-claim .cc-b{margin-top:10px;font-size:18px;font-weight:800;color:#123b5b;line-height:1.5}
+  .coin-claim .cc-b b{color:#c0392b}
+  .coin-claim .cc-s{margin-top:8px;font-size:13px;color:#9a7233;font-weight:600}
+  .quiz-review{margin-top:16px}
+  .quiz-review .qr-h{font-size:13px;font-weight:800;color:#7c6a45;margin-bottom:8px}
+  .quiz-review .qr-i{background:#fffdf6;border:1.5px solid #e0cfa0;border-radius:13px;
+    padding:12px 14px;margin-bottom:8px}
+  .quiz-review .qr-q{font-size:14px;font-weight:700;color:var(--navy);line-height:1.55}
+  .quiz-review .qr-a{font-size:13.5px;font-weight:800;color:#0c6e4f;margin-top:6px}
+  .quiz-review .qr-r{font-size:12.5px;color:#2f7f8c;margin-top:4px;font-weight:700}
+
 </style>
 </head>
 <body class="lock">
 
 <!-- ═══════════ HERO ═══════════ -->
+
+<!-- ═══════════ 로그인 게이트 ═══════════ -->
+<div id="gate">
+  <div class="gate-card">
+    <svg class="anc" viewBox="0 0 100 100" fill="none" stroke="#c9a227" stroke-width="8" stroke-linecap="round">
+      <circle cx="50" cy="15" r="8"/><path d="M50 23 V86 M27 42 H73 M16 60 c0 19 15 28 34 28 s34-9 34-28"/></svg>
+    <h2>승선 확인</h2>
+    <p class="sub">몇 조인지와 이름을 적어 주세요.<br>한 번 정하면 바꿀 수 없어요.</p>
+    <div class="gate-f">
+      <label>조</label>
+      <div class="gate-teams" id="gate-teams"></div>
+    </div>
+    <div class="gate-f">
+      <label>이름 <span style="font-weight:500;color:#9a7233">성까지 모두</span></label>
+      <input id="gate-name" placeholder="예: 박정겸" maxlength="10" autocomplete="off" spellcheck="false">
+    </div>
+    <div class="gate-err" id="gate-err"></div>
+    <button class="gate-go" id="gate-go" disabled>승선하기 ⚓</button>
+    <div class="gate-who">이 폰에 저장되어 다음부터는 바로 들어와요</div>
+  </div>
+</div>
+
 <section class="hero" id="hero">
   <div class="bg bg-storm"></div><div class="bg bg-calm"></div>
   <div class="cloud cloud-l"><img src="assets/cloud-l.webp" alt="" id="cimgL"></div>
@@ -1023,36 +1101,96 @@ function stopLivePoll(){clearInterval(livePoll);}
 
 /* ═══ 퀴즈 ═══ */
 const QUIZ=[
-  {q:'예수님이 바다 위 광풍을 잠잠하게 하신 사건은 어느 복음서에 나올까요?',o:['마가복음 4장','요한계시록 1장','창세기 1장'],a:0,e:'막 4:39 — "잠잠하라 고요하라" 하시니 바람이 그쳤어요.'},
-  {q:'이번 수련회 주제 말씀 히브리서 12:2에서 우리가 바라볼 분은?',o:['천사','예수','바다'],a:1,e:'"믿음의 주요 또 온전하게 하시는 이인 예수를 바라보자"'},
-  {q:'노아가 방주에서 물이 빠졌는지 알아보려고 마지막에 날려 보낸 새는?',o:['까마귀','비둘기','독수리'],a:1,e:'비둘기가 감람 잎사귀를 물고 돌아왔어요 (창 8장).'},
-  {q:'예수님의 열두 제자 중 원래 어부였던 사람은?',o:['마태','베드로','도마'],a:1,e:'베드로와 안드레, 야고보와 요한은 갈릴리의 어부였어요.'},
-  {q:'"내가 너희를 사람 낚는 어부가 되게 하리라"— 누가 하신 말씀?',o:['모세','다윗','예수님'],a:2,e:'예수님이 제자들을 부르실 때 하신 말씀이에요 (마 4:19).'},
-  {q:'요나는 하나님을 피해 배를 타고 어디로 도망쳤나요?',o:['다시스','니느웨','예루살렘'],a:0,e:'요나는 다시스로 도망쳤지만 큰 물고기 뱃속에서 회개했어요.'},
-  {q:'바다가 갈라져 이스라엘 백성이 건넌 사건의 지도자는?',o:['여호수아','모세','사무엘'],a:1,e:'모세가 홍해를 가르는 기적을 통해 백성을 인도했어요 (출 14장).'},
-  {q:'"수고하고 무거운 짐 진 자들아 다 내게로 오라" 하신 분은?',o:['예수님','바울','베드로'],a:0,e:'예수님의 초청 말씀이에요 (마 11:28).'}
+  {q:'예수님이 광풍을 잔잔케 하신 뒤 제자들에게 하신 말씀은 누가복음 8장 몇 절에 있을까요?',
+   o:['8:22','8:25','8:29','8:33'],a:1,
+   e:'눅 8:25 — "너희 믿음이 어디 있느냐". 앞뒤 절을 직접 세어 봐야 찾을 수 있어요.',
+   ref:'누가복음 8:22-25'},
+  {q:'거라사 광인에게서 나온 귀신의 이름은 무엇이며, 왜 그렇게 불렸나요?',
+   o:['군대 — 많은 귀신이 들어갔으므로','바알 — 우상의 이름이므로','사망 — 무덤에 살았으므로','폭풍 — 바다에서 왔으므로'],a:0,
+   e:'눅 8:30 — "군대라 하니 이는 많은 귀신이 그에게 들어갔음이라"',
+   ref:'누가복음 8:26-33'},
+  {q:'귀신이 들어간 돼지 떼는 몇 마리였나요? (마가복음에 숫자가 적혀 있어요)',
+   o:['오백 마리쯤','이천 마리쯤','삼천 마리쯤','만 마리쯤'],a:1,
+   e:'막 5:13 — "돼지 떼가 비탈로 내리달아 … 이천 마리쯤 되는 것이 바다에서 몰사하거늘"',
+   ref:'마가복음 5:1-13'},
+  {q:'열두 해 혈루증을 앓던 여인에게 예수님이 하신 말씀에서, 그를 구원한 것은 무엇이라고 하셨나요?',
+   o:['네 소망이','네 사랑이','네 믿음이','네 눈물이'],a:2,
+   e:'눅 8:48 — "딸아 네 믿음이 너를 구원하였으니 평안히 가라"',
+   ref:'누가복음 8:43-48'},
+  {q:'야이로의 딸을 살리실 때 예수님이 방에 들어가도록 허락하신 사람은 모두 몇 명일까요?',
+   o:['세 명','다섯 명','일곱 명','열두 명'],a:1,
+   e:'눅 8:51 — 베드로·요한·야고보와 아이의 부모, 모두 다섯 사람이에요.',
+   ref:'누가복음 8:49-56'},
+  {q:'"달리다굼"은 무슨 뜻이며 어느 복음서에 기록돼 있나요?',
+   o:['마가복음 — 소녀야 일어나라','마태복음 — believe 하라','누가복음 — 잠잠하라','요한복음 — 나를 따르라'],a:0,
+   e:'막 5:41 — "달리다굼 하시니 번역하면 곧 내가 네게 말하노니 소녀야 일어나라"',
+   ref:'마가복음 5:41'},
+  {q:'예수님이 열두 제자를 파송하시며 가지고 가지 말라고 하신 것이 아닌 것은?',
+   o:['지팡이','배낭','양식','신발 한 켤레'],a:3,
+   e:'눅 9:3 — 지팡이·배낭·양식·돈·두 벌 옷을 금하셨어요. 신발은 목록에 없어요.',
+   ref:'누가복음 9:1-6'},
+  {q:'히브리서 12:2에서 예수님을 무엇이라 부르며, 그분이 참으신 것은 무엇인가요?',
+   o:['믿음의 주 — 십자가','평강의 왕 — 채찍','선한 목자 — 광야','만왕의 왕 — 시험'],a:0,
+   e:'히 12:2 — "믿음의 주요 또 온전하게 하시는 이인 예수를 바라보자 … 십자가를 참으사"',
+   ref:'히브리서 12:2'},
+  {q:'요한복음 20:31에서 이것을 기록한 목적 두 가지는 무엇인가요?',
+   o:['알게 하고 가르치려','믿게 하고 생명을 얻게 하려','기억하고 전하려','회개하고 순종하려'],a:1,
+   e:'요 20:31 — "너희로 믿게 하려 함이요 또 믿고 그 이름을 힘입어 생명을 얻게 하려 함이니라"',
+   ref:'요한복음 20:30-31'},
+  {q:'광풍이 내리쳤을 때 예수님은 배 어디에서 무엇을 하고 계셨나요? (마가복음이 자세해요)',
+   o:['뱃머리에서 기도하심','고물에서 베개를 베고 주무심','돛대 옆에 서 계심','물 위를 걸어오심'],a:1,
+   e:'막 4:38 — "예수께서는 고물에서 베개를 베고 주무시더니"',
+   ref:'마가복음 4:35-41'}
 ];
-let qi=0,qscore=0;
-function startQuiz(){qi=0;qscore=0;renderQ();}
+/* 점수대별 금화 — 사회자(박길웅 장로님)가 실물 금화를 지급한다 */
+const COIN_TIERS=[
+  {min:100, coins:5, em:'👑', ms:'만점! 성경을 완전히 뒤졌군요'},
+  {min:90,  coins:4, em:'🏆', ms:'훌륭해요! 거의 완벽합니다'},
+  {min:80,  coins:3, em:'⚓', ms:'잘했어요! 든든한 항해사예요'},
+  {min:70,  coins:2, em:'⛵', ms:'좋아요! 조금만 더 찾아봐요'},
+  {min:60,  coins:1, em:'🌊', ms:'통과! 금화 한 닢을 받으세요'},
+  {min:0,   coins:0, em:'📖', ms:'60점부터 금화를 받아요. 성경을 펴고 다시 도전!'}
+];
+const coinTier=p=>COIN_TIERS.find(t=>p>=t.min);
+let qi=0,qscore=0,qwrong=[];
+function startQuiz(){qi=0;qscore=0;qwrong=[];renderQ();}
 function renderQ(){
   const body=$('#quiz-body');
   if(qi>=QUIZ.length){
     const pct=Math.round(qscore/QUIZ.length*100);
-    const em=pct>=80?'🏆':pct>=50?'⛵':'🌊';
-    const ms=pct>=80?'믿음의 항해사! 대단해요':pct>=50?'좋아요! 계속 항해해요':'괜찮아요, 다시 도전해봐요';
-    body.innerHTML=`<div class="quiz-result"><div class="em">${em}</div><div class="sc">${qscore} / ${QUIZ.length}</div><div class="ms">${ms}</div></div><button class="big-btn" id="q-again">다시 풀기</button>`;
+    const t=coinTier(pct);
+    const coins=t.coins?Array.from({length:t.coins},()=>'<span class="coin">🪙</span>').join(''):'';
+    body.innerHTML=`<div class="quiz-result">
+        <div class="em">${t.em}</div>
+        <div class="sc">${pct}점</div>
+        <div class="ms">${esc(t.ms)}</div>
+        <div class="coin-row">${coins||'<span class="nocoin">금화 없음</span>'}</div>
+        <div class="coin-n">${t.coins?`금화 <b>${t.coins}</b>닢`:'&nbsp;'}</div>
+      </div>
+      ${t.coins?`<div class="coin-claim">
+        <div class="cc-t">🪙 금화 <b>${t.coins}</b>닢</div>
+        <div class="cc-b"><b>박길웅 장로님</b>께 금화를 받으세요</div>
+        <div class="cc-s">이 화면을 보여 드리면 됩니다${ME?` · <b>${esc(ME.team)} ${esc(ME.name)}</b>`:''}</div>
+      </div>`:''}
+      <div class="quiz-review" id="q-review"></div>
+      <button class="big-btn" id="q-again" style="margin-top:14px">다시 풀기</button>`;
+    $('#q-review').innerHTML=`<div class="qr-h">틀린 문제 다시 보기</div>`+
+      (qwrong.length?qwrong.map(i=>`<div class="qr-i"><div class="qr-q">${esc(QUIZ[i].q)}</div>
+        <div class="qr-a">정답 · ${esc(QUIZ[i].o[QUIZ[i].a])}</div>
+        <div class="qr-r">📖 ${esc(QUIZ[i].ref)}</div></div>`).join(''):'<div class="qr-i">전부 맞혔어요! 🎉</div>');
     $('#q-again').addEventListener('click',startQuiz);
-    // 선장실 퀴즈 기록으로 전송 (실패해도 무시)
-    try{const p=profile();sb.from('songsan_quiz_scores').insert({device_id:deviceId(),name:p?.name||'익명',dept:p?.dept||null,grp:p?.group||null,score:qscore,total:QUIZ.length}).then(()=>{},()=>{});}catch(e){}
+    try{const p=profile();sb.from('songsan_quiz_scores').insert({device_id:deviceId(),
+      name:(ME&&ME.name)||p?.name||'익명',dept:p?.dept||null,
+      grp:(ME&&ME.team)||p?.group||null,score:qscore,total:QUIZ.length}).then(()=>{},()=>{});}catch(e){}
     return;
   }
   const it=QUIZ[qi];
-  body.innerHTML=`<div class="quiz-prog"><span>문제 ${qi+1} / ${QUIZ.length}</span><span>⭐ ${qscore}</span></div><div class="quiz-bar"><i style="width:${Math.round(qi/QUIZ.length*100)}%"></i></div><div class="card"><div class="quiz-q">${esc(it.q)}</div>${it.o.map((o,i)=>`<button class="quiz-opt" data-i="${i}">${esc(o)}</button>`).join('')}<div class="quiz-explain" id="q-ex" style="display:none"></div></div><button class="big-btn" id="q-next" style="display:none;margin-top:14px">${qi===QUIZ.length-1?'결과 보기':'다음 문제'}</button>`;
+  body.innerHTML=`<div class="quiz-prog"><span>문제 ${qi+1} / ${QUIZ.length}</span><span>⭐ ${qscore}</span></div><div class="quiz-bar"><i style="width:${Math.round(qi/QUIZ.length*100)}%"></i></div><div class="card"><div class="quiz-q">${esc(it.q)}</div><div class="quiz-ref">📖 ${esc(it.ref)} — 성경을 펴서 찾아보세요</div>${it.o.map((o,i)=>`<button class="quiz-opt" data-i="${i}">${esc(o)}</button>`).join('')}<div class="quiz-explain" id="q-ex" style="display:none"></div></div><button class="big-btn" id="q-next" style="display:none;margin-top:14px">${qi===QUIZ.length-1?'결과 보기':'다음 문제'}</button>`;
   $$('#quiz-body .quiz-opt').forEach(btn=>btn.addEventListener('click',()=>{
     if(btn.classList.contains('dim')||$('#q-next').style.display!=='none')return;
     const i=+btn.dataset.i,correct=i===it.a;
     $$('#quiz-body .quiz-opt').forEach((b,bi)=>{b.classList.add(bi===it.a?'correct':(bi===i?'wrong':'dim'));});
-    if(correct)qscore++;
+    if(correct)qscore++; else qwrong.push(qi);
     $('#q-ex').style.display='block';$('#q-ex').textContent=(correct?'✅ 정답! ':'💡 ')+it.e;
     $('#q-next').style.display='block';
   }));
@@ -1102,6 +1240,91 @@ function renderRolesView(data){
   v.style.display='block';
   v.innerHTML=`<h4 style="font-family:'Jua';font-size:19px;color:var(--wood-dk);margin-bottom:12px">⚓ ${esc(data.team||'우리 조')} 역할표</h4>`+data.rows.map(r=>`<span class="role-chip">${esc(r.name)} · ${esc(r.role)}</span>`).join('');
 }
+
+
+/* ═══════════════════════════════════════════════════════════
+   로그인 게이트 — 조 + 성명. 한 번 정하면 이 폰에서 안 풀린다.
+   ═══════════════════════════════════════════════════════════ */
+const ME_KEY = 'songsan_me';
+const TEAMS  = ['1조','2조','3조','4조','5조','6조','7조','8조'];
+let ME = null;
+try { ME = JSON.parse(localStorage.getItem(ME_KEY) || 'null'); } catch(e) { ME = null; }
+
+function meBadge(){
+  if(!ME) return;
+  let b = document.getElementById('meBadge');
+  if(!b){ b = document.createElement('div'); b.id='meBadge'; b.className='me-badge'; document.body.appendChild(b); }
+  b.innerHTML = `<b>${esc(ME.team)}</b> ${esc(ME.name)}`;
+}
+
+async function registerMe(){
+  if(!ME) return;
+  try{
+    await sb.from('songsan_members').upsert(
+      { device: deviceId(), team: ME.team, name: ME.name, seen_at: new Date().toISOString() },
+      { onConflict: 'device' });
+  }catch(e){ /* 오프라인이어도 게임 진행은 막지 않는다 */ }
+}
+
+function openGate(){
+  const g = document.getElementById('gate');
+  const teamsEl = document.getElementById('gate-teams');
+  const nameEl  = document.getElementById('gate-name');
+  const goEl    = document.getElementById('gate-go');
+  const errEl   = document.getElementById('gate-err');
+  let team = null;
+
+  teamsEl.innerHTML = TEAMS.map(t=>`<button type="button" data-t="${t}">${t.replace('조','')}</button>`).join('');
+  teamsEl.querySelectorAll('button').forEach(b=>{
+    b.addEventListener('click',()=>{
+      team = b.dataset.t;
+      teamsEl.querySelectorAll('button').forEach(x=>x.classList.toggle('on', x===b));
+      check();
+    });
+  });
+  const check = ()=>{ goEl.disabled = !(team && nameEl.value.trim().length >= 2); };
+  nameEl.addEventListener('input', ()=>{ errEl.textContent=''; check(); });
+  nameEl.addEventListener('keydown', e=>{ if(e.key==='Enter' && !goEl.disabled) goEl.click(); });
+
+  goEl.addEventListener('click', async ()=>{
+    const name = nameEl.value.trim().replace(/\s+/g,' ');
+    if(!team){ errEl.textContent='조를 골라 주세요'; return; }
+    if(name.length < 2){ errEl.textContent='이름을 성까지 적어 주세요'; return; }
+    if(!/^[가-힣]{2,10}$/.test(name)){ errEl.textContent='한글 이름으로 적어 주세요'; return; }
+    goEl.disabled = true; goEl.textContent = '승선 중…';
+    ME = { team, name, at: Date.now() };
+    localStorage.setItem(ME_KEY, JSON.stringify(ME));
+    await registerMe();
+    g.classList.remove('on');
+    document.body.classList.remove('gated');
+    meBadge();
+    toast(`${team} ${name}님, 환영합니다 ⚓`);
+  });
+
+  g.classList.add('on');
+  document.body.classList.add('gated');
+}
+
+/* 관리자만 초기화 — 로고를 5초 길게 누르면 물어본다 */
+function armGateReset(){
+  const logo = document.querySelector('.stage .church') || document.querySelector('.stage .logo');
+  if(!logo) return;
+  let t = null;
+  const start = ()=>{ t = setTimeout(async ()=>{
+      const pin = await askModal({title:'참가자 정보 초기화', type:'password',
+        placeholder:'관리자 암호', confirm:'초기화'});
+      if(pin === null) return;
+      if(pin !== MAFIA_HOST_PASS) return toast('암호가 틀렸어요',1);
+      localStorage.removeItem(ME_KEY); location.reload();
+    }, 5000); };
+  const stop = ()=>{ clearTimeout(t); };
+  ['pointerdown','touchstart'].forEach(ev=>logo.addEventListener(ev,start,{passive:true}));
+  ['pointerup','pointerleave','touchend','touchcancel'].forEach(ev=>logo.addEventListener(ev,stop,{passive:true}));
+}
+
+if(ME && ME.team && ME.name){ meBadge(); registerMe(); }
+else { openGate(); }
+armGateReset();
 
 /* ═══ 레크리에이션 ═══ */
 function recMenu(){
