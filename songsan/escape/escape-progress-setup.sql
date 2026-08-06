@@ -39,5 +39,11 @@ drop policy if exists escape_progress_update on escape_progress;
 create policy escape_progress_update on escape_progress
   for update using (true) with check (true);
 
--- 수련회 끝나고 초기화할 때:
--- truncate escape_progress;
+drop policy if exists escape_progress_delete on escape_progress;
+create policy escape_progress_delete on escape_progress
+  for delete using (true);
+
+-- ── 현황 초기화 ──────────────────────────────────────────
+-- 관리자 화면(admin.html)의 「현황 전체 초기화」 버튼이 이 정책을 씁니다.
+-- 수동으로 지우려면:
+--   delete from escape_progress;
