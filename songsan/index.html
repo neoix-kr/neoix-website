@@ -1357,8 +1357,7 @@ function openTool(name){
   showScreen(name);
 }
 
-/* 자동 진입: 프로필 있고 8/6 이후면 바로 도구 */
-if(profile() && nowKST()>=RETREAT_START){ document.body.classList.remove('lock'); enterApp(); }
+/* 자동 진입은 스크립트 맨 끝에서 실행한다 (아래 let 선언들이 다 초기화된 뒤라야 한다) */
 
 /* ═══ 성경암송 ═══ */
 let liveVerse=null, memHideLevel=0;
@@ -2512,6 +2511,14 @@ function passReveal(cards,done,title){
   draw();
 }
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+/* ═══ 자동 진입 ═══
+   반드시 스크립트 맨 끝. 위쪽에서 부르면 아직 초기화되지 않은 let(livePoll·liveVerse·
+   rmTimer·qi·chatTimer …)을 건드려 TDZ 에러가 나고, 그 뒤 선언이 전부 죽어
+   퀴즈·레크레이션 같은 화면이 아예 안 열린다. */
+try {
+  if (profile() && nowKST() >= RETREAT_START){ document.body.classList.remove('lock'); enterApp(); }
+} catch(e){ console.error('자동 진입 실패', e); }
 
 /* ═══ util ═══ */
 function shrinkBlob(file,max){return new Promise((res,rej)=>{const img=new Image();img.onload=()=>{let w=img.width,h=img.height;if(w>h&&w>max){h=h*max/w;w=max;}else if(h>max){w=w*max/h;h=max;}const c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(img,0,0,w,h);c.toBlob(b=>b?res(b):rej('blob'),'image/jpeg',.85);};img.onerror=rej;img.src=URL.createObjectURL(file);});}
