@@ -573,6 +573,16 @@
   .so-pair{background:#fffdf6;border:1.5px solid #e0cfa0;border-radius:11px;padding:9px 6px;text-align:center}
   .so-pair b{display:block;font-size:13px;color:var(--navy)}
   .so-pair span{font-size:11.5px;color:#8a7a5c;font-weight:700}
+  .so-modal{align-items:flex-start;overflow-y:auto;padding:18px 16px}
+  .so-modal .in{width:100%;max-width:430px;margin:auto}
+  .so-modal .so-rolepick{width:100%}
+  .big-btn.alt{ background:linear-gradient(180deg,#c8952f,#a97a1e); border-color:#7a5610; box-shadow:0 4px 0 #7a5610; }
+  .so-pair.todo{border-style:dashed;border-color:#c9b98f;background:#f7f1e2}
+  .so-pair.todo span{color:#a9976f}
+  .so-pk-h{color:#e8dcc0;font-size:14.5px;font-weight:700;margin-bottom:11px;text-align:center}
+  .so-pk-h b{color:#ffd873;font-size:17px}
+  .so-pk-a{display:flex;gap:8px;margin-top:12px}
+  .so-pk-a .ghost-btn{flex:1;margin:0}
   .so-rolepick{display:grid;grid-template-columns:repeat(auto-fill,minmax(78px,1fr));gap:8px}
   .so-rp{background:#fffdf6;border:2px solid #e0cfa0;border-radius:12px;padding:8px 4px;text-align:center}
   .so-rp.on{border-color:#8a2f1e;background:#fdf3ef}
@@ -2753,6 +2763,8 @@ function soloNames(out){
       ${SOLO.players.length?'<p class="desc" style="margin-top:8px">이름을 누르면 지워집니다.</p>':''}
       <button class="big-btn" id="so-next" style="margin-top:14px" ${SOLO.players.length<3?'disabled':''}>
         ${SOLO.players.length<3?'3명 이상 넣어 주세요':'다음 — 직업 정하기'}</button>
+      <button class="ghost-btn" id="so-manual0" style="margin-top:9px" ${SOLO.players.length<3?'disabled':''}>
+        ✍️ 직업을 내가 직접 정할게요</button>
       <button class="ghost-btn" id="so-clear" style="margin-top:9px">명단 비우기</button>
     </div>`);
   const add = () => {
@@ -2768,6 +2780,7 @@ function soloNames(out){
     SOLO.players = SOLO.players.filter(p => p.id !== b.dataset.del); soloSave(); soloRender(); }));
   $('#so-clear').addEventListener('click', () => { SOLO.players = []; soloSave(); soloRender(); });
   $('#so-next').addEventListener('click', () => { SOLO.step = 'roles'; soloSave(); soloRender(); });
+  $('#so-manual0').addEventListener('click', soloManual);
 }
 
 /* 2) 직업 구성 ------------------------------------------- */
@@ -2792,7 +2805,9 @@ function soloRoles(out){
         <label>밤 <input type="number" id="so-night" value="${SOLO.nightLen}" min="15" max="180"> 초</label>
         <label>투표 <input type="number" id="so-vote" value="${SOLO.voteLen}" min="15" max="180"> 초</label>
       </div>
-      <button class="big-btn" id="so-deal" style="margin-top:16px" ${sum!==n?'disabled':''}>무작위로 배정하기 🎲</button>
+      <button class="big-btn" id="so-deal" style="margin-top:16px" ${sum!==n?'disabled':''}>🎲 무작위로 배정하기</button>
+      <button class="big-btn alt" id="so-manual" style="margin-top:9px">✍️ 내가 직접 정하기</button>
+      <p class="desc" style="margin-top:7px">직접 정할 때는 위 인원 합계를 안 맞춰도 됩니다.</p>
       <button class="ghost-btn" id="so-back" style="margin-top:9px">← 명단 고치기</button>
     </div>`);
   $$('#rec-body [data-son]').forEach(b => b.addEventListener('click', () => {
@@ -2808,6 +2823,13 @@ function soloRoles(out){
     SOLO.voteLen = +$('#so-vote').value||60; soloSave(); }));
   $('#so-back').addEventListener('click', () => { SOLO.step='names'; soloSave(); soloRender(); });
   $('#so-deal').addEventListener('click', soloDeal);
+  $('#so-manual').addEventListener('click', soloManual);
+}
+/* 전부 비우고 한 명씩 직접 정하러 간다 */
+function soloManual(){
+  SOLO.players.forEach(p => { p.role = null; p.alive = true; p.shield = 0; });
+  SOLO.step = 'assign'; soloSave(); soloRender();
+  const first = SOLO.players[0]; if (first) soloPickRole(first.id);
 }
 function soloDeal(){
   const pool = [];
@@ -2820,48 +2842,70 @@ function soloDeal(){
 
 /* 3) 배정 확인 · 직접 지정 ------------------------------- */
 function soloAssign(out){
+  const done = SOLO.players.filter(p => p.role).length, n = SOLO.players.length;
+  const left = SOLO.players.filter(p => !p.role);
   out(`<div class="card">
-      <div class="hs-t">배정 결과 <span class="hs-sub">사회자만 보세요</span></div>
-      <p class="desc" style="margin:6px 0 4px">이름을 누르면 <b>직업을 직접 바꿀 수</b> 있어요.</p>
-      ${rosterByRole(SOLO.players, false)}
+      <div class="hs-t">배정 <span class="hs-sub ${done===n?'ok':'bad'}">${done} / ${n}명</span></div>
+      <p class="desc" style="margin:6px 0 4px">이름을 누르면 <b>직업을 정하거나 바꿀 수</b> 있어요.</p>
+      <div class="so-pairs">${SOLO.players.map(p=>`
+        <button class="so-pair ${p.role?'':'todo'}" data-pick="${p.id}"><b>${esc(p.name)}</b>
+          <span>${p.role?MF_ROLES[p.role].n:'눌러서 정하기'}</span></button>`).join('')}</div>
+      ${left.length?`<button class="ghost-btn" id="so-rest" style="margin-top:11px">
+        남은 ${left.length}명 전부 시민으로</button>`:''}
     </div>
     <div class="card">
-      <div class="hs-t">이름 → 직업</div>
-      <div class="so-pairs">${SOLO.players.map(p=>`
-        <button class="so-pair" data-pick="${p.id}"><b>${esc(p.name)}</b>
-          <span>${p.role?MF_ROLES[p.role].n:'—'}</span></button>`).join('')}</div>
-      <button class="big-btn" id="so-show" style="margin-top:14px">📱 폰 돌려서 한 명씩 알려주기</button>
-      <button class="ghost-btn" id="so-redeal" style="margin-top:9px">🎲 다시 섞기</button>
-      <button class="ghost-btn" id="so-go" style="margin-top:9px">게임 시작 🎬</button>
-      <button class="ghost-btn" id="so-back2" style="margin-top:9px">← 직업 구성 고치기</button>
-    </div>`);
+      <div class="hs-t">직업별로 보기 <span class="hs-sub">사회자만 보세요</span></div>
+      ${rosterByRole(SOLO.players, false)}
+    </div>
+    <button class="big-btn" id="so-show" ${done<n?'disabled':''}>📱 폰 돌려서 한 명씩 알려주기</button>
+    <button class="big-btn alt" id="so-go" style="margin-top:9px" ${done<n?'disabled':''}>
+      ${done<n?`아직 ${n-done}명 안 정했어요`:'게임 시작 🎬'}</button>
+    <button class="ghost-btn" id="so-redeal" style="margin-top:9px">🎲 무작위로 다시 섞기</button>
+    <button class="ghost-btn" id="so-back2" style="margin-top:9px">← 직업 구성 고치기</button>`);
   $$('#rec-body [data-pick]').forEach(b => b.addEventListener('click', () => soloPickRole(b.dataset.pick)));
+  { const r = $('#so-rest'); if (r) r.addEventListener('click', () => {
+      SOLO.players.forEach(p => { if (!p.role) p.role = 'citizen'; }); soloSave(); soloRender(); }); }
   $('#so-redeal').addEventListener('click', soloDeal);
   $('#so-show').addEventListener('click', soloShowRound);
   $('#so-back2').addEventListener('click', () => { SOLO.step='roles'; soloSave(); soloRender(); });
   $('#so-go').addEventListener('click', () => {
+    if (SOLO.players.some(p => !p.role)) return toast('아직 직업이 없는 사람이 있어요', 1);
     SOLO.step='play'; SOLO.phase='night'; SOLO.round=1; SOLO.night={}; SOLO.used={};
     SOLO.notice=null; SOLO.scoop=null; SOLO.winner=null;
     soloSetTimer(SOLO.nightLen); soloSave(); soloRender();
   });
 }
-function soloPickRole(id){
+/* 한 사람의 직업을 고른다. 아직 안 정한 사람이 남아 있으면 바로 다음 사람으로 넘어간다. */
+function soloPickRole(id, chain){
   const p = sBy(id); if (!p) return;
+  const idx = SOLO.players.indexOf(p);
   const d = document.createElement('div');
-  d.className = 'mf-cardview';
-  d.innerHTML = `<div class="in" style="max-width:420px">
-    <div class="hs-t" style="color:#fff;margin-bottom:10px">${esc(p.name)} 의 직업</div>
+  d.className = 'mf-cardview so-modal';
+  d.innerHTML = `<div class="in">
+    <div class="so-pk-h">${idx+1} / ${SOLO.players.length} · <b>${esc(p.name)}</b> 의 직업</div>
     <div class="so-rolepick">${HAS_CARD.map(k=>`
       <button class="so-rp ${p.role===k?'on':''}" data-set="${k}">
         <img src="${cardSrc(k)}" alt=""><span>${MF_ROLES[k].n}</span></button>`).join('')}</div>
-    <button class="ghost-btn" id="so-x" style="margin-top:12px">닫기</button></div>`;
+    <div class="so-pk-a"><button class="ghost-btn" id="so-x">닫기</button>
+      <button class="ghost-btn" id="so-skip">건너뛰기 →</button></div></div>`;
   document.body.appendChild(d);
+  const close = () => { d.remove(); soloSave(); soloRender(); };
+  const nextTodo = from => {
+    for (let i = from; i < SOLO.players.length; i++) if (!SOLO.players[i].role) return SOLO.players[i];
+    return null;
+  };
+  const go = () => {
+    const nx = nextTodo(idx + 1);
+    d.remove(); soloSave(); soloRender();
+    if (nx) soloPickRole(nx.id, true);
+  };
   d.querySelectorAll('[data-set]').forEach(b => b.addEventListener('click', () => {
-    p.role = b.dataset.set; p.shield = p.role === 'soldier' ? 1 : 0;
-    d.remove(); soloSave(); soloRender(); }));
-  d.querySelector('#so-x').addEventListener('click', () => d.remove());
-  d.addEventListener('click', e => { if (e.target === d) d.remove(); });
+    p.role = b.dataset.set; p.shield = p.role === 'soldier' ? 1 : 0; go(); }));
+  d.querySelector('#so-x').addEventListener('click', close);
+  d.querySelector('#so-skip').addEventListener('click', go);
+  d.addEventListener('click', e => { if (e.target === d) close(); });
 }
+
 /* 폰을 돌려 한 명씩 자기 직업만 보게 한다 */
 function soloShowRound(){
   let i = 0, open = false;
