@@ -551,6 +551,50 @@
   .hs-yn>div{border-radius:12px;padding:14px;text-align:center;font-size:13px;font-weight:800}
   .hs-yn .y{background:#fdece9;color:#a53a2f}.hs-yn .n{background:#e9f6ef;color:#0c6e4f}
   .hs-yn b{display:block;font-family:'Jua',sans-serif;font-size:26px}
+  /* 사회자 혼자 진행 */
+  .rec-menu-btn.solo{border-color:#c9a86a}
+  .so-turn{background:#fffdf6;border:1.5px solid #e0cfa0;border-radius:14px;padding:12px 12px 13px;margin-top:10px}
+  .so-turn .st-h{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--navy);font-weight:800}
+  .so-turn .st-h img{width:24px;aspect-ratio:5/7;object-fit:cover;border-radius:3px}
+  .so-turn .st-h i{font-style:normal;font-size:11.5px;color:#8a7a5c;font-weight:700}
+  .so-res{margin-top:9px;background:#eef4ea;border:1.5px solid #b9cfae;border-radius:10px;
+    padding:9px 11px;font-size:13.5px;font-weight:700;color:#2f5a34;line-height:1.6;word-break:keep-all}
+  .so-tally{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:9px;margin-top:9px}
+  .so-tally.two{grid-template-columns:1fr 1fr}
+  .so-tally .tl{background:#fffdf6;border:2px solid #e0cfa0;border-radius:13px;padding:10px 8px;text-align:center}
+  .so-tally .tl.lead{border-color:#8a2f1e;background:#fdf3ef}
+  .so-tally .tl.y{border-color:#c98a7a} .so-tally .tl.n{border-color:#8fa9c9}
+  .so-tally .tl b{display:block;font-size:13.5px;color:var(--navy)}
+  .so-tally .tn{display:flex;align-items:center;justify-content:center;gap:7px;margin-top:6px}
+  .so-tally .tn span{min-width:26px;font-family:'Jua',sans-serif;font-size:19px;color:var(--navy)}
+  .so-tally .tn button{width:30px;height:30px;border-radius:9px;border:1.5px solid #e0cfa0;
+    background:#fff;font-size:16px;font-weight:900;color:var(--navy)}
+  .so-pairs{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:7px;margin-top:9px}
+  .so-pair{background:#fffdf6;border:1.5px solid #e0cfa0;border-radius:11px;padding:9px 6px;text-align:center}
+  .so-pair b{display:block;font-size:13px;color:var(--navy)}
+  .so-pair span{font-size:11.5px;color:#8a7a5c;font-weight:700}
+  .so-rolepick{display:grid;grid-template-columns:repeat(auto-fill,minmax(78px,1fr));gap:8px}
+  .so-rp{background:#fffdf6;border:2px solid #e0cfa0;border-radius:12px;padding:8px 4px;text-align:center}
+  .so-rp.on{border-color:#8a2f1e;background:#fdf3ef}
+  .so-rp img{width:34px;aspect-ratio:5/7;object-fit:cover;border-radius:4px;display:block;margin:0 auto}
+  .so-rp span{display:block;font-size:11.5px;font-weight:800;color:var(--navy);margin-top:4px}
+  .hs-team{display:flex;align-items:center;gap:8px;margin:14px 0 2px;padding:6px 10px;border-radius:9px;
+    font-size:13px;font-weight:900}
+  .hs-team i{margin-left:auto;font-style:normal;font-size:11.5px;font-weight:700;opacity:.75}
+  .hs-team.mafia{background:#f6e0dc;color:#8a2f1e}
+  .hs-team.citizen{background:#e3edf6;color:#1d4e7a}
+  .hs-team.clown{background:#f6eedb;color:#8a6b1e}
+  .hs-team.none{background:#eee8dc;color:#7a6d55}
+  .rg{display:flex;align-items:flex-start;gap:10px;padding:8px 2px;border-bottom:1px dashed #ece1c6}
+  .rg:last-child{border-bottom:0}
+  .rg-h{flex:0 0 84px;display:flex;align-items:center;gap:6px;padding-top:3px}
+  .rg-h img{width:22px;aspect-ratio:5/7;object-fit:cover;border-radius:3px;flex:0 0 auto}
+  .rg-h b{font-size:12.5px;font-weight:900;color:var(--navy);line-height:1.2}
+  .rg-h i{font-style:normal;font-size:10.5px;color:#8a7a5c;font-weight:700;display:block}
+  .rg-p{flex:1;display:flex;flex-wrap:wrap;gap:5px}
+  .rg-p .pn{background:#fffdf6;border:1.5px solid #e0cfa0;border-radius:9px;padding:6px 10px;
+    font-size:13px;font-weight:800;color:var(--navy)}
+  .rg-p .pn.dead{opacity:.45;background:#efe7d6;text-decoration:line-through}
   .hs-people{display:grid;grid-template-columns:repeat(auto-fill,minmax(82px,1fr));gap:7px;margin-top:9px}
   .hs-people .hp{background:#fffdf6;border:1.5px solid #e0cfa0;border-radius:11px;padding:7px 4px;
     text-align:center;cursor:pointer;user-select:none}
@@ -1667,8 +1711,8 @@ const MF_ROLES = {
              d:'첫날 밤에 죽은 사람의 직업을 물려받습니다. 아무도 죽지 않으면 시민으로 남습니다.'},
   reporter: {n:'기자',   team:'citizen', img:'reporter',act:'report', once:true,
              d:'게임 중 한 번, 밤에 한 사람을 취재합니다. 다음 날 그 사람의 직업이 공개됩니다.'},
-  priest  : {n:'성직자', team:'citizen', img:'priest',  act:'revive', once:true,
-             d:'게임 중 한 번, 밤에 죽은 사람 한 명을 부활시킬 수 있습니다.'},
+  priest  : {n:'성직자', team:'citizen', img:'priest',  act:'ward',   once:true,
+             d:'게임 중 한 번, 밤에 한 사람을 지정합니다. 그 사람은 그날 밤 모든 능력의 대상이 되지 않습니다. 마피아 공격, 경찰 조사, 스파이 조사 등 모두 무효.'},
   citizen : {n:'시민',   team:'citizen', img:'citizen', act:null,
              d:'특별한 능력은 없습니다. 투표로 마피아를 처형시키면 승리합니다.'}
 };
@@ -1700,9 +1744,11 @@ function recMenu2(){
     <p class="desc" style="margin-bottom:16px">같은 방에서 함께 진행해요.</p>
     <button class="rec-menu-btn mafia" id="rc-join"><span class="em">🕵️</span><div><div class="rt">마피아 게임 참가</div><div class="rd">바로 입장</div></div></button>
     <button class="rec-menu-btn liar" id="rc-make"><span class="em">🎬</span><div><div class="rt">사회자로 진행</div><div class="rd">관리자 암호 필요</div></div></button>
+    <button class="rec-menu-btn solo" id="rc-solo"><span class="em">🎙</span><div><div class="rt">사회자 혼자 진행</div><div class="rd">참가자는 앱을 안 씁니다 · 폰 하나로</div></div></button>
     <button class="rec-menu-btn" id="rc-liar" style="border-color:#d9c89c"><span class="em">🤥</span><div><div class="rt">라이어 게임</div><div class="rd">폰 하나로 돌려보기</div></div></button>`;
   $('#rc-join').addEventListener('click', joinFlow);
   $('#rc-make').addEventListener('click', makeFlow);
+  $('#rc-solo').addEventListener('click', soloStart);
   $('#rc-liar').addEventListener('click', liarSetup);
 }
 
@@ -1947,8 +1993,9 @@ function renderPlayer(){
   } else if (st.phase === 'night'){
     if (R.act && !(R.once && used)){
       const L = {kill:'누구를 제거할까요?', save:'누구를 살릴까요?', check:'누구를 조사할까요?',
-                 spy:'누구의 직업을 조사할까요?', report:'누구를 취재할까요?', revive:'누구를 부활시킬까요?'}[R.act];
-      const pool = R.act === 'revive' ? dead() : alive().filter(p => R.act === 'save' ? true : p.id !== me.id);
+                 spy:'누구의 직업을 조사할까요?', report:'누구를 취재할까요?',
+                 ward:'누구를 성역으로 감쌀까요?'}[R.act];
+      const pool = alive().filter(p => (R.act === 'save' || R.act === 'ward') ? true : p.id !== me.id);
       const mates = alive().filter(p => p.role === me.role);
       const multi = mates.length > 1;
       h += `<div class="mf-turn"><b>${R.n}</b>의 밤${multi?` · ${mates.length}명`:''}</div>`;
@@ -2010,23 +2057,31 @@ function renderPlayer(){
 }
 
 /* 밤 지목 — 정보 계열(경찰·스파이·기자)은 누르는 즉시 결과를 보여준다 */
+/* 성역을 쓸 수 있는 성직자가 살아 있으면, 조사 결과를 즉시 알려줄 수 없다.
+   지목한 사람이 성역에 감싸일지 아직 모르기 때문 — 결과는 아침에 확정된다. */
+const wardPending = () => alive().some(p => p.role === 'priest' && !usedMap()[p.id]);
+
 async function pickTarget(tid, me){
   const t = byId(tid); if (!t) return;
   const R = MF_ROLES[me.role] || {};
   const patch = { night_target: tid };
+  const later2 = wardPending();
 
   if (me.role === 'police'){
-    patch.night_result = `${t.name}님은 ${MF_ROLES[t.role]?.team==='mafia' ? '마피아입니다!' : '마피아가 아닙니다.'}`;
+    patch.night_result = later2 ? `${t.name}님을 조사했습니다. 결과는 아침에 알 수 있습니다.`
+      : `${t.name}님은 ${MF_ROLES[t.role]?.team==='mafia' ? '마피아입니다!' : '마피아가 아닙니다.'}`;
   } else if (me.role === 'spy'){
     const isM = MF_ROLES[t.role]?.team === 'mafia';
-    patch.night_result = isM ? `${t.name}님은 마피아! 접선해 마피아팀이 됩니다.`
-                             : `${t.name}님의 직업은 「${MF_ROLES[t.role]?.n||'시민'}」입니다.`;
-    if (isM) patch.role = 'mafia';
+    if (later2) patch.night_result = `${t.name}님을 조사했습니다. 결과는 아침에 알 수 있습니다.`;
+    else {
+      patch.night_result = isM ? `${t.name}님은 마피아! 접선해 마피아팀이 됩니다.`
+                               : `${t.name}님의 직업은 「${MF_ROLES[t.role]?.n||'시민'}」입니다.`;
+      if (isM) patch.role = 'mafia';
+    }
   } else if (me.role === 'reporter'){
-    patch.night_result = `${t.name}님의 직업은 「${MF_ROLES[t.role]?.n||'시민'}」입니다. 내일 아침 모두에게 공개됩니다.`;
-    const cur = RM.state || {};
-    saveRoom({ state:{ ...cur, pendingScoop:`${t.name}님의 직업은 「${MF_ROLES[t.role]?.n||'시민'}」입니다.`,
-      used:{ ...(cur.used||{}), [me.id]: true } } });
+    patch.night_result = `${t.name}님을 취재했습니다. 내일 아침 모두에게 공개됩니다.`;
+  } else if (me.role === 'priest'){
+    patch.night_result = `${t.name}님을 성역으로 감쌌습니다. 오늘 밤 아무도 손대지 못합니다.`;
   }
   await saveMe(patch);
   /* 같은 역할이 둘 이상이면 첫 지목 순간부터 30초 합의 시계를 건다 */
@@ -2132,6 +2187,40 @@ function autoRoles(n, on){
 }
 const roleSum = r => Object.values(r).reduce((a,b)=>a+b,0);
 
+/* ── 명단을 팀 → 직업 순으로 묶어 보여준다 (사회자 전용) ────────
+   killable=true 면 이름을 길게 눌러 강제 탈락/부활시킬 수 있다. */
+const TEAM_ORDER = ['mafia','citizen','clown'];
+const TEAM_LABEL = { mafia:'🕵️ 마피아팀', citizen:'👥 시민팀', clown:'🤡 광대', none:'❓ 아직 직업 없음' };
+function rosterByRole(list, killable){
+  const chip = p => `<button class="pn ${p.alive?'':'dead'}"${killable?` data-kill="${p.id}"`:''}>${esc(p.name)}</button>`;
+  let out = '';
+  const drawn = new Set();
+  TEAM_ORDER.forEach(t => {
+    const mine = list.filter(p => MF_ROLES[p.role] && MF_ROLES[p.role].team === t);
+    if (!mine.length) return;
+    mine.forEach(p => drawn.add(p.id));
+    const al = mine.filter(p=>p.alive).length;
+    out += `<div class="hs-team ${t}"><span>${TEAM_LABEL[t]}</span>
+      <i>${al < mine.length ? `${al} / ${mine.length}명 생존` : `${mine.length}명`}</i></div>`;
+    HAS_CARD.filter(k => MF_ROLES[k].team === t).forEach(k => {
+      const ps = mine.filter(p => p.role === k);
+      if (!ps.length) return;
+      const a = ps.filter(p=>p.alive).length;
+      out += `<div class="rg"><div class="rg-h"><img src="${cardSrc(k)}" alt="">
+        <span><b>${MF_ROLES[k].n}</b><i>${a < ps.length ? `${a}/${ps.length}명` : `${ps.length}명`}</i></span></div>
+        <div class="rg-p">${ps.map(chip).join('')}</div></div>`;
+    });
+  });
+  const rest = list.filter(p => !drawn.has(p.id));
+  if (rest.length){
+    out += `<div class="hs-team none"><span>${TEAM_LABEL.none}</span><i>${rest.length}명</i></div>
+      <div class="rg"><div class="rg-h"><img src="assets/mafia/card-back.jpg" alt="">
+        <span><b>미정</b><i>${rest.length}명</i></span></div>
+        <div class="rg-p">${rest.map(chip).join('')}</div></div>`;
+  }
+  return out || '<p class="desc">아직 아무도 없어요</p>';
+}
+
 function renderHost(){
   const st = RM.state || {}, cfg = RM.settings || DEFAULT_SETTINGS;
   const on = cfg.on || DEFAULT_SETTINGS.on, roles = cfg.roles || DEFAULT_SETTINGS.roles;
@@ -2209,8 +2298,7 @@ function renderHost(){
     body.innerHTML = head + `<div class="mf-end ${W==='mafia'?'m':W==='clown'?'c':'g'}">
         <div class="t">${W==='mafia'?'🕵️ 마피아 승리':W==='clown'?'🤡 광대 단독 승리':'🎉 시민 승리'}</div>
         <div class="d">${esc(st.winDesc||'')}</div></div>
-      <div class="mf-roster">${inGame().map(p=>`<div class="mr ${p.alive?'':'dead'}">
-        <img src="${cardSrc(p.role)}" alt=""><div><b>${esc(p.name)}</b><span>${MF_ROLES[p.role]?.n||'-'}</span></div></div>`).join('')}</div>
+      <div class="card">${rosterByRole(inGame(), false)}</div>
       <button class="big-btn" id="hs-again" style="margin-top:14px">새 판 시작</button>`;
     $('#hs-again').addEventListener('click', resetGame);
     return bindOut();
@@ -2277,10 +2365,9 @@ function renderHost(){
     <div class="ms-add"><input id="ms-new" placeholder="새 미션을 적으세요" maxlength="60">
       <button id="ms-plus">추가</button></div></div>`;
 
-  h += `<div class="card"><div class="hs-t">참가자 (${A.length}명 생존)</div>
-    <div class="hs-people">${inGame().map(p=>`<div class="hp ${p.alive?'':'dead'}" data-kill="${p.id}">
-      <img src="${cardSrc(p.role)}" alt=""><b>${esc(p.name)}</b><span>${MF_ROLES[p.role]?.n||'-'}</span></div>`).join('')}</div>
-    <p class="desc" style="margin-top:8px">이름을 길게 누르면 강제 탈락/부활</p></div>
+  h += `<div class="card"><div class="hs-t">참가자 <span class="hs-sub">${A.length}명 생존 / ${inGame().length}명</span></div>
+    ${rosterByRole(inGame(), true)}
+    <p class="desc" style="margin-top:10px">이름을 길게 누르면 강제 탈락/부활</p></div>
     <button class="ghost-btn" id="hs-reset" style="margin-top:12px">판 초기화</button>`;
 
   body.innerHTML = h;
@@ -2373,6 +2460,16 @@ async function resolveNight(){
   const ups = []; let scoop = null, extra = '', killed = null;
 
   const actor = k => A.find(p => p.role === k && p.night_target && !(MF_ROLES[k].once && used[p.id]));
+  const all = k => A.filter(p => p.role === k && p.night_target && !(MF_ROLES[k].once && used[p.id]));
+  const setRes = (p, msg) => ups.push(sb.from('songsan_room_members')
+    .update({ night_result: msg }).eq('id', p.id));
+
+  /* 성역을 가장 먼저 확정한다 — 이 사람은 오늘 밤 어떤 능력의 대상도 되지 않는다 */
+  let ward = null;
+  { const pr = actor('priest');
+    if (pr){ ward = pr.night_target; used[pr.id] = true; } }
+  const safe = id => ward && id === ward;
+
   /* 경찰 → 마피아 → 의사 는 항상 이 순서. 나머지는 매 밤 무작위 */
   const TAIL = shuffle(['spy','reporter','robber','priest']);
   const ORDER = ['police','mafia','doctor'].concat(TAIL);
@@ -2380,7 +2477,10 @@ async function resolveNight(){
 
   for (const k of ORDER){
     if (k === 'police'){
-      if (actor('police')) log.push('경찰');      // 결과는 지목 즉시 전달됨
+      const ps = all('police'); if (!ps.length) continue; log.push('경찰');
+      ps.forEach(p => { const t = byId(p.night_target); if (!t) return;
+        setRes(p, safe(t.id) ? `${t.name}님은 성역에 감싸여 아무것도 알아내지 못했습니다.`
+          : `${t.name}님은 ${MF_ROLES[t.role]?.team==='mafia' ? '마피아입니다!' : '마피아가 아닙니다.'}`); });
     }
     else if (k === 'mafia'){
       const mafs = A.filter(p => MF_ROLES[p.role]?.team === 'mafia' && p.night_target);
@@ -2390,7 +2490,8 @@ async function resolveNight(){
       const tops = Object.keys(tal).filter(k => tal[k] === max);
       const tid = tops[Math.floor(Math.random()*tops.length)];   // 동률이면 무작위
       const t = byId(tid);
-      if (t && t.shield > 0){
+      if (t && safe(t.id)) extra += ' 공격이 있었지만 누군가를 감싸는 빛에 막혔습니다.';
+      else if (t && t.shield > 0){
         ups.push(sb.from('songsan_room_members').update({ shield:t.shield-1 }).eq('id', t.id));
         extra += ' 공격이 있었지만 누군가 버텨냈습니다.';
       } else if (t) killed = t;
@@ -2400,11 +2501,21 @@ async function resolveNight(){
       if (killed && d.night_target === killed.id){ killed = null; extra += ' 의사가 한 생명을 건졌습니다.'; }
     }
     else if (k === 'spy'){
-      const p = A.find(x => x.role === 'mafia' && x.night_result && /접선/.test(x.night_result));
-      if (p){ log.push('스파이'); extra += ' 스파이가 접선했다는 소문이 돕니다…'; }
+      const ss = all('spy'); if (!ss.length) continue; log.push('스파이');
+      ss.forEach(p => { const t = byId(p.night_target); if (!t) return;
+        if (safe(t.id)) return setRes(p, `${t.name}님은 성역에 감싸여 아무것도 알아내지 못했습니다.`);
+        const isM = MF_ROLES[t.role]?.team === 'mafia';
+        if (isM){ ups.push(sb.from('songsan_room_members')
+            .update({ role:'mafia', night_result:`${t.name}님은 마피아! 접선해 마피아팀이 됩니다.` }).eq('id', p.id));
+          extra += ' 스파이가 접선했다는 소문이 돕니다…'; }
+        else setRes(p, `${t.name}님의 직업은 「${MF_ROLES[t.role]?.n||'시민'}」입니다.`); });
     }
     else if (k === 'reporter'){
-      if (st.pendingScoop){ log.push('기자'); scoop = st.pendingScoop; }
+      const rs = all('reporter'); if (!rs.length) continue; log.push('기자');
+      rs.forEach(p => { const t = byId(p.night_target); used[p.id] = true; if (!t) return;
+        if (safe(t.id)){ setRes(p, `${t.name}님은 성역에 감싸여 취재하지 못했습니다.`); return; }
+        scoop = `${t.name}님의 직업은 「${MF_ROLES[t.role]?.n||'시민'}」입니다.`;
+        setRes(p, `${t.name}님의 직업은 「${MF_ROLES[t.role]?.n||'시민'}」 — 아침에 공개됩니다.`); });
     }
     else if (k === 'robber'){
       if (!killed || (st.round||1) !== 1) continue;
@@ -2416,11 +2527,9 @@ async function resolveNight(){
       extra += ' 누군가 무덤을 파헤쳤다는 소문이 돕니다…';
     }
     else if (k === 'priest'){
-      const p = actor('priest'); if (!p) continue; log.push('성직자');
-      const t = byId(p.night_target); used[p.id] = true;
-      if (t && !t.alive){ ups.push(sb.from('songsan_room_members').update({ alive:true }).eq('id', t.id));
-        extra += ` ${t.name}님이 기적처럼 돌아왔습니다.`; }
-      ups.push(sb.from('songsan_room_members').update({ night_result:'기도를 드렸습니다.' }).eq('id', p.id));
+      if (!ward) continue; log.push('성직자');
+      const pr = A.find(p => p.role === 'priest' && p.night_target === ward);
+      if (pr) setRes(pr, `${nm(ward)}님을 성역으로 감쌌습니다. 오늘 밤 아무도 손대지 못했습니다.`);
     }
   }
 
@@ -2511,6 +2620,509 @@ function passReveal(cards,done,title){
   draw();
 }
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   사회자 혼자 진행 — 참가자는 앱을 쓰지 않는다.
+   명단·직업·밤 행동·투표를 전부 이 화면 하나에서 사회자가 입력한다.
+   서버를 쓰지 않고 이 기기에만 저장하므로 인터넷이 끊겨도 돌아간다.
+   ═══════════════════════════════════════════════════════════════ */
+const SOLO_KEY = 'songsan_solo';
+let SOLO = null, soloBarT = null;
+
+const soloSave = () => { try { localStorage.setItem(SOLO_KEY, JSON.stringify(SOLO)); } catch(e){} };
+const soloRead = () => { try { return JSON.parse(localStorage.getItem(SOLO_KEY) || 'null'); } catch(e){ return null; } };
+const sAlive = () => SOLO.players.filter(p => p.alive);
+const sDead  = () => SOLO.players.filter(p => !p.alive);
+const sBy    = id => SOLO.players.find(p => p.id === id);
+const sNm    = id => (sBy(id) || {}).name || '—';
+const sid    = () => 's' + Math.random().toString(36).slice(2, 9);
+
+const SOLO_DEF = { on:{mafia:true,doctor:true,police:true,soldier:false,spy:false,clown:false,robber:false,reporter:false,priest:false,citizen:true},
+  roles:{mafia:1,doctor:1,police:1,soldier:0,spy:0,clown:0,robber:0,reporter:0,priest:0,citizen:0} };
+
+function soloStart(){
+  const saved = soloRead();
+  if (saved && saved.players && saved.players.length){
+    SOLO = saved;
+    if (SOLO.step === 'play') SOLO.paused = true;      // 돌아오면 항상 멈춘 상태로
+  } else soloNew();
+  soloRender();
+}
+function soloNew(){
+  SOLO = { step:'names', players:[], on:{...SOLO_DEF.on}, roles:{...SOLO_DEF.roles},
+    dayLen:180, nightLen:60, voteLen:60, round:0, phase:null, used:{}, night:{},
+    votes:{}, trial:null, yes:0, no:0, notice:null, scoop:null, pendingScoop:null,
+    mission:null, deadline:null, paused:false, remain:0, winner:null, log:[] };
+  soloSave();
+}
+
+/* ── 시간 ─────────────────────────────────────────────── */
+function soloSetTimer(sec){ SOLO.deadline = Date.now() + sec*1000; SOLO.paused = false; SOLO.remain = 0; }
+function soloLeft(){
+  if (SOLO.paused) return Math.max(0, Math.round(SOLO.remain/1000));
+  return SOLO.deadline ? Math.max(0, Math.round((SOLO.deadline - Date.now())/1000)) : 0;
+}
+function soloKillBar(){ clearInterval(soloBarT); soloBarT = null; const b = document.getElementById('mfBar'); if (b) b.remove(); }
+function soloBar(){
+  if (!SOLO || SOLO.step !== 'play' || !SOLO.phase || SOLO.phase === 'end'){ soloKillBar(); return; }
+  let b = document.getElementById('mfBar');
+  if (!b){ b = document.createElement('div'); b.id = 'mfBar'; b.className = 'mf-bar'; document.body.appendChild(b); }
+  const lab = SOLO.phase==='night'?'🌙 밤':SOLO.phase==='day'?'☀️ 낮':SOLO.phase==='vote'?'🗳 투표':'⚖️ 최후변론';
+  b.className = 'mf-bar ' + SOLO.phase;
+  const paint = () => {
+    const s = soloLeft();
+    b.innerHTML = `<span class="ph">${lab}</span><span class="rd">${SOLO.round||1}일차</span>` +
+      `<span class="tm ${s<=10?'warn':''}">${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}</span>`;
+  };
+  clearInterval(soloBarT); paint(); soloBarT = setInterval(paint, 500);
+}
+
+/* ── 승리 판정 ────────────────────────────────────────── */
+function sWin(){
+  const A = sAlive();
+  const maf = A.filter(p => MF_ROLES[p.role] && MF_ROLES[p.role].team === 'mafia').length;
+  const oth = A.length - maf;
+  if (!A.length) return { w:'citizen', d:'모두 탈락했습니다' };
+  if (maf === 0)   return { w:'citizen', d:'마피아가 모두 잡혔습니다' };
+  if (maf >= oth)  return { w:'mafia',   d:'마피아 수가 시민 수 이상이 되었습니다' };
+  return null;
+}
+function sHint(){
+  const A = sAlive();
+  const maf = A.filter(p => MF_ROLES[p.role] && MF_ROLES[p.role].team === 'mafia').length;
+  const oth = A.length - maf;
+  if (!A.length) return '';
+  if (maf >= oth - 1) return `⚠ 시민이 한 명 더 죽으면 마피아 승리 (마피아 ${maf} · 시민 ${oth})`;
+  return `마피아 ${maf} · 시민 ${oth}`;
+}
+function soloEnd(w){ SOLO.winner = w.w; SOLO.winDesc = w.d; SOLO.phase = 'end'; soloKillBar(); soloSave(); soloRender(); }
+
+
+/* 앱을 안 쓰는 판이라 대본이 다르다 — 사회자가 직접 부르고 눈을 감기게 한다 */
+const SOLO_SCRIPT = {
+  night: () => [
+    '「밤이 되었습니다. 모두 고개를 숙이고 눈을 감아 주세요.」',
+    '아래 순서대로 한 직업씩 부릅니다 — 「○○, 눈을 뜨세요.」',
+    '그 사람이 손으로 가리키면 화면에서 눌러 주고, 「○○, 눈을 감으세요.」',
+    '경찰·스파이 결과는 소리내지 말고 고개를 끄덕이거나 손가락으로 알려 주세요.',
+    '다 끝나면 「밤 끝내고 아침으로」를 누릅니다.'
+  ],
+  day: () => [
+    '「아침이 밝았습니다. 모두 눈을 뜨세요.」',
+    SOLO.notice ? `「${SOLO.notice}」` : '',
+    SOLO.scoop ? `「특종입니다 — ${SOLO.scoop}」` : '',
+    '자유롭게 토론하게 두세요. 시간이 끝나면 투표로 넘어갑니다.'
+  ].filter(Boolean),
+  vote: () => [
+    '「투표를 시작합니다. 의심되는 사람 한 명에게 손을 드세요.」',
+    '이름을 하나씩 부르면서 손을 세고, 그 수만큼 ＋를 눌러 주세요.',
+    '한 사람은 한 번만 들게 하세요.'
+  ],
+  trial: () => [
+    `「${sNm(SOLO.trial)}님, 최후 변론하세요.」`,
+    '「이제 죽일지 살릴지 손을 들어 주세요.」 — 본인은 빼고 셉니다.'
+  ]
+};
+
+/* ── 화면 ─────────────────────────────────────────────── */
+function soloRender(){
+  const body = $('#rec-body');
+  const head = `<div class="rm-bar host"><span class="rm-code">혼자 진행</span>
+    <span class="rm-cnt">${SOLO.players.length}명${SOLO.step==='play'?` · ${sAlive().length}명 생존`:''}</span>
+    <button class="rm-out" id="rm-out2">나가기</button></div>`;
+  const out = h => { body.innerHTML = head + h;
+    $('#rm-out2').addEventListener('click', () => { soloKillBar(); recMenu2(); }); };
+
+  if (SOLO.step === 'names')  return soloNames(out);
+  if (SOLO.step === 'roles')  return soloRoles(out);
+  if (SOLO.step === 'assign') return soloAssign(out);
+  return soloPlay(out);
+}
+
+/* 1) 명단 ------------------------------------------------ */
+function soloNames(out){
+  out(`<div class="card">
+      <div class="hs-t">참가자 명단 <span class="hs-sub">${SOLO.players.length}명</span></div>
+      <p class="desc" style="margin:6px 0 10px">이름을 적고 <b>추가</b>를 누르세요. 줄바꿈이나 쉼표로 여러 명을 한꺼번에 넣어도 됩니다.</p>
+      <div class="ms-add"><input id="so-nm" placeholder="예) 김철수, 이영희, 박민수" maxlength="120">
+        <button id="so-add">추가</button></div>
+      <div class="rm-list" style="margin-top:12px">${SOLO.players.map(p=>
+        `<button class="rm-chip on" data-del="${p.id}">${esc(p.name)} <i>✕</i></button>`).join('')
+        || '<span class="desc">아직 아무도 없어요</span>'}</div>
+      ${SOLO.players.length?'<p class="desc" style="margin-top:8px">이름을 누르면 지워집니다.</p>':''}
+      <button class="big-btn" id="so-next" style="margin-top:14px" ${SOLO.players.length<3?'disabled':''}>
+        ${SOLO.players.length<3?'3명 이상 넣어 주세요':'다음 — 직업 정하기'}</button>
+      <button class="ghost-btn" id="so-clear" style="margin-top:9px">명단 비우기</button>
+    </div>`);
+  const add = () => {
+    const el = $('#so-nm'), v = (el.value||'').trim();
+    if (!v) return;
+    v.split(/[,\n]/).map(x=>x.trim()).filter(Boolean).forEach(n =>
+      SOLO.players.push({ id:sid(), name:n.slice(0,12), role:null, alive:true, shield:0 }));
+    el.value = ''; soloSave(); soloRender(); $('#so-nm').focus();
+  };
+  $('#so-add').addEventListener('click', add);
+  $('#so-nm').addEventListener('keydown', e => { if (e.key === 'Enter') add(); });
+  $$('#rec-body [data-del]').forEach(b => b.addEventListener('click', () => {
+    SOLO.players = SOLO.players.filter(p => p.id !== b.dataset.del); soloSave(); soloRender(); }));
+  $('#so-clear').addEventListener('click', () => { SOLO.players = []; soloSave(); soloRender(); });
+  $('#so-next').addEventListener('click', () => { SOLO.step = 'roles'; soloSave(); soloRender(); });
+}
+
+/* 2) 직업 구성 ------------------------------------------- */
+function soloRoles(out){
+  const n = SOLO.players.length, on = SOLO.on, roles = SOLO.roles;
+  const sum = SETUP_KEYS.reduce((a,k) => a + (on[k] ? (roles[k]||0) : 0), 0);
+  out(`<div class="card">
+      <div class="hs-t">직업 구성 <span class="hs-sub ${sum===n?'ok':'bad'}">합계 ${sum}명 / 참가 ${n}명</span></div>
+      <div class="hs-roles">${SETUP_KEYS.map(k=>`
+        <div class="hr ${on[k]?'':'off'}">
+          <button class="hr-tg" data-son="${k}">${on[k]?'ON':'OFF'}</button>
+          <img src="${cardSrc(k)}" alt=""><span>${MF_ROLES[k].n}</span>
+          <div class="hrn"><button data-sr="${k}" data-d="-1" ${on[k]?'':'disabled'}>−</button>
+            <b>${roles[k]||0}</b>
+            <button data-sr="${k}" data-d="1" ${on[k]?'':'disabled'}>＋</button></div>
+        </div>`).join('')}</div>
+      ${sum!==n?`<div class="hs-warn">${sum>n?`직업이 ${sum-n}명 많아요`:`직업이 ${n-sum}명 모자라요`}
+        <button class="hs-fit" id="so-fit">시민으로 맞추기</button></div>`:''}
+      <div class="hs-t" style="margin-top:18px">시간</div>
+      <div class="hs-times">
+        <label>낮 <input type="number" id="so-day" value="${Math.round(SOLO.dayLen/60)}" min="1" max="15"> 분</label>
+        <label>밤 <input type="number" id="so-night" value="${SOLO.nightLen}" min="15" max="180"> 초</label>
+        <label>투표 <input type="number" id="so-vote" value="${SOLO.voteLen}" min="15" max="180"> 초</label>
+      </div>
+      <button class="big-btn" id="so-deal" style="margin-top:16px" ${sum!==n?'disabled':''}>무작위로 배정하기 🎲</button>
+      <button class="ghost-btn" id="so-back" style="margin-top:9px">← 명단 고치기</button>
+    </div>`);
+  $$('#rec-body [data-son]').forEach(b => b.addEventListener('click', () => {
+    const k = b.dataset.son, nx = !on[k];
+    on[k] = nx; roles[k] = nx ? Math.max(1, roles[k]||0) : 0; soloSave(); soloRender(); }));
+  $$('#rec-body [data-sr]').forEach(b => b.addEventListener('click', () => {
+    const k = b.dataset.sr; roles[k] = Math.max(0, (roles[k]||0) + (+b.dataset.d)); soloSave(); soloRender(); }));
+  { const f = $('#so-fit'); if (f) f.addEventListener('click', () => {
+      const other = SETUP_KEYS.filter(k=>k!=='citizen').reduce((a,k)=>a+(on[k]?(roles[k]||0):0),0);
+      on.citizen = true; roles.citizen = Math.max(0, n - other); soloSave(); soloRender(); }); }
+  ['#so-day','#so-night','#so-vote'].forEach(sel => $(sel).addEventListener('change', () => {
+    SOLO.dayLen = (+$('#so-day').value||3)*60; SOLO.nightLen = +$('#so-night').value||60;
+    SOLO.voteLen = +$('#so-vote').value||60; soloSave(); }));
+  $('#so-back').addEventListener('click', () => { SOLO.step='names'; soloSave(); soloRender(); });
+  $('#so-deal').addEventListener('click', soloDeal);
+}
+function soloDeal(){
+  const pool = [];
+  SETUP_KEYS.forEach(k => { if (SOLO.on[k]) for (let i=0;i<(SOLO.roles[k]||0);i++) pool.push(k); });
+  shuffle(pool);
+  SOLO.players.forEach((p,i) => { p.role = pool[i] || 'citizen'; p.alive = true;
+    p.shield = p.role === 'soldier' ? 1 : 0; });
+  SOLO.step = 'assign'; soloSave(); soloRender();
+}
+
+/* 3) 배정 확인 · 직접 지정 ------------------------------- */
+function soloAssign(out){
+  out(`<div class="card">
+      <div class="hs-t">배정 결과 <span class="hs-sub">사회자만 보세요</span></div>
+      <p class="desc" style="margin:6px 0 4px">이름을 누르면 <b>직업을 직접 바꿀 수</b> 있어요.</p>
+      ${rosterByRole(SOLO.players, false)}
+    </div>
+    <div class="card">
+      <div class="hs-t">이름 → 직업</div>
+      <div class="so-pairs">${SOLO.players.map(p=>`
+        <button class="so-pair" data-pick="${p.id}"><b>${esc(p.name)}</b>
+          <span>${p.role?MF_ROLES[p.role].n:'—'}</span></button>`).join('')}</div>
+      <button class="big-btn" id="so-show" style="margin-top:14px">📱 폰 돌려서 한 명씩 알려주기</button>
+      <button class="ghost-btn" id="so-redeal" style="margin-top:9px">🎲 다시 섞기</button>
+      <button class="ghost-btn" id="so-go" style="margin-top:9px">게임 시작 🎬</button>
+      <button class="ghost-btn" id="so-back2" style="margin-top:9px">← 직업 구성 고치기</button>
+    </div>`);
+  $$('#rec-body [data-pick]').forEach(b => b.addEventListener('click', () => soloPickRole(b.dataset.pick)));
+  $('#so-redeal').addEventListener('click', soloDeal);
+  $('#so-show').addEventListener('click', soloShowRound);
+  $('#so-back2').addEventListener('click', () => { SOLO.step='roles'; soloSave(); soloRender(); });
+  $('#so-go').addEventListener('click', () => {
+    SOLO.step='play'; SOLO.phase='night'; SOLO.round=1; SOLO.night={}; SOLO.used={};
+    SOLO.notice=null; SOLO.scoop=null; SOLO.winner=null;
+    soloSetTimer(SOLO.nightLen); soloSave(); soloRender();
+  });
+}
+function soloPickRole(id){
+  const p = sBy(id); if (!p) return;
+  const d = document.createElement('div');
+  d.className = 'mf-cardview';
+  d.innerHTML = `<div class="in" style="max-width:420px">
+    <div class="hs-t" style="color:#fff;margin-bottom:10px">${esc(p.name)} 의 직업</div>
+    <div class="so-rolepick">${HAS_CARD.map(k=>`
+      <button class="so-rp ${p.role===k?'on':''}" data-set="${k}">
+        <img src="${cardSrc(k)}" alt=""><span>${MF_ROLES[k].n}</span></button>`).join('')}</div>
+    <button class="ghost-btn" id="so-x" style="margin-top:12px">닫기</button></div>`;
+  document.body.appendChild(d);
+  d.querySelectorAll('[data-set]').forEach(b => b.addEventListener('click', () => {
+    p.role = b.dataset.set; p.shield = p.role === 'soldier' ? 1 : 0;
+    d.remove(); soloSave(); soloRender(); }));
+  d.querySelector('#so-x').addEventListener('click', () => d.remove());
+  d.addEventListener('click', e => { if (e.target === d) d.remove(); });
+}
+/* 폰을 돌려 한 명씩 자기 직업만 보게 한다 */
+function soloShowRound(){
+  let i = 0, open = false;
+  const body = $('#rec-body');
+  const draw = () => {
+    const p = SOLO.players[i];
+    if (!p){ soloRender(); return; }
+    const R = MF_ROLES[p.role] || MF_ROLES.citizen;
+    body.innerHTML = `<div class="reveal-card" id="so-rev">${ open
+      ? `<div class="who">${esc(p.name)} 님의 직업</div><div class="role">${R.n}</div>
+         <div class="rdesc">${esc(R.d)}</div>`
+      : `<div class="who">${i+1} / ${SOLO.players.length}</div>
+         <div class="role">${esc(p.name)}</div>
+         <div class="rdesc">본인만 보고 눌러 주세요.<br>화면을 누르면 직업이 나옵니다.</div>` }</div>
+      <button class="big-btn" id="so-rn" style="margin-top:12px">${open?(i===SOLO.players.length-1?'끝내기':'다음 사람에게 넘기기'):'직업 보기'}</button>
+      <button class="ghost-btn" id="so-rx" style="margin-top:9px">그만두기</button>`;
+    const nx = () => { if (!open){ open = true; } else { open = false; i++; } draw(); };
+    $('#so-rev').addEventListener('click', nx);
+    $('#so-rn').addEventListener('click', nx);
+    $('#so-rx').addEventListener('click', soloRender);
+  };
+  draw();
+}
+
+/* 4) 진행 ------------------------------------------------ */
+function soloPlay(out){
+  soloBar();
+  if (SOLO.phase === 'end'){
+    const W = SOLO.winner;
+    out(`<div class="mf-end ${W==='mafia'?'m':W==='clown'?'c':'g'}">
+        <div class="t">${W==='mafia'?'🕵️ 마피아 승리':W==='clown'?'🤡 광대 단독 승리':'🎉 시민 승리'}</div>
+        <div class="d">${esc(SOLO.winDesc||'')}</div></div>
+      <div class="card">${rosterByRole(SOLO.players, false)}</div>
+      <button class="big-btn" id="so-again" style="margin-top:14px">같은 명단으로 새 판</button>
+      <button class="ghost-btn" id="so-fresh" style="margin-top:9px">명단부터 새로</button>`);
+    $('#so-again').addEventListener('click', () => {
+      SOLO.players.forEach(p => { p.alive = true; p.shield = p.role==='soldier'?1:0; });
+      SOLO.step='roles'; SOLO.phase=null; SOLO.winner=null; soloSave(); soloRender(); });
+    $('#so-fresh').addEventListener('click', () => { soloNew(); soloRender(); });
+    return;
+  }
+
+  const A = sAlive();
+  let h = `<div class="hs-win">${esc(sHint())}</div>`;
+  if (SOLO.notice) h += `<div class="mf-notice">${esc(SOLO.notice)}</div>`;
+  if (SOLO.scoop)  h += `<div class="mf-scoop">📰 <b>특종</b> ${esc(SOLO.scoop)}</div>`;
+  if (SOLO.mission)h += `<div class="mf-mission">🎯 <b>미션</b> ${esc(SOLO.mission)}</div>`;
+
+  const lines = (SOLO_SCRIPT[SOLO.phase] || (()=>[]))();
+  h += `<div class="hs-script"><div class="sc-h">📖 대본 — 이대로 읽으세요</div>${
+    lines.map(l => `<p>${esc(l)}</p>`).join('')}</div>`;
+
+  const left = soloLeft();
+  h += `<div class="card"><div class="hs-t">시간
+      <span class="hs-sub">${SOLO.paused?'⏸ 멈춤':'진행 중'} · ${String(Math.floor(left/60)).padStart(2,'0')}:${String(left%60).padStart(2,'0')}</span></div>
+    <div class="hs-time-ctl">
+      <button data-stm="60">＋1분</button><button data-stm="30">＋30초</button>
+      <button data-stm="-30">−30초</button>
+      <button class="${SOLO.paused?'go':'stop'}" id="so-pause">${SOLO.paused?'▶ 다시':'⏸ 멈춤'}</button>
+    </div></div>`;
+
+  if (SOLO.phase === 'night'){
+    const actors = A.filter(p => MF_ROLES[p.role] && MF_ROLES[p.role].act
+      && !(MF_ROLES[p.role].once && SOLO.used[p.id]));
+    const ORDER = ['priest','police','mafia','doctor','spy','reporter'];
+    actors.sort((a,b) => ORDER.indexOf(a.role) - ORDER.indexOf(b.role));
+    h += `<div class="card"><div class="hs-t">밤 행동 <span class="hs-sub">한 명씩 물어보고 눌러 주세요</span></div>`;
+    if (!actors.length) h += `<p class="desc">밤에 능력을 쓰는 사람이 없어요.</p>`;
+    actors.forEach(p => {
+      const R = MF_ROLES[p.role];
+      const L = {kill:'누구를 제거할까요?', save:'누구를 살릴까요?', check:'누구가 마피아인지 조사할까요?',
+                 spy:'누구의 직업을 조사할까요?', report:'누구를 취재할까요?',
+                 ward:'누구를 성역으로 감쌀까요?'}[R.act];
+      const pool = A.filter(x => (R.act === 'save' || R.act === 'ward') ? true : x.id !== p.id);
+      const tid = SOLO.night[p.id];
+      h += `<div class="so-turn"><div class="st-h"><img src="${cardSrc(p.role)}" alt="">
+          <b>${R.n}</b> ${esc(p.name)}${R.once?' <i>(한 번뿐)</i>':''}</div>
+        <p class="desc" style="margin:4px 0 7px">${L}</p>
+        <div class="mf-targets">${pool.map(x=>`<button class="mf-t ${tid===x.id?'on':''}"
+          data-sn="${p.id}" data-t="${x.id}">${esc(x.name)}</button>`).join('') || '<span class="desc">대상이 없어요</span>'}</div>
+        ${tid ? `<div class="so-res">${esc(soloInstant(p, tid))}</div>` : ''}</div>`;
+    });
+    h += `<button class="big-btn" id="so-dawn" style="margin-top:12px">밤 끝내고 아침으로 ☀️</button></div>`;
+  }
+  else if (SOLO.phase === 'day'){
+    h += `<div class="card"><button class="big-btn" id="so-tovote">투표 시작 🗳</button></div>`;
+  }
+  else if (SOLO.phase === 'vote'){
+    const tal = SOLO.votes || {};
+    const top = Object.entries(tal).sort((a,b)=>b[1]-a[1])[0];
+    const cast = Object.values(tal).reduce((a,b)=>a+b,0);
+    h += `<div class="card"><div class="hs-t">투표 <span class="hs-sub">손을 세어 눌러 주세요 · ${cast}표</span></div>
+      <div class="so-tally">${A.map(p=>`<div class="tl ${top&&top[0]===p.id&&top[1]>0?'lead':''}">
+        <b>${esc(p.name)}</b>
+        <div class="tn"><button data-vt="${p.id}" data-d="-1">−</button><span>${tal[p.id]||0}</span>
+          <button data-vt="${p.id}" data-d="1">＋</button></div></div>`).join('')}</div>
+      <button class="big-btn" id="so-totrial" style="margin-top:12px" ${top&&top[1]>0?'':'disabled'}>
+        ${top&&top[1]>0?`${esc(sNm(top[0]))} — 최후변론으로`:'표를 세어 주세요'}</button>
+      <button class="ghost-btn" id="so-novote" style="margin-top:9px">아무도 안 뽑고 밤으로</button></div>`;
+  }
+  else if (SOLO.phase === 'trial'){
+    h += `<div class="card"><div class="hs-t">최후변론 — ${esc(sNm(SOLO.trial))}</div>
+      <p class="desc" style="margin:6px 0 10px">변론이 끝나면 손을 세어 눌러 주세요.</p>
+      <div class="so-tally two">
+        <div class="tl y"><b>죽인다</b><div class="tn"><button data-jt="y" data-d="-1">−</button>
+          <span>${SOLO.yes||0}</span><button data-jt="y" data-d="1">＋</button></div></div>
+        <div class="tl n"><b>살린다</b><div class="tn"><button data-jt="n" data-d="-1">−</button>
+          <span>${SOLO.no||0}</span><button data-jt="n" data-d="1">＋</button></div></div></div>
+      <button class="big-btn" id="so-exec" style="margin-top:12px">결과 공개</button></div>`;
+  }
+
+  h += `<div class="card"><div class="hs-t">미션 <span class="hs-sub">직접 적어서 넣으세요</span></div>
+    ${SOLO.mission?`<button class="ms clear" id="so-msoff">미션 끄기</button>`:''}
+    <div class="ms-add"><input id="so-ms" placeholder="새 미션을 적으세요" maxlength="60">
+      <button id="so-msadd">넣기</button></div></div>`;
+
+  h += `<div class="card"><div class="hs-t">참가자 <span class="hs-sub">${A.length}명 생존 / ${SOLO.players.length}명</span></div>
+    ${rosterByRole(SOLO.players, true)}
+    <p class="desc" style="margin-top:10px">이름을 길게 누르면 강제 탈락/부활</p></div>
+    <button class="ghost-btn" id="so-reset" style="margin-top:12px">판 초기화</button>`;
+
+  out(h);
+  const on2 = (id, fn) => { const e = $(id); if (e) e.addEventListener('click', fn); };
+  $$('#rec-body [data-stm]').forEach(b => b.addEventListener('click', () => {
+    const d = (+b.dataset.stm)*1000;
+    if (SOLO.paused) SOLO.remain = Math.max(0, (SOLO.remain||0) + d);
+    else SOLO.deadline = Math.max(Date.now(), (SOLO.deadline||Date.now()) + d);
+    soloSave(); soloRender(); }));
+  on2('#so-pause', () => {
+    if (SOLO.paused){ SOLO.deadline = Date.now() + (SOLO.remain||0); SOLO.paused = false; SOLO.remain = 0; }
+    else { SOLO.remain = Math.max(0, (SOLO.deadline||Date.now()) - Date.now()); SOLO.paused = true; }
+    soloSave(); soloRender(); });
+  $$('#rec-body [data-sn]').forEach(b => b.addEventListener('click', () => {
+    SOLO.night[b.dataset.sn] = b.dataset.t; soloSave(); soloRender(); }));
+  on2('#so-dawn', soloNight);
+  on2('#so-tovote', () => { SOLO.phase='vote'; SOLO.votes={}; SOLO.notice=null; SOLO.scoop=null;
+    soloSetTimer(SOLO.voteLen); soloSave(); soloRender(); });
+  $$('#rec-body [data-vt]').forEach(b => b.addEventListener('click', () => {
+    const id = b.dataset.vt;
+    SOLO.votes[id] = Math.max(0, (SOLO.votes[id]||0) + (+b.dataset.d)); soloSave(); soloRender(); }));
+  on2('#so-totrial', () => {
+    const top = Object.entries(SOLO.votes||{}).sort((a,b)=>b[1]-a[1])[0];
+    if (!top) return;
+    SOLO.trial = top[0]; SOLO.yes = 0; SOLO.no = 0; SOLO.phase = 'trial';
+    soloSetTimer(30); soloSave(); soloRender(); });
+  on2('#so-novote', () => soloToNight('아무도 지목되지 않았습니다.'));
+  $$('#rec-body [data-jt]').forEach(b => b.addEventListener('click', () => {
+    const k = b.dataset.jt === 'y' ? 'yes' : 'no';
+    SOLO[k] = Math.max(0, (SOLO[k]||0) + (+b.dataset.d)); soloSave(); soloRender(); }));
+  on2('#so-exec', soloTrial);
+  on2('#so-msoff', () => { SOLO.mission = null; soloSave(); soloRender(); });
+  on2('#so-msadd', () => { const v = ($('#so-ms').value||'').trim();
+    if (!v) return; SOLO.mission = v; soloSave(); soloRender(); });
+  on2('#so-reset', () => { SOLO.players.forEach(p => { p.alive = true; p.shield = p.role==='soldier'?1:0; });
+    SOLO.step='assign'; SOLO.phase=null; SOLO.winner=null; SOLO.night={}; SOLO.votes={};
+    soloKillBar(); soloSave(); soloRender(); });
+  $$('#rec-body [data-kill]').forEach(el => {
+    let t = null;
+    const s = () => { t = setTimeout(() => {
+      const p = sBy(el.dataset.kill); if (!p) return;
+      p.alive = !p.alive; soloSave(); toast(`${p.name} ${p.alive?'부활':'탈락'}`); soloRender();
+    }, 800); };
+    ['pointerdown','touchstart'].forEach(ev => el.addEventListener(ev, s, {passive:true}));
+    ['pointerup','pointerleave','touchend'].forEach(ev => el.addEventListener(ev, () => clearTimeout(t), {passive:true}));
+  });
+}
+
+/* 지목하는 순간 사회자에게만 보이는 즉답 (경찰·스파이·기자) */
+function soloWard(){
+  const pr = sAlive().find(p => p.role === 'priest' && SOLO.night[p.id] && !SOLO.used[p.id]);
+  return pr ? SOLO.night[pr.id] : null;
+}
+function soloInstant(p, tid){
+  const t = sBy(tid); if (!t) return '';
+  const act = MF_ROLES[p.role].act;
+  const safe = soloWard() === tid;
+  if (act === 'ward')  return `→ ${t.name} 님은 오늘 밤 아무도 손대지 못합니다. 어떤 능력의 대상도 되지 않습니다.`;
+  if (safe && (act === 'check' || act === 'spy' || act === 'report'))
+    return `→ ${t.name} 님은 성역에 감싸여 있습니다. 아무것도 알아내지 못했다고 알려 주세요.`;
+  if (act === 'check') return `→ ${t.name} 님은 ${MF_ROLES[t.role].team==='mafia'?'마피아가 맞습니다':'마피아가 아닙니다'}. 경찰에게만 알려 주세요.`;
+  if (act === 'spy')   return `→ ${t.name} 님의 직업은 「${MF_ROLES[t.role].n}」입니다.${MF_ROLES[t.role].team==='mafia'?' 스파이가 마피아팀이 됩니다.':''}`;
+  if (act === 'report')return `→ ${t.name} 님의 직업은 「${MF_ROLES[t.role].n}」 — 내일 아침에 공개됩니다.`;
+  if (act === 'kill')  return safe ? `→ ${t.name} 님을 지목했지만 성역에 막힙니다.` : `→ ${t.name} 님을 지목했습니다.`;
+  if (act === 'save')  return `→ ${t.name} 님을 살립니다.`;
+  return '';
+}
+
+/* 밤 결과 계산 */
+function soloNight(){
+  const A = sAlive(), N = SOLO.night || {};
+  let killed = null, extra = '', scoop = SOLO.pendingScoop || null;
+  const logs = [];
+  const actorOf = k => A.find(p => p.role === k && N[p.id] && !(MF_ROLES[k].once && SOLO.used[p.id]));
+  const allOf   = k => A.filter(p => p.role === k && N[p.id] && !(MF_ROLES[k].once && SOLO.used[p.id]));
+
+  /* 성역을 가장 먼저 확정한다 */
+  let ward = null;
+  { const pr = actorOf('priest');
+    if (pr){ ward = N[pr.id]; SOLO.used[pr.id] = true; logs.push('성직자');
+      extra += ` ${sNm(ward)}님을 감싸는 빛이 있었습니다.`; } }
+  const safe = id => ward && id === ward;
+
+  if (actorOf('police')) logs.push('경찰');
+
+  const mafs = A.filter(p => MF_ROLES[p.role] && MF_ROLES[p.role].team === 'mafia' && N[p.id]);
+  if (mafs.length){
+    logs.push('마피아');
+    const tal = {}; mafs.forEach(m => tal[N[m.id]] = (tal[N[m.id]]||0)+1);
+    const max = Math.max(...Object.values(tal));
+    const tops = Object.keys(tal).filter(k => tal[k] === max);
+    const t = sBy(tops[Math.floor(Math.random()*tops.length)]);
+    if (t && safe(t.id)) extra += ' 공격은 성역에 막혔습니다.';
+    else if (t && t.shield > 0){ t.shield--; extra += ' 공격이 있었지만 누군가 버텨냈습니다.'; }
+    else if (t) killed = t;
+  }
+  const doc = actorOf('doctor');
+  if (doc){ logs.push('의사');
+    if (killed && N[doc.id] === killed.id){ killed = null; extra += ' 의사가 한 생명을 건졌습니다.'; } }
+
+  allOf('spy').forEach(sp => { logs.push('스파이'); const t = sBy(N[sp.id]);
+    if (t && !safe(t.id) && MF_ROLES[t.role] && MF_ROLES[t.role].team === 'mafia'){
+      sp.role = 'mafia'; extra += ' 스파이가 접선했다는 소문이 돕니다…'; } });
+
+  allOf('reporter').forEach(rep => { logs.push('기자'); SOLO.used[rep.id] = true;
+    const t = sBy(N[rep.id]);
+    if (t && !safe(t.id)) scoop = `${t.name}님의 직업은 「${MF_ROLES[t.role].n}」입니다.`; });
+
+  if (killed && (SOLO.round||1) === 1){
+    const rob = A.find(p => p.role === 'robber' && p.id !== killed.id);
+    if (rob && killed.role && killed.role !== 'robber'){ logs.push('도굴꾼');
+      rob.role = killed.role; rob.shield = killed.role === 'soldier' ? 1 : 0;
+      extra += ' 누군가 무덤을 파헤쳤다는 소문이 돕니다…'; } }
+
+  if (killed) killed.alive = false;
+  SOLO.night = {};
+  SOLO.notice = (killed ? `${killed.name}님이 밤사이 세상을 떠났습니다.` : '조용한 밤이었습니다.') + extra;
+  SOLO.scoop = scoop; SOLO.pendingScoop = null; SOLO.nightLog = logs.join(' → ');
+  const w = sWin(); if (w) return soloEnd(w);
+  SOLO.phase = 'day'; soloSetTimer(SOLO.dayLen); soloSave(); soloRender();
+}
+
+/* 최후변론 결과 */
+function soloTrial(){
+  const t = sBy(SOLO.trial);
+  if (!t) return soloToNight('아무 일도 없었습니다.');
+  if ((SOLO.yes||0) > (SOLO.no||0)){
+    t.alive = false;
+    if (t.role === 'clown'){ SOLO.notice = `${t.name}님이 처형됐습니다.`;
+      return soloEnd({ w:'clown', d:`광대 ${t.name}님이 투표로 죽어 혼자 이겼습니다` }); }
+    const w = sWin();
+    if (w){ SOLO.notice = `${t.name}님이 처형됐습니다.`; return soloEnd(w); }
+    return soloToNight(`${t.name}님이 처형됐습니다. 직업은 밝히지 않습니다.`);
+  }
+  return soloToNight(`${t.name}님은 살아남았습니다.`);
+}
+function soloToNight(msg){
+  SOLO.round = (SOLO.round||1) + 1;
+  SOLO.phase = 'night'; SOLO.night = {}; SOLO.votes = {}; SOLO.trial = null;
+  SOLO.yes = 0; SOLO.no = 0; SOLO.notice = msg; SOLO.scoop = null;
+  soloSetTimer(SOLO.nightLen); soloSave(); soloRender();
+}
 
 /* ═══ 자동 진입 ═══
    반드시 스크립트 맨 끝. 위쪽에서 부르면 아직 초기화되지 않은 let(livePoll·liveVerse·
