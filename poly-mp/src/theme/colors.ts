@@ -270,16 +270,17 @@ export const SHADOWS = {
   },
 };
 
+// 자간(letterSpacing)은 poly-build 화면들의 실측 관례 — 타이트한 한글 자간이 폴리 톤의 핵심.
 export const TYPO = {
-  displayHero: { fontSize: 30, fontWeight: '700' as const, lineHeight: 40 },
-  displayLarge: { fontSize: 26, fontWeight: '700' as const, lineHeight: 36 },
-  headingLarge: { fontSize: 22, fontWeight: '700' as const, lineHeight: 30 },
-  heading: { fontSize: 20, fontWeight: '600' as const, lineHeight: 28 },
-  subtitle: { fontSize: 16, fontWeight: '600' as const, lineHeight: 24 },
-  bodyLarge: { fontSize: 16, fontWeight: '400' as const, lineHeight: 24 },
-  body: { fontSize: 14, fontWeight: '400' as const, lineHeight: 22 },
-  bodySmall: { fontSize: 13, fontWeight: '400' as const, lineHeight: 20 },
-  caption: { fontSize: 12, fontWeight: '400' as const, lineHeight: 18 },
+  displayHero: { fontSize: 30, fontWeight: '900' as const, lineHeight: 40, letterSpacing: -0.7 },
+  displayLarge: { fontSize: 26, fontWeight: '900' as const, lineHeight: 36, letterSpacing: -0.6 },
+  headingLarge: { fontSize: 22, fontWeight: '700' as const, lineHeight: 30, letterSpacing: -0.5 },
+  heading: { fontSize: 20, fontWeight: '600' as const, lineHeight: 28, letterSpacing: -0.4 },
+  subtitle: { fontSize: 16, fontWeight: '600' as const, lineHeight: 24, letterSpacing: -0.3 },
+  bodyLarge: { fontSize: 16, fontWeight: '400' as const, lineHeight: 24, letterSpacing: -0.2 },
+  body: { fontSize: 14, fontWeight: '400' as const, lineHeight: 22, letterSpacing: -0.2 },
+  bodySmall: { fontSize: 13, fontWeight: '400' as const, lineHeight: 20, letterSpacing: -0.2 },
+  caption: { fontSize: 12, fontWeight: '400' as const, lineHeight: 18, letterSpacing: -0.1 },
 };
 
 export const SPACING = {

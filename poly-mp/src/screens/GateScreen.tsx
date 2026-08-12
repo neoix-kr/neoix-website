@@ -9,7 +9,7 @@ import { deleteMyAccount } from '../lib/account';
 import { useAuth } from '../contexts/AuthContext';
 import { useMember } from '../contexts/MemberContext';
 import { useTheme } from '../theme/ThemeContext';
-import { TYPO, SPACING, RADIUS } from '../theme/colors';
+import { TYPO, SPACING } from '../theme/colors';
 import {
   MEMBER_LEVELS, levelLabel, PROVINCES, PROVINCE_CITIES,
   getDistrictOptions, formatDistrict, type MemberLevel,
@@ -18,7 +18,7 @@ import {
 export default function GateScreen() {
   const { signOut, user } = useAuth();
   const { member, apply, refresh } = useMember();
-  const { COLORS, SHADOWS } = useTheme();
+  const { COLORS } = useTheme();
   const insets = useSafeAreaInsets();
   const [name, setName] = useState('');
   const [level, setLevel] = useState<MemberLevel | null>(null);
@@ -49,26 +49,25 @@ export default function GateScreen() {
       <Text style={s.title}>{pending ? '승인을 기다리고 있어요' : suspended ? '이용이 중지된 계정이에요' : '의원 인증이 필요해요'}</Text>
 
       {pending ? (
-        <View style={[s.card, SHADOWS.standard]}>
+        <>
           <Text style={s.body}>
             <Text style={{ fontWeight: '700', color: COLORS.text }}>{member?.name}</Text>님의 신청이 접수됐어요.{'\n'}
             {member?.position ? `${member.position}${member?.district ? ` · ${member.district}` : ''}\n` : ''}
             운영팀 확인 후 승인되면 바로 이용할 수 있습니다.{'\n'}보통 1영업일 안에 처리돼요.
           </Text>
-          <Pressable style={[s.btn, { backgroundColor: COLORS.primary }]} onPress={refresh}>
+          <Pressable style={[s.btn, { opacity: 1 }]} onPress={refresh}>
             <Text style={s.btnText}>승인 여부 새로고침</Text>
           </Pressable>
-        </View>
+        </>
       ) : suspended ? (
-        <View style={[s.card, SHADOWS.standard]}>
-          <Text style={s.body}>이용료 미납 또는 운영 정책에 따라 중지됐어요.{'\n'}문의: support@polyx.kr</Text>
-        </View>
+        <Text style={s.body}>이용료 미납 또는 운영 정책에 따라 중지됐어요.{'\n'}문의: support@polyx.kr</Text>
       ) : (
-        <View style={[s.card, SHADOWS.standard]}>
+        <>
           <Text style={s.body}>폴리 오피스는 의원·후보자 전용 앱이에요.{'\n'}아래 정보로 신청하면 확인 후 열어드립니다.</Text>
 
           {/* 의원 유형 — 기초/광역/국회 선택 */}
-          <View style={{ flexDirection: 'row', gap: SPACING.xs, flexWrap: 'wrap' }}>
+          <Text style={s.label}>의원 유형</Text>
+          <View style={{ flexDirection: 'row', gap: SPACING.sm, flexWrap: 'wrap', marginTop: 10 }}>
             {MEMBER_LEVELS.map(l => (
               <Pressable
                 key={l.key}
@@ -80,11 +79,13 @@ export default function GateScreen() {
             ))}
           </View>
 
-          <TextInput style={s.input} placeholder="성함 (필수)" placeholderTextColor={COLORS.textPlaceholder} value={name} onChangeText={setName} />
+          <Text style={s.label}>성함</Text>
+          <TextInput style={s.input} placeholder="성함을 입력하세요" placeholderTextColor={COLORS.textTertiary} value={name} onChangeText={setName} />
 
           {/* 지역구 — 선관위 선거구에서 선택 */}
+          <Text style={s.label}>지역구</Text>
           <Pressable
-            style={[s.input, s.selectRow]}
+            style={s.selectRow}
             onPress={() => {
               if (!level) return Alert.alert('입력 확인', '의원 유형을 먼저 선택해 주세요.');
               setPicker(true);
@@ -93,13 +94,13 @@ export default function GateScreen() {
             <Text style={district ? s.selectValue : s.selectPlaceholder} numberOfLines={1}>
               {district || '지역구 선택'}
             </Text>
-            <Ionicons name="chevron-forward" size={16} color={COLORS.textCaption} />
+            <Ionicons name="chevron-forward" size={16} color={COLORS.textTertiary} />
           </Pressable>
 
-          <Pressable style={[s.btn, { backgroundColor: COLORS.primary, opacity: busy ? 0.6 : 1 }]} disabled={busy} onPress={submit}>
+          <Pressable style={[s.btn, { opacity: busy ? 0.6 : 1 }]} disabled={busy} onPress={submit}>
             <Text style={s.btnText}>인증 신청하기</Text>
           </Pressable>
-        </View>
+        </>
       )}
 
       <Pressable onPress={signOut} style={{ marginTop: SPACING.xl }}>
@@ -222,21 +223,33 @@ function DistrictPicker({ visible, level, onClose, onSelect }: {
   );
 }
 
+// poly-build PoliticianVerifyScreen과 동일한 폼 언어 — 라벨 + 밑줄 입력, primary 버튼 radius 14
 const styles = (C: any) => StyleSheet.create({
-  title: { ...TYPO.displayLarge, color: C.text, marginBottom: SPACING.lg },
-  card: { backgroundColor: C.surface, borderRadius: RADIUS.large, padding: SPACING.lg, gap: SPACING.md },
-  body: { ...TYPO.body, color: C.textSecondary, lineHeight: 22 },
-  input: {
-    height: 48, borderRadius: RADIUS.standard, borderWidth: 1, borderColor: C.border,
-    paddingHorizontal: SPACING.base, color: C.text, backgroundColor: C.surface, ...TYPO.bodyLarge,
+  title: { ...TYPO.displayLarge, color: C.text, marginBottom: 10 },
+  body: { ...TYPO.body, color: C.textSecondary, lineHeight: 22, marginBottom: 6 },
+  label: {
+    fontSize: 12.5, fontWeight: '600', color: C.textTertiary, marginTop: 22, letterSpacing: -0.1,
   },
-  selectRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: SPACING.sm },
-  selectValue: { ...TYPO.bodyLarge, color: C.text, flex: 1 },
-  selectPlaceholder: { ...TYPO.bodyLarge, color: C.textPlaceholder, flex: 1 },
-  chipBtn: { paddingHorizontal: SPACING.md, height: 36, borderRadius: RADIUS.pill, borderWidth: 1, borderColor: C.border, alignItems: 'center', justifyContent: 'center' },
-  chipBtnText: { ...TYPO.bodySmall, color: C.textSecondary },
-  btn: { height: 50, borderRadius: RADIUS.standard, alignItems: 'center', justifyContent: 'center' },
-  btnText: { ...TYPO.subtitle, color: C.textInverse },
+  input: {
+    borderBottomWidth: 1.5, borderBottomColor: C.border,
+    paddingVertical: 13, fontSize: 17, color: C.text, letterSpacing: -0.2,
+  },
+  selectRow: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: SPACING.sm,
+    borderBottomWidth: 1.5, borderBottomColor: C.border, paddingVertical: 13,
+  },
+  selectValue: { fontSize: 17, color: C.text, letterSpacing: -0.2, flex: 1 },
+  selectPlaceholder: { fontSize: 17, color: C.textTertiary, letterSpacing: -0.2, flex: 1 },
+  chipBtn: {
+    paddingHorizontal: 14, paddingVertical: 10, borderRadius: 14, borderWidth: 1.5,
+    borderColor: C.border, backgroundColor: C.surface, alignItems: 'center', justifyContent: 'center',
+  },
+  chipBtnText: { fontSize: 13.5, fontWeight: '600', color: C.textSecondary, letterSpacing: -0.2 },
+  btn: {
+    marginTop: 28, backgroundColor: C.primary, borderRadius: 14,
+    paddingVertical: 16, alignItems: 'center', justifyContent: 'center',
+  },
+  btnText: { fontSize: 16, fontWeight: '700', color: C.textInverse, letterSpacing: -0.2 },
   signout: { ...TYPO.bodySmall, color: C.textCaption, textAlign: 'center' },
   modalHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: SPACING.base, gap: SPACING.sm },
   modalCancel: { ...TYPO.bodyLarge, color: C.textCaption },
