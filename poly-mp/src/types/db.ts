@@ -10,6 +10,8 @@ export interface Profile {
 export interface MpMember {
   user_id: string;
   name: string;
+  /** 의원 유형 — basic(기초의회) | metro(광역의회) | national(국회) */
+  level: string | null;
   position: string | null;
   district: string | null;
   party: string | null;

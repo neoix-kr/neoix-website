@@ -8,7 +8,7 @@ interface MemberContextType {
   member: MpMember | null;
   isLoading: boolean;
   /** 승격 신청 (pending 행 생성) */
-  apply: (info: { name: string; position?: string; district?: string; party?: string }) => Promise<{ error: any }>;
+  apply: (info: { name: string; level?: string; position?: string; district?: string; party?: string }) => Promise<{ error: any }>;
   refresh: () => Promise<void>;
 }
 
@@ -29,11 +29,12 @@ export function MemberProvider({ children }: { children: React.ReactNode }) {
   // onAuthStateChange 콜백 안에서 부르지 않는다(데드락) — user 변화를 보고 별도 effect에서 조회
   useEffect(() => { setIsLoading(true); refresh(); }, [refresh]);
 
-  const apply = async (info: { name: string; position?: string; district?: string; party?: string }) => {
+  const apply = async (info: { name: string; level?: string; position?: string; district?: string; party?: string }) => {
     if (!user) return { error: new Error('로그인이 필요해요') };
     const { error } = await supabase.from('mp_members').insert({
       user_id: user.id,
       name: info.name,
+      level: info.level ?? null,
       position: info.position ?? null,
       district: info.district ?? null,
       party: info.party ?? null,

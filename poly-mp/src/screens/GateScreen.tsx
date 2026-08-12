@@ -1,13 +1,19 @@
 // 승격 게이트 — 의원 인증 신청(pending) 또는 승인 대기 안내
 // 승인은 네오익스 어드민(폴리 → 의원 앱)에서 처리한다.
-import React, { useState } from 'react';
-import { View, Text, TextInput, Pressable, StyleSheet, Alert, ScrollView } from 'react-native';
+// 유형(기초/광역/국회)과 지역구는 선관위 선거구 데이터(poly-build 이식)에서 선택 — 자유입력 없음.
+import React, { useMemo, useState } from 'react';
+import { View, Text, TextInput, Pressable, StyleSheet, Alert, ScrollView, Modal, FlatList } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
 import { deleteMyAccount } from '../lib/account';
 import { useAuth } from '../contexts/AuthContext';
 import { useMember } from '../contexts/MemberContext';
 import { useTheme } from '../theme/ThemeContext';
 import { TYPO, SPACING, RADIUS } from '../theme/colors';
+import {
+  MEMBER_LEVELS, levelLabel, PROVINCES, PROVINCE_CITIES,
+  getDistrictOptions, formatDistrict, type MemberLevel,
+} from '../data/districts';
 
 export default function GateScreen() {
   const { signOut, user } = useAuth();
@@ -15,8 +21,9 @@ export default function GateScreen() {
   const { COLORS, SHADOWS } = useTheme();
   const insets = useSafeAreaInsets();
   const [name, setName] = useState('');
-  const [position, setPosition] = useState('');
+  const [level, setLevel] = useState<MemberLevel | null>(null);
   const [district, setDistrict] = useState('');
+  const [picker, setPicker] = useState(false);
   const [busy, setBusy] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
@@ -26,8 +33,10 @@ export default function GateScreen() {
 
   const submit = async () => {
     if (!name.trim()) return Alert.alert('입력 확인', '성함을 입력해 주세요.');
+    if (!level) return Alert.alert('입력 확인', '의원 유형을 선택해 주세요.');
+    if (!district) return Alert.alert('입력 확인', '지역구를 선택해 주세요.');
     setBusy(true);
-    const { error } = await apply({ name: name.trim(), position: position.trim() || undefined, district: district.trim() || undefined });
+    const { error } = await apply({ name: name.trim(), level, position: levelLabel(level), district });
     setBusy(false);
     if (error) Alert.alert('신청 실패', String(error?.message ?? error));
   };
@@ -43,6 +52,7 @@ export default function GateScreen() {
         <View style={[s.card, SHADOWS.standard]}>
           <Text style={s.body}>
             <Text style={{ fontWeight: '700', color: COLORS.text }}>{member?.name}</Text>님의 신청이 접수됐어요.{'\n'}
+            {member?.position ? `${member.position}${member?.district ? ` · ${member.district}` : ''}\n` : ''}
             운영팀 확인 후 승인되면 바로 이용할 수 있습니다.{'\n'}보통 1영업일 안에 처리돼요.
           </Text>
           <Pressable style={[s.btn, { backgroundColor: COLORS.primary }]} onPress={refresh}>
@@ -56,9 +66,36 @@ export default function GateScreen() {
       ) : (
         <View style={[s.card, SHADOWS.standard]}>
           <Text style={s.body}>폴리 오피스는 의원·후보자 전용 앱이에요.{'\n'}아래 정보로 신청하면 확인 후 열어드립니다.</Text>
+
+          {/* 의원 유형 — 기초/광역/국회 선택 */}
+          <View style={{ flexDirection: 'row', gap: SPACING.xs, flexWrap: 'wrap' }}>
+            {MEMBER_LEVELS.map(l => (
+              <Pressable
+                key={l.key}
+                style={[s.chipBtn, level === l.key && { backgroundColor: COLORS.primaryLight, borderColor: COLORS.primary }]}
+                onPress={() => { setLevel(l.key); setDistrict(''); }}
+              >
+                <Text style={[s.chipBtnText, level === l.key && { color: COLORS.primary, fontWeight: '700' }]}>{l.label}</Text>
+              </Pressable>
+            ))}
+          </View>
+
           <TextInput style={s.input} placeholder="성함 (필수)" placeholderTextColor={COLORS.textPlaceholder} value={name} onChangeText={setName} />
-          <TextInput style={s.input} placeholder="직위 — 예: 고양특례시의회 의원" placeholderTextColor={COLORS.textPlaceholder} value={position} onChangeText={setPosition} />
-          <TextInput style={s.input} placeholder="지역구 — 예: 일산서구 제1선거구" placeholderTextColor={COLORS.textPlaceholder} value={district} onChangeText={setDistrict} />
+
+          {/* 지역구 — 선관위 선거구에서 선택 */}
+          <Pressable
+            style={[s.input, s.selectRow]}
+            onPress={() => {
+              if (!level) return Alert.alert('입력 확인', '의원 유형을 먼저 선택해 주세요.');
+              setPicker(true);
+            }}
+          >
+            <Text style={district ? s.selectValue : s.selectPlaceholder} numberOfLines={1}>
+              {district || '지역구 선택'}
+            </Text>
+            <Ionicons name="chevron-forward" size={16} color={COLORS.textCaption} />
+          </Pressable>
+
           <Pressable style={[s.btn, { backgroundColor: COLORS.primary, opacity: busy ? 0.6 : 1 }]} disabled={busy} onPress={submit}>
             <Text style={s.btnText}>인증 신청하기</Text>
           </Pressable>
@@ -109,7 +146,79 @@ export default function GateScreen() {
       >
         <Text style={[s.signout, { color: COLORS.error }]}>{deleting ? '삭제 중…' : '계정 삭제'}</Text>
       </Pressable>
+
+      {level && (
+        <DistrictPicker
+          visible={picker}
+          level={level}
+          onClose={() => setPicker(false)}
+          onSelect={(v) => { setDistrict(v); setPicker(false); }}
+        />
+      )}
     </ScrollView>
+  );
+}
+
+// ── 지역구 선택 모달 — 선관위식 3단계 (시도 → 시군구 → 선거구) ──
+function DistrictPicker({ visible, level, onClose, onSelect }: {
+  visible: boolean; level: MemberLevel; onClose: () => void; onSelect: (formatted: string) => void;
+}) {
+  const { COLORS } = useTheme();
+  const [province, setProvince] = useState<string | null>(null);
+  const [city, setCity] = useState<string | null>(null);
+  const s = styles(COLORS);
+
+  const reset = () => { setProvince(null); setCity(null); };
+  const close = () => { reset(); onClose(); };
+
+  const step: 'province' | 'city' | 'district' = !province ? 'province' : !city ? 'city' : 'district';
+  const data = useMemo(() => {
+    if (step === 'province') return PROVINCES;
+    if (step === 'city') return PROVINCE_CITIES[province!] ?? [];
+    return getDistrictOptions(level, province!, city!);
+  }, [step, province, city, level]);
+
+  const title =
+    step === 'province' ? `${levelLabel(level)} · 시·도 선택`
+    : step === 'city' ? `${province} · 시·군·구 선택`
+    : `${province} ${city} · 선거구 선택`;
+
+  return (
+    <Modal visible={visible} animationType="slide" presentationStyle="pageSheet" onRequestClose={close}>
+      <View style={{ flex: 1, backgroundColor: COLORS.background }}>
+        <View style={s.modalHead}>
+          {step === 'province' ? (
+            <Pressable onPress={close}><Text style={s.modalCancel}>취소</Text></Pressable>
+          ) : (
+            <Pressable onPress={() => (step === 'district' ? setCity(null) : setProvince(null))}>
+              <Text style={s.modalCancel}>뒤로</Text>
+            </Pressable>
+          )}
+          <Text style={s.modalTitle} numberOfLines={1}>{title}</Text>
+          <View style={{ width: 40 }} />
+        </View>
+        <FlatList
+          data={data}
+          keyExtractor={(i) => i}
+          contentContainerStyle={{ padding: SPACING.base, paddingBottom: 48 }}
+          renderItem={({ item }) => (
+            <Pressable
+              style={s.pickRow}
+              onPress={() => {
+                if (step === 'province') return setProvince(item);
+                if (step === 'city') return setCity(item);
+                const formatted = formatDistrict(province!, city!, item);
+                reset();
+                onSelect(formatted);
+              }}
+            >
+              <Text style={s.pickText}>{item}</Text>
+              <Ionicons name="chevron-forward" size={15} color={COLORS.textCaption} />
+            </Pressable>
+          )}
+        />
+      </View>
+    </Modal>
   );
 }
 
@@ -121,7 +230,21 @@ const styles = (C: any) => StyleSheet.create({
     height: 48, borderRadius: RADIUS.standard, borderWidth: 1, borderColor: C.border,
     paddingHorizontal: SPACING.base, color: C.text, backgroundColor: C.surface, ...TYPO.bodyLarge,
   },
+  selectRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: SPACING.sm },
+  selectValue: { ...TYPO.bodyLarge, color: C.text, flex: 1 },
+  selectPlaceholder: { ...TYPO.bodyLarge, color: C.textPlaceholder, flex: 1 },
+  chipBtn: { paddingHorizontal: SPACING.md, height: 36, borderRadius: RADIUS.pill, borderWidth: 1, borderColor: C.border, alignItems: 'center', justifyContent: 'center' },
+  chipBtnText: { ...TYPO.bodySmall, color: C.textSecondary },
   btn: { height: 50, borderRadius: RADIUS.standard, alignItems: 'center', justifyContent: 'center' },
   btnText: { ...TYPO.subtitle, color: C.textInverse },
   signout: { ...TYPO.bodySmall, color: C.textCaption, textAlign: 'center' },
+  modalHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: SPACING.base, gap: SPACING.sm },
+  modalCancel: { ...TYPO.bodyLarge, color: C.textCaption },
+  modalTitle: { ...TYPO.subtitle, color: C.text, flexShrink: 1 },
+  pickRow: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+    paddingVertical: SPACING.md, paddingHorizontal: SPACING.sm,
+    borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: C.border,
+  },
+  pickText: { ...TYPO.bodyLarge, color: C.textBody },
 });
