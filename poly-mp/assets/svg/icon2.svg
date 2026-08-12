@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <defs>
+    <linearGradient id="bg2" x1="0" y1="0" x2="0.5" y2="1">
+      <stop offset="0%" stop-color="#6D28D9"/>
+      <stop offset="100%" stop-color="#A855F7"/>
+    </linearGradient>
+    <clipPath id="clip2"><rect width="1024" height="1024" rx="220" ry="220"/></clipPath>
+    <filter id="sh2"><feDropShadow dx="0" dy="8" stdDeviation="15" flood-color="rgba(0,0,0,0.12)"/></filter>
+  </defs>
+  <g clip-path="url(#clip2)">
+    <rect width="1024" height="1024" fill="url(#bg2)"/>
+    <circle cx="850" cy="180" r="200" fill="rgba(255,255,255,0.06)"/>
+  </g>
+  <g clip-path="url(#clip2)">
+    <g filter="url(#sh2)">
+      <rect x="240" y="190" width="544" height="400" rx="65" fill="white"/>
+      <polygon points="360,585 310,700 440,585" fill="white"/>
+    </g>
+    <text x="512" y="420" text-anchor="middle" dominant-baseline="central" 
+          font-family="Apple SD Gothic Neo, sans-serif" 
+          font-size="260" font-weight="800" fill="#6D28D9">폴</text>
+    <text x="450" y="790" text-anchor="middle" dominant-baseline="central" 
+          font-family="Apple SD Gothic Neo, sans-serif" 
+          font-size="120" font-weight="700" fill="rgba(255,255,255,0.8)">리</text>
+  </g>
+</svg>

@@ -1,0 +1,89 @@
+{
+  "expo": {
+    "name": "폴리 오피스",
+    "slug": "poly-mp",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "scheme": "polymp",
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#FFFFFF"
+    },
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "kr.polyx.mp",
+      "buildNumber": "1",
+      "infoPlist": {
+        "NSPhotoLibraryUsageDescription": "활동 게시물에 사진을 첨부할 때 사진 보관함에 접근해요.",
+        "NSContactsUsageDescription": "주소록에서 선택한 연락처만 가져와 조직 관리에 사용해요.",
+        "NSMicrophoneUsageDescription": "민원 미팅 녹음 기능에서만 마이크를 사용해요.",
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    },
+    "android": {
+      "package": "kr.polyx.mp",
+      "versionCode": 1,
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#FFFFFF"
+      },
+      "edgeToEdgeEnabled": true,
+      "permissions": [
+        "android.permission.READ_CONTACTS",
+        "android.permission.RECORD_AUDIO"
+      ],
+      "blockedPermissions": [
+        "android.permission.WRITE_CONTACTS"
+      ]
+    },
+    "plugins": [
+      [
+        "@react-native-kakao/core",
+        {
+          "nativeAppKey": "16cdb1c7fa120c1588aaa6b39ca5755a",
+          "ios": {
+            "handleKakaoOpenUrl": true
+          },
+          "android": {
+            "authCodeHandlerActivity": true
+          }
+        }
+      ],
+      "expo-font",
+      "expo-apple-authentication",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "활동 게시물에 사진을 첨부할 때 사진 보관함에 접근해요.",
+          "cameraPermission": false
+        }
+      ],
+      [
+        "expo-contacts",
+        {
+          "contactsPermission": "주소록에서 선택한 연락처만 가져와 조직 관리에 사용해요."
+        }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "extraMavenRepos": [
+              "https://devrepo.kakao.com/nexus/content/groups/public/"
+            ]
+          }
+        }
+      ],
+      "react-native-bottom-tabs"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "d669c08a-6e7d-4bd5-8b9c-f51ed292e61d"
+      }
+    }
+  }
+}

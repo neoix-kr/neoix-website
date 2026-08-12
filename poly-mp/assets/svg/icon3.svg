@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <defs>
+    <linearGradient id="bg3" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0F172A"/>
+      <stop offset="100%" stop-color="#1E293B"/>
+    </linearGradient>
+    <clipPath id="clip3"><rect width="1024" height="1024" rx="220" ry="220"/></clipPath>
+  </defs>
+  <g clip-path="url(#clip3)">
+    <rect width="1024" height="1024" fill="url(#bg3)"/>
+    <rect x="200" y="660" width="624" height="4" rx="2" fill="rgba(255,255,255,0.1)"/>
+  </g>
+  <g clip-path="url(#clip3)">
+    <text x="512" y="420" text-anchor="middle" dominant-baseline="central" 
+          font-family="Apple SD Gothic Neo, sans-serif" 
+          font-size="330" font-weight="900" fill="white">폴리</text>
+    <text x="512" y="610" text-anchor="middle" dominant-baseline="central" 
+          font-family="SF Pro Display, Helvetica Neue, Arial, sans-serif" 
+          font-size="55" font-weight="400" fill="rgba(255,255,255,0.35)" letter-spacing="16">POLITICIAN</text>
+  </g>
+</svg>

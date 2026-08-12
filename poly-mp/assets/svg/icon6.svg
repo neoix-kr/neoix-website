@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <defs>
+    <linearGradient id="bg6" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#115E59"/>
+      <stop offset="100%" stop-color="#14B8A6"/>
+    </linearGradient>
+    <clipPath id="clip6"><rect width="1024" height="1024" rx="220" ry="220"/></clipPath>
+  </defs>
+  <g clip-path="url(#clip6)">
+    <rect width="1024" height="1024" fill="url(#bg6)"/>
+  </g>
+  <g clip-path="url(#clip6)">
+    <circle cx="512" cy="300" r="70" fill="rgba(255,255,255,0.9)"/>
+    <path d="M 420,510 Q 420,410 512,410 Q 604,410 604,510 L 420,510 Z" fill="rgba(255,255,255,0.9)"/>
+    <circle cx="340" cy="340" r="52" fill="rgba(255,255,255,0.45)"/>
+    <path d="M 265,490 Q 265,400 340,400 Q 415,400 415,490 L 265,490 Z" fill="rgba(255,255,255,0.45)"/>
+    <circle cx="684" cy="340" r="52" fill="rgba(255,255,255,0.45)"/>
+    <path d="M 609,490 Q 609,400 684,400 Q 759,400 759,490 L 609,490 Z" fill="rgba(255,255,255,0.45)"/>
+    <text x="512" y="680" text-anchor="middle" dominant-baseline="central" 
+          font-family="Apple SD Gothic Neo, sans-serif" 
+          font-size="170" font-weight="800" fill="white">폴리</text>
+    <text x="512" y="800" text-anchor="middle" dominant-baseline="central" 
+          font-family="Apple SD Gothic Neo, sans-serif" 
+          font-size="45" font-weight="500" fill="rgba(255,255,255,0.55)">우리동네 정치인</text>
+  </g>
+</svg>

@@ -1,0 +1,12 @@
+# 의존성·빌드 산출물 (Expo CNG — ios/android는 prebuild로 재생성)
+node_modules/
+ios/
+android/
+.expo/
+dist/
+*.log
+
+# 로컬 환경 값 — .env.example 참고 (publishable 키뿐이지만 관례상 제외)
+.env
+
+.DS_Store
