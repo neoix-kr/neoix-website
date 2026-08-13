@@ -313,7 +313,8 @@ function ComposeModal({ visible, seg, onClose, onSaved }: {
 
   return (
     <Modal visible={visible} animationType="slide" presentationStyle="pageSheet" onRequestClose={onClose}>
-      <KeyboardAvoidingView style={{ flex: 1, backgroundColor: COLORS.background }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+      {/* 컴포저는 흰 시트다 — 회색 캔버스를 그대로 쓰면 빈 화면이 미완성처럼 보인다 */}
+      <KeyboardAvoidingView style={{ flex: 1, backgroundColor: COLORS.surface }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         {/* 모달 헤더 — 취소 / 타이틀 / 올리기 pill */}
         <View style={s.modalHead}>
           <Pressable onPress={() => { reset(); onClose(); }}><Text style={s.modalCancel}>취소</Text></Pressable>
@@ -325,13 +326,18 @@ function ComposeModal({ visible, seg, onClose, onSaved }: {
 
         {seg === 'feed' ? (
           <>
-            <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: LAYOUT.screenX, paddingBottom: 24 }} keyboardShouldPersistTaps="handled">
-              {/* 프로필 행 — 아바타 + 이름 + 카테고리 미니 칩 */}
+            {/* 본문 영역이 남은 공간을 전부 차지한다 — 빈 여백이 생기지 않고 어디를 눌러도 입력에 포커스 */}
+            <View style={s.compArea}>
               <View style={s.compProfile}>
                 <InitialAvatar name={myName} size={LAYOUT.rowAvatar} />
                 <View style={{ flex: 1 }}>
                   <Text style={s.compName} numberOfLines={1}>{myName}</Text>
-                  <View style={s.miniChipRow}>
+                  <ScrollView
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    keyboardShouldPersistTaps="handled"
+                    contentContainerStyle={s.miniChipRow}
+                  >
                     {CATEGORIES.map(c => (
                       <Pressable key={c.key}
                         style={[s.miniChip, category === c.key && s.miniChipActive]}
@@ -339,20 +345,30 @@ function ComposeModal({ visible, seg, onClose, onSaved }: {
                         <Text style={[s.miniChipText, category === c.key && s.miniChipTextActive]}>{c.label}</Text>
                       </Pressable>
                     ))}
-                  </View>
+                  </ScrollView>
                 </View>
               </View>
 
-              {/* 본문 — 테두리 없는 플랫 입력 (페북 컴포저) */}
+              {/* 열자마자 키보드가 올라와 하단 공백을 채운다(페북 컴포저와 동일) */}
               <TextInput
                 style={s.compBody}
                 placeholder="오늘의 활동을 기록하세요…"
                 placeholderTextColor={COLORS.textTertiary}
-                multiline value={body} onChangeText={setBody}
+                multiline
+                autoFocus={visible}
+                value={body}
+                onChangeText={setBody}
               />
+            </View>
 
-              {/* 사진 그리드 — 썸네일 80 + X 오버레이 + 추가 타일 */}
-              <View style={s.thumbWrap}>
+            {/* 선택한 사진 — 본문 아래 가로 스트립 (없으면 아예 렌더하지 않는다) */}
+            {photos.length > 0 && (
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                style={s.photoStrip}
+                contentContainerStyle={s.photoStripInner}
+              >
                 {photos.map((p, i) => (
                   <View key={`${p.uri}-${i}`}>
                     <Image source={{ uri: p.uri }} style={s.thumb} />
@@ -361,19 +377,13 @@ function ComposeModal({ visible, seg, onClose, onSaved }: {
                     </Pressable>
                   </View>
                 ))}
-                {photos.length < MAX_PHOTOS && (
-                  <Pressable style={s.thumbAdd} onPress={pickPhotos}>
-                    <Ionicons name="image-outline" size={19} color={COLORS.textCaption} />
-                    <Text style={s.thumbAddText}>사진</Text>
-                  </Pressable>
-                )}
-              </View>
-            </ScrollView>
+              </ScrollView>
+            )}
 
-            {/* 하단 고정 옵션 바 — 장소 인라인 + SNS 공유 토글 */}
+            {/* 하단 액션 바 — 장소 한 줄 + [사진 추가]·SNS 공유 토글 */}
             <View style={s.optionBar}>
               <View style={s.placeRow}>
-                <Ionicons name="location-outline" size={17} color={COLORS.textCaption} />
+                <Ionicons name="location-outline" size={16} color={COLORS.textTertiary} />
                 <TextInput
                   style={s.placeInput}
                   placeholder="장소 추가 (선택)"
@@ -381,12 +391,24 @@ function ComposeModal({ visible, seg, onClose, onSaved }: {
                   value={place} onChangeText={setPlace}
                 />
               </View>
-              <Pressable style={s.toggleRow} onPress={() => setShareAfter(v => !v)}>
-                <View style={[s.checkbox, shareAfter && { backgroundColor: COLORS.primary, borderColor: COLORS.primary }]}>
-                  {shareAfter && <Text style={{ color: COLORS.textInverse, fontSize: 12, fontWeight: '800' }}>✓</Text>}
-                </View>
-                <Text style={s.toggleText}>저장 후 SNS 공유창 열기 (인스타 자동 업로드는 프로 요금제에서 순차 제공)</Text>
-              </Pressable>
+              <View style={s.actionRowBar}>
+                <Pressable
+                  style={[s.photoBtn, photos.length >= MAX_PHOTOS && { opacity: 0.4 }]}
+                  disabled={photos.length >= MAX_PHOTOS}
+                  onPress={pickPhotos}
+                >
+                  <Ionicons name="images-outline" size={17} color={COLORS.primary} />
+                  <Text style={s.photoBtnText}>
+                    사진{photos.length > 0 ? ` ${photos.length}/${MAX_PHOTOS}` : ''}
+                  </Text>
+                </Pressable>
+                <Pressable style={s.toggleRow} onPress={() => setShareAfter(v => !v)}>
+                  <View style={[s.checkbox, shareAfter && { backgroundColor: COLORS.primary, borderColor: COLORS.primary }]}>
+                    {shareAfter && <Ionicons name="checkmark" size={13} color={COLORS.textInverse} />}
+                  </View>
+                  <Text style={s.toggleText}>올린 뒤 SNS 공유</Text>
+                </Pressable>
+              </View>
             </View>
           </>
         ) : (
@@ -461,40 +483,58 @@ const makeStyles = (COLORS: ThemeColors) => StyleSheet.create({
   postPillText: { fontSize: 13.5, fontWeight: '700', color: COLORS.textInverse, letterSpacing: -0.2 },
   compProfile: { flexDirection: 'row', alignItems: 'flex-start', gap: LAYOUT.rowGap },
   compName: { fontSize: 15.5, fontWeight: '700', color: COLORS.text, letterSpacing: -0.3, marginTop: 1 },
-  miniChipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginTop: 6 },
-  miniChip: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 14, backgroundColor: COLORS.surface, ...SHADOWS.subtle },
-  miniChipActive: { backgroundColor: COLORS.text },
-  miniChipText: { fontSize: 12, fontWeight: '600', color: COLORS.textSecondary, letterSpacing: -0.2 },
-  miniChipTextActive: { color: COLORS.textInverse, fontWeight: '700' },
-  compBody: {
-    fontSize: 16.5, lineHeight: 24, color: COLORS.text, letterSpacing: -0.2,
-    minHeight: 132, textAlignVertical: 'top', marginTop: 12, padding: 0,
+  // 카테고리 칩 — 선택 상태를 피드 카드의 카테고리 뱃지와 같은 색으로 두어
+  // "올리면 이런 뱃지가 붙는다"가 바로 읽히게 한다(검은 pill은 흰 시트에서 과하다).
+  miniChipRow: { flexDirection: 'row', gap: 6, marginTop: 6, paddingRight: LAYOUT.screenX },
+  miniChip: {
+    paddingHorizontal: 10, paddingVertical: 4.5, borderRadius: 14,
+    backgroundColor: COLORS.grey100,
   },
-  thumbWrap: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 8 },
-  thumb: { width: 80, height: 80, borderRadius: 10, backgroundColor: COLORS.backgroundSecondary },
+  miniChipActive: { backgroundColor: COLORS.primaryLight },
+  miniChipText: { fontSize: 12, fontWeight: '600', color: COLORS.textSecondary, letterSpacing: -0.2 },
+  miniChipTextActive: { color: COLORS.primary, fontWeight: '700' },
+  // 본문 영역 — 남은 공간을 전부 차지해 빈 여백이 남지 않게 한다
+  compArea: { flex: 1, paddingHorizontal: LAYOUT.screenX, paddingTop: LAYOUT.cardPadY },
+  compBody: {
+    flex: 1,
+    fontSize: 16.5, lineHeight: 24, color: COLORS.text, letterSpacing: -0.2,
+    textAlignVertical: 'top', marginTop: 12, padding: 0,
+  },
+  photoStrip: { flexGrow: 0, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: COLORS.divider },
+  photoStripInner: { paddingHorizontal: LAYOUT.screenX, paddingVertical: 10, gap: 8 },
+  thumb: { width: 72, height: 72, borderRadius: 10, backgroundColor: COLORS.backgroundSecondary },
   thumbX: {
     position: 'absolute', top: -6, right: -6, width: 20, height: 20, borderRadius: 10,
     backgroundColor: COLORS.overlayStrong, alignItems: 'center', justifyContent: 'center',
   },
   thumbXText: { color: COLORS.textInverse, fontSize: 13, fontWeight: '700', marginTop: -1 },
-  thumbAdd: {
-    width: 80, height: 80, borderRadius: 10, borderWidth: 1, borderColor: COLORS.border,
-    borderStyle: 'dashed', alignItems: 'center', justifyContent: 'center', gap: 2,
-  },
-  thumbAddText: { fontSize: 11.5, color: COLORS.textTertiary, letterSpacing: -0.2 },
   optionBar: {
     borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: COLORS.divider,
-    paddingHorizontal: LAYOUT.screenX, paddingVertical: 12, gap: 8,
+    paddingHorizontal: LAYOUT.screenX, paddingTop: 10, paddingBottom: 12, gap: 6,
   },
-  placeRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  placeInput: { flex: 1, fontSize: 13.5, color: COLORS.text, letterSpacing: -0.2, paddingVertical: 5 },
-  toggleRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  checkbox: { width: 20, height: 20, borderRadius: 6, borderWidth: 1.5, borderColor: COLORS.border, alignItems: 'center', justifyContent: 'center' },
-  toggleText: { fontSize: 12, color: COLORS.textCaption, flex: 1, lineHeight: 17, letterSpacing: -0.2 },
+  placeRow: {
+    flexDirection: 'row', alignItems: 'center', gap: 8,
+    borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: COLORS.divider,
+    paddingBottom: 8,
+  },
+  placeInput: { flex: 1, fontSize: 13.5, color: COLORS.text, letterSpacing: -0.2, paddingVertical: 4 },
+  actionRowBar: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingTop: 4 },
+  photoBtn: {
+    flexDirection: 'row', alignItems: 'center', gap: 6,
+    paddingHorizontal: 12, paddingVertical: 7, borderRadius: 999,
+    backgroundColor: COLORS.primaryLight,
+  },
+  photoBtnText: { fontSize: 13, fontWeight: '700', color: COLORS.primary, letterSpacing: -0.2 },
+  toggleRow: { flexDirection: 'row', alignItems: 'center', gap: 7 },
+  checkbox: { width: 20, height: 20, borderRadius: 6, borderWidth: 1.5, borderColor: COLORS.borderStrong, alignItems: 'center', justifyContent: 'center' },
+  toggleText: { fontSize: 12.5, color: COLORS.textSecondary, letterSpacing: -0.2 },
 
   // ── 일정 모달 입력 ──
   input: {
+    // 흰 시트 위에서는 grey50만으로 입력칸이 안 보인다 — 테두리로 경계를 준다
     backgroundColor: COLORS.grey50,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: COLORS.border,
     borderRadius: LAYOUT.cardRadius,
     paddingHorizontal: LAYOUT.rowPadX,
     paddingVertical: 12,
