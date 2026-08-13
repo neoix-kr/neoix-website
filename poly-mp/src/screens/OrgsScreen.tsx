@@ -12,6 +12,7 @@ import Header from '../components/Header';
 import GlassIconButton from '../components/GlassIconButton';
 import PressableScale from '../components/PressableScale';
 import { CategoryChips, EmptyState } from '../components/PolyUI';
+import InitialAvatar from '../components/InitialAvatar';
 import type { MpOrg, MpContact } from '../types/db';
 
 type OrgKind = MpOrg['kind'];
@@ -35,7 +36,7 @@ const FRIENDLY_LEVELS: { value: number; label: string }[] = [
 ];
 const friendlyLabel = (v: number | null) =>
   v === null ? '미평가' : FRIENDLY_LEVELS.find(f => f.value === v)?.label ?? '중립';
-const friendlyColor = (C: any, v: number | null): string => {
+const friendlyColor = (C: ThemeColors, v: number | null): string => {
   if (v === null) return C.grey300;
   if (v === 2) return C.success;
   if (v === 1) return C.accent;
@@ -43,6 +44,9 @@ const friendlyColor = (C: any, v: number | null): string => {
   if (v === -1) return C.warning;
   return C.error;
 };
+// -2~2 → 0~100% (미니 게이지 채움 폭)
+const friendlyPercent = (v: number | null) =>
+  v === null ? 0 : Math.round(((v + 2) / 4) * 100);
 
 type MemberRow = {
   contact_id: string;
@@ -80,6 +84,13 @@ export default function OrgsScreen() {
     [orgs, filter],
   );
 
+  // 요약 — 전체 / 우호(1 이상) / 미평가
+  const stats = useMemo(() => ({
+    total: orgs.length,
+    friendly: orgs.filter(o => o.friendly !== null && o.friendly >= 1).length,
+    unrated: orgs.filter(o => o.friendly === null).length,
+  }), [orgs]);
+
   const s = useMemo(() => makeStyles(COLORS), [COLORS]);
 
   return (
@@ -110,32 +121,71 @@ export default function OrgsScreen() {
         keyExtractor={i => i.id}
         contentContainerStyle={{ paddingTop: 2, paddingBottom: 120 }}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={COLORS.textCaption} />}
+        ListHeaderComponent={
+          orgs.length === 0 ? null : (
+            <View style={s.statWrap}>
+              <View style={s.statCell}>
+                <Text style={s.statNum}>{stats.total}</Text>
+                <Text style={s.statLabel}>전체</Text>
+              </View>
+              <View style={s.statDivider} />
+              <View style={s.statCell}>
+                <Text style={[s.statNum, { color: COLORS.primary }]}>{stats.friendly}</Text>
+                <Text style={s.statLabel}>우호</Text>
+              </View>
+              <View style={s.statDivider} />
+              <View style={s.statCell}>
+                <Text style={s.statNum}>{stats.unrated}</Text>
+                <Text style={s.statLabel}>미평가</Text>
+              </View>
+            </View>
+          )
+        }
         ListEmptyComponent={
           <EmptyState
             icon="business-outline"
-            title="등록된 조직이 없어요"
-            sub={'지역 단체·기업·언론을 등록하면\n우호도와 소속 인맥을 한눈에 관리할 수 있어요.'}
+            title={filter === 'all' ? '등록된 조직이 없어요' : `${kindLabel(filter)} 유형의 조직이 없어요`}
+            sub={filter === 'all'
+              ? '지역 단체·기업·언론을 등록하면\n우호도와 소속 인맥을 한눈에 관리할 수 있어요.'
+              : '다른 유형을 선택하거나 새 조직을 등록해 보세요.'}
             ctaLabel="조직 등록하기"
             onCta={() => setCreate(true)}
           />
         }
         renderItem={({ item }) => (
           <PressableScale style={s.card} scaleTo={0.98} onPress={() => setDetail(item)}>
-            <View style={s.cardTop}>
-              <View style={s.kindBadge}>
-                <Text style={s.kindBadgeText}>{kindLabel(item.kind)}</Text>
-              </View>
-              <Text style={s.orgName} numberOfLines={1}>{item.name}</Text>
-            </View>
-            <View style={s.cardBottom}>
-              <Text style={s.meta}>
-                {item.region ? `${item.region} · ` : ''}소속 {counts[item.id] ?? 0}명
-              </Text>
-              <View style={s.friendlyRow}>
-                <View style={[s.dot, { backgroundColor: friendlyColor(COLORS, item.friendly) }]} />
-                <Text style={[s.meta, item.friendly === null && { color: COLORS.textPlaceholder }]}>
-                  {friendlyLabel(item.friendly)}{item.friendly !== null ? `(${item.friendly})` : ''}
-                </Text>
+            <View style={s.cardRow}>
+              <InitialAvatar name={item.name} size={44} />
+              <View style={s.cardMain}>
+                <View style={s.cardTop}>
+                  <View style={s.kindBadge}>
+                    <Text style={s.kindBadgeText}>{kindLabel(item.kind)}</Text>
+                  </View>
+                  <Text style={s.orgName} numberOfLines={1}>{item.name}</Text>
+                </View>
+                <View style={s.cardBottom}>
+                  <Text style={[s.meta, s.cardMeta]} numberOfLines={1}>
+                    {item.region ? `${item.region} · ` : ''}소속 {counts[item.id] ?? 0}명
+                  </Text>
+                  <View style={s.friendlyRow}>
+                    <View style={s.gaugeTrack}>
+                      {item.friendly !== null && (
+                        <View
+                          style={[
+                            s.gaugeFill,
+                            {
+                              width: `${friendlyPercent(item.friendly)}%`,
+                              backgroundColor: friendlyColor(COLORS, item.friendly),
+                            },
+                          ]}
+                        />
+                      )}
+                    </View>
+                    <Text style={[s.meta, item.friendly === null && { color: COLORS.textPlaceholder }]}>
+                      {friendlyLabel(item.friendly)}
+                    </Text>
+                  </View>
+                </View>
               </View>
             </View>
           </PressableScale>
@@ -390,6 +440,21 @@ function CreateModal({ visible, onClose, onSaved }: {
 const makeStyles = (COLORS: ThemeColors) => StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.background },
 
+  // 요약 스트립 — 전체 / 우호 / 미평가
+  statWrap: {
+    flexDirection: 'row',
+    marginHorizontal: 16,
+    marginBottom: 10,
+    backgroundColor: COLORS.surface,
+    borderRadius: 18,
+    paddingVertical: 14,
+    ...SHADOWS.subtle,
+  },
+  statCell: { flex: 1, alignItems: 'center', gap: 3 },
+  statDivider: { width: StyleSheet.hairlineWidth, backgroundColor: COLORS.divider, marginVertical: 2 },
+  statNum: { fontSize: 19, fontWeight: '800', color: COLORS.text, letterSpacing: -0.4 },
+  statLabel: { fontSize: 11.5, color: COLORS.textTertiary, letterSpacing: -0.2 },
+
   // 리스트 카드
   card: {
     backgroundColor: COLORS.surface,
@@ -401,14 +466,22 @@ const makeStyles = (COLORS: ThemeColors) => StyleSheet.create({
     borderRadius: 18,
     ...SHADOWS.subtle,
   },
+  cardRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  cardMain: { flex: 1 },
   cardTop: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 9 },
   orgName: { flex: 1, fontSize: 15, fontWeight: '700', color: COLORS.text, letterSpacing: -0.3 },
   kindBadge: { backgroundColor: COLORS.primaryLight, paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 },
   kindBadgeText: { fontSize: 10.5, fontWeight: '700', color: COLORS.primary, letterSpacing: -0.2 },
-  cardBottom: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  cardBottom: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8 },
   meta: { fontSize: 12, color: COLORS.textTertiary, letterSpacing: -0.2 },
-  friendlyRow: { flexDirection: 'row', alignItems: 'center', gap: 5 },
+  // 지역명이 길어도 게이지를 밀어내지 않도록 (RN flexShrink 기본값 0)
+  cardMeta: { flex: 1 },
+  friendlyRow: { flexDirection: 'row', alignItems: 'center', gap: 6, flexShrink: 0 },
   dot: { width: 8, height: 8, borderRadius: 4 },
+
+  // 우호도 미니 게이지 (-2~2 → 0~100%)
+  gaugeTrack: { width: 56, height: 5, borderRadius: 3, backgroundColor: COLORS.grey200, overflow: 'hidden', flexShrink: 0 },
+  gaugeFill: { height: '100%', borderRadius: 3 },
 
   // 모달 공통 — pageSheet 흰 시트 + grey50 폼
   modalSheet: { flex: 1, backgroundColor: COLORS.surface },

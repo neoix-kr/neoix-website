@@ -46,11 +46,12 @@ function MainTabs() {
       tabBarActiveTintColor="#A5A6FF"
       tabBarInactiveTintColor="rgba(255,255,255,0.6)"
     >
-      <Tab.Screen name="Archive" component={ArchiveScreen} options={{ title: '아카이빙', tabBarIcon: () => ({ sfSymbol: 'square.and.pencil' }) }} />
-      <Tab.Screen name="Cases" component={CasesScreen} options={{ title: '민원', tabBarIcon: () => ({ sfSymbol: 'bubble.left.and.bubble.right' }) }} />
-      <Tab.Screen name="Support" component={SupportScreen} options={{ title: '후원회', tabBarIcon: () => ({ sfSymbol: 'wonsign.circle' }) }} />
+      {/* 탭 순서 확정: 연락처 · 민원 · 아카이빙(가운데, 시작 탭) · 조직 · 후원회 */}
       <Tab.Screen name="Contacts" component={ContactsScreen} options={{ title: '연락처', tabBarIcon: () => ({ sfSymbol: 'person.crop.circle' }) }} />
+      <Tab.Screen name="Cases" component={CasesScreen} options={{ title: '민원', tabBarIcon: () => ({ sfSymbol: 'bubble.left.and.bubble.right' }) }} />
+      <Tab.Screen name="Archive" component={ArchiveScreen} options={{ title: '아카이빙', tabBarIcon: () => ({ sfSymbol: 'square.and.pencil' }) }} />
       <Tab.Screen name="Orgs" component={OrgsScreen} options={{ title: '조직', tabBarIcon: () => ({ sfSymbol: 'building.2' }) }} />
+      <Tab.Screen name="Support" component={SupportScreen} options={{ title: '후원회', tabBarIcon: () => ({ sfSymbol: 'wonsign.circle' }) }} />
     </Tab.Navigator>
   );
 }

@@ -1,8 +1,8 @@
-// 아카이빙 — 활동 피드(게시물) + 정치일정. 작성 시 SNS 공유시트(P0 반자동) 연동.
+// 아카이빙 — 활동 피드(게시물) + 정치일정. 페이스북 업로드/피드 문법으로 정제.
 // 폴리 화면 문법: Header(GlassIconButton) + UnderlineTabs + 폴리 카드 + EmptyState. 자유 창작 금지.
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
-  View, Text, FlatList, Pressable, StyleSheet, Modal, TextInput,
+  View, Text, FlatList, Pressable, StyleSheet, Modal, TextInput, ScrollView,
   Alert, Share, RefreshControl, KeyboardAvoidingView, Platform, Image,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
@@ -10,12 +10,15 @@ import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
+import { useMember } from '../contexts/MemberContext';
 import { uploadPostImage, mediaUrl } from '../lib/media';
+import { timeAgo } from '../lib/time';
 import { useTheme, type ThemeColors } from '../theme/ThemeContext';
 import { SHADOWS } from '../theme/colors';
 import Header from '../components/Header';
 import GlassIconButton from '../components/GlassIconButton';
 import PressableScale from '../components/PressableScale';
+import InitialAvatar from '../components/InitialAvatar';
 import { UnderlineTabs, EmptyState } from '../components/PolyUI';
 import type { MpPost, MpSchedule, PostCategory } from '../types/db';
 
@@ -35,14 +38,24 @@ const fmtDate = (iso: string) => {
   return `${d.getMonth() + 1}월 ${d.getDate()}일 ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
 };
 
+// 2장씩 끊기 — 페북식 2열 그리드 렌더용
+const chunk2 = <T,>(arr: T[]): T[][] => {
+  const rows: T[][] = [];
+  for (let i = 0; i < arr.length; i += 2) rows.push(arr.slice(i, i + 2));
+  return rows;
+};
+
 export default function ArchiveScreen() {
   const { COLORS } = useTheme();
   const navigation = useNavigation<any>();
+  const { member } = useMember();
   const [seg, setSeg] = useState<'feed' | 'schedule'>('feed');
   const [posts, setPosts] = useState<MpPost[]>([]);
   const [schedules, setSchedules] = useState<MpSchedule[]>([]);
   const [refreshing, setRefreshing] = useState(false);
   const [compose, setCompose] = useState(false);
+
+  const myName = member?.name ?? '나';
 
   const load = useCallback(async () => {
     const [p, sch] = await Promise.all([
@@ -56,30 +69,56 @@ export default function ArchiveScreen() {
 
   const onRefresh = async () => { setRefreshing(true); await load(); setRefreshing(false); };
 
+  const confirmDelete = (id: string) => {
+    Alert.alert('게시물을 삭제할까요?', '삭제하면 되돌릴 수 없어요.', [
+      { text: '취소', style: 'cancel' },
+      {
+        text: '삭제', style: 'destructive',
+        onPress: async () => {
+          const { error } = await supabase.from('mp_posts').delete().eq('id', id);
+          if (error) return Alert.alert('삭제 실패', error.message);
+          load();
+        },
+      },
+    ]);
+  };
+
   const s = useMemo(() => makeStyles(COLORS), [COLORS]);
+
+  // ── 피드 상단 컴포저 카드 (페북 '무슨 생각을 하고 계신가요?' 문법) ──
+  const FeedComposer = (
+    <View style={[s.card, s.composerCard]}>
+      <InitialAvatar name={myName} size={40} />
+      <Pressable style={s.composerPill} onPress={() => setCompose(true)}>
+        <Text style={s.composerPillText}>오늘의 활동을 기록해 보세요</Text>
+      </Pressable>
+      <Pressable style={s.composerPhotoBtn} hitSlop={8} onPress={() => setCompose(true)}>
+        <Ionicons name="images-outline" size={22} color={COLORS.primary} />
+      </Pressable>
+    </View>
+  );
+
+  // ── 일정 탭 상단 소형 등록 카드 ──
+  const ScheduleComposer = (
+    <PressableScale style={[s.card, s.schedAddCard]} scaleTo={0.98} onPress={() => setCompose(true)}>
+      <Ionicons name="calendar-outline" size={18} color={COLORS.textSecondary} />
+      <Text style={s.schedAddText}>일정 등록하기</Text>
+    </PressableScale>
+  );
 
   return (
     <View style={{ flex: 1, backgroundColor: COLORS.background }}>
       <Header
         title="아카이빙"
         rightElement={
-          <View style={{ flexDirection: 'row', gap: 4 }}>
-            <GlassIconButton
-              icon="create-outline"
-              onPress={() => setCompose(true)}
-              size={44}
-              iconSize={20}
-              fallbackVariant="surface"
-            />
-            <GlassIconButton
-              icon="settings-outline"
-              onPress={() => navigation.navigate('Settings')}
-              size={44}
-              iconSize={20}
-              iconColor={COLORS.grey700}
-              fallbackVariant="plain"
-            />
-          </View>
+          <GlassIconButton
+            icon="settings-outline"
+            onPress={() => navigation.navigate('Settings')}
+            size={44}
+            iconSize={20}
+            iconColor={COLORS.grey700}
+            fallbackVariant="plain"
+          />
         }
       />
 
@@ -95,6 +134,7 @@ export default function ArchiveScreen() {
           keyExtractor={i => i.id}
           contentContainerStyle={{ paddingTop: 12, paddingBottom: 120 }}
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={COLORS.textCaption} />}
+          ListHeaderComponent={FeedComposer}
           ListEmptyComponent={
             <EmptyState
               icon="images-outline"
@@ -106,31 +146,51 @@ export default function ArchiveScreen() {
           }
           renderItem={({ item }) => (
             <View style={s.card}>
-              <View style={s.cardTop}>
-                <View style={s.catBadge}>
-                  <Text style={s.catBadgeText}>{catLabel(item.category)}</Text>
+              {/* 상단 — 아바타 + 이름·뱃지 / 시각·장소 (페북 게시물 헤더) */}
+              <View style={s.postHead}>
+                <InitialAvatar name={myName} size={36} />
+                <View style={{ flex: 1 }}>
+                  <View style={s.postNameRow}>
+                    <Text style={s.postName} numberOfLines={1}>{myName}</Text>
+                    <View style={s.catBadge}>
+                      <Text style={s.catBadgeText}>{catLabel(item.category)}</Text>
+                    </View>
+                  </View>
+                  <Text style={s.postMeta} numberOfLines={1}>
+                    {timeAgo(item.event_at ?? item.created_at)}{item.place ? ` · ${item.place}` : ''}
+                  </Text>
                 </View>
-                <Text style={s.meta} numberOfLines={1}>
-                  {fmtDate(item.event_at ?? item.created_at)}{item.place ? ` · ${item.place}` : ''}
-                </Text>
               </View>
+
               <Text style={s.body}>{item.body}</Text>
-              {item.media?.length > 0 && (
-                <View style={s.mediaWrap}>
-                  {item.media.map(m => (
-                    <Image
-                      key={m.path}
-                      source={{ uri: mediaUrl(m.path) }}
-                      style={item.media.length === 1 ? s.mediaSingle : s.mediaGrid}
-                      resizeMode="cover"
-                    />
+
+              {/* 사진 — 1장 풀와이드 / 2장 2열 / 3~4장 2x2 그리드 */}
+              {item.media?.length === 1 && (
+                <Image source={{ uri: mediaUrl(item.media[0].path) }} style={s.mediaSingle} resizeMode="cover" />
+              )}
+              {item.media?.length > 1 && (
+                <View style={s.mediaGridWrap}>
+                  {chunk2(item.media.slice(0, 4)).map((row, ri) => (
+                    <View key={ri} style={s.mediaGridRow}>
+                      {row.map(m => (
+                        <Image key={m.path} source={{ uri: mediaUrl(m.path) }} style={s.mediaCell} resizeMode="cover" />
+                      ))}
+                      {row.length === 1 && <View style={{ flex: 1 }} />}
+                    </View>
                   ))}
                 </View>
               )}
-              <PressableScale style={s.shareBtn} scaleTo={0.97} onPress={() => Share.share({ message: item.body })}>
-                <Ionicons name="share-social-outline" size={14} color={COLORS.textSecondary} />
-                <Text style={s.shareText}>SNS로 공유</Text>
-              </PressableScale>
+
+              {/* 하단 액션 행 — 공유 / 삭제 */}
+              <View style={s.actionRow}>
+                <PressableScale style={s.actionBtn} scaleTo={0.96} onPress={() => Share.share({ message: item.body })}>
+                  <Ionicons name="share-social-outline" size={16} color={COLORS.textSecondary} />
+                  <Text style={s.actionText}>공유</Text>
+                </PressableScale>
+                <Pressable style={s.deleteBtn} hitSlop={8} onPress={() => confirmDelete(item.id)}>
+                  <Ionicons name="trash-outline" size={16} color={COLORS.textTertiary} />
+                </Pressable>
+              </View>
             </View>
           )}
         />
@@ -140,6 +200,7 @@ export default function ArchiveScreen() {
           keyExtractor={i => i.id}
           contentContainerStyle={{ paddingTop: 12, paddingBottom: 120 }}
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={COLORS.textCaption} />}
+          ListHeaderComponent={ScheduleComposer}
           ListEmptyComponent={
             <EmptyState
               icon="calendar-outline"
@@ -168,7 +229,7 @@ export default function ArchiveScreen() {
   );
 }
 
-// ── 작성 모달 (게시물 / 일정 겸용) ──
+// ── 작성 모달 (페북 컴포저 문법 — 게시물 / 일정 겸용) ──
 type PickedPhoto = { uri: string; base64: string; w?: number; h?: number };
 const MAX_PHOTOS = 4;
 
@@ -177,6 +238,7 @@ function ComposeModal({ visible, seg, onClose, onSaved }: {
 }) {
   const { COLORS } = useTheme();
   const { user } = useAuth();
+  const { member } = useMember();
   const [body, setBody] = useState('');
   const [place, setPlace] = useState('');
   const [category, setCategory] = useState<PostCategory>('activity');
@@ -186,6 +248,8 @@ function ComposeModal({ visible, seg, onClose, onSaved }: {
   const [shareAfter, setShareAfter] = useState(true);
   const [photos, setPhotos] = useState<PickedPhoto[]>([]);
   const s = useMemo(() => makeStyles(COLORS), [COLORS]);
+
+  const myName = member?.name ?? '나';
 
   const reset = () => { setBody(''); setPlace(''); setTitle(''); setWhen(''); setCategory('activity'); setPhotos([]); };
 
@@ -248,37 +312,52 @@ function ComposeModal({ visible, seg, onClose, onSaved }: {
   return (
     <Modal visible={visible} animationType="slide" presentationStyle="pageSheet" onRequestClose={onClose}>
       <KeyboardAvoidingView style={{ flex: 1, backgroundColor: COLORS.background }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+        {/* 모달 헤더 — 취소 / 타이틀 / 올리기 pill */}
         <View style={s.modalHead}>
           <Pressable onPress={() => { reset(); onClose(); }}><Text style={s.modalCancel}>취소</Text></Pressable>
-          <Text style={s.modalTitle}>{seg === 'feed' ? '활동 기록' : '일정 등록'}</Text>
-          <Pressable onPress={save} disabled={busy}><Text style={s.modalSave}>저장</Text></Pressable>
+          <Text style={s.modalTitle}>{seg === 'feed' ? '새 활동' : '일정 등록'}</Text>
+          <Pressable onPress={save} disabled={busy} style={[s.postPill, busy && { opacity: 0.6 }]}>
+            <Text style={s.postPillText}>{seg === 'feed' ? '올리기' : '등록'}</Text>
+          </Pressable>
         </View>
-        <View style={{ padding: 16, gap: 12 }}>
-          {seg === 'feed' ? (
-            <>
-              {/* 카테고리 — 검정 활성 pill (CategoryChips 문법) */}
-              <View style={{ flexDirection: 'row', gap: 6, flexWrap: 'wrap' }}>
-                {CATEGORIES.map(c => (
-                  <Pressable key={c.key}
-                    style={[s.chipBtn, category === c.key && s.chipBtnActive]}
-                    onPress={() => setCategory(c.key)}>
-                    <Text style={[s.chipBtnText, category === c.key && s.chipBtnTextActive]}>{c.label}</Text>
-                  </Pressable>
-                ))}
+
+        {seg === 'feed' ? (
+          <>
+            <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 16, paddingBottom: 24 }} keyboardShouldPersistTaps="handled">
+              {/* 프로필 행 — 아바타 + 이름 + 카테고리 미니 칩 */}
+              <View style={s.compProfile}>
+                <InitialAvatar name={myName} size={40} />
+                <View style={{ flex: 1 }}>
+                  <Text style={s.compName} numberOfLines={1}>{myName}</Text>
+                  <View style={s.miniChipRow}>
+                    {CATEGORIES.map(c => (
+                      <Pressable key={c.key}
+                        style={[s.miniChip, category === c.key && s.miniChipActive]}
+                        onPress={() => setCategory(c.key)}>
+                        <Text style={[s.miniChipText, category === c.key && s.miniChipTextActive]}>{c.label}</Text>
+                      </Pressable>
+                    ))}
+                  </View>
+                </View>
               </View>
+
+              {/* 본문 — 테두리 없는 플랫 입력 (페북 컴포저) */}
               <TextInput
-                style={[s.input, s.inputMulti]}
-                placeholder="오늘의 활동을 기록하세요 — 이 내용이 그대로 SNS 공유 문구가 돼요"
-                placeholderTextColor={COLORS.textTertiary} multiline value={body} onChangeText={setBody}
+                style={s.compBody}
+                placeholder="오늘의 활동을 기록하세요…"
+                placeholderTextColor={COLORS.textTertiary}
+                multiline value={body} onChangeText={setBody}
               />
-              <TextInput style={s.input} placeholder="장소 (선택)" placeholderTextColor={COLORS.textTertiary} value={place} onChangeText={setPlace} />
-              {/* 사진 첨부 — 최대 4장, 탭하면 제거 */}
-              <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+
+              {/* 사진 그리드 — 썸네일 88 + X 오버레이 + 추가 타일 */}
+              <View style={s.thumbWrap}>
                 {photos.map((p, i) => (
-                  <Pressable key={`${p.uri}-${i}`} onPress={() => setPhotos(ps => ps.filter((_, j) => j !== i))}>
+                  <View key={`${p.uri}-${i}`}>
                     <Image source={{ uri: p.uri }} style={s.thumb} />
-                    <View style={s.thumbX}><Text style={s.thumbXText}>×</Text></View>
-                  </Pressable>
+                    <Pressable style={s.thumbX} hitSlop={6} onPress={() => setPhotos(ps => ps.filter((_, j) => j !== i))}>
+                      <Text style={s.thumbXText}>×</Text>
+                    </Pressable>
+                  </View>
                 ))}
                 {photos.length < MAX_PHOTOS && (
                   <Pressable style={s.thumbAdd} onPress={pickPhotos}>
@@ -287,21 +366,34 @@ function ComposeModal({ visible, seg, onClose, onSaved }: {
                   </Pressable>
                 )}
               </View>
+            </ScrollView>
+
+            {/* 하단 고정 옵션 바 — 장소 인라인 + SNS 공유 토글 */}
+            <View style={s.optionBar}>
+              <View style={s.placeRow}>
+                <Ionicons name="location-outline" size={18} color={COLORS.textCaption} />
+                <TextInput
+                  style={s.placeInput}
+                  placeholder="장소 추가 (선택)"
+                  placeholderTextColor={COLORS.textTertiary}
+                  value={place} onChangeText={setPlace}
+                />
+              </View>
               <Pressable style={s.toggleRow} onPress={() => setShareAfter(v => !v)}>
                 <View style={[s.checkbox, shareAfter && { backgroundColor: COLORS.primary, borderColor: COLORS.primary }]}>
                   {shareAfter && <Text style={{ color: COLORS.textInverse, fontSize: 12, fontWeight: '800' }}>✓</Text>}
                 </View>
                 <Text style={s.toggleText}>저장 후 SNS 공유창 열기 (인스타 자동 업로드는 프로 요금제에서 순차 제공)</Text>
               </Pressable>
-            </>
-          ) : (
-            <>
-              <TextInput style={s.input} placeholder="일정 제목" placeholderTextColor={COLORS.textTertiary} value={title} onChangeText={setTitle} />
-              <TextInput style={s.input} placeholder="일시 — 2026-08-15 14:00 (비우면 지금)" placeholderTextColor={COLORS.textTertiary} value={when} onChangeText={setWhen} />
-              <TextInput style={s.input} placeholder="장소 (선택)" placeholderTextColor={COLORS.textTertiary} value={place} onChangeText={setPlace} />
-            </>
-          )}
-        </View>
+            </View>
+          </>
+        ) : (
+          <View style={{ padding: 16, gap: 12 }}>
+            <TextInput style={s.input} placeholder="일정 제목" placeholderTextColor={COLORS.textTertiary} value={title} onChangeText={setTitle} />
+            <TextInput style={s.input} placeholder="일시 — 2026-08-15 14:00 (비우면 지금)" placeholderTextColor={COLORS.textTertiary} value={when} onChangeText={setWhen} />
+            <TextInput style={s.input} placeholder="장소 (선택)" placeholderTextColor={COLORS.textTertiary} value={place} onChangeText={setPlace} />
+          </View>
+        )}
       </KeyboardAvoidingView>
     </Modal>
   );
@@ -319,16 +411,34 @@ const makeStyles = (COLORS: ThemeColors) => StyleSheet.create({
     borderRadius: 18,
     ...SHADOWS.subtle,
   },
-  cardTop: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 9 },
+
+  // ── 피드 상단 컴포저 카드 ──
+  composerCard: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingBottom: 15 },
+  composerPill: { flex: 1, backgroundColor: COLORS.grey50, borderRadius: 20, paddingHorizontal: 14, paddingVertical: 10 },
+  composerPillText: { fontSize: 14, color: COLORS.textTertiary, letterSpacing: -0.2 },
+  composerPhotoBtn: { padding: 4 },
+
+  // ── 피드 카드 (페북 게시물 문법) ──
+  postHead: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 11 },
+  postNameRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  postName: { fontSize: 14.5, fontWeight: '700', color: COLORS.text, letterSpacing: -0.2, flexShrink: 1 },
+  postMeta: { fontSize: 11.5, color: COLORS.textTertiary, letterSpacing: -0.1, marginTop: 2 },
   catBadge: { backgroundColor: COLORS.primaryLight, paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 },
-  catBadgeText: { fontSize: 11, fontWeight: '700', color: COLORS.primary, letterSpacing: -0.1 },
+  catBadgeText: { fontSize: 10.5, fontWeight: '700', color: COLORS.primary, letterSpacing: -0.1 },
+  body: { fontSize: 15, color: COLORS.text, lineHeight: 22, letterSpacing: -0.2 },
+  mediaSingle: { width: '100%', aspectRatio: 4 / 3, borderRadius: 12, marginTop: 11, backgroundColor: COLORS.backgroundSecondary },
+  mediaGridWrap: { gap: 4, marginTop: 11 },
+  mediaGridRow: { flexDirection: 'row', gap: 4 },
+  mediaCell: { flex: 1, aspectRatio: 1, borderRadius: 8, backgroundColor: COLORS.backgroundSecondary },
+  actionRow: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+    borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: COLORS.divider,
+    marginTop: 12, paddingTop: 10,
+  },
+  actionBtn: { flexDirection: 'row', alignItems: 'center', gap: 5, paddingVertical: 2 },
+  actionText: { fontSize: 13, fontWeight: '600', color: COLORS.textSecondary, letterSpacing: -0.2 },
+  deleteBtn: { padding: 2 },
   meta: { fontSize: 11, color: COLORS.textTertiary, letterSpacing: -0.1, flexShrink: 1 },
-  body: { fontSize: 13, color: COLORS.textSecondary, lineHeight: 19, letterSpacing: -0.2 },
-  mediaWrap: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 10 },
-  mediaSingle: { width: '100%', aspectRatio: 4 / 3, borderRadius: 12, backgroundColor: COLORS.backgroundSecondary },
-  mediaGrid: { width: 96, height: 96, borderRadius: 12, backgroundColor: COLORS.backgroundSecondary },
-  shareBtn: { flexDirection: 'row', alignItems: 'center', gap: 5, alignSelf: 'flex-start', marginTop: 10, paddingVertical: 4 },
-  shareText: { fontSize: 12.5, fontWeight: '600', color: COLORS.textSecondary, letterSpacing: -0.2 },
 
   // ── 일정 카드 — dateBox 날짜 강조 ──
   schedCard: { flexDirection: 'row', alignItems: 'center', gap: 12 },
@@ -336,12 +446,49 @@ const makeStyles = (COLORS: ThemeColors) => StyleSheet.create({
   dateDay: { fontSize: 20, fontWeight: '800', color: COLORS.primary, letterSpacing: -0.3 },
   dateMon: { fontSize: 11, color: COLORS.textTertiary, letterSpacing: -0.1, marginTop: 1 },
   schedTitle: { fontSize: 15, fontWeight: '700', color: COLORS.text, letterSpacing: -0.2, marginBottom: 3 },
+  schedAddCard: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 7, paddingBottom: 15 },
+  schedAddText: { fontSize: 14, fontWeight: '600', color: COLORS.textSecondary, letterSpacing: -0.2 },
 
-  // ── 작성 모달 (pageSheet — 헤더 구조 유지, 타이포만 폴리 자간) ──
-  modalHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 14 },
+  // ── 작성 모달 (페북 컴포저) ──
+  modalHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 12 },
   modalCancel: { fontSize: 16, color: COLORS.textCaption, letterSpacing: -0.2 },
   modalTitle: { fontSize: 16, fontWeight: '700', color: COLORS.text, letterSpacing: -0.3 },
-  modalSave: { fontSize: 16, fontWeight: '700', color: COLORS.primary, letterSpacing: -0.2 },
+  postPill: { backgroundColor: COLORS.primary, borderRadius: 999, paddingHorizontal: 16, paddingVertical: 8 },
+  postPillText: { fontSize: 13.5, fontWeight: '700', color: COLORS.textInverse, letterSpacing: -0.2 },
+  compProfile: { flexDirection: 'row', alignItems: 'flex-start', gap: 10 },
+  compName: { fontSize: 15, fontWeight: '700', color: COLORS.text, letterSpacing: -0.2, marginTop: 1 },
+  miniChipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginTop: 6 },
+  miniChip: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 16, backgroundColor: COLORS.surface, ...SHADOWS.subtle },
+  miniChipActive: { backgroundColor: COLORS.text },
+  miniChipText: { fontSize: 12, fontWeight: '600', color: COLORS.textSecondary, letterSpacing: -0.2 },
+  miniChipTextActive: { color: COLORS.textInverse, fontWeight: '700' },
+  compBody: {
+    fontSize: 17, lineHeight: 25, color: COLORS.text, letterSpacing: -0.2,
+    minHeight: 140, textAlignVertical: 'top', marginTop: 14, padding: 0,
+  },
+  thumbWrap: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 8 },
+  thumb: { width: 88, height: 88, borderRadius: 10, backgroundColor: COLORS.backgroundSecondary },
+  thumbX: {
+    position: 'absolute', top: -6, right: -6, width: 20, height: 20, borderRadius: 10,
+    backgroundColor: COLORS.overlayStrong, alignItems: 'center', justifyContent: 'center',
+  },
+  thumbXText: { color: COLORS.textInverse, fontSize: 13, fontWeight: '700', marginTop: -1 },
+  thumbAdd: {
+    width: 88, height: 88, borderRadius: 10, borderWidth: 1, borderColor: COLORS.border,
+    borderStyle: 'dashed', alignItems: 'center', justifyContent: 'center', gap: 2,
+  },
+  thumbAddText: { fontSize: 11, color: COLORS.textCaption, letterSpacing: -0.1 },
+  optionBar: {
+    borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: COLORS.divider,
+    paddingHorizontal: 16, paddingTop: 10, paddingBottom: 14, gap: 8,
+  },
+  placeRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  placeInput: { flex: 1, fontSize: 14, color: COLORS.text, letterSpacing: -0.2, paddingVertical: 6 },
+  toggleRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  checkbox: { width: 20, height: 20, borderRadius: 6, borderWidth: 1.5, borderColor: COLORS.border, alignItems: 'center', justifyContent: 'center' },
+  toggleText: { fontSize: 12, color: COLORS.textCaption, flex: 1, lineHeight: 17, letterSpacing: -0.1 },
+
+  // ── 일정 모달 입력 (기존 유지) ──
   input: {
     backgroundColor: COLORS.grey50,
     borderRadius: 12,
@@ -351,23 +498,4 @@ const makeStyles = (COLORS: ThemeColors) => StyleSheet.create({
     color: COLORS.text,
     letterSpacing: -0.2,
   },
-  inputMulti: { minHeight: 110, textAlignVertical: 'top' },
-  chipBtn: { paddingHorizontal: 13, paddingVertical: 6, borderRadius: 16, backgroundColor: COLORS.surface, ...SHADOWS.subtle },
-  chipBtnActive: { backgroundColor: COLORS.text },
-  chipBtnText: { fontSize: 13, fontWeight: '600', color: COLORS.textSecondary, letterSpacing: -0.2 },
-  chipBtnTextActive: { color: COLORS.textInverse, fontWeight: '700' },
-  thumb: { width: 72, height: 72, borderRadius: 12, backgroundColor: COLORS.backgroundSecondary },
-  thumbX: {
-    position: 'absolute', top: -6, right: -6, width: 20, height: 20, borderRadius: 10,
-    backgroundColor: COLORS.overlayStrong, alignItems: 'center', justifyContent: 'center',
-  },
-  thumbXText: { color: COLORS.textInverse, fontSize: 13, fontWeight: '700', marginTop: -1 },
-  thumbAdd: {
-    width: 72, height: 72, borderRadius: 12, borderWidth: 1, borderColor: COLORS.border,
-    borderStyle: 'dashed', alignItems: 'center', justifyContent: 'center', gap: 2,
-  },
-  thumbAddText: { fontSize: 11, color: COLORS.textCaption, letterSpacing: -0.1 },
-  toggleRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  checkbox: { width: 20, height: 20, borderRadius: 6, borderWidth: 1.5, borderColor: COLORS.border, alignItems: 'center', justifyContent: 'center' },
-  toggleText: { fontSize: 12, color: COLORS.textCaption, flex: 1, lineHeight: 17, letterSpacing: -0.1 },
 });

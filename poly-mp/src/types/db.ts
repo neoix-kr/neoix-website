@@ -72,6 +72,8 @@ export interface MpContactOrg {
 }
 
 export type CaseStatus = 'open' | 'progress' | 'resolved' | 'closed';
+/** 접수 경로 — 직접(사적으로) 받은 민원 기록용 */
+export type CaseChannel = 'call' | 'sms' | 'kakao' | 'visit' | 'etc';
 export interface MpCase {
   id: string;
   created_at: string;
@@ -81,6 +83,9 @@ export interface MpCase {
   body: string | null;
   status: CaseStatus;
   resolved_at: string | null;
+  /** 문자·카톡 캡처 등 첨부 (mp-media 버킷) */
+  media: { path: string; w?: number; h?: number }[];
+  channel: CaseChannel | null;
 }
 
 export interface MpMeeting {

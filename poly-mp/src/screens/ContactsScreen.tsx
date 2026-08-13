@@ -11,6 +11,7 @@ import { Ionicons } from '@expo/vector-icons';
 import Header from '../components/Header';
 import GlassIconButton from '../components/GlassIconButton';
 import PressableScale from '../components/PressableScale';
+import InitialAvatar from '../components/InitialAvatar';
 import { EmptyState } from '../components/PolyUI';
 import { supabase } from '../lib/supabase';
 import { useTheme, type ThemeColors } from '../theme/ThemeContext';
@@ -122,6 +123,13 @@ export default function ContactsScreen() {
     return [...base].sort((a, b) => Number(b.favorite) - Number(a.favorite));
   }, [contacts, query]);
 
+  // 요약 스트립 — 전체 / 후원자(매칭된 연락처 수) / 즐겨찾기
+  const stats = useMemo(() => ({
+    total: contacts.length,
+    donors: contacts.filter(c => !!c.phone_hash && !!donorByHash[c.phone_hash]).length,
+    favorites: contacts.filter(c => c.favorite).length,
+  }), [contacts, donorByHash]);
+
   const s = useMemo(() => makeStyles(COLORS), [COLORS]);
 
   return (
@@ -159,6 +167,26 @@ export default function ContactsScreen() {
         autoCorrect={false}
       />
 
+      {/* 요약 스트립 — 연락처가 0건이면 렌더하지 않는다 */}
+      {stats.total > 0 && (
+        <View style={s.statWrap}>
+          <View style={s.statCell}>
+            <Text style={s.statNum}>{stats.total}</Text>
+            <Text style={s.statLabel}>전체</Text>
+          </View>
+          <View style={s.statDivider} />
+          <View style={s.statCell}>
+            <Text style={[s.statNum, { color: COLORS.primary }]}>{stats.donors}</Text>
+            <Text style={s.statLabel}>후원자</Text>
+          </View>
+          <View style={s.statDivider} />
+          <View style={s.statCell}>
+            <Text style={s.statNum}>{stats.favorites}</Text>
+            <Text style={s.statLabel}>즐겨찾기</Text>
+          </View>
+        </View>
+      )}
+
       <FlatList
         data={filtered}
         keyExtractor={i => i.id}
@@ -178,19 +206,21 @@ export default function ContactsScreen() {
         renderItem={({ item }) => {
           const orgs = orgsByContact[item.id] ?? [];
           const donor = item.phone_hash ? donorByHash[item.phone_hash] : undefined;
+          // 한 줄 요약 — 직함 · 소속단체 첫 개 · 태그 첫 개
+          const summary = [
+            item.title,
+            orgs[0]?.name,
+            item.tags[0] ? `#${item.tags[0]}` : null,
+          ].filter(Boolean).join(' · ');
           return (
             <PressableScale style={s.card} scaleTo={0.98} onPress={() => setSelected(item)}>
               <View style={s.rowTop}>
+                <InitialAvatar name={item.name} size={44} />
                 <View style={{ flex: 1 }}>
-                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                    <Text style={s.name}>{item.name}</Text>
-                    {item.title ? <Text style={s.meta}>{item.title}</Text> : null}
-                  </View>
-                  {orgs.length > 0 && (
-                    <Text style={s.metaLine} numberOfLines={1}>
-                      {orgs.map(o => o.name).join(' · ')}
-                    </Text>
-                  )}
+                  <Text style={s.name}>{item.name}</Text>
+                  {summary ? (
+                    <Text style={s.metaLine} numberOfLines={1}>{summary}</Text>
+                  ) : null}
                   {donor && (
                     <View style={{ flexDirection: 'row', marginTop: 6 }}>
                       <Text style={s.donorBadge}>
@@ -602,6 +632,21 @@ const makeStyles = (C: ThemeColors) => StyleSheet.create({
     ...SHADOWS.subtle,
   },
 
+  // 요약 스트립 (검색바 아래)
+  statWrap: {
+    flexDirection: 'row',
+    marginHorizontal: 16,
+    marginBottom: 10,
+    backgroundColor: C.surface,
+    borderRadius: 18,
+    paddingVertical: 14,
+    ...SHADOWS.subtle,
+  },
+  statCell: { flex: 1, alignItems: 'center', gap: 3 },
+  statDivider: { width: StyleSheet.hairlineWidth, backgroundColor: C.divider, marginVertical: 2 },
+  statNum: { fontSize: 19, fontWeight: '800', color: C.text, letterSpacing: -0.4 },
+  statLabel: { fontSize: 11.5, color: C.textTertiary, letterSpacing: -0.2 },
+
   // 리스트 카드
   card: {
     backgroundColor: C.surface,
@@ -613,7 +658,7 @@ const makeStyles = (C: ThemeColors) => StyleSheet.create({
     borderRadius: 18,
     ...SHADOWS.subtle,
   },
-  rowTop: { flexDirection: 'row', alignItems: 'flex-start', gap: 8 },
+  rowTop: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   name: { fontSize: 15, fontWeight: '700', color: C.text, letterSpacing: -0.2 },
   meta: { fontSize: 12, color: C.textTertiary, letterSpacing: -0.1 },
   metaLine: { fontSize: 12, color: C.textTertiary, letterSpacing: -0.1, marginTop: 3 },
@@ -628,7 +673,7 @@ const makeStyles = (C: ThemeColors) => StyleSheet.create({
     borderRadius: 6,
     overflow: 'hidden',
   },
-  star: { fontSize: 20, marginTop: -2 },
+  star: { fontSize: 20 },
 
   // 주소록 가져오기
   importNote: { fontSize: 12, color: C.textCaption, lineHeight: 17, letterSpacing: -0.1 },

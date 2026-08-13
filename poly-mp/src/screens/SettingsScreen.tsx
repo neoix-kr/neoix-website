@@ -1,14 +1,19 @@
-// 설정 — 계정·약관·앱 정보·계정 삭제(Apple 5.1.1(v))·사업자 정보(전자상거래법 표시)
+// 내 정보 — 프로필 허브(프로필 카드·편집 모달·요금제) + 계정·약관·앱 정보·계정 삭제(Apple 5.1.1(v))·사업자 정보(전자상거래법 표시)
 // 화면 문법은 폴리 공용(Header + 카드 radius 18 + subtle 섀도 + 바깥 섹션 라벨)을 따른다.
 import React, { useMemo, useState } from 'react';
-import { View, Text, Pressable, StyleSheet, Alert, ScrollView } from 'react-native';
+import {
+  View, Text, Pressable, StyleSheet, Alert, ScrollView,
+  Modal, TextInput, KeyboardAvoidingView, Platform,
+} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import * as WebBrowser from 'expo-web-browser';
 import Header from '../components/Header';
 import GlassIconButton from '../components/GlassIconButton';
+import InitialAvatar from '../components/InitialAvatar';
 import { deleteMyAccount } from '../lib/account';
+import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { useMember } from '../contexts/MemberContext';
 import { useTheme, type ThemeColors, type ThemeShadows } from '../theme/ThemeContext';
@@ -19,12 +24,49 @@ const PRIVACY_URL = 'https://neoix.kr/privacy/';
 
 export default function SettingsScreen() {
   const { user, signOut } = useAuth();
-  const { member } = useMember();
+  const { member, refresh } = useMember();
   const { COLORS, SHADOWS } = useTheme();
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<any>();
   const [deleting, setDeleting] = useState(false);
+
+  // 프로필 편집 모달 — name·party만 수정 가능(유형·지역구는 인증 정보라 문의로만)
+  const [editVisible, setEditVisible] = useState(false);
+  const [editName, setEditName] = useState('');
+  const [editParty, setEditParty] = useState('');
+  const [saving, setSaving] = useState(false);
+
   const s = useMemo(() => makeStyles(COLORS, SHADOWS), [COLORS]);
+
+  const displayName = member?.name ?? user?.email ?? '나';
+  // 캡션 — '기초의회의원 · 경기도 고양시 …' (position · district · party), 없으면 인증 전
+  const profileCaption =
+    [member?.position, member?.district, member?.party].filter(Boolean).join(' · ') || '의원 인증 전';
+
+  const openEdit = () => {
+    setEditName(member?.name ?? '');
+    setEditParty(member?.party ?? '');
+    setEditVisible(true);
+  };
+
+  const saveProfile = async () => {
+    if (saving) return;
+    if (!user) return;
+    const name = editName.trim();
+    if (!name) return Alert.alert('입력 확인', '성함을 입력해 주세요.');
+    setSaving(true);
+    const { error } = await supabase
+      .from('mp_members')
+      .update({ name, party: editParty.trim() || null })
+      .eq('user_id', user.id);
+    if (error) {
+      setSaving(false);
+      return Alert.alert('저장 실패', error.message);
+    }
+    await refresh();
+    setSaving(false);
+    setEditVisible(false);
+  };
 
   // 계정 삭제 (Apple 5.1.1(v)) — NEOIX 통합 계정 전체 삭제, 2단계 확인.
   // 순서: 서버 데이터(RPC가 mp_* 선삭제 후 auth 계정 삭제) → 로컬 signOut.
@@ -81,7 +123,7 @@ export default function SettingsScreen() {
   return (
     <View style={{ flex: 1, backgroundColor: COLORS.background }}>
       <Header
-        title="설정"
+        title="내 정보"
         rightElement={
           <GlassIconButton
             icon="close"
@@ -96,14 +138,38 @@ export default function SettingsScreen() {
       />
 
       <ScrollView contentContainerStyle={{ paddingBottom: insets.bottom + 40 }} showsVerticalScrollIndicator={false}>
+        {/* 내 정보 — 프로필 카드 */}
+        <Text style={s.sectionTitle}>내 정보</Text>
+        <View style={s.profileCard}>
+          <View style={s.profileRow}>
+            <InitialAvatar name={displayName} photo={member?.photo_url} size={56} />
+            <View style={{ flex: 1 }}>
+              <Text style={s.profileName} numberOfLines={1}>{displayName}</Text>
+              <Text style={s.profileCaption} numberOfLines={2}>{profileCaption}</Text>
+            </View>
+          </View>
+          <Pressable style={s.editBtn} onPress={openEdit} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+            <Text style={s.editBtnText}>편집</Text>
+          </Pressable>
+        </View>
+
+        {/* 결제·요금제 */}
+        <Text style={s.sectionTitle}>결제·요금제</Text>
+        <View style={s.card}>
+          <View style={s.row}>
+            <Text style={s.rowLabel}>현재 요금제</Text>
+            <Text style={s.rowRight}>{member?.plan === 'operator' ? '운영 계정' : '기초 · 출시 기념 무료'}</Text>
+          </View>
+          <Divider />
+          <Row
+            label="결제 수단 관리"
+            onPress={() => Alert.alert('준비 중이에요', '정식 출시 후 요금제·결제 관리를 제공할 예정이에요.')}
+          />
+        </View>
+
         {/* 계정 */}
         <Text style={s.sectionTitle}>계정</Text>
         <View style={s.card}>
-          <View style={s.row}>
-            <Text style={s.rowLabel}>{member?.name ?? '—'}</Text>
-            <Text style={s.rowRight}>{member?.position ?? ''}</Text>
-          </View>
-          <Divider />
           <View style={s.row}>
             <Text style={s.rowLabel}>이메일</Text>
             <Text style={s.rowRight}>{user?.email ?? '—'}</Text>
@@ -149,6 +215,37 @@ export default function SettingsScreen() {
           네오익스(NEOIX) · 대표 박정겸{'\n'}사업자등록번호 292-33-01829 · jg@neoix.kr
         </Text>
       </ScrollView>
+
+      {/* 프로필 편집 모달 — pageSheet 흰 시트 + grey50 폼 */}
+      <Modal visible={editVisible} animationType="slide" presentationStyle="pageSheet" onRequestClose={() => setEditVisible(false)}>
+        <KeyboardAvoidingView style={s.modalSheet} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+          <View style={s.modalHead}>
+            <Pressable onPress={() => setEditVisible(false)}><Text style={s.modalCancel}>취소</Text></Pressable>
+            <Text style={s.modalTitle}>프로필 편집</Text>
+            <Pressable onPress={saveProfile} disabled={saving}>
+              <Text style={[s.modalSave, saving && { opacity: 0.4 }]}>저장</Text>
+            </Pressable>
+          </View>
+          <View style={{ padding: 16, gap: 12 }}>
+            <TextInput
+              style={s.input}
+              placeholder="성함"
+              placeholderTextColor={COLORS.textTertiary}
+              value={editName}
+              onChangeText={setEditName}
+            />
+            <TextInput
+              style={s.input}
+              placeholder="정당 (선택)"
+              placeholderTextColor={COLORS.textTertiary}
+              value={editParty}
+              onChangeText={setEditParty}
+            />
+            {/* position·district·level은 인증 정보라 앱에서 수정 불가 */}
+            <Text style={s.modalNote}>의원 유형·지역구 변경은 문의해 주세요. (support@polyx.kr)</Text>
+          </View>
+        </KeyboardAvoidingView>
+      </Modal>
     </View>
   );
 }
@@ -172,6 +269,44 @@ const makeStyles = (COLORS: ThemeColors, SHADOWS: ThemeShadows) => StyleSheet.cr
     paddingHorizontal: 16,
     borderRadius: 18,
     ...SHADOWS.subtle,
+  },
+  // 프로필 카드 — 아바타 + 이름 + 캡션, 우상단 '편집'
+  profileCard: {
+    backgroundColor: COLORS.surface,
+    marginHorizontal: 16,
+    marginBottom: 10,
+    paddingHorizontal: 16,
+    paddingVertical: 18,
+    borderRadius: 18,
+    ...SHADOWS.subtle,
+  },
+  profileRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 14,
+  },
+  profileName: {
+    fontSize: 18,
+    fontWeight: '800',
+    color: COLORS.text,
+    letterSpacing: -0.4,
+  },
+  profileCaption: {
+    fontSize: 12.5,
+    color: COLORS.textTertiary,
+    letterSpacing: -0.2,
+    marginTop: 3,
+  },
+  editBtn: {
+    position: 'absolute',
+    top: 14,
+    right: 16,
+  },
+  editBtnText: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: COLORS.primary,
+    letterSpacing: -0.2,
   },
   row: {
     flexDirection: 'row',
@@ -211,5 +346,26 @@ const makeStyles = (COLORS: ThemeColors, SHADOWS: ThemeShadows) => StyleSheet.cr
     lineHeight: 18,
     letterSpacing: -0.2,
     marginTop: 12,
+  },
+  // 모달 공통 — pageSheet 흰 시트 + grey50 폼 (OrgsScreen 문법과 동일)
+  modalSheet: { flex: 1, backgroundColor: COLORS.surface },
+  modalHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 18, paddingVertical: 16 },
+  modalCancel: { fontSize: 15.5, color: COLORS.textCaption, letterSpacing: -0.2 },
+  modalTitle: { flex: 1, textAlign: 'center', marginHorizontal: 8, fontSize: 17, fontWeight: '700', color: COLORS.text, letterSpacing: -0.3 },
+  modalSave: { fontSize: 15.5, fontWeight: '700', color: COLORS.primary, letterSpacing: -0.2 },
+  input: {
+    backgroundColor: COLORS.grey50,
+    borderRadius: 12,
+    paddingHorizontal: 14,
+    paddingVertical: 13,
+    fontSize: 15,
+    color: COLORS.text,
+  },
+  modalNote: {
+    fontSize: 12,
+    color: COLORS.textTertiary,
+    lineHeight: 17,
+    letterSpacing: -0.2,
+    marginTop: 2,
   },
 });
