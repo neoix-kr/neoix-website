@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, Image, StyleSheet, ImageStyle, ViewStyle, TextStyle } from 'react-native';
 import { useTheme } from '../theme/ThemeContext';
 
@@ -30,6 +30,10 @@ export default function InitialAvatar({
 }: InitialAvatarProps) {
   const { COLORS } = useTheme();
   const [errored, setErrored] = useState(false);
+
+  // photo가 바뀌면 실패 상태를 푼다 — 한 번 로드에 실패한 뒤 새 사진을 골라도
+  // errored가 남아 계속 이니셜만 보이던 문제(연락처 사진 변경에서 재현).
+  useEffect(() => { setErrored(false); }, [photo]);
 
   // Normalize: empty / known-broken placeholder URLs are treated as no photo
   const isBrokenPlaceholder =

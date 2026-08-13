@@ -54,6 +54,20 @@ export interface MpContact {
   memo: string | null;
   tags: string[];
   favorite: boolean;
+  /** 연락처 사진 — mp-media 버킷 경로 */
+  photo_path: string | null;
+  email: string | null;
+  /** 직장·직업 */
+  company: string | null;
+  /** 알게 된 시기 (YYYY-MM-DD) */
+  met_at: string | null;
+  /** 알게 된 경위 — 어디서·누구 소개로 */
+  met_context: string | null;
+  birthday: string | null;
+  /** 거주 지역(동 단위) */
+  address: string | null;
+  /** 관계 친밀도 -2~2 (조직 우호도와 같은 스케일, null=미평가) */
+  closeness: number | null;
 }
 
 export interface MpOrg {
