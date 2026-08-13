@@ -3,7 +3,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   View, Text, FlatList, Pressable, StyleSheet, Modal, TextInput, ScrollView,
-  Alert, Share, RefreshControl, KeyboardAvoidingView, Platform, Image,
+  Alert, Share, RefreshControl, Platform, Image, Keyboard,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
@@ -248,6 +248,17 @@ function ComposeModal({ visible, seg, onClose, onSaved }: {
   const [when, setWhen] = useState('');   // YYYY-MM-DD HH:mm (P0 수기 — P1에서 피커)
   const [busy, setBusy] = useState(false);
   const [shareAfter, setShareAfter] = useState(true);
+  // 키보드 높이 직접 추적 — willChangeFrame이 한글 키보드의 하단 바까지 포함한 최종 높이를 준다
+  const [kbHeight, setKbHeight] = useState(0);
+  useEffect(() => {
+    const showEvt = Platform.OS === 'ios' ? 'keyboardWillChangeFrame' : 'keyboardDidShow';
+    const hideEvt = Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide';
+    const show = Keyboard.addListener(showEvt as any, (e: any) => setKbHeight(e?.endCoordinates?.height ?? 0));
+    const hide = Keyboard.addListener(hideEvt as any, () => setKbHeight(0));
+    return () => { show.remove(); hide.remove(); };
+  }, []);
+  // 모달이 닫히면 다음에 열 때 잔여 패딩이 남지 않도록 초기화
+  useEffect(() => { if (!visible) setKbHeight(0); }, [visible]);
   const [photos, setPhotos] = useState<PickedPhoto[]>([]);
   const s = useMemo(() => makeStyles(COLORS), [COLORS]);
 
@@ -313,8 +324,11 @@ function ComposeModal({ visible, seg, onClose, onSaved }: {
 
   return (
     <Modal visible={visible} animationType="slide" presentationStyle="pageSheet" onRequestClose={onClose}>
-      {/* 컴포저는 흰 시트다 — 회색 캔버스를 그대로 쓰면 빈 화면이 미완성처럼 보인다 */}
-      <KeyboardAvoidingView style={{ flex: 1, backgroundColor: COLORS.surface }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+      {/* 컴포저는 흰 시트다 — 회색 캔버스를 그대로 쓰면 빈 화면이 미완성처럼 보인다.
+          KeyboardAvoidingView 대신 실제 키보드 높이를 직접 패딩으로 준다:
+          pageSheet 모달 + autoFocus 조합에서 KAV가 한글 키보드의 하단 바(지구본·마이크) 높이만큼
+          짧게 계산해 하단 액션 바(사진·SNS)가 키보드에 가려지는 것을 실측으로 확인했다. */}
+      <View style={{ flex: 1, backgroundColor: COLORS.surface, paddingBottom: kbHeight }}>
         {/* 모달 헤더 — 취소 / 타이틀 / 올리기 pill */}
         <View style={s.modalHead}>
           <Pressable onPress={() => { reset(); onClose(); }}><Text style={s.modalCancel}>취소</Text></Pressable>
@@ -418,7 +432,7 @@ function ComposeModal({ visible, seg, onClose, onSaved }: {
             <TextInput style={s.input} placeholder="장소 (선택)" placeholderTextColor={COLORS.textTertiary} value={place} onChangeText={setPlace} />
           </View>
         )}
-      </KeyboardAvoidingView>
+      </View>
     </Modal>
   );
 }
