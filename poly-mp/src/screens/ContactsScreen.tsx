@@ -1,8 +1,8 @@
 // 연락처 — 조직관리용 연락처 탭. 검색·즐겨찾기·후원 매칭 뱃지 + 정치인용 프로필 상세 + 등록/편집.
 // 화면 문법은 폴리 본체(ComplaintScreen) 실측값 — Header + GlassIconButton + PolyUI + PressableScale.
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
-  View, Text, FlatList, Pressable, StyleSheet, Modal, TextInput,
+  View, Text, FlatList, SectionList, Pressable, StyleSheet, Modal, TextInput,
   Alert, RefreshControl, KeyboardAvoidingView, Platform, Linking, ScrollView,
 } from 'react-native';
 import * as Crypto from 'expo-crypto';
@@ -722,8 +722,66 @@ function DetailModal({ contact, orgs, donor, onClose, onChanged }: {
 // 원칙: 기기 주소록은 화면에만 보여주고, 서버에는 사용자가 체크한 연락처만 저장한다.
 // 전체 선택은 '중복 아닌 항목'만 담는 편의 기능 — 체크 상태는 그대로 사용자가 확인·해제할 수 있다.
 type DeviceContact = { id: string; name: string; phone: string | null };
+type ImportSection = { title: string; data: DeviceContact[] };
 
 const IMPORT_CHUNK = 100;
+
+// 초성 그룹핑 — 쌍자음은 홑자음 섹션으로 합친다(ㄲ→ㄱ). 인덱스 바에 ㄲ·ㅆ가 따로 서면 읽기 어렵다.
+const CHOSUNG = ['ㄱ','ㄲ','ㄴ','ㄷ','ㄸ','ㄹ','ㅁ','ㅂ','ㅃ','ㅅ','ㅆ','ㅇ','ㅈ','ㅉ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ'];
+const CHOSUNG_MERGE: Record<string, string> = { 'ㄲ': 'ㄱ', 'ㄸ': 'ㄷ', 'ㅃ': 'ㅂ', 'ㅆ': 'ㅅ', 'ㅉ': 'ㅈ' };
+const KO_SECTIONS = ['ㄱ','ㄴ','ㄷ','ㄹ','ㅁ','ㅂ','ㅅ','ㅇ','ㅈ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ'];
+
+/** 이름 첫 글자 → 섹션 키. 한글 초성 → 한글 자모 → 영문 대문자 → '#' */
+const sectionKey = (name: string): string => {
+  const ch = name.trim().charAt(0);
+  if (!ch) return '#';
+  const code = ch.charCodeAt(0);
+  if (code >= 0xac00 && code <= 0xd7a3) {
+    const cho = CHOSUNG[Math.floor((code - 0xac00) / 588)];
+    return CHOSUNG_MERGE[cho] ?? cho;
+  }
+  const merged = CHOSUNG_MERGE[ch] ?? ch;
+  if (KO_SECTIONS.includes(merged)) return merged;
+  if (/[a-zA-Z]/.test(ch)) return ch.toUpperCase();
+  return '#';
+};
+
+/** 섹션 정렬 — 한글 초성 순 → 영문 A~Z → '#' */
+const sectionRank = (key: string): number => {
+  const i = KO_SECTIONS.indexOf(key);
+  if (i >= 0) return i;
+  if (key >= 'A' && key <= 'Z') return 100 + (key.charCodeAt(0) - 65);
+  return 999;
+};
+
+/**
+ * 중복 판정용 정규화 키 — 숫자만 남기고 국가번호 82를 0으로 되돌린다.
+ * '+82 10-9016-9566' / '010-9016-9566' / '01090169566' 이 모두 같은 키가 된다.
+ * (표시·저장이 아니라 "같은 사람인가" 비교에만 쓴다)
+ */
+const dialKey = (raw: string): string => {
+  const d = raw.replace(/\D/g, '');
+  if (!d) return '';
+  if (d.startsWith('82') && d.length >= 11 && d.length <= 12) return `0${d.slice(2)}`;
+  return d;
+};
+
+/**
+ * 전화번호 표기 통일 — '01090169566'과 '010-3042-6492'가 섞여 보이던 것을 한 모양으로.
+ * 표시 전용이다. 저장하는 phone 값은 기기에서 읽은 원문 그대로 둔다(해시·발신 링크가 원문 기준).
+ */
+const formatPhone = (raw: string): string => {
+  let d = raw.replace(/\D/g, '');
+  // 국가번호 +82 → 0 (+821057167675 → 01057167675)
+  if (d.startsWith('82') && d.length >= 11 && d.length <= 12) d = `0${d.slice(2)}`;
+  const mobile = /^(01[016789])(\d{3,4})(\d{4})$/.exec(d);
+  if (mobile) return `${mobile[1]}-${mobile[2]}-${mobile[3]}`;
+  const seoul = /^(02)(\d{3,4})(\d{4})$/.exec(d);
+  if (seoul) return `${seoul[1]}-${seoul[2]}-${seoul[3]}`;
+  const local = /^(0\d{2})(\d{3,4})(\d{4})$/.exec(d);
+  if (local) return `${local[1]}-${local[2]}-${local[3]}`;
+  return raw;
+};
 
 function ImportModal({ visible, existing, onClose, onSaved }: {
   visible: boolean; existing: MpContact[]; onClose: () => void; onSaved: () => void;
@@ -735,6 +793,7 @@ function ImportModal({ visible, existing, onClose, onSaved }: {
   const [q, setQ] = useState('');
   const [busy, setBusy] = useState(false);
   const s = useMemo(() => makeStyles(COLORS), [COLORS]);
+  const listRef = useRef<SectionList<DeviceContact, ImportSection>>(null);
 
   useEffect(() => {
     if (!visible) return;
@@ -758,14 +817,19 @@ function ImportModal({ visible, existing, onClose, onSaved }: {
     })();
   }, [visible]);
 
-  // 이미 등록된 연락처는 회색 처리(중복 방지) — 전화 숫자 또는 이름으로 대조
+  // 이미 등록된 연락처는 회색 처리(중복 방지) — 전화 숫자 또는 이름으로 대조.
+  // 양쪽 다 dialKey로 정규화한다: 기기가 '+82 10-9016-9566'을 주고 DB엔 '01090169566'이 있으면
+  // 숫자만 비교할 때 서로 다른 값이 되어 같은 사람이 '추가 가능'으로 잡히고 중복 저장된다.
   const existingPhones = useMemo(
-    () => new Set(existing.map(c => (c.phone ?? '').replace(/\D/g, '')).filter(Boolean)),
+    () => new Set(existing.map(c => dialKey(c.phone ?? '')).filter(Boolean)),
     [existing],
   );
   const existingNames = useMemo(() => new Set(existing.map(c => c.name)), [existing]);
   const isDup = useCallback(
-    (d: DeviceContact) => (d.phone ? existingPhones.has(d.phone.replace(/\D/g, '')) : existingNames.has(d.name)),
+    (d: DeviceContact) => {
+      const key = dialKey(d.phone ?? '');
+      return key ? existingPhones.has(key) : existingNames.has(d.name);
+    },
     [existingPhones, existingNames],
   );
 
@@ -778,7 +842,29 @@ function ImportModal({ visible, existing, onClose, onSaved }: {
       (qd && (d.phone ?? '').replace(/\D/g, '').includes(qd)));
   }, [device, q]);
 
+  // 검색으로 걸러진 결과를 초성 섹션으로 묶는다 — 매칭된 항목만 남기고 빈 섹션은 자연히 사라진다.
+  const sections = useMemo<ImportSection[]>(() => {
+    const map = new Map<string, DeviceContact[]>();
+    for (const d of filtered) {
+      const k = sectionKey(d.name);
+      const arr = map.get(k);
+      if (arr) arr.push(d); else map.set(k, [d]);
+    }
+    return Array.from(map, ([title, data]) => ({
+      title,
+      data: data.sort((a, b) => a.name.localeCompare(b.name, 'ko')),
+    })).sort((a, b) => sectionRank(a.title) - sectionRank(b.title));
+  }, [filtered]);
+
+  const dupCount = useMemo(() => device.filter(isDup).length, [device, isDup]);
   const selCount = Object.values(sel).filter(Boolean).length;
+
+  /** 인덱스 바 탭 — 아직 측정 전인 섹션이면 실패할 수 있어 조용히 무시한다 */
+  const jumpTo = (sectionIndex: number) => {
+    try {
+      listRef.current?.scrollToLocation({ sectionIndex, itemIndex: 0, viewOffset: 0, animated: false });
+    } catch { /* noop */ }
+  };
 
   /** 전체 선택 — 이미 등록된(중복) 항목은 빼고 담는다 */
   const selectAll = () => {
@@ -845,6 +931,12 @@ function ImportModal({ visible, existing, onClose, onSaved }: {
               <Text style={s.importNote}>
                 체크한 연락처만 서버에 저장돼요. 전체 선택으로 한 번에 담을 수 있어요.
               </Text>
+              {/* 아직 못 읽은 상태에서 '전체 0명'이 뜨면 주소록이 빈 것처럼 읽힌다 — 다 읽은 뒤에만 센다 */}
+              {perm === 'granted' && (
+                <Text style={s.importSummary}>
+                  전체 {device.length}명 · 추가 가능 {device.length - dupCount}명 · 이미 등록 {dupCount}명
+                </Text>
+              )}
               <View style={s.bulkRow}>
                 <Pressable onPress={selectAll} hitSlop={8}><Text style={s.linkBtn}>전체 선택</Text></Pressable>
                 <Pressable onPress={() => setSel({})} hitSlop={8}><Text style={s.linkBtn}>선택 해제</Text></Pressable>
@@ -856,38 +948,80 @@ function ImportModal({ visible, existing, onClose, onSaved }: {
                 value={q} onChangeText={setQ} autoCorrect={false}
               />
             </View>
-            <FlatList
-              data={filtered}
-              keyExtractor={d => d.id}
-              contentContainerStyle={{ paddingHorizontal: LAYOUT.screenX, paddingTop: 4, paddingBottom: 48 }}
-              ListEmptyComponent={
-                perm === 'loading' ? (
-                  <View style={s.empty}><Text style={s.emptyBody}>주소록을 불러오는 중…</Text></View>
-                ) : (
-                  <View style={s.empty}><Text style={s.emptyBody}>연락처가 없어요.</Text></View>
-                )
-              }
-              renderItem={({ item, index }) => {
-                const dup = isDup(item);
-                const on = !!sel[item.id];
-                return (
-                  // 구분선은 행 '위'에 — 마지막 행 뒤에 선이 남지 않는다
-                  <Pressable
-                    style={[s.importRow, index > 0 && s.importRowDivided, dup && { opacity: 0.4 }]}
-                    disabled={dup}
-                    onPress={() => setSel(prev => ({ ...prev, [item.id]: !prev[item.id] }))}
-                  >
-                    <View style={[s.importCheck, on && s.importCheckOn]}>
-                      {on && <Ionicons name="checkmark" size={14} color={COLORS.textInverse} />}
+            <View style={{ flex: 1 }}>
+              <SectionList
+                ref={listRef}
+                sections={sections}
+                keyExtractor={d => d.id}
+                stickySectionHeadersEnabled
+                onScrollToIndexFailed={() => { /* 측정 전 섹션 — 무시 */ }}
+                contentContainerStyle={{ paddingTop: 4, paddingBottom: 48 }}
+                ListEmptyComponent={
+                  perm === 'loading' ? (
+                    <View style={s.empty}><Text style={s.emptyBody}>주소록을 불러오는 중…</Text></View>
+                  ) : (
+                    <View style={s.empty}><Text style={s.emptyBody}>연락처가 없어요.</Text></View>
+                  )
+                }
+                renderSectionHeader={({ section }) => (
+                  <View style={s.importSecHead}>
+                    <Text style={s.importSecHeadText}>{section.title}</Text>
+                  </View>
+                )}
+                renderItem={({ item, index, section }) => {
+                  const dup = isDup(item);
+                  const on = !!sel[item.id];
+                  return (
+                    // 섹션 하나가 흰 카드 한 장 — 첫/마지막 행만 라운드, 구분선은 행 '위'에 둔다
+                    <View
+                      style={[
+                        s.groupWrap,
+                        index === 0 && s.groupWrapFirst,
+                        index === section.data.length - 1 && s.groupWrapLast,
+                      ]}
+                    >
+                      {index > 0 && <View style={s.rowDivider} />}
+                      <Pressable
+                        style={[s.importRow, dup && { opacity: 0.45 }]}
+                        disabled={dup}
+                        onPress={() => setSel(prev => ({ ...prev, [item.id]: !prev[item.id] }))}
+                      >
+                        <InitialAvatar name={item.name} size={LAYOUT.rowAvatar} />
+                        <View style={s.rowMain}>
+                          <View style={s.nameLine}>
+                            <Text style={s.name} numberOfLines={1}>{item.name}</Text>
+                            {dup && (
+                              <View style={s.importDupBadge}>
+                                <Text style={s.importDupBadgeText}>등록됨</Text>
+                              </View>
+                            )}
+                          </View>
+                          <Text style={s.rowSub} numberOfLines={1}>
+                            {item.phone ? formatPhone(item.phone) : '전화번호 없음'}
+                          </Text>
+                        </View>
+                        {dup ? (
+                          <Ionicons name="checkmark-circle" size={20} color={COLORS.grey300} />
+                        ) : (
+                          <View style={[s.importCheck, on && s.importCheckOn]}>
+                            {on && <Ionicons name="checkmark" size={14} color={COLORS.textInverse} />}
+                          </View>
+                        )}
+                      </Pressable>
                     </View>
-                    <View style={{ flex: 1, minWidth: 0 }}>
-                      <Text style={s.name} numberOfLines={1}>{item.name}</Text>
-                      <Text style={s.meta} numberOfLines={1}>{item.phone ?? '전화번호 없음'}{dup ? ' · 이미 등록됨' : ''}</Text>
-                    </View>
-                  </Pressable>
-                );
-              }}
-            />
+                  );
+                }}
+              />
+              {sections.length > 3 && (
+                <View style={s.importIndex} pointerEvents="box-none">
+                  {sections.map((sec, i) => (
+                    <Pressable key={sec.title} hitSlop={4} onPress={() => jumpTo(i)}>
+                      <Text style={s.importIndexText}>{sec.title}</Text>
+                    </Pressable>
+                  ))}
+                </View>
+              )}
+            </View>
           </>
         )}
       </View>
@@ -1254,27 +1388,60 @@ const makeStyles = (C: ThemeColors) => StyleSheet.create({
 
   // 주소록 가져오기
   importNote: { fontSize: 13, lineHeight: 18.5, color: C.textSecondary, letterSpacing: -0.2 },
+  importSummary: { fontSize: 11.5, color: C.textTertiary, letterSpacing: -0.2, marginTop: 5 },
   bulkRow: { flexDirection: 'row', justifyContent: 'flex-end', gap: 14, marginTop: 8 },
+  // 초성 섹션 헤더 — 캔버스 색으로 깔아야 sticky로 붙었을 때 아래 카드가 비쳐 보이지 않는다
+  importSecHead: {
+    backgroundColor: C.background,
+    paddingHorizontal: LAYOUT.screenX + 6,
+    paddingTop: 12,
+    paddingBottom: 5,
+  },
+  importSecHeadText: { fontSize: 12, fontWeight: '700', color: C.textTertiary, letterSpacing: -0.2 },
   importRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: LAYOUT.rowGap,
+    paddingHorizontal: LAYOUT.rowPadX,
     paddingVertical: LAYOUT.rowPadY,
   },
-  importRowDivided: {
-    borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: C.divider,
+  importDupBadge: {
+    // 다크 팔레트에서는 grey100이 surface와 같은 값이라 뱃지가 행 배경에 묻힌다 → grey200
+    backgroundColor: C.grey200,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 5,
+    flexShrink: 0,
   },
+  importDupBadgeText: { fontSize: 10.5, fontWeight: '700', color: C.textTertiary, letterSpacing: -0.2 },
+  // 선택 체크는 원형 — 네모 체크박스는 '대량 편집 도구'처럼 보여 연락처 목록 문법과 어긋난다
   importCheck: {
     width: 22,
     height: 22,
-    borderRadius: 6,
+    borderRadius: 11,
     borderWidth: 1.5,
-    borderColor: C.grey300,
+    borderColor: C.borderStrong,
+    backgroundColor: 'transparent',
     alignItems: 'center',
     justifyContent: 'center',
   },
   importCheckOn: { backgroundColor: C.primary, borderColor: C.primary },
+  // 우측 초성 인덱스 바 — 157명을 훑을 때 스크롤 대신 한 번에 점프
+  importIndex: {
+    position: 'absolute',
+    right: 2,
+    top: 0,
+    bottom: 0,
+    width: 22,
+    justifyContent: 'center',
+  },
+  importIndexText: {
+    fontSize: 10,
+    fontWeight: '600',
+    color: C.textTertiary,
+    textAlign: 'center',
+    paddingVertical: 1,
+  },
 
   // 빈 상태 (ImportModal 전용 — 리스트 빈 상태는 PolyUI EmptyState)
   empty: { alignItems: 'center', paddingTop: 96, gap: 6 },
