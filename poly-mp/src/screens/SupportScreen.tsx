@@ -1,12 +1,15 @@
 // 후원회 — 읽기 전용 요약 (모금 현황·후원 통계). 관리는 polyx.kr/support 관리자 포털에서.
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
-  View, Text, ScrollView, Pressable, StyleSheet, Linking, RefreshControl,
+  View, Text, ScrollView, StyleSheet, Linking, RefreshControl,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
+import Header from '../components/Header';
+import { EmptyState, HeroCard } from '../components/PolyUI';
+import PressableScale from '../components/PressableScale';
 import { supabase } from '../lib/supabase';
-import { useTheme } from '../theme/ThemeContext';
-import { TYPO, SPACING, RADIUS } from '../theme/colors';
+import { useTheme, type ThemeColors } from '../theme/ThemeContext';
+import { SHADOWS } from '../theme/colors';
 import { useMember } from '../contexts/MemberContext';
 
 interface CommitteeSummary {
@@ -29,8 +32,7 @@ const fmtWon = (n: number) => {
 };
 
 export default function SupportScreen() {
-  const { COLORS, SHADOWS } = useTheme();
-  const insets = useSafeAreaInsets();
+  const { COLORS } = useTheme();
   const { member } = useMember();
   const [summary, setSummary] = useState<CommitteeSummary | null>(null);
   const [failed, setFailed] = useState(false);
@@ -56,24 +58,20 @@ export default function SupportScreen() {
 
   const onRefresh = async () => { setRefreshing(true); await load(); setRefreshing(false); };
 
-  const s = useMemo(() => styles(COLORS), [COLORS]);
+  const s = useMemo(() => makeStyles(COLORS), [COLORS]);
 
   // ── 후원회 미연결 ──
   if (!member?.committee_id) {
     return (
-      <View style={{ flex: 1, backgroundColor: COLORS.background }}>
-        <View style={[s.header, { paddingTop: insets.top + SPACING.md }]}>
-          <Text style={s.h1}>후원회</Text>
-        </View>
-        <View style={s.empty}>
-          <Text style={s.emptyTitle}>후원회가 아직 연결되지 않았어요</Text>
-          <Text style={s.emptyBody}>polyx.kr/support 에서 후원회를 개설하면{'\n'}모금 현황을 이 화면에서 바로 확인할 수 있어요.</Text>
-          <Pressable
-            style={[s.primaryBtn, { backgroundColor: COLORS.primary }]}
+      <View style={s.container}>
+        <Header title="후원회" />
+        <View style={{ paddingTop: 8 }}>
+          <HeroCard
+            title={'후원회가 아직\n연결되지 않았어요'}
+            sub="polyx.kr/support 에서 후원회를 개설하면 모금 현황을 이 화면에서 바로 확인할 수 있어요"
+            btnLabel="후원회 개설하러 가기"
             onPress={() => Linking.openURL('https://polyx.kr/support/')}
-          >
-            <Text style={s.primaryBtnText}>후원회 개설하러 가기</Text>
-          </Pressable>
+          />
         </View>
       </View>
     );
@@ -82,20 +80,15 @@ export default function SupportScreen() {
   // ── 요약 로드 실패 ──
   if (failed) {
     return (
-      <View style={{ flex: 1, backgroundColor: COLORS.background }}>
-        <View style={[s.header, { paddingTop: insets.top + SPACING.md }]}>
-          <Text style={s.h1}>후원회</Text>
-        </View>
-        <View style={s.empty}>
-          <Text style={s.emptyTitle}>요약을 불러오지 못했어요</Text>
-          <Text style={s.emptyBody}>네트워크 상태를 확인한 뒤{'\n'}다시 시도해 주세요.</Text>
-          <Pressable
-            style={[s.primaryBtn, { backgroundColor: COLORS.primary }]}
-            onPress={() => { setFailed(false); load(); }}
-          >
-            <Text style={s.primaryBtnText}>다시 시도</Text>
-          </Pressable>
-        </View>
+      <View style={s.container}>
+        <Header title="후원회" />
+        <EmptyState
+          icon="cloud-offline-outline"
+          title="요약을 불러오지 못했어요"
+          sub={'네트워크 상태를 확인한 뒤\n다시 시도해 주세요'}
+          ctaLabel="다시 시도"
+          onCta={() => { setFailed(false); load(); }}
+        />
       </View>
     );
   }
@@ -106,22 +99,23 @@ export default function SupportScreen() {
   const pending = summary?.receipt_pending ?? 0;
 
   return (
-    <View style={{ flex: 1, backgroundColor: COLORS.background }}>
-      <View style={[s.header, { paddingTop: insets.top + SPACING.md }]}>
-        <Text style={s.h1}>후원회</Text>
-        {summary?.politician ? <Text style={s.headerSub}>{summary.politician} 후원회</Text> : null}
-      </View>
+    <View style={s.container}>
+      <Header title="후원회" />
 
       <ScrollView
-        contentContainerStyle={{ padding: SPACING.base, paddingBottom: 120, gap: SPACING.md }}
+        contentContainerStyle={{ paddingTop: 6, paddingBottom: 120 }}
+        showsVerticalScrollIndicator={false}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={COLORS.textCaption} />}
       >
-        {/* 올해 모금액 */}
-        <View style={[s.card, SHADOWS.standard]}>
-          <Text style={s.cardLabel}>올해 모금액</Text>
-          <Text style={[s.bigNumber, { color: COLORS.primary }]}>{fmtWon(raised)}</Text>
+        {/* 올해 모금액 — 대형 요약 카드 */}
+        <View style={s.summaryCard}>
+          <View style={s.summaryTopRow}>
+            <Text style={s.cardLabel}>올해 모금액</Text>
+            {summary?.politician ? <Text style={s.meta}>{summary.politician} 후원회</Text> : null}
+          </View>
+          <Text style={s.bigNumber}>{fmtWon(raised)}</Text>
           <View style={s.gaugeTrack}>
-            <View style={[s.gaugeFill, { width: `${pct}%`, backgroundColor: COLORS.primary }]} />
+            <View style={[s.gaugeFill, { width: `${pct}%` }]} />
           </View>
           <View style={s.gaugeMeta}>
             <Text style={s.meta}>한도 대비 {pct}%</Text>
@@ -129,13 +123,13 @@ export default function SupportScreen() {
           </View>
         </View>
 
-        {/* 후원 건수 · 후원자 수 */}
-        <View style={{ flexDirection: 'row', gap: SPACING.md }}>
-          <View style={[s.card, SHADOWS.standard, { flex: 1, marginBottom: 0 }]}>
+        {/* 후원 건수 · 후원자 수 — 2열 통계 */}
+        <View style={s.statRow}>
+          <View style={s.statCard}>
             <Text style={s.cardLabel}>후원 건수</Text>
             <Text style={s.statNumber}>{(summary?.donation_count ?? 0).toLocaleString()}건</Text>
           </View>
-          <View style={[s.card, SHADOWS.standard, { flex: 1, marginBottom: 0 }]}>
+          <View style={s.statCard}>
             <Text style={s.cardLabel}>후원자 수</Text>
             <Text style={s.statNumber}>{(summary?.donor_count ?? 0).toLocaleString()}명</Text>
           </View>
@@ -143,50 +137,93 @@ export default function SupportScreen() {
 
         {/* 영수증 교부 대기 */}
         {pending > 0 ? (
-          <View style={[s.card, SHADOWS.standard, { backgroundColor: COLORS.warningLight, marginBottom: 0 }]}>
+          <View style={[s.card, { backgroundColor: COLORS.warningLight }]}>
             <Text style={[s.cardLabel, { color: COLORS.warning, fontWeight: '700' }]}>영수증 교부 대기</Text>
             <Text style={[s.statNumber, { color: COLORS.warning }]}>{pending.toLocaleString()}건</Text>
-            <Text style={s.meta}>정치자금 영수증 교부가 필요한 후원이 있어요.</Text>
+            <Text style={s.cardBody}>정치자금 영수증 교부가 필요한 후원이 있어요.</Text>
           </View>
         ) : (
-          <View style={[s.card, SHADOWS.standard, { marginBottom: 0 }]}>
+          <View style={s.card}>
             <Text style={s.cardLabel}>영수증 교부 대기</Text>
             <Text style={s.statNumber}>0건</Text>
-            <Text style={s.meta}>교부 대기 중인 영수증이 없어요.</Text>
+            <Text style={s.cardBody}>교부 대기 중인 영수증이 없어요.</Text>
           </View>
         )}
 
         {/* 관리자 포털 안내 */}
-        <View style={[s.card, SHADOWS.standard, { marginBottom: 0 }]}>
-          <Text style={s.portalText}>장부·명단·영수증 관리는 관리자 포털에서 하실 수 있어요.</Text>
-          <Pressable
-            style={[s.primaryBtn, { backgroundColor: COLORS.primary, alignSelf: 'stretch', marginTop: SPACING.md }]}
+        <View style={s.card}>
+          <Text style={s.cardBody}>장부·명단·영수증 관리는 관리자 포털에서 하실 수 있어요.</Text>
+          <PressableScale
+            style={s.portalBtn}
+            scaleTo={0.97}
             onPress={() => Linking.openURL('https://polyx.kr/support/manage/')}
           >
-            <Text style={s.primaryBtnText}>관리자 포털 열기</Text>
-          </Pressable>
+            <Ionicons name="open-outline" size={17} color={COLORS.textInverse} />
+            <Text style={s.portalBtnText}>관리자 포털 열기</Text>
+          </PressableScale>
         </View>
       </ScrollView>
     </View>
   );
 }
 
-const styles = (C: any) => StyleSheet.create({
-  header: { paddingHorizontal: SPACING.base, paddingBottom: SPACING.md, backgroundColor: C.background },
-  h1: { ...TYPO.displayLarge, color: C.text },
-  headerSub: { ...TYPO.bodySmall, color: C.textCaption, marginTop: SPACING.xs },
-  card: { backgroundColor: C.surface, borderRadius: RADIUS.comfortable, padding: SPACING.base, marginBottom: SPACING.md },
-  cardLabel: { ...TYPO.caption, color: C.textCaption, marginBottom: SPACING.xs },
-  bigNumber: { ...TYPO.displayHero },
-  statNumber: { ...TYPO.headingLarge, color: C.text },
-  gaugeTrack: { height: 8, borderRadius: RADIUS.pill, backgroundColor: C.backgroundSecondary, marginTop: SPACING.md, overflow: 'hidden' },
-  gaugeFill: { height: 8, borderRadius: RADIUS.pill },
-  gaugeMeta: { flexDirection: 'row', justifyContent: 'space-between', marginTop: SPACING.sm },
-  meta: { ...TYPO.caption, color: C.textCaption, marginTop: SPACING.xs },
-  portalText: { ...TYPO.bodySmall, color: C.textSecondary, lineHeight: 20 },
-  primaryBtn: { alignSelf: 'center', height: 48, borderRadius: RADIUS.standard, paddingHorizontal: SPACING.xl, alignItems: 'center', justifyContent: 'center', marginTop: SPACING.lg },
-  primaryBtnText: { ...TYPO.subtitle, color: C.textInverse },
-  empty: { alignItems: 'center', paddingTop: 96, gap: SPACING.sm, paddingHorizontal: SPACING.xl },
-  emptyTitle: { ...TYPO.subtitle, color: C.text },
-  emptyBody: { ...TYPO.bodySmall, color: C.textCaption, textAlign: 'center', lineHeight: 20 },
+const makeStyles = (COLORS: ThemeColors) => StyleSheet.create({
+  container: { flex: 1, backgroundColor: COLORS.background },
+
+  // 폴리 리스트 카드 문법
+  card: {
+    backgroundColor: COLORS.surface,
+    marginHorizontal: 16,
+    marginBottom: 10,
+    paddingHorizontal: 16,
+    paddingTop: 15,
+    paddingBottom: 12,
+    borderRadius: 18,
+    ...SHADOWS.subtle,
+  },
+  // 요약 대형 카드 — radius 20 · padding 20
+  summaryCard: {
+    backgroundColor: COLORS.surface,
+    marginHorizontal: 16,
+    marginBottom: 10,
+    padding: 20,
+    borderRadius: 20,
+    ...SHADOWS.subtle,
+  },
+  summaryTopRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+
+  cardLabel: { fontSize: 12.5, fontWeight: '600', color: COLORS.textCaption, letterSpacing: -0.2, marginBottom: 4 },
+  cardBody: { fontSize: 13, color: COLORS.textSecondary, lineHeight: 19, letterSpacing: -0.2 },
+  meta: { fontSize: 12, color: COLORS.textTertiary, letterSpacing: -0.2 },
+
+  bigNumber: { fontSize: 26, fontWeight: '900', color: COLORS.primary, letterSpacing: -0.6, marginTop: 2 },
+  statNumber: { fontSize: 20, fontWeight: '800', color: COLORS.text, letterSpacing: -0.5, marginBottom: 3 },
+
+  gaugeTrack: { height: 8, borderRadius: 999, backgroundColor: COLORS.grey200, marginTop: 14, overflow: 'hidden' },
+  gaugeFill: { height: 8, borderRadius: 999, backgroundColor: COLORS.primary },
+  gaugeMeta: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 8 },
+
+  statRow: { flexDirection: 'row', gap: 10, marginHorizontal: 16, marginBottom: 10 },
+  statCard: {
+    flex: 1,
+    backgroundColor: COLORS.surface,
+    paddingHorizontal: 16,
+    paddingTop: 15,
+    paddingBottom: 12,
+    borderRadius: 18,
+    ...SHADOWS.subtle,
+  },
+
+  portalBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    backgroundColor: COLORS.primary,
+    borderRadius: 14,
+    paddingVertical: 15,
+    marginTop: 14,
+    marginBottom: 3,
+  },
+  portalBtnText: { fontSize: 15.5, fontWeight: '700', color: COLORS.textInverse, letterSpacing: -0.2 },
 });

@@ -29,14 +29,28 @@ export type TabParamList = {
 const Tab = createNativeBottomTabNavigator<TabParamList>();
 const Stack = createNativeStackNavigator();
 
+// @bottom-tabs 타입 정의에 없는 네이티브 전용 프롭 (런타임 지원됨) — poly-build와 동일
+const NATIVE_TAB_PROPS = {
+  backgroundColor: 'rgba(23,24,31,0.55)',
+  activeIndicatorColor: 'rgba(99,102,241,0.28)',
+  translucent: true,
+  hapticFeedbackEnabled: true,
+} as any;
+
 function MainTabs() {
   return (
-    <Tab.Navigator initialRouteName="Archive">
-      <Tab.Screen name="Archive" component={ArchiveScreen} options={{ title: '아카이빙' }} />
-      <Tab.Screen name="Cases" component={CasesScreen} options={{ title: '민원' }} />
-      <Tab.Screen name="Support" component={SupportScreen} options={{ title: '후원회' }} />
-      <Tab.Screen name="Contacts" component={ContactsScreen} options={{ title: '연락처' }} />
-      <Tab.Screen name="Orgs" component={OrgsScreen} options={{ title: '조직' }} />
+    <Tab.Navigator
+      initialRouteName="Archive"
+      // 반투명 그래파이트 글래스 바 — 선택 탭 쨍한 인디고 (폴리 본체와 동일)
+      {...NATIVE_TAB_PROPS}
+      tabBarActiveTintColor="#A5A6FF"
+      tabBarInactiveTintColor="rgba(255,255,255,0.6)"
+    >
+      <Tab.Screen name="Archive" component={ArchiveScreen} options={{ title: '아카이빙', tabBarIcon: () => ({ sfSymbol: 'square.and.pencil' }) }} />
+      <Tab.Screen name="Cases" component={CasesScreen} options={{ title: '민원', tabBarIcon: () => ({ sfSymbol: 'bubble.left.and.bubble.right' }) }} />
+      <Tab.Screen name="Support" component={SupportScreen} options={{ title: '후원회', tabBarIcon: () => ({ sfSymbol: 'wonsign.circle' }) }} />
+      <Tab.Screen name="Contacts" component={ContactsScreen} options={{ title: '연락처', tabBarIcon: () => ({ sfSymbol: 'person.crop.circle' }) }} />
+      <Tab.Screen name="Orgs" component={OrgsScreen} options={{ title: '조직', tabBarIcon: () => ({ sfSymbol: 'building.2' }) }} />
     </Tab.Navigator>
   );
 }

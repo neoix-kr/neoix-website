@@ -1,14 +1,17 @@
 // 기타 조직 — 단체·기업·기관·언론·정당 관리. 우호도 추적 + 소속 연락처 연결.
-// 스타일은 ArchiveScreen(exemplar)의 헤더/카드/FAB/모달 패턴을 따른다.
+// 화면 문법은 폴리 본체(ComplaintScreen) 실측 문법 — Header + CategoryChips + 폴리 카드/모달 그대로.
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   View, Text, FlatList, Pressable, StyleSheet, Modal, TextInput,
   Alert, RefreshControl, KeyboardAvoidingView, Platform, ScrollView,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { supabase } from '../lib/supabase';
-import { useTheme } from '../theme/ThemeContext';
-import { TYPO, SPACING, RADIUS } from '../theme/colors';
+import { useTheme, type ThemeColors } from '../theme/ThemeContext';
+import { SHADOWS } from '../theme/colors';
+import Header from '../components/Header';
+import GlassIconButton from '../components/GlassIconButton';
+import PressableScale from '../components/PressableScale';
+import { CategoryChips, EmptyState } from '../components/PolyUI';
 import type { MpOrg, MpContact } from '../types/db';
 
 type OrgKind = MpOrg['kind'];
@@ -48,8 +51,7 @@ type MemberRow = {
 };
 
 export default function OrgsScreen() {
-  const { COLORS, SHADOWS } = useTheme();
-  const insets = useSafeAreaInsets();
+  const { COLORS } = useTheme();
   const [orgs, setOrgs] = useState<MpOrg[]>([]);
   const [counts, setCounts] = useState<Record<string, number>>({});
   const [filter, setFilter] = useState<'all' | OrgKind>('all');
@@ -78,39 +80,51 @@ export default function OrgsScreen() {
     [orgs, filter],
   );
 
-  const s = useMemo(() => styles(COLORS), [COLORS]);
+  const s = useMemo(() => makeStyles(COLORS), [COLORS]);
 
   return (
-    <View style={{ flex: 1, backgroundColor: COLORS.background }}>
-      {/* 헤더 + 유형 필터 칩 */}
-      <View style={[s.header, { paddingTop: insets.top + SPACING.md }]}>
-        <Text style={s.h1}>기타 조직</Text>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginTop: SPACING.md }} contentContainerStyle={{ gap: SPACING.xs }}>
-          {([{ key: 'all' as const, label: '전체' }, ...KINDS]).map(k => (
-            <Pressable key={k.key}
-              style={[s.chipBtn, filter === k.key && { backgroundColor: COLORS.primaryLight, borderColor: COLORS.primary }]}
-              onPress={() => setFilter(k.key)}>
-              <Text style={[s.chipBtnText, filter === k.key && { color: COLORS.primary, fontWeight: '700' }]}>{k.label}</Text>
-            </Pressable>
-          ))}
-        </ScrollView>
-      </View>
+    <View style={s.container}>
+      <Header
+        title="조직"
+        rightElement={
+          <GlassIconButton
+            icon="create-outline"
+            onPress={() => setCreate(true)}
+            size={44}
+            iconSize={20}
+            fallbackVariant="surface"
+          />
+        }
+      />
+
+      {/* 유형 필터 — 검정 활성 칩 */}
+      <CategoryChips
+        options={KINDS}
+        value={filter === 'all' ? null : filter}
+        onChange={k => setFilter((k as OrgKind | null) ?? 'all')}
+        allLabel="전체"
+      />
 
       <FlatList
         data={filtered}
         keyExtractor={i => i.id}
-        contentContainerStyle={{ padding: SPACING.base, paddingBottom: 120 }}
+        contentContainerStyle={{ paddingTop: 2, paddingBottom: 120 }}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={COLORS.textCaption} />}
         ListEmptyComponent={
-          <View style={s.empty}>
-            <Text style={s.emptyTitle}>등록된 조직이 없어요</Text>
-            <Text style={s.emptyBody}>지역 단체·기업·언론을 등록하면{'\n'}우호도와 소속 인맥을 한눈에 관리할 수 있어요.</Text>
-          </View>
+          <EmptyState
+            icon="business-outline"
+            title="등록된 조직이 없어요"
+            sub={'지역 단체·기업·언론을 등록하면\n우호도와 소속 인맥을 한눈에 관리할 수 있어요.'}
+            ctaLabel="조직 등록하기"
+            onCta={() => setCreate(true)}
+          />
         }
         renderItem={({ item }) => (
-          <Pressable style={[s.card, SHADOWS.standard]} onPress={() => setDetail(item)}>
+          <PressableScale style={s.card} scaleTo={0.98} onPress={() => setDetail(item)}>
             <View style={s.cardTop}>
-              <Text style={[s.chip, { backgroundColor: COLORS.primaryLight, color: COLORS.primary }]}>{kindLabel(item.kind)}</Text>
+              <View style={s.kindBadge}>
+                <Text style={s.kindBadgeText}>{kindLabel(item.kind)}</Text>
+              </View>
               <Text style={s.orgName} numberOfLines={1}>{item.name}</Text>
             </View>
             <View style={s.cardBottom}>
@@ -124,17 +138,9 @@ export default function OrgsScreen() {
                 </Text>
               </View>
             </View>
-          </Pressable>
+          </PressableScale>
         )}
       />
-
-      {/* FAB */}
-      <Pressable
-        style={[s.fab, { bottom: insets.bottom + 88, backgroundColor: COLORS.primary }, SHADOWS.elevated]}
-        onPress={() => setCreate(true)}
-      >
-        <Text style={s.fabText}>＋</Text>
-      </Pressable>
 
       <CreateModal visible={create} onClose={() => setCreate(false)} onSaved={() => { setCreate(false); load(); }} />
       <DetailModal org={detail} onClose={() => setDetail(null)} onChanged={load} />
@@ -155,7 +161,7 @@ function DetailModal({ org, onClose, onChanged }: {
   const [picked, setPicked] = useState<MpContact | null>(null);
   const [role, setRole] = useState('');
   const [busy, setBusy] = useState(false);
-  const s = styles(COLORS);
+  const s = useMemo(() => makeStyles(COLORS), [COLORS]);
 
   const loadMembers = useCallback(async (orgId: string) => {
     const { data } = await supabase
@@ -216,33 +222,35 @@ function DetailModal({ org, onClose, onChanged }: {
 
   return (
     <Modal visible={!!org} animationType="slide" presentationStyle="pageSheet" onRequestClose={onClose}>
-      <KeyboardAvoidingView style={{ flex: 1, backgroundColor: COLORS.background }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+      <KeyboardAvoidingView style={s.modalSheet} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <View style={s.modalHead}>
           <Pressable onPress={onClose}><Text style={s.modalCancel}>닫기</Text></Pressable>
           <Text style={s.modalTitle} numberOfLines={1}>{org?.name ?? ''}</Text>
           <View style={{ width: 40 }} />
         </View>
 
-        <ScrollView contentContainerStyle={{ padding: SPACING.base, gap: SPACING.lg, paddingBottom: 48 }} keyboardShouldPersistTaps="handled">
+        <ScrollView contentContainerStyle={{ padding: 16, gap: 20, paddingBottom: 48 }} keyboardShouldPersistTaps="handled">
           {/* 기본 정보 */}
-          <View style={{ gap: SPACING.xs }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: SPACING.sm }}>
-              <Text style={[s.chip, { backgroundColor: COLORS.primaryLight, color: COLORS.primary }]}>{kindLabel(org?.kind ?? 'etc')}</Text>
+          <View style={{ gap: 6 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+              <View style={s.kindBadge}>
+                <Text style={s.kindBadgeText}>{kindLabel(org?.kind ?? 'etc')}</Text>
+              </View>
               {!!org?.region && <Text style={s.meta}>{org.region}</Text>}
             </View>
             {!!org?.memo && <Text style={s.body}>{org.memo}</Text>}
           </View>
 
-          {/* 우호도 */}
-          <View style={{ gap: SPACING.sm }}>
+          {/* 우호도 — 검정 활성 pill */}
+          <View style={{ gap: 10 }}>
             <Text style={s.sectionTitle}>우호도</Text>
-            <View style={{ flexDirection: 'row', gap: SPACING.xs, flexWrap: 'wrap' }}>
+            <View style={{ flexDirection: 'row', gap: 6, flexWrap: 'wrap' }}>
               {FRIENDLY_LEVELS.map(f => (
                 <Pressable key={f.value}
-                  style={[s.chipBtn, friendly === f.value && { backgroundColor: COLORS.primaryLight, borderColor: COLORS.primary }]}
+                  style={[s.pillChip, friendly === f.value && s.pillChipActive]}
                   onPress={() => setLevel(f.value)}>
                   <View style={[s.dot, { backgroundColor: friendlyColor(COLORS, f.value), marginRight: 5 }]} />
-                  <Text style={[s.chipBtnText, friendly === f.value && { color: COLORS.primary, fontWeight: '700' }]}>{f.label}</Text>
+                  <Text style={[s.pillChipText, friendly === f.value && s.pillChipTextActive]}>{f.label}</Text>
                 </Pressable>
               ))}
             </View>
@@ -250,20 +258,20 @@ function DetailModal({ org, onClose, onChanged }: {
           </View>
 
           {/* 소속 연락처 */}
-          <View style={{ gap: SPACING.sm }}>
+          <View style={{ gap: 10 }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
               <Text style={s.sectionTitle}>소속 연락처 {members.length > 0 ? `${members.length}명` : ''}</Text>
               <Pressable onPress={() => setLinking(v => !v)}>
-                <Text style={[s.linkAction, { color: COLORS.primary }]}>{linking ? '접기' : '＋ 연락처 연결'}</Text>
+                <Text style={s.linkAction}>{linking ? '접기' : '연락처 연결'}</Text>
               </Pressable>
             </View>
 
             {linking && (
-              <View style={{ gap: SPACING.sm }}>
+              <View style={{ gap: 10 }}>
                 <TextInput
                   style={s.input}
                   placeholder="이름으로 검색"
-                  placeholderTextColor={COLORS.textPlaceholder}
+                  placeholderTextColor={COLORS.textTertiary}
                   value={query}
                   onChangeText={search}
                 />
@@ -277,7 +285,7 @@ function DetailModal({ org, onClose, onChanged }: {
                   <Text style={s.meta}>검색 결과가 없어요.</Text>
                 )}
                 {picked && (
-                  <View style={{ gap: SPACING.sm }}>
+                  <View style={{ gap: 10 }}>
                     <View style={s.resultRow}>
                       <Text style={s.memberName}>{picked.name}</Text>
                       {!!picked.title && <Text style={s.meta}>{picked.title}</Text>}
@@ -285,13 +293,13 @@ function DetailModal({ org, onClose, onChanged }: {
                     <TextInput
                       style={s.input}
                       placeholder="역할 (예: 회장 · 대변인 · 선택)"
-                      placeholderTextColor={COLORS.textPlaceholder}
+                      placeholderTextColor={COLORS.textTertiary}
                       value={role}
                       onChangeText={setRole}
                     />
-                    <Pressable style={[s.primaryBtn, { backgroundColor: COLORS.primary }]} onPress={link} disabled={busy}>
+                    <PressableScale style={s.primaryBtn} scaleTo={0.97} onPress={link} disabled={busy}>
                       <Text style={s.primaryBtnText}>이 조직에 연결</Text>
-                    </Pressable>
+                    </PressableScale>
                   </View>
                 )}
               </View>
@@ -307,7 +315,9 @@ function DetailModal({ org, onClose, onChanged }: {
                     {!!m.mp_contacts?.title && <Text style={s.meta}>{m.mp_contacts.title}</Text>}
                   </View>
                   {!!m.role && (
-                    <Text style={[s.chip, { backgroundColor: COLORS.backgroundSecondary, color: COLORS.textSecondary }]}>{m.role}</Text>
+                    <View style={s.roleBadge}>
+                      <Text style={s.roleBadgeText}>{m.role}</Text>
+                    </View>
                   )}
                 </View>
               ))
@@ -329,7 +339,7 @@ function CreateModal({ visible, onClose, onSaved }: {
   const [region, setRegion] = useState('');
   const [memo, setMemo] = useState('');
   const [busy, setBusy] = useState(false);
-  const s = styles(COLORS);
+  const s = useMemo(() => makeStyles(COLORS), [COLORS]);
 
   const reset = () => { setName(''); setKind('group'); setRegion(''); setMemo(''); };
 
@@ -347,27 +357,27 @@ function CreateModal({ visible, onClose, onSaved }: {
 
   return (
     <Modal visible={visible} animationType="slide" presentationStyle="pageSheet" onRequestClose={onClose}>
-      <KeyboardAvoidingView style={{ flex: 1, backgroundColor: COLORS.background }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+      <KeyboardAvoidingView style={s.modalSheet} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <View style={s.modalHead}>
           <Pressable onPress={() => { reset(); onClose(); }}><Text style={s.modalCancel}>취소</Text></Pressable>
           <Text style={s.modalTitle}>조직 등록</Text>
-          <Pressable onPress={save} disabled={busy}><Text style={[s.modalSave, { color: COLORS.primary }]}>저장</Text></Pressable>
+          <Pressable onPress={save} disabled={busy}><Text style={s.modalSave}>저장</Text></Pressable>
         </View>
-        <View style={{ padding: SPACING.base, gap: SPACING.md }}>
-          <TextInput style={s.input} placeholder="조직 이름" placeholderTextColor={COLORS.textPlaceholder} value={name} onChangeText={setName} />
-          <View style={{ flexDirection: 'row', gap: SPACING.xs, flexWrap: 'wrap' }}>
+        <View style={{ padding: 16, gap: 12 }}>
+          <TextInput style={s.input} placeholder="조직 이름" placeholderTextColor={COLORS.textTertiary} value={name} onChangeText={setName} />
+          <View style={{ flexDirection: 'row', gap: 6, flexWrap: 'wrap' }}>
             {KINDS.map(k => (
               <Pressable key={k.key}
-                style={[s.chipBtn, kind === k.key && { backgroundColor: COLORS.primaryLight, borderColor: COLORS.primary }]}
+                style={[s.pillChip, kind === k.key && s.pillChipActive]}
                 onPress={() => setKind(k.key)}>
-                <Text style={[s.chipBtnText, kind === k.key && { color: COLORS.primary, fontWeight: '700' }]}>{k.label}</Text>
+                <Text style={[s.pillChipText, kind === k.key && s.pillChipTextActive]}>{k.label}</Text>
               </Pressable>
             ))}
           </View>
-          <TextInput style={s.input} placeholder="지역 (선택)" placeholderTextColor={COLORS.textPlaceholder} value={region} onChangeText={setRegion} />
+          <TextInput style={s.input} placeholder="지역 (선택)" placeholderTextColor={COLORS.textTertiary} value={region} onChangeText={setRegion} />
           <TextInput
-            style={[s.input, { height: 100, textAlignVertical: 'top', paddingTop: SPACING.md }]}
-            placeholder="메모 (선택)" placeholderTextColor={COLORS.textPlaceholder}
+            style={[s.input, s.textarea]}
+            placeholder="메모 (선택)" placeholderTextColor={COLORS.textTertiary}
             multiline value={memo} onChangeText={setMemo}
           />
         </View>
@@ -376,35 +386,74 @@ function CreateModal({ visible, onClose, onSaved }: {
   );
 }
 
-const styles = (C: any) => StyleSheet.create({
-  header: { paddingHorizontal: SPACING.base, paddingBottom: SPACING.md, backgroundColor: C.background },
-  h1: { ...TYPO.displayLarge, color: C.text },
-  card: { backgroundColor: C.surface, borderRadius: RADIUS.comfortable, padding: SPACING.base, marginBottom: SPACING.md },
-  cardTop: { flexDirection: 'row', alignItems: 'center', gap: SPACING.sm, marginBottom: SPACING.sm },
+/* ── 폴리 문법 실측 스타일 ── */
+const makeStyles = (COLORS: ThemeColors) => StyleSheet.create({
+  container: { flex: 1, backgroundColor: COLORS.background },
+
+  // 리스트 카드
+  card: {
+    backgroundColor: COLORS.surface,
+    marginHorizontal: 16,
+    marginBottom: 10,
+    paddingHorizontal: 16,
+    paddingTop: 15,
+    paddingBottom: 12,
+    borderRadius: 18,
+    ...SHADOWS.subtle,
+  },
+  cardTop: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 9 },
+  orgName: { flex: 1, fontSize: 15, fontWeight: '700', color: COLORS.text, letterSpacing: -0.3 },
+  kindBadge: { backgroundColor: COLORS.primaryLight, paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 },
+  kindBadgeText: { fontSize: 10.5, fontWeight: '700', color: COLORS.primary, letterSpacing: -0.2 },
   cardBottom: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  orgName: { ...TYPO.subtitle, color: C.text, flex: 1 },
-  chip: { ...TYPO.caption, fontWeight: '700', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6, overflow: 'hidden' },
-  meta: { ...TYPO.caption, color: C.textCaption },
-  body: { ...TYPO.body, color: C.textBody, lineHeight: 22 },
+  meta: { fontSize: 12, color: COLORS.textTertiary, letterSpacing: -0.2 },
   friendlyRow: { flexDirection: 'row', alignItems: 'center', gap: 5 },
   dot: { width: 8, height: 8, borderRadius: 4 },
-  empty: { alignItems: 'center', paddingTop: 96, gap: SPACING.sm },
-  emptyTitle: { ...TYPO.subtitle, color: C.text },
-  emptyBody: { ...TYPO.bodySmall, color: C.textCaption, textAlign: 'center', lineHeight: 20 },
-  fab: { position: 'absolute', right: SPACING.lg, width: 56, height: 56, borderRadius: 28, alignItems: 'center', justifyContent: 'center' },
-  fabText: { color: C.textInverse, fontSize: 28, marginTop: -2 },
-  modalHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: SPACING.base },
-  modalCancel: { ...TYPO.bodyLarge, color: C.textCaption },
-  modalTitle: { ...TYPO.subtitle, color: C.text, flex: 1, textAlign: 'center', marginHorizontal: SPACING.sm },
-  modalSave: { ...TYPO.subtitle },
-  sectionTitle: { ...TYPO.subtitle, color: C.text },
-  linkAction: { ...TYPO.bodySmall, fontWeight: '700' },
-  input: { minHeight: 48, borderRadius: RADIUS.standard, borderWidth: 1, borderColor: C.border, paddingHorizontal: SPACING.base, color: C.text, backgroundColor: C.surface, ...TYPO.bodyLarge },
-  chipBtn: { paddingHorizontal: SPACING.md, height: 34, borderRadius: RADIUS.pill, borderWidth: 1, borderColor: C.border, alignItems: 'center', justifyContent: 'center', flexDirection: 'row' },
-  chipBtnText: { ...TYPO.bodySmall, color: C.textSecondary },
-  memberRow: { flexDirection: 'row', alignItems: 'center', gap: SPACING.sm, backgroundColor: C.surface, borderRadius: RADIUS.standard, padding: SPACING.md },
-  memberName: { ...TYPO.body, color: C.text, fontWeight: '600' },
-  resultRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: C.surface, borderRadius: RADIUS.standard, padding: SPACING.md, borderWidth: 1, borderColor: C.border },
-  primaryBtn: { height: 48, borderRadius: RADIUS.standard, alignItems: 'center', justifyContent: 'center' },
-  primaryBtnText: { ...TYPO.subtitle, color: C.textInverse },
+
+  // 모달 공통 — pageSheet 흰 시트 + grey50 폼
+  modalSheet: { flex: 1, backgroundColor: COLORS.surface },
+  modalHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 18, paddingVertical: 16 },
+  modalCancel: { fontSize: 15.5, color: COLORS.textCaption, letterSpacing: -0.2 },
+  modalTitle: { flex: 1, textAlign: 'center', marginHorizontal: 8, fontSize: 17, fontWeight: '700', color: COLORS.text, letterSpacing: -0.3 },
+  modalSave: { fontSize: 15.5, fontWeight: '700', color: COLORS.primary, letterSpacing: -0.2 },
+
+  sectionTitle: { fontSize: 15, fontWeight: '700', color: COLORS.text, letterSpacing: -0.3 },
+  body: { fontSize: 13, color: COLORS.textSecondary, lineHeight: 19, letterSpacing: -0.2 },
+  linkAction: { fontSize: 13, fontWeight: '700', color: COLORS.primary, letterSpacing: -0.2 },
+
+  input: {
+    backgroundColor: COLORS.grey50,
+    borderRadius: 12,
+    paddingHorizontal: 14,
+    paddingVertical: 13,
+    fontSize: 15,
+    color: COLORS.text,
+  },
+  textarea: { minHeight: 110, textAlignVertical: 'top' },
+
+  // 선택 칩 — 검정 활성 pill
+  pillChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 13,
+    paddingVertical: 8,
+    borderRadius: 16,
+    backgroundColor: COLORS.surface,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+  },
+  pillChipActive: { backgroundColor: COLORS.text, borderColor: COLORS.text },
+  pillChipText: { fontSize: 13, fontWeight: '600', color: COLORS.textSecondary, letterSpacing: -0.2 },
+  pillChipTextActive: { color: COLORS.textInverse, fontWeight: '700' },
+
+  // 주요 버튼
+  primaryBtn: { backgroundColor: COLORS.primary, borderRadius: 14, paddingVertical: 15, alignItems: 'center' },
+  primaryBtnText: { fontSize: 15.5, fontWeight: '700', color: COLORS.textInverse, letterSpacing: -0.2 },
+
+  // 소속/검색 행
+  memberRow: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: COLORS.grey50, borderRadius: 12, paddingHorizontal: 14, paddingVertical: 12 },
+  memberName: { fontSize: 14, fontWeight: '600', color: COLORS.text, letterSpacing: -0.2 },
+  resultRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: COLORS.grey50, borderRadius: 12, paddingHorizontal: 14, paddingVertical: 12 },
+  roleBadge: { backgroundColor: COLORS.grey100, paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 },
+  roleBadgeText: { fontSize: 11, fontWeight: '600', color: COLORS.textSecondary, letterSpacing: -0.2 },
 });
