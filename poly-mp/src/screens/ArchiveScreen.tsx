@@ -15,6 +15,7 @@ import { uploadPostImage, mediaUrl } from '../lib/media';
 import { timeAgo } from '../lib/time';
 import { useTheme, type ThemeColors } from '../theme/ThemeContext';
 import { SHADOWS } from '../theme/colors';
+import { LAYOUT } from '../theme/layout';
 import Header from '../components/Header';
 import GlassIconButton from '../components/GlassIconButton';
 import PressableScale from '../components/PressableScale';
@@ -88,12 +89,13 @@ export default function ArchiveScreen() {
   // ── 피드 상단 컴포저 카드 (페북 '무슨 생각을 하고 계신가요?' 문법) ──
   const FeedComposer = (
     <View style={[s.card, s.composerCard]}>
-      <InitialAvatar name={myName} size={40} />
+      <InitialAvatar name={myName} size={36} />
       <Pressable style={s.composerPill} onPress={() => setCompose(true)}>
-        <Text style={s.composerPillText}>오늘의 활동을 기록해 보세요</Text>
+        {/* 좁은 기기(SE)에서 두 줄로 접히면 컴포저 행 높이가 무너진다 — 한 줄 고정 */}
+        <Text style={s.composerPillText} numberOfLines={1}>오늘의 활동을 기록해 보세요</Text>
       </Pressable>
       <Pressable style={s.composerPhotoBtn} hitSlop={8} onPress={() => setCompose(true)}>
-        <Ionicons name="images-outline" size={22} color={COLORS.primary} />
+        <Ionicons name="images-outline" size={20} color={COLORS.primary} />
       </Pressable>
     </View>
   );
@@ -101,8 +103,8 @@ export default function ArchiveScreen() {
   // ── 일정 탭 상단 소형 등록 카드 ──
   const ScheduleComposer = (
     <PressableScale style={[s.card, s.schedAddCard]} scaleTo={0.98} onPress={() => setCompose(true)}>
-      <Ionicons name="calendar-outline" size={18} color={COLORS.textSecondary} />
-      <Text style={s.schedAddText}>일정 등록하기</Text>
+      <Ionicons name="calendar-outline" size={17} color={COLORS.textSecondary} />
+      <Text style={s.schedAddText} numberOfLines={1}>일정 등록하기</Text>
     </PressableScale>
   );
 
@@ -132,7 +134,7 @@ export default function ArchiveScreen() {
         <FlatList
           data={posts}
           keyExtractor={i => i.id}
-          contentContainerStyle={{ paddingTop: 12, paddingBottom: 120 }}
+          contentContainerStyle={{ paddingTop: LAYOUT.cardGap, paddingBottom: 120 }}
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={COLORS.textCaption} />}
           ListHeaderComponent={FeedComposer}
           ListEmptyComponent={
@@ -148,7 +150,7 @@ export default function ArchiveScreen() {
             <View style={s.card}>
               {/* 상단 — 아바타 + 이름·뱃지 / 시각·장소 (페북 게시물 헤더) */}
               <View style={s.postHead}>
-                <InitialAvatar name={myName} size={36} />
+                <InitialAvatar name={myName} size={34} />
                 <View style={{ flex: 1 }}>
                   <View style={s.postNameRow}>
                     <Text style={s.postName} numberOfLines={1}>{myName}</Text>
@@ -184,11 +186,11 @@ export default function ArchiveScreen() {
               {/* 하단 액션 행 — 공유 / 삭제 */}
               <View style={s.actionRow}>
                 <PressableScale style={s.actionBtn} scaleTo={0.96} onPress={() => Share.share({ message: item.body })}>
-                  <Ionicons name="share-social-outline" size={16} color={COLORS.textSecondary} />
+                  <Ionicons name="share-social-outline" size={15} color={COLORS.textSecondary} />
                   <Text style={s.actionText}>공유</Text>
                 </PressableScale>
                 <Pressable style={s.deleteBtn} hitSlop={8} onPress={() => confirmDelete(item.id)}>
-                  <Ionicons name="trash-outline" size={16} color={COLORS.textTertiary} />
+                  <Ionicons name="trash-outline" size={15} color={COLORS.textTertiary} />
                 </Pressable>
               </View>
             </View>
@@ -198,7 +200,7 @@ export default function ArchiveScreen() {
         <FlatList
           data={schedules}
           keyExtractor={i => i.id}
-          contentContainerStyle={{ paddingTop: 12, paddingBottom: 120 }}
+          contentContainerStyle={{ paddingTop: LAYOUT.cardGap, paddingBottom: 120 }}
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={COLORS.textCaption} />}
           ListHeaderComponent={ScheduleComposer}
           ListEmptyComponent={
@@ -216,8 +218,8 @@ export default function ArchiveScreen() {
                 <Text style={s.dateMon}>{new Date(item.starts_at).getMonth() + 1}월</Text>
               </View>
               <View style={{ flex: 1 }}>
-                <Text style={s.schedTitle}>{item.title}</Text>
-                <Text style={s.meta}>{fmtDate(item.starts_at)}{item.place ? ` · ${item.place}` : ''}</Text>
+                <Text style={s.schedTitle} numberOfLines={2}>{item.title}</Text>
+                <Text style={s.meta} numberOfLines={1}>{fmtDate(item.starts_at)}{item.place ? ` · ${item.place}` : ''}</Text>
               </View>
             </View>
           )}
@@ -323,10 +325,10 @@ function ComposeModal({ visible, seg, onClose, onSaved }: {
 
         {seg === 'feed' ? (
           <>
-            <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 16, paddingBottom: 24 }} keyboardShouldPersistTaps="handled">
+            <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: LAYOUT.screenX, paddingBottom: 24 }} keyboardShouldPersistTaps="handled">
               {/* 프로필 행 — 아바타 + 이름 + 카테고리 미니 칩 */}
               <View style={s.compProfile}>
-                <InitialAvatar name={myName} size={40} />
+                <InitialAvatar name={myName} size={LAYOUT.rowAvatar} />
                 <View style={{ flex: 1 }}>
                   <Text style={s.compName} numberOfLines={1}>{myName}</Text>
                   <View style={s.miniChipRow}>
@@ -349,7 +351,7 @@ function ComposeModal({ visible, seg, onClose, onSaved }: {
                 multiline value={body} onChangeText={setBody}
               />
 
-              {/* 사진 그리드 — 썸네일 88 + X 오버레이 + 추가 타일 */}
+              {/* 사진 그리드 — 썸네일 80 + X 오버레이 + 추가 타일 */}
               <View style={s.thumbWrap}>
                 {photos.map((p, i) => (
                   <View key={`${p.uri}-${i}`}>
@@ -361,7 +363,7 @@ function ComposeModal({ visible, seg, onClose, onSaved }: {
                 ))}
                 {photos.length < MAX_PHOTOS && (
                   <Pressable style={s.thumbAdd} onPress={pickPhotos}>
-                    <Ionicons name="image-outline" size={20} color={COLORS.textCaption} />
+                    <Ionicons name="image-outline" size={19} color={COLORS.textCaption} />
                     <Text style={s.thumbAddText}>사진</Text>
                   </Pressable>
                 )}
@@ -371,7 +373,7 @@ function ComposeModal({ visible, seg, onClose, onSaved }: {
             {/* 하단 고정 옵션 바 — 장소 인라인 + SNS 공유 토글 */}
             <View style={s.optionBar}>
               <View style={s.placeRow}>
-                <Ionicons name="location-outline" size={18} color={COLORS.textCaption} />
+                <Ionicons name="location-outline" size={17} color={COLORS.textCaption} />
                 <TextInput
                   style={s.placeInput}
                   placeholder="장소 추가 (선택)"
@@ -388,7 +390,7 @@ function ComposeModal({ visible, seg, onClose, onSaved }: {
             </View>
           </>
         ) : (
-          <View style={{ padding: 16, gap: 12 }}>
+          <View style={{ padding: LAYOUT.screenX, gap: LAYOUT.cardGap }}>
             <TextInput style={s.input} placeholder="일정 제목" placeholderTextColor={COLORS.textTertiary} value={title} onChangeText={setTitle} />
             <TextInput style={s.input} placeholder="일시 — 2026-08-15 14:00 (비우면 지금)" placeholderTextColor={COLORS.textTertiary} value={when} onChangeText={setWhen} />
             <TextInput style={s.input} placeholder="장소 (선택)" placeholderTextColor={COLORS.textTertiary} value={place} onChangeText={setPlace} />
@@ -400,101 +402,103 @@ function ComposeModal({ visible, seg, onClose, onSaved }: {
 }
 
 const makeStyles = (COLORS: ThemeColors) => StyleSheet.create({
-  // ── 리스트 카드 (폴리 실측) ──
+  // ── 리스트 카드 — LAYOUT 토큰 고정 (화면 공통 리듬) ──
   card: {
     backgroundColor: COLORS.surface,
-    marginHorizontal: 16,
-    marginBottom: 10,
-    paddingHorizontal: 16,
-    paddingTop: 15,
-    paddingBottom: 12,
-    borderRadius: 18,
+    marginHorizontal: LAYOUT.screenX,
+    marginBottom: LAYOUT.cardGap,
+    paddingHorizontal: LAYOUT.cardPadX,
+    paddingVertical: LAYOUT.cardPadY,
+    borderRadius: LAYOUT.cardRadius,
     ...SHADOWS.subtle,
   },
 
   // ── 피드 상단 컴포저 카드 ──
-  composerCard: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingBottom: 15 },
-  composerPill: { flex: 1, backgroundColor: COLORS.grey50, borderRadius: 20, paddingHorizontal: 14, paddingVertical: 10 },
-  composerPillText: { fontSize: 14, color: COLORS.textTertiary, letterSpacing: -0.2 },
+  // padding 12 — card 토큰(14/12)보다 좁게. paddingHorizontal/Vertical로 써야 card를 확실히 덮는다.
+  composerCard: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 12, paddingVertical: 12 },
+  composerPill: { flex: 1, backgroundColor: COLORS.grey50, borderRadius: 18, paddingHorizontal: 14, paddingVertical: 9 },
+  composerPillText: { fontSize: 13.5, color: COLORS.textTertiary, letterSpacing: -0.2 },
   composerPhotoBtn: { padding: 4 },
 
   // ── 피드 카드 (페북 게시물 문법) ──
-  postHead: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 11 },
+  // gap 10 — 컴포저(12+36+10=58)와 게시물(14+34+10=58) 텍스트 시작선을 맞춘다
+  postHead: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   postNameRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  postName: { fontSize: 14.5, fontWeight: '700', color: COLORS.text, letterSpacing: -0.2, flexShrink: 1 },
-  postMeta: { fontSize: 11.5, color: COLORS.textTertiary, letterSpacing: -0.1, marginTop: 2 },
-  catBadge: { backgroundColor: COLORS.primaryLight, paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 },
-  catBadgeText: { fontSize: 10.5, fontWeight: '700', color: COLORS.primary, letterSpacing: -0.1 },
-  body: { fontSize: 15, color: COLORS.text, lineHeight: 22, letterSpacing: -0.2 },
-  mediaSingle: { width: '100%', aspectRatio: 4 / 3, borderRadius: 12, marginTop: 11, backgroundColor: COLORS.backgroundSecondary },
-  mediaGridWrap: { gap: 4, marginTop: 11 },
-  mediaGridRow: { flexDirection: 'row', gap: 4 },
+  postName: { fontSize: 14.5, fontWeight: '700', color: COLORS.text, letterSpacing: -0.3, flexShrink: 1 },
+  postMeta: { fontSize: 11.5, color: COLORS.textTertiary, letterSpacing: -0.2, marginTop: 1.5 },
+  catBadge: { backgroundColor: COLORS.primaryLight, paddingHorizontal: 7, paddingVertical: 2.5, borderRadius: 6 },
+  catBadgeText: { fontSize: 10.5, fontWeight: '700', color: COLORS.primary, letterSpacing: -0.2 },
+  body: { fontSize: 14.5, color: COLORS.text, lineHeight: 21, letterSpacing: -0.2, marginTop: 8 },
+  mediaSingle: { width: '100%', aspectRatio: 4 / 3, borderRadius: 10, marginTop: 10, backgroundColor: COLORS.backgroundSecondary },
+  mediaGridWrap: { gap: 3, marginTop: 10 },
+  mediaGridRow: { flexDirection: 'row', gap: 3 },
   mediaCell: { flex: 1, aspectRatio: 1, borderRadius: 8, backgroundColor: COLORS.backgroundSecondary },
   actionRow: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
     borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: COLORS.divider,
-    marginTop: 12, paddingTop: 10,
+    marginTop: 10, paddingTop: 9,
   },
-  actionBtn: { flexDirection: 'row', alignItems: 'center', gap: 5, paddingVertical: 2 },
-  actionText: { fontSize: 13, fontWeight: '600', color: COLORS.textSecondary, letterSpacing: -0.2 },
+  actionBtn: { flexDirection: 'row', alignItems: 'center', gap: 5, paddingVertical: 1 },
+  actionText: { fontSize: 12.5, fontWeight: '600', color: COLORS.textSecondary, letterSpacing: -0.2 },
   deleteBtn: { padding: 2 },
-  meta: { fontSize: 11, color: COLORS.textTertiary, letterSpacing: -0.1, flexShrink: 1 },
+  meta: { fontSize: 12, color: COLORS.textTertiary, letterSpacing: -0.2, flexShrink: 1 },
 
   // ── 일정 카드 — dateBox 날짜 강조 ──
-  schedCard: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  dateBox: { width: 44, alignItems: 'center' },
-  dateDay: { fontSize: 20, fontWeight: '800', color: COLORS.primary, letterSpacing: -0.3 },
-  dateMon: { fontSize: 11, color: COLORS.textTertiary, letterSpacing: -0.1, marginTop: 1 },
-  schedTitle: { fontSize: 15, fontWeight: '700', color: COLORS.text, letterSpacing: -0.2, marginBottom: 3 },
-  schedAddCard: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 7, paddingBottom: 15 },
-  schedAddText: { fontSize: 14, fontWeight: '600', color: COLORS.textSecondary, letterSpacing: -0.2 },
+  schedCard: { flexDirection: 'row', alignItems: 'center', gap: LAYOUT.rowGap },
+  // 날짜 박스가 아바타 슬롯을 대신한다 — rowAvatar+rowGap로 본문 시작선이 rowDividerInset(66)과 일치
+  dateBox: { width: LAYOUT.rowAvatar, alignItems: 'center' },
+  dateDay: { fontSize: 19, fontWeight: '800', color: COLORS.primary, letterSpacing: -0.4 },
+  dateMon: { fontSize: 11, color: COLORS.textTertiary, letterSpacing: -0.2, marginTop: 1 },
+  schedTitle: { fontSize: 15.5, fontWeight: '700', color: COLORS.text, letterSpacing: -0.3, marginBottom: 2 },
+  schedAddCard: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 7 },
+  schedAddText: { fontSize: 13.5, fontWeight: '600', color: COLORS.textSecondary, letterSpacing: -0.2 },
 
   // ── 작성 모달 (페북 컴포저) ──
-  modalHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 12 },
-  modalCancel: { fontSize: 16, color: COLORS.textCaption, letterSpacing: -0.2 },
-  modalTitle: { fontSize: 16, fontWeight: '700', color: COLORS.text, letterSpacing: -0.3 },
-  postPill: { backgroundColor: COLORS.primary, borderRadius: 999, paddingHorizontal: 16, paddingVertical: 8 },
+  modalHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: LAYOUT.screenX, paddingVertical: LAYOUT.cardPadY },
+  modalCancel: { fontSize: 15.5, color: COLORS.textCaption, letterSpacing: -0.2 },
+  modalTitle: { fontSize: 15.5, fontWeight: '700', color: COLORS.text, letterSpacing: -0.3 },
+  postPill: { backgroundColor: COLORS.primary, borderRadius: 999, paddingHorizontal: 15, paddingVertical: 7 },
   postPillText: { fontSize: 13.5, fontWeight: '700', color: COLORS.textInverse, letterSpacing: -0.2 },
-  compProfile: { flexDirection: 'row', alignItems: 'flex-start', gap: 10 },
-  compName: { fontSize: 15, fontWeight: '700', color: COLORS.text, letterSpacing: -0.2, marginTop: 1 },
+  compProfile: { flexDirection: 'row', alignItems: 'flex-start', gap: LAYOUT.rowGap },
+  compName: { fontSize: 15.5, fontWeight: '700', color: COLORS.text, letterSpacing: -0.3, marginTop: 1 },
   miniChipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginTop: 6 },
-  miniChip: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 16, backgroundColor: COLORS.surface, ...SHADOWS.subtle },
+  miniChip: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 14, backgroundColor: COLORS.surface, ...SHADOWS.subtle },
   miniChipActive: { backgroundColor: COLORS.text },
   miniChipText: { fontSize: 12, fontWeight: '600', color: COLORS.textSecondary, letterSpacing: -0.2 },
   miniChipTextActive: { color: COLORS.textInverse, fontWeight: '700' },
   compBody: {
-    fontSize: 17, lineHeight: 25, color: COLORS.text, letterSpacing: -0.2,
-    minHeight: 140, textAlignVertical: 'top', marginTop: 14, padding: 0,
+    fontSize: 16.5, lineHeight: 24, color: COLORS.text, letterSpacing: -0.2,
+    minHeight: 132, textAlignVertical: 'top', marginTop: 12, padding: 0,
   },
   thumbWrap: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 8 },
-  thumb: { width: 88, height: 88, borderRadius: 10, backgroundColor: COLORS.backgroundSecondary },
+  thumb: { width: 80, height: 80, borderRadius: 10, backgroundColor: COLORS.backgroundSecondary },
   thumbX: {
     position: 'absolute', top: -6, right: -6, width: 20, height: 20, borderRadius: 10,
     backgroundColor: COLORS.overlayStrong, alignItems: 'center', justifyContent: 'center',
   },
   thumbXText: { color: COLORS.textInverse, fontSize: 13, fontWeight: '700', marginTop: -1 },
   thumbAdd: {
-    width: 88, height: 88, borderRadius: 10, borderWidth: 1, borderColor: COLORS.border,
+    width: 80, height: 80, borderRadius: 10, borderWidth: 1, borderColor: COLORS.border,
     borderStyle: 'dashed', alignItems: 'center', justifyContent: 'center', gap: 2,
   },
-  thumbAddText: { fontSize: 11, color: COLORS.textCaption, letterSpacing: -0.1 },
+  thumbAddText: { fontSize: 11.5, color: COLORS.textTertiary, letterSpacing: -0.2 },
   optionBar: {
     borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: COLORS.divider,
-    paddingHorizontal: 16, paddingTop: 10, paddingBottom: 14, gap: 8,
+    paddingHorizontal: LAYOUT.screenX, paddingVertical: 12, gap: 8,
   },
   placeRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  placeInput: { flex: 1, fontSize: 14, color: COLORS.text, letterSpacing: -0.2, paddingVertical: 6 },
+  placeInput: { flex: 1, fontSize: 13.5, color: COLORS.text, letterSpacing: -0.2, paddingVertical: 5 },
   toggleRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   checkbox: { width: 20, height: 20, borderRadius: 6, borderWidth: 1.5, borderColor: COLORS.border, alignItems: 'center', justifyContent: 'center' },
-  toggleText: { fontSize: 12, color: COLORS.textCaption, flex: 1, lineHeight: 17, letterSpacing: -0.1 },
+  toggleText: { fontSize: 12, color: COLORS.textCaption, flex: 1, lineHeight: 17, letterSpacing: -0.2 },
 
-  // ── 일정 모달 입력 (기존 유지) ──
+  // ── 일정 모달 입력 ──
   input: {
     backgroundColor: COLORS.grey50,
-    borderRadius: 12,
-    paddingHorizontal: 14,
-    paddingVertical: 13,
-    fontSize: 15,
+    borderRadius: LAYOUT.cardRadius,
+    paddingHorizontal: LAYOUT.rowPadX,
+    paddingVertical: 12,
+    fontSize: 14.5,
     color: COLORS.text,
     letterSpacing: -0.2,
   },

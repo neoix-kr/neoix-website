@@ -1,5 +1,5 @@
 // 내 정보 — 프로필 허브(프로필 카드·편집 모달·요금제) + 계정·약관·앱 정보·계정 삭제(Apple 5.1.1(v))·사업자 정보(전자상거래법 표시)
-// 화면 문법은 폴리 공용(Header + 카드 radius 18 + subtle 섀도 + 바깥 섹션 라벨)을 따른다.
+// 화면 문법은 폴리 공용(Header + LAYOUT 토큰 카드 + subtle 섀도 + 바깥 섹션 라벨)을 따른다.
 import React, { useMemo, useState } from 'react';
 import {
   View, Text, Pressable, StyleSheet, Alert, ScrollView,
@@ -17,6 +17,7 @@ import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { useMember } from '../contexts/MemberContext';
 import { useTheme, type ThemeColors, type ThemeShadows } from '../theme/ThemeContext';
+import { LAYOUT } from '../theme/layout';
 import { APP_VERSION } from '../appVersion';
 
 const TERMS_URL = 'https://neoix.kr/terms/';
@@ -111,9 +112,9 @@ export default function SettingsScreen() {
     <Pressable style={s.row} onPress={onPress} disabled={!onPress}>
       <Text style={[s.rowLabel, danger && { color: COLORS.error }]}>{label}</Text>
       {right ? (
-        <Text style={s.rowRight}>{right}</Text>
+        <Text style={s.rowRight} numberOfLines={1}>{right}</Text>
       ) : onPress ? (
-        <Ionicons name="chevron-forward" size={16} color={COLORS.textTertiary} />
+        <Ionicons name="chevron-forward" size={15} color={COLORS.textTertiary} />
       ) : null}
     </Pressable>
   );
@@ -142,15 +143,17 @@ export default function SettingsScreen() {
         <Text style={s.sectionTitle}>내 정보</Text>
         <View style={s.profileCard}>
           <View style={s.profileRow}>
-            <InitialAvatar name={displayName} photo={member?.photo_url} size={56} />
+            <InitialAvatar name={displayName} photo={member?.photo_url} size={52} />
+            {/* flex:1 + numberOfLines — 이름·캡션이 길어도 '편집'을 밀거나 겹치지 않는다 */}
             <View style={{ flex: 1 }}>
               <Text style={s.profileName} numberOfLines={1}>{displayName}</Text>
               <Text style={s.profileCaption} numberOfLines={2}>{profileCaption}</Text>
             </View>
+            {/* 우측 상단 고정 — absolute 대신 행의 flex-start로 붙여 긴 이름과 겹치지 않게 */}
+            <Pressable style={s.editBtn} onPress={openEdit} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+              <Text style={s.editBtnText}>편집</Text>
+            </Pressable>
           </View>
-          <Pressable style={s.editBtn} onPress={openEdit} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-            <Text style={s.editBtnText}>편집</Text>
-          </Pressable>
         </View>
 
         {/* 결제·요금제 */}
@@ -158,7 +161,7 @@ export default function SettingsScreen() {
         <View style={s.card}>
           <View style={s.row}>
             <Text style={s.rowLabel}>현재 요금제</Text>
-            <Text style={s.rowRight}>{member?.plan === 'operator' ? '운영 계정' : '기초 · 출시 기념 무료'}</Text>
+            <Text style={s.rowRight} numberOfLines={1}>{member?.plan === 'operator' ? '운영 계정' : '기초 · 출시 기념 무료'}</Text>
           </View>
           <Divider />
           <Row
@@ -172,7 +175,7 @@ export default function SettingsScreen() {
         <View style={s.card}>
           <View style={s.row}>
             <Text style={s.rowLabel}>이메일</Text>
-            <Text style={s.rowRight}>{user?.email ?? '—'}</Text>
+            <Text style={s.rowRight} numberOfLines={1} ellipsizeMode="middle">{user?.email ?? '—'}</Text>
           </View>
           <Divider />
           <Row label="로그아웃" onPress={() => {
@@ -196,14 +199,14 @@ export default function SettingsScreen() {
         <View style={s.card}>
           <View style={s.row}>
             <Text style={s.rowLabel}>버전</Text>
-            <Text style={s.rowRight}>{APP_VERSION}</Text>
+            <Text style={s.rowRight} numberOfLines={1}>{APP_VERSION}</Text>
           </View>
           <Divider />
           <Row label="문의" right="support@polyx.kr" />
         </View>
 
         {/* 계정 삭제 */}
-        <View style={[s.card, { marginTop: 8 }]}>
+        <View style={[s.card, { marginTop: LAYOUT.cardGap }]}>
           <Row label={deleting ? '삭제 중…' : '계정 삭제'} danger onPress={deleting ? undefined : onDeleteAccount} />
           <Text style={s.deleteNote}>
             계정과 모든 데이터가 영구 삭제돼요. NEOIX 통합 계정이라 다른 NEOIX 앱에도 함께 적용됩니다.
@@ -226,7 +229,7 @@ export default function SettingsScreen() {
               <Text style={[s.modalSave, saving && { opacity: 0.4 }]}>저장</Text>
             </Pressable>
           </View>
-          <View style={{ padding: 16, gap: 12 }}>
+          <View style={{ paddingHorizontal: LAYOUT.screenX, paddingTop: 4, gap: LAYOUT.cardGap }}>
             <TextInput
               style={s.input}
               placeholder="성함"
@@ -253,40 +256,40 @@ export default function SettingsScreen() {
 const makeStyles = (COLORS: ThemeColors, SHADOWS: ThemeShadows) => StyleSheet.create({
   // 섹션 라벨 — 카드 바깥 위, 소문자 톤
   sectionTitle: {
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: '700',
     color: COLORS.textTertiary,
     letterSpacing: -0.2,
     marginHorizontal: 20,
-    marginTop: 8,
-    marginBottom: 8,
+    marginTop: 14,
+    marginBottom: 6,
   },
-  // 폴리 리스트 카드 문법 — radius 18 + subtle
+  // 폴리 리스트 카드 문법 — LAYOUT 토큰 + subtle
   card: {
     backgroundColor: COLORS.surface,
-    marginHorizontal: 16,
-    marginBottom: 10,
-    paddingHorizontal: 16,
-    borderRadius: 18,
+    marginHorizontal: LAYOUT.screenX,
+    marginBottom: LAYOUT.cardGap,
+    paddingHorizontal: LAYOUT.rowPadX,
+    borderRadius: LAYOUT.cardRadius,
     ...SHADOWS.subtle,
   },
   // 프로필 카드 — 아바타 + 이름 + 캡션, 우상단 '편집'
   profileCard: {
     backgroundColor: COLORS.surface,
-    marginHorizontal: 16,
-    marginBottom: 10,
-    paddingHorizontal: 16,
-    paddingVertical: 18,
-    borderRadius: 18,
+    marginHorizontal: LAYOUT.screenX,
+    marginBottom: LAYOUT.cardGap,
+    paddingHorizontal: LAYOUT.rowPadX,
+    paddingVertical: 16,
+    borderRadius: LAYOUT.cardRadius,
     ...SHADOWS.subtle,
   },
   profileRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 14,
+    gap: LAYOUT.rowGap,
   },
   profileName: {
-    fontSize: 18,
+    fontSize: 17.5,
     fontWeight: '800',
     color: COLORS.text,
     letterSpacing: -0.4,
@@ -294,13 +297,12 @@ const makeStyles = (COLORS: ThemeColors, SHADOWS: ThemeShadows) => StyleSheet.cr
   profileCaption: {
     fontSize: 12.5,
     color: COLORS.textTertiary,
+    lineHeight: 17,
     letterSpacing: -0.2,
-    marginTop: 3,
+    marginTop: 2,
   },
   editBtn: {
-    position: 'absolute',
-    top: 14,
-    right: 16,
+    alignSelf: 'flex-start',
   },
   editBtnText: {
     fontSize: 13,
@@ -312,11 +314,11 @@ const makeStyles = (COLORS: ThemeColors, SHADOWS: ThemeShadows) => StyleSheet.cr
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: 13,
-    gap: 12,
+    paddingVertical: 12,
+    gap: LAYOUT.rowGap,
   },
   rowLabel: {
-    fontSize: 15,
+    fontSize: 14.5,
     fontWeight: '600',
     color: COLORS.text,
     letterSpacing: -0.2,
@@ -337,29 +339,32 @@ const makeStyles = (COLORS: ThemeColors, SHADOWS: ThemeShadows) => StyleSheet.cr
     color: COLORS.textTertiary,
     lineHeight: 16,
     letterSpacing: -0.2,
-    paddingBottom: 13,
+    paddingBottom: LAYOUT.cardPadY,
   },
   bizInfo: {
     fontSize: 11.5,
     color: COLORS.textCaption,
     textAlign: 'center',
-    lineHeight: 18,
+    paddingHorizontal: LAYOUT.screenX,
+    lineHeight: 17,
     letterSpacing: -0.2,
     marginTop: 12,
+    marginBottom: 8,
   },
   // 모달 공통 — pageSheet 흰 시트 + grey50 폼 (OrgsScreen 문법과 동일)
   modalSheet: { flex: 1, backgroundColor: COLORS.surface },
-  modalHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 18, paddingVertical: 16 },
-  modalCancel: { fontSize: 15.5, color: COLORS.textCaption, letterSpacing: -0.2 },
-  modalTitle: { flex: 1, textAlign: 'center', marginHorizontal: 8, fontSize: 17, fontWeight: '700', color: COLORS.text, letterSpacing: -0.3 },
-  modalSave: { fontSize: 15.5, fontWeight: '700', color: COLORS.primary, letterSpacing: -0.2 },
+  modalHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: LAYOUT.screenX, paddingVertical: 14 },
+  modalCancel: { fontSize: 15, color: COLORS.textCaption, letterSpacing: -0.2 },
+  modalTitle: { flex: 1, textAlign: 'center', marginHorizontal: 8, fontSize: 16.5, fontWeight: '700', color: COLORS.text, letterSpacing: -0.3 },
+  modalSave: { fontSize: 15, fontWeight: '700', color: COLORS.primary, letterSpacing: -0.2 },
   input: {
     backgroundColor: COLORS.grey50,
-    borderRadius: 12,
-    paddingHorizontal: 14,
-    paddingVertical: 13,
-    fontSize: 15,
+    borderRadius: LAYOUT.cardRadius,
+    paddingHorizontal: LAYOUT.rowPadX,
+    paddingVertical: LAYOUT.cardPadY,
+    fontSize: 14.5,
     color: COLORS.text,
+    letterSpacing: -0.2,
   },
   modalNote: {
     fontSize: 12,

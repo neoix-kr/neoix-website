@@ -16,6 +16,7 @@ import { EmptyState } from '../components/PolyUI';
 import { supabase } from '../lib/supabase';
 import { useTheme, type ThemeColors } from '../theme/ThemeContext';
 import { SHADOWS } from '../theme/colors';
+import { LAYOUT } from '../theme/layout';
 import type { MpContact, MpCase, MpMeeting, DonorSummary } from '../types/db';
 
 // ── 유틸 ──
@@ -167,31 +168,35 @@ export default function ContactsScreen() {
         autoCorrect={false}
       />
 
-      {/* 요약 스트립 — 연락처가 0건이면 렌더하지 않는다 */}
-      {stats.total > 0 && (
-        <View style={s.statWrap}>
-          <View style={s.statCell}>
-            <Text style={s.statNum}>{stats.total}</Text>
-            <Text style={s.statLabel}>전체</Text>
-          </View>
-          <View style={s.statDivider} />
-          <View style={s.statCell}>
-            <Text style={[s.statNum, { color: COLORS.primary }]}>{stats.donors}</Text>
-            <Text style={s.statLabel}>후원자</Text>
-          </View>
-          <View style={s.statDivider} />
-          <View style={s.statCell}>
-            <Text style={s.statNum}>{stats.favorites}</Text>
-            <Text style={s.statLabel}>즐겨찾기</Text>
-          </View>
-        </View>
-      )}
-
+      {/* 본문 — 요약 스트립 + 그룹 리스트(한 카드 안에 행 + hairline 구분선) */}
       <FlatList
         data={filtered}
         keyExtractor={i => i.id}
-        contentContainerStyle={{ paddingTop: 4, paddingBottom: 120 }}
+        contentContainerStyle={{ paddingBottom: 120 }}
+        keyboardDismissMode="on-drag"
+        keyboardShouldPersistTaps="handled"
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={COLORS.textCaption} />}
+        ListHeaderComponent={
+          // 요약 스트립 — 연락처가 0건이면 렌더하지 않는다
+          stats.total === 0 ? null : (
+            <View style={s.statWrap}>
+              <View style={s.statCell}>
+                <Text style={s.statNum}>{stats.total}</Text>
+                <Text style={s.statLabel}>전체</Text>
+              </View>
+              <View style={s.statDivider} />
+              <View style={s.statCell}>
+                <Text style={[s.statNum, { color: COLORS.primary }]}>{stats.donors}</Text>
+                <Text style={s.statLabel}>후원자</Text>
+              </View>
+              <View style={s.statDivider} />
+              <View style={s.statCell}>
+                <Text style={s.statNum}>{stats.favorites}</Text>
+                <Text style={s.statLabel}>즐겨찾기</Text>
+              </View>
+            </View>
+          )
+        }
         ListEmptyComponent={
           <EmptyState
             icon="people-outline"
@@ -203,7 +208,7 @@ export default function ContactsScreen() {
             onCta={() => setCompose(true)}
           />
         }
-        renderItem={({ item }) => {
+        renderItem={({ item, index }) => {
           const orgs = orgsByContact[item.id] ?? [];
           const donor = item.phone_hash ? donorByHash[item.phone_hash] : undefined;
           // 한 줄 요약 — 직함 · 소속단체 첫 개 · 태그 첫 개
@@ -213,29 +218,38 @@ export default function ContactsScreen() {
             item.tags[0] ? `#${item.tags[0]}` : null,
           ].filter(Boolean).join(' · ');
           return (
-            <PressableScale style={s.card} scaleTo={0.98} onPress={() => setSelected(item)}>
-              <View style={s.rowTop}>
-                <InitialAvatar name={item.name} size={44} />
-                <View style={{ flex: 1 }}>
-                  <Text style={s.name}>{item.name}</Text>
-                  {summary ? (
-                    <Text style={s.metaLine} numberOfLines={1}>{summary}</Text>
-                  ) : null}
-                  {donor && (
-                    <View style={{ flexDirection: 'row', marginTop: 6 }}>
-                      <Text style={s.donorBadge}>
-                        후원 {donor.cnt}회 · 누적 {fmtWon(donor.total)}
+            // 그룹 리스트 — 한 장의 카드처럼 보이도록 행마다 같은 surface, 첫/마지막만 라운드.
+            // 구분선은 각 행의 '위'에 두어(index > 0) 마지막 행 뒤에 선이 남지 않는다.
+            <View
+              style={[
+                s.groupWrap,
+                index === 0 && s.groupWrapFirst,
+                index === filtered.length - 1 && s.groupWrapLast,
+              ]}
+            >
+              {index > 0 && <View style={s.rowDivider} />}
+              <PressableScale style={s.row} scaleTo={0.99} onPress={() => setSelected(item)}>
+                <InitialAvatar name={item.name} size={LAYOUT.rowAvatar} />
+                <View style={s.rowMain}>
+                  <View style={s.nameLine}>
+                    <Text style={s.name} numberOfLines={1}>{item.name}</Text>
+                    {donor && (
+                      <Text style={s.donorBadge} numberOfLines={1}>
+                        후원 {donor.cnt}회 · {fmtWon(donor.total)}
                       </Text>
-                    </View>
-                  )}
+                    )}
+                  </View>
+                  {summary ? (
+                    <Text style={s.rowSub} numberOfLines={1}>{summary}</Text>
+                  ) : null}
                 </View>
                 <Pressable hitSlop={10} onPress={() => toggleFavorite(item)}>
                   <Text style={[s.star, { color: item.favorite ? COLORS.primary : COLORS.grey300 }]}>
                     {item.favorite ? '★' : '☆'}
                   </Text>
                 </Pressable>
-              </View>
-            </PressableScale>
+              </PressableScale>
+            </View>
           );
         }}
       />
@@ -318,15 +332,17 @@ function DetailModal({ contact, orgs, donor, onClose, onChanged }: {
       <View style={{ flex: 1, backgroundColor: COLORS.background }}>
         <View style={s.modalHead}>
           <Pressable onPress={onClose}><Text style={s.modalCancel}>닫기</Text></Pressable>
-          <Text style={s.modalTitle}>{contact.name}</Text>
+          <Text style={s.modalTitle} numberOfLines={1}>{contact.name}</Text>
           <View style={{ width: 40 }} />
         </View>
-        <ScrollView contentContainerStyle={{ paddingTop: 4, paddingBottom: 48 }}>
+        <ScrollView contentContainerStyle={{ paddingTop: 2, paddingBottom: 48 }}>
           {/* 기본 정보 */}
           <View style={s.card}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-              <Text style={s.name}>{contact.name}</Text>
-              {contact.title ? <Text style={s.meta}>{contact.title}</Text> : null}
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+              <Text style={s.name} numberOfLines={1}>{contact.name}</Text>
+              {contact.title ? (
+                <Text style={[s.meta, { flexShrink: 1 }]} numberOfLines={1}>{contact.title}</Text>
+              ) : null}
             </View>
             {contact.phone ? (
               <PressableScale
@@ -340,17 +356,17 @@ function DetailModal({ contact, orgs, donor, onClose, onChanged }: {
                 <Text style={s.callText}>{contact.phone} 전화 걸기</Text>
               </PressableScale>
             ) : (
-              <Text style={[s.meta, { marginTop: 8 }]}>전화번호가 없어요</Text>
+              <Text style={[s.meta, { marginTop: 6 }]}>전화번호가 없어요</Text>
             )}
             {contact.tags.length > 0 && (
-              <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 4, marginTop: 12 }}>
+              <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 4, marginTop: 10 }}>
                 {contact.tags.map(t => (
                   <Text key={t} style={s.tagChip}>#{t}</Text>
                 ))}
               </View>
             )}
             {donor && (
-              <View style={{ flexDirection: 'row', marginTop: 12 }}>
+              <View style={{ flexDirection: 'row', marginTop: 10 }}>
                 <Text style={s.donorBadge}>
                   후원 {donor.cnt}회 · 누적 {fmtWon(donor.total)}{donor.last_at ? ` · 최근 ${fmtDate(donor.last_at)}` : ''}
                 </Text>
@@ -362,12 +378,14 @@ function DetailModal({ contact, orgs, donor, onClose, onChanged }: {
           <View style={s.card}>
             <Text style={s.sectionTitle}>소속 단체</Text>
             {orgs.length === 0 ? (
-              <Text style={s.meta}>연결된 단체가 없어요.</Text>
+              <Text style={s.body}>연결된 단체가 없어요.</Text>
             ) : (
               orgs.map(o => (
                 <View key={o.org_id} style={s.orgRow}>
-                  <Text style={s.orgName}>{o.name}</Text>
-                  {o.role ? <Text style={s.meta}>{o.role}</Text> : null}
+                  <Text style={s.orgName} numberOfLines={1}>{o.name}</Text>
+                  {o.role ? (
+                    <Text style={[s.meta, { flexShrink: 0 }]} numberOfLines={1}>{o.role}</Text>
+                  ) : null}
                 </View>
               ))
             )}
@@ -377,7 +395,7 @@ function DetailModal({ contact, orgs, donor, onClose, onChanged }: {
           <View style={s.card}>
             <Text style={s.sectionTitle}>최근 이력</Text>
             {timeline.length === 0 ? (
-              <Text style={s.meta}>아직 민원·미팅 기록이 없어요.</Text>
+              <Text style={s.body}>아직 민원·미팅 기록이 없어요.</Text>
             ) : (
               timeline.map(t => (
                 <View key={t.key} style={s.tlRow}>
@@ -386,7 +404,7 @@ function DetailModal({ contact, orgs, donor, onClose, onChanged }: {
                   </Text>
                   <View style={{ flex: 1 }}>
                     <Text style={s.tlTitle} numberOfLines={1}>{t.title}</Text>
-                    <Text style={s.meta}>{fmtDate(t.at)}{t.sub ? ` · ${t.sub}` : ''}</Text>
+                    <Text style={s.meta} numberOfLines={1}>{fmtDate(t.at)}{t.sub ? ` · ${t.sub}` : ''}</Text>
                   </View>
                 </View>
               ))
@@ -506,12 +524,12 @@ function ImportModal({ visible, existing, onClose, onSaved }: {
           </View>
         ) : (
           <>
-            <View style={{ paddingHorizontal: 16 }}>
+            <View style={{ paddingHorizontal: LAYOUT.screenX }}>
               <Text style={s.importNote}>
                 체크한 연락처만 서버에 저장돼요. 전체 주소록은 업로드하지 않아요.
               </Text>
               <TextInput
-                style={[s.input, { marginTop: 10 }]}
+                style={[s.input, { marginTop: 8 }]}
                 placeholder="이름·전화 검색"
                 placeholderTextColor={COLORS.textTertiary}
                 value={q} onChangeText={setQ} autoCorrect={false}
@@ -520,7 +538,7 @@ function ImportModal({ visible, existing, onClose, onSaved }: {
             <FlatList
               data={filtered}
               keyExtractor={d => d.id}
-              contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 6, paddingBottom: 48 }}
+              contentContainerStyle={{ paddingHorizontal: LAYOUT.screenX, paddingTop: 4, paddingBottom: 48 }}
               ListEmptyComponent={
                 perm === 'loading' ? (
                   <View style={s.empty}><Text style={s.emptyBody}>주소록을 불러오는 중…</Text></View>
@@ -528,21 +546,22 @@ function ImportModal({ visible, existing, onClose, onSaved }: {
                   <View style={s.empty}><Text style={s.emptyBody}>연락처가 없어요.</Text></View>
                 )
               }
-              renderItem={({ item }) => {
+              renderItem={({ item, index }) => {
                 const dup = isDup(item);
                 const on = !!sel[item.id];
                 return (
+                  // 구분선은 행 '위'에 — 마지막 행 뒤에 선이 남지 않는다
                   <Pressable
-                    style={[s.importRow, dup && { opacity: 0.4 }]}
+                    style={[s.importRow, index > 0 && s.importRowDivided, dup && { opacity: 0.4 }]}
                     disabled={dup}
                     onPress={() => setSel(prev => ({ ...prev, [item.id]: !prev[item.id] }))}
                   >
                     <View style={[s.importCheck, on && s.importCheckOn]}>
                       {on && <Ionicons name="checkmark" size={14} color={COLORS.textInverse} />}
                     </View>
-                    <View style={{ flex: 1 }}>
-                      <Text style={s.name}>{item.name}</Text>
-                      <Text style={s.meta}>{item.phone ?? '전화번호 없음'}{dup ? ' · 이미 등록됨' : ''}</Text>
+                    <View style={{ flex: 1, minWidth: 0 }}>
+                      <Text style={s.name} numberOfLines={1}>{item.name}</Text>
+                      <Text style={s.meta} numberOfLines={1}>{item.phone ?? '전화번호 없음'}{dup ? ' · 이미 등록됨' : ''}</Text>
                     </View>
                   </Pressable>
                 );
@@ -601,7 +620,7 @@ function ComposeModal({ visible, onClose, onSaved }: {
           <Text style={s.modalTitle}>연락처 등록</Text>
           <Pressable onPress={save} disabled={busy}><Text style={[s.modalSave, { color: COLORS.primary }]}>저장</Text></Pressable>
         </View>
-        <View style={{ padding: 16, gap: 12 }}>
+        <View style={{ paddingHorizontal: LAYOUT.screenX, paddingTop: 4, gap: 10 }}>
           <TextInput style={s.input} placeholder="이름 (필수)" placeholderTextColor={COLORS.textTertiary} value={name} onChangeText={setName} />
           <TextInput style={s.input} placeholder="전화번호 (선택) — 후원자 매칭에 사용돼요" placeholderTextColor={COLORS.textTertiary} keyboardType="phone-pad" value={phone} onChangeText={setPhone} />
           <TextInput style={s.input} placeholder="직함 (선택) — 회장, 지회장 등" placeholderTextColor={COLORS.textTertiary} value={title} onChangeText={setTitle} />
@@ -622,12 +641,12 @@ const makeStyles = (C: ThemeColors) => StyleSheet.create({
   search: {
     backgroundColor: C.surface,
     borderRadius: 12,
-    paddingHorizontal: 14,
-    paddingVertical: 11,
+    paddingHorizontal: LAYOUT.rowPadX,
+    paddingVertical: 10,
     fontSize: 15,
     color: C.text,
-    marginHorizontal: 16,
-    marginBottom: 10,
+    marginHorizontal: LAYOUT.screenX,
+    marginBottom: 8,
     letterSpacing: -0.2,
     ...SHADOWS.subtle,
   },
@@ -635,55 +654,82 @@ const makeStyles = (C: ThemeColors) => StyleSheet.create({
   // 요약 스트립 (검색바 아래)
   statWrap: {
     flexDirection: 'row',
-    marginHorizontal: 16,
-    marginBottom: 10,
+    marginHorizontal: LAYOUT.screenX,
+    marginBottom: 8,
     backgroundColor: C.surface,
-    borderRadius: 18,
-    paddingVertical: 14,
+    borderRadius: LAYOUT.cardRadius,
+    paddingVertical: 12,
     ...SHADOWS.subtle,
   },
-  statCell: { flex: 1, alignItems: 'center', gap: 3 },
+  statCell: { flex: 1, alignItems: 'center', gap: 2 },
   statDivider: { width: StyleSheet.hairlineWidth, backgroundColor: C.divider, marginVertical: 2 },
-  statNum: { fontSize: 19, fontWeight: '800', color: C.text, letterSpacing: -0.4 },
-  statLabel: { fontSize: 11.5, color: C.textTertiary, letterSpacing: -0.2 },
+  statNum: { fontSize: 18, fontWeight: '800', color: C.text, letterSpacing: -0.4 },
+  statLabel: { fontSize: 11, color: C.textTertiary, letterSpacing: -0.2 },
 
-  // 리스트 카드
+  // 그룹 리스트 — 한 장의 카드처럼 보이도록 행마다 같은 surface, 첫/마지막만 라운드.
+  // 여기서는 FlatList가 스크롤러라 행을 한 View로 감쌀 수 없다(가상화 유지). 그래서 행 단위 래퍼인데,
+  // 행마다 그림자를 주면 아래 행의 위쪽 그림자가 구분선 위에 겹쳐 hairline이 뭉개진다(255→241 그라데이션).
+  // 흰 카드와 회색 캔버스의 명도 차만으로 카드로 읽히므로 그림자는 빼고 구분선을 선명하게 둔다.
+  groupWrap: {
+    marginHorizontal: LAYOUT.screenX,
+    backgroundColor: C.surface,
+  },
+  groupWrapFirst: { borderTopLeftRadius: LAYOUT.cardRadius, borderTopRightRadius: LAYOUT.cardRadius },
+  groupWrapLast: { borderBottomLeftRadius: LAYOUT.cardRadius, borderBottomRightRadius: LAYOUT.cardRadius },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: LAYOUT.rowGap,
+    paddingHorizontal: LAYOUT.rowPadX,
+    paddingVertical: LAYOUT.rowPadY,
+  },
+  rowDivider: {
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: C.divider,
+    marginLeft: LAYOUT.rowDividerInset,
+  },
+  rowMain: { flex: 1, minWidth: 0 },
+  nameLine: { flexDirection: 'row', alignItems: 'center', gap: 5 },
+  rowSub: { fontSize: 12, color: C.textTertiary, letterSpacing: -0.2, marginTop: 2 },
+
+  // 상세 모달 카드
   card: {
     backgroundColor: C.surface,
-    marginHorizontal: 16,
-    marginBottom: 10,
-    paddingHorizontal: 16,
-    paddingTop: 15,
-    paddingBottom: 12,
-    borderRadius: 18,
+    marginHorizontal: LAYOUT.screenX,
+    marginBottom: LAYOUT.cardGap,
+    paddingHorizontal: LAYOUT.cardPadX,
+    paddingVertical: LAYOUT.cardPadY,
+    borderRadius: LAYOUT.cardRadius,
     ...SHADOWS.subtle,
   },
-  rowTop: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  name: { fontSize: 15, fontWeight: '700', color: C.text, letterSpacing: -0.2 },
-  meta: { fontSize: 12, color: C.textTertiary, letterSpacing: -0.1 },
-  metaLine: { fontSize: 12, color: C.textTertiary, letterSpacing: -0.1, marginTop: 3 },
+  name: { fontSize: 15.5, fontWeight: '700', color: C.text, letterSpacing: -0.3, flexShrink: 1 },
+  body: { fontSize: 13, lineHeight: 18.5, color: C.textSecondary, letterSpacing: -0.2 },
+  meta: { fontSize: 12, color: C.textTertiary, letterSpacing: -0.2 },
   donorBadge: {
     backgroundColor: C.primaryLight,
     color: C.primary,
-    fontSize: 11,
+    fontSize: 10.5,
     fontWeight: '700',
-    letterSpacing: -0.1,
-    paddingHorizontal: 8,
-    paddingVertical: 3,
+    letterSpacing: -0.2,
+    paddingHorizontal: 7,
+    paddingVertical: 2.5,
     borderRadius: 6,
     overflow: 'hidden',
+    flexShrink: 0,
   },
-  star: { fontSize: 20 },
+  star: { fontSize: 18 },
 
   // 주소록 가져오기
-  importNote: { fontSize: 12, color: C.textCaption, lineHeight: 17, letterSpacing: -0.1 },
+  importNote: { fontSize: 13, lineHeight: 18.5, color: C.textSecondary, letterSpacing: -0.2 },
   importRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
-    paddingVertical: 12,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: C.border,
+    gap: LAYOUT.rowGap,
+    paddingVertical: LAYOUT.rowPadY,
+  },
+  importRowDivided: {
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: C.divider,
   },
   importCheck: {
     width: 22,
@@ -697,65 +743,72 @@ const makeStyles = (C: ThemeColors) => StyleSheet.create({
   importCheckOn: { backgroundColor: C.primary, borderColor: C.primary },
 
   // 빈 상태 (ImportModal 전용 — 리스트 빈 상태는 PolyUI EmptyState)
-  empty: { alignItems: 'center', paddingTop: 96, gap: 8 },
-  emptyTitle: { fontSize: 15, fontWeight: '600', color: C.textSecondary, letterSpacing: -0.2 },
-  emptyBody: { fontSize: 13, color: C.textCaption, textAlign: 'center', lineHeight: 19, letterSpacing: -0.2 },
+  empty: { alignItems: 'center', paddingTop: 96, gap: 6 },
+  emptyTitle: { fontSize: 15.5, fontWeight: '700', color: C.text, letterSpacing: -0.3 },
+  emptyBody: { fontSize: 13, lineHeight: 18.5, color: C.textSecondary, textAlign: 'center', letterSpacing: -0.2 },
 
   // 모달 공통
-  modalHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 16 },
+  modalHead: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: LAYOUT.screenX,
+    paddingVertical: 12,
+  },
   modalCancel: { fontSize: 15, color: C.textSecondary, letterSpacing: -0.2 },
-  modalTitle: { fontSize: 16, fontWeight: '700', color: C.text, letterSpacing: -0.3 },
-  modalSave: { fontSize: 15.5, fontWeight: '700', letterSpacing: -0.2 },
+  modalTitle: { flexShrink: 1, fontSize: 15.5, fontWeight: '700', color: C.text, letterSpacing: -0.3 },
+  modalSave: { fontSize: 15, fontWeight: '700', letterSpacing: -0.2 },
 
   // 모달 폼 입력
   input: {
     backgroundColor: C.grey50,
     borderRadius: 12,
-    paddingHorizontal: 14,
-    paddingVertical: 13,
+    paddingHorizontal: LAYOUT.rowPadX,
+    paddingVertical: 11,
     fontSize: 15,
     color: C.text,
     letterSpacing: -0.2,
   },
-  inputMultiline: { minHeight: 110, textAlignVertical: 'top' },
+  inputMultiline: { minHeight: 96, textAlignVertical: 'top' },
 
   // 상세 모달
-  sectionTitle: { fontSize: 14, fontWeight: '700', color: C.text, letterSpacing: -0.2, marginBottom: 8 },
-  callBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, alignSelf: 'flex-start', marginTop: 12, paddingVertical: 4 },
-  callText: { fontSize: 14, fontWeight: '600', color: C.primary, letterSpacing: -0.2 },
+  sectionTitle: { fontSize: 15.5, fontWeight: '700', color: C.text, letterSpacing: -0.3, marginBottom: 6 },
+  callBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, alignSelf: 'flex-start', marginTop: 8, paddingVertical: 2 },
+  callText: { fontSize: 13, fontWeight: '700', color: C.primary, letterSpacing: -0.2 },
   tagChip: {
     backgroundColor: C.grey100,
     color: C.textSecondary,
-    fontSize: 11,
-    letterSpacing: -0.1,
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 999,
+    fontSize: 10.5,
+    fontWeight: '700',
+    letterSpacing: -0.2,
+    paddingHorizontal: 7,
+    paddingVertical: 2.5,
+    borderRadius: 6,
     overflow: 'hidden',
   },
-  orgRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 4 },
-  orgName: { fontSize: 13, color: C.textBody, letterSpacing: -0.2 },
-  tlRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 8, paddingVertical: 4 },
+  orgRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8, paddingVertical: 3 },
+  orgName: { flex: 1, fontSize: 13, lineHeight: 18.5, color: C.textSecondary, letterSpacing: -0.2 },
+  tlRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 8, paddingVertical: 3 },
   tlKind: {
     backgroundColor: C.grey100,
-    fontSize: 10,
+    fontSize: 10.5,
     fontWeight: '700',
-    letterSpacing: -0.1,
-    paddingHorizontal: 6,
-    paddingVertical: 2,
+    letterSpacing: -0.2,
+    paddingHorizontal: 7,
+    paddingVertical: 2.5,
     borderRadius: 6,
     overflow: 'hidden',
     marginTop: 1,
   },
-  tlTitle: { fontSize: 13, fontWeight: '600', color: C.textBody, letterSpacing: -0.2, lineHeight: 19 },
+  tlTitle: { fontSize: 13, lineHeight: 18.5, fontWeight: '600', color: C.text, letterSpacing: -0.2 },
 
   // 모달 주요 버튼
   saveBtn: {
     backgroundColor: C.primary,
-    borderRadius: 14,
-    paddingVertical: 15,
+    borderRadius: 12,
+    paddingVertical: 13,
     alignItems: 'center',
-    marginTop: 12,
+    marginTop: 10,
   },
-  saveBtnText: { fontSize: 15.5, fontWeight: '700', color: C.textInverse, letterSpacing: -0.2 },
+  saveBtnText: { fontSize: 15, fontWeight: '700', color: C.textInverse, letterSpacing: -0.2 },
 });

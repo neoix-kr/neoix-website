@@ -2,12 +2,13 @@
 // 화면 문법은 폴리 본체(ComplaintScreen) 실측 문법 — Header + CategoryChips + 폴리 카드/모달 그대로.
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
-  View, Text, FlatList, Pressable, StyleSheet, Modal, TextInput,
+  View, Text, Pressable, StyleSheet, Modal, TextInput,
   Alert, RefreshControl, KeyboardAvoidingView, Platform, ScrollView,
 } from 'react-native';
 import { supabase } from '../lib/supabase';
 import { useTheme, type ThemeColors } from '../theme/ThemeContext';
 import { SHADOWS } from '../theme/colors';
+import { LAYOUT } from '../theme/layout';
 import Header from '../components/Header';
 import GlassIconButton from '../components/GlassIconButton';
 import PressableScale from '../components/PressableScale';
@@ -45,8 +46,9 @@ const friendlyColor = (C: ThemeColors, v: number | null): string => {
   return C.error;
 };
 // -2~2 → 0~100% (미니 게이지 채움 폭)
+// 평가한 값은 최소 폭을 남긴다 — '매우 비우호'(0%)가 '미평가'(빈 트랙)와 똑같이 보이면 안 된다.
 const friendlyPercent = (v: number | null) =>
-  v === null ? 0 : Math.round(((v + 2) / 4) * 100);
+  v === null ? 0 : Math.max(10, Math.round(((v + 2) / 4) * 100));
 
 type MemberRow = {
   contact_id: string;
@@ -116,32 +118,33 @@ export default function OrgsScreen() {
         allLabel="전체"
       />
 
-      <FlatList
-        data={filtered}
-        keyExtractor={i => i.id}
-        contentContainerStyle={{ paddingTop: 2, paddingBottom: 120 }}
+      {/* 본문 — 요약 스트립 + 그룹 리스트(흰 카드 한 장 안에 행 + hairline 구분선) */}
+      <ScrollView
+        contentContainerStyle={{ paddingBottom: 120 }}
+        keyboardDismissMode="on-drag"
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={COLORS.textCaption} />}
-        ListHeaderComponent={
-          orgs.length === 0 ? null : (
-            <View style={s.statWrap}>
-              <View style={s.statCell}>
-                <Text style={s.statNum}>{stats.total}</Text>
-                <Text style={s.statLabel}>전체</Text>
-              </View>
-              <View style={s.statDivider} />
-              <View style={s.statCell}>
-                <Text style={[s.statNum, { color: COLORS.primary }]}>{stats.friendly}</Text>
-                <Text style={s.statLabel}>우호</Text>
-              </View>
-              <View style={s.statDivider} />
-              <View style={s.statCell}>
-                <Text style={s.statNum}>{stats.unrated}</Text>
-                <Text style={s.statLabel}>미평가</Text>
-              </View>
+      >
+        {/* 요약 스트립 — 조직이 0건이면 렌더하지 않는다 */}
+        {stats.total > 0 && (
+          <View style={s.statWrap}>
+            <View style={s.statCell}>
+              <Text style={s.statNum}>{stats.total}</Text>
+              <Text style={s.statLabel}>전체</Text>
             </View>
-          )
-        }
-        ListEmptyComponent={
+            <View style={s.statDivider} />
+            <View style={s.statCell}>
+              <Text style={[s.statNum, { color: COLORS.primary }]}>{stats.friendly}</Text>
+              <Text style={s.statLabel}>우호</Text>
+            </View>
+            <View style={s.statDivider} />
+            <View style={s.statCell}>
+              <Text style={s.statNum}>{stats.unrated}</Text>
+              <Text style={s.statLabel}>미평가</Text>
+            </View>
+          </View>
+        )}
+
+        {filtered.length === 0 ? (
           <EmptyState
             icon="business-outline"
             title={filter === 'all' ? '등록된 조직이 없어요' : `${kindLabel(filter)} 유형의 조직이 없어요`}
@@ -151,23 +154,25 @@ export default function OrgsScreen() {
             ctaLabel="조직 등록하기"
             onCta={() => setCreate(true)}
           />
-        }
-        renderItem={({ item }) => (
-          <PressableScale style={s.card} scaleTo={0.98} onPress={() => setDetail(item)}>
-            <View style={s.cardRow}>
-              <InitialAvatar name={item.name} size={44} />
-              <View style={s.cardMain}>
-                <View style={s.cardTop}>
-                  <View style={s.kindBadge}>
-                    <Text style={s.kindBadgeText}>{kindLabel(item.kind)}</Text>
+        ) : (
+          // 그림자와 라운드 클리핑은 반드시 다른 View에 둔다 —
+          // iOS에서 overflow:'hidden'은 masksToBounds라 같은 뷰의 그림자까지 잘라낸다.
+          <View style={s.listShadow}>
+            <View style={s.listClip}>
+            {filtered.map((item, idx) => (
+              <React.Fragment key={item.id}>
+                <PressableScale style={s.row} scaleTo={0.99} onPress={() => setDetail(item)}>
+                  <InitialAvatar name={item.name} size={LAYOUT.rowAvatar} />
+                  {/* 이름이 먼저 크게, 유형·지역·소속 수는 서브 한 줄로 */}
+                  <View style={s.rowMain}>
+                    <Text style={s.rowTitle} numberOfLines={1}>{item.name}</Text>
+                    <Text style={s.rowSub} numberOfLines={1}>
+                      {kindLabel(item.kind)}
+                      {item.region ? ` · ${item.region}` : ''}
+                      {` · 소속 ${counts[item.id] ?? 0}명`}
+                    </Text>
                   </View>
-                  <Text style={s.orgName} numberOfLines={1}>{item.name}</Text>
-                </View>
-                <View style={s.cardBottom}>
-                  <Text style={[s.meta, s.cardMeta]} numberOfLines={1}>
-                    {item.region ? `${item.region} · ` : ''}소속 {counts[item.id] ?? 0}명
-                  </Text>
-                  <View style={s.friendlyRow}>
+                  <View style={s.friendlyCol}>
                     <View style={s.gaugeTrack}>
                       {item.friendly !== null && (
                         <View
@@ -181,16 +186,22 @@ export default function OrgsScreen() {
                         />
                       )}
                     </View>
-                    <Text style={[s.meta, item.friendly === null && { color: COLORS.textPlaceholder }]}>
+                    <Text
+                      style={[s.gaugeLabel, item.friendly === null && { color: COLORS.textPlaceholder }]}
+                      numberOfLines={1}
+                    >
                       {friendlyLabel(item.friendly)}
                     </Text>
                   </View>
-                </View>
-              </View>
+                </PressableScale>
+                {/* 마지막 행 뒤에는 구분선을 두지 않는다 */}
+                {idx < filtered.length - 1 && <View style={s.rowDivider} />}
+              </React.Fragment>
+            ))}
             </View>
-          </PressableScale>
+          </View>
         )}
-      />
+      </ScrollView>
 
       <CreateModal visible={create} onClose={() => setCreate(false)} onSaved={() => { setCreate(false); load(); }} />
       <DetailModal org={detail} onClose={() => setDetail(null)} onChanged={load} />
@@ -279,20 +290,23 @@ function DetailModal({ org, onClose, onChanged }: {
           <View style={{ width: 40 }} />
         </View>
 
-        <ScrollView contentContainerStyle={{ padding: 16, gap: 20, paddingBottom: 48 }} keyboardShouldPersistTaps="handled">
+        <ScrollView
+          contentContainerStyle={{ padding: LAYOUT.screenX, gap: LAYOUT.screenX, paddingBottom: 40 }}
+          keyboardShouldPersistTaps="handled"
+        >
           {/* 기본 정보 */}
           <View style={{ gap: 6 }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
               <View style={s.kindBadge}>
                 <Text style={s.kindBadgeText}>{kindLabel(org?.kind ?? 'etc')}</Text>
               </View>
-              {!!org?.region && <Text style={s.meta}>{org.region}</Text>}
+              {!!org?.region && <Text style={[s.meta, { flexShrink: 1 }]} numberOfLines={1}>{org.region}</Text>}
             </View>
             {!!org?.memo && <Text style={s.body}>{org.memo}</Text>}
           </View>
 
           {/* 우호도 — 검정 활성 pill */}
-          <View style={{ gap: 10 }}>
+          <View style={{ gap: LAYOUT.cardGap }}>
             <Text style={s.sectionTitle}>우호도</Text>
             <View style={{ flexDirection: 'row', gap: 6, flexWrap: 'wrap' }}>
               {FRIENDLY_LEVELS.map(f => (
@@ -308,7 +322,7 @@ function DetailModal({ org, onClose, onChanged }: {
           </View>
 
           {/* 소속 연락처 */}
-          <View style={{ gap: 10 }}>
+          <View style={{ gap: LAYOUT.cardGap }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
               <Text style={s.sectionTitle}>소속 연락처 {members.length > 0 ? `${members.length}명` : ''}</Text>
               <Pressable onPress={() => setLinking(v => !v)}>
@@ -317,7 +331,7 @@ function DetailModal({ org, onClose, onChanged }: {
             </View>
 
             {linking && (
-              <View style={{ gap: 10 }}>
+              <View style={{ gap: LAYOUT.cardGap }}>
                 <TextInput
                   style={s.input}
                   placeholder="이름으로 검색"
@@ -327,18 +341,18 @@ function DetailModal({ org, onClose, onChanged }: {
                 />
                 {!picked && results.map(c => (
                   <Pressable key={c.id} style={s.resultRow} onPress={() => { setPicked(c); setResults([]); }}>
-                    <Text style={s.memberName}>{c.name}</Text>
-                    {!!c.title && <Text style={s.meta}>{c.title}</Text>}
+                    <Text style={s.memberName} numberOfLines={1}>{c.name}</Text>
+                    {!!c.title && <Text style={[s.meta, s.metaTrailing]} numberOfLines={1}>{c.title}</Text>}
                   </Pressable>
                 ))}
                 {!picked && query.trim().length > 0 && results.length === 0 && (
                   <Text style={s.meta}>검색 결과가 없어요.</Text>
                 )}
                 {picked && (
-                  <View style={{ gap: 10 }}>
+                  <View style={{ gap: LAYOUT.cardGap }}>
                     <View style={s.resultRow}>
-                      <Text style={s.memberName}>{picked.name}</Text>
-                      {!!picked.title && <Text style={s.meta}>{picked.title}</Text>}
+                      <Text style={s.memberName} numberOfLines={1}>{picked.name}</Text>
+                      {!!picked.title && <Text style={[s.meta, s.metaTrailing]} numberOfLines={1}>{picked.title}</Text>}
                     </View>
                     <TextInput
                       style={s.input}
@@ -361,12 +375,12 @@ function DetailModal({ org, onClose, onChanged }: {
               members.map(m => (
                 <View key={m.contact_id} style={s.memberRow}>
                   <View style={{ flex: 1 }}>
-                    <Text style={s.memberName}>{m.mp_contacts?.name ?? '(삭제된 연락처)'}</Text>
-                    {!!m.mp_contacts?.title && <Text style={s.meta}>{m.mp_contacts.title}</Text>}
+                    <Text style={s.memberName} numberOfLines={1}>{m.mp_contacts?.name ?? '(삭제된 연락처)'}</Text>
+                    {!!m.mp_contacts?.title && <Text style={s.meta} numberOfLines={1}>{m.mp_contacts.title}</Text>}
                   </View>
                   {!!m.role && (
                     <View style={s.roleBadge}>
-                      <Text style={s.roleBadgeText}>{m.role}</Text>
+                      <Text style={s.roleBadgeText} numberOfLines={1}>{m.role}</Text>
                     </View>
                   )}
                 </View>
@@ -413,7 +427,7 @@ function CreateModal({ visible, onClose, onSaved }: {
           <Text style={s.modalTitle}>조직 등록</Text>
           <Pressable onPress={save} disabled={busy}><Text style={s.modalSave}>저장</Text></Pressable>
         </View>
-        <View style={{ padding: 16, gap: 12 }}>
+        <View style={{ padding: LAYOUT.screenX, gap: LAYOUT.cardGap }}>
           <TextInput style={s.input} placeholder="조직 이름" placeholderTextColor={COLORS.textTertiary} value={name} onChangeText={setName} />
           <View style={{ flexDirection: 'row', gap: 6, flexWrap: 'wrap' }}>
             {KINDS.map(k => (
@@ -443,74 +457,100 @@ const makeStyles = (COLORS: ThemeColors) => StyleSheet.create({
   // 요약 스트립 — 전체 / 우호 / 미평가
   statWrap: {
     flexDirection: 'row',
-    marginHorizontal: 16,
-    marginBottom: 10,
+    marginHorizontal: LAYOUT.screenX,
+    marginBottom: LAYOUT.cardGap,
     backgroundColor: COLORS.surface,
-    borderRadius: 18,
-    paddingVertical: 14,
+    borderRadius: LAYOUT.cardRadius,
+    paddingVertical: LAYOUT.cardPadY,
     ...SHADOWS.subtle,
   },
-  statCell: { flex: 1, alignItems: 'center', gap: 3 },
+  statCell: { flex: 1, alignItems: 'center', gap: 2 },
   statDivider: { width: StyleSheet.hairlineWidth, backgroundColor: COLORS.divider, marginVertical: 2 },
-  statNum: { fontSize: 19, fontWeight: '800', color: COLORS.text, letterSpacing: -0.4 },
-  statLabel: { fontSize: 11.5, color: COLORS.textTertiary, letterSpacing: -0.2 },
+  statNum: { fontSize: 18, fontWeight: '800', color: COLORS.text, letterSpacing: -0.4 },
+  statLabel: { fontSize: 11, color: COLORS.textTertiary, letterSpacing: -0.2 },
 
-  // 리스트 카드
-  card: {
+  // 그룹 리스트 — 흰 카드 한 장에 행들이 들어가고 사이는 hairline (그림자는 카드에 한 번만)
+  // 바깥: 그림자 담당 (overflow 없음) / 안쪽: 라운드 클리핑 담당
+  listShadow: {
+    marginHorizontal: LAYOUT.screenX,
+    borderRadius: LAYOUT.cardRadius,
     backgroundColor: COLORS.surface,
-    marginHorizontal: 16,
-    marginBottom: 10,
-    paddingHorizontal: 16,
-    paddingTop: 15,
-    paddingBottom: 12,
-    borderRadius: 18,
     ...SHADOWS.subtle,
   },
-  cardRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  cardMain: { flex: 1 },
-  cardTop: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 9 },
-  orgName: { flex: 1, fontSize: 15, fontWeight: '700', color: COLORS.text, letterSpacing: -0.3 },
-  kindBadge: { backgroundColor: COLORS.primaryLight, paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 },
+  listClip: {
+    borderRadius: LAYOUT.cardRadius,
+    overflow: 'hidden',
+  },
+  rowDivider: {
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: COLORS.divider,
+    marginLeft: LAYOUT.rowDividerInset,
+  },
+
+  // 행 — 아바타 40 / 이름+서브 / 우호도
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: LAYOUT.rowGap,
+    paddingHorizontal: LAYOUT.rowPadX,
+    paddingVertical: LAYOUT.rowPadY,
+  },
+  rowMain: { flex: 1, gap: 2 },
+  rowTitle: { fontSize: 15.5, fontWeight: '700', color: COLORS.text, letterSpacing: -0.3 },
+  rowSub: { fontSize: 12, color: COLORS.textTertiary, letterSpacing: -0.2 },
+  kindBadge: {
+    backgroundColor: COLORS.primaryLight,
+    paddingHorizontal: 7,
+    paddingVertical: 2.5,
+    borderRadius: 6,
+    flexShrink: 0,
+  },
   kindBadgeText: { fontSize: 10.5, fontWeight: '700', color: COLORS.primary, letterSpacing: -0.2 },
-  cardBottom: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8 },
   meta: { fontSize: 12, color: COLORS.textTertiary, letterSpacing: -0.2 },
-  // 지역명이 길어도 게이지를 밀어내지 않도록 (RN flexShrink 기본값 0)
-  cardMeta: { flex: 1 },
-  friendlyRow: { flexDirection: 'row', alignItems: 'center', gap: 6, flexShrink: 0 },
+  /** 행 오른쪽에 붙는 메타 — 이름을 밀어내지 않게 줄어드는 쪽은 이쪽 */
+  metaTrailing: { flexShrink: 1, textAlign: 'right' },
   dot: { width: 8, height: 8, borderRadius: 4 },
 
-  // 우호도 미니 게이지 (-2~2 → 0~100%)
-  gaugeTrack: { width: 56, height: 5, borderRadius: 3, backgroundColor: COLORS.grey200, overflow: 'hidden', flexShrink: 0 },
-  gaugeFill: { height: '100%', borderRadius: 3 },
+  // 우호도 미니 게이지 (-2~2 → 0~100%) — 이름이 길어도 밀리지 않게 flexShrink 0
+  friendlyCol: { alignItems: 'flex-end', gap: 4, flexShrink: 0 },
+  gaugeTrack: { width: 44, height: 4, borderRadius: 2, backgroundColor: COLORS.grey200, overflow: 'hidden' },
+  gaugeFill: { height: '100%', borderRadius: 2 },
+  gaugeLabel: { fontSize: 11, color: COLORS.textTertiary, letterSpacing: -0.2 },
 
   // 모달 공통 — pageSheet 흰 시트 + grey50 폼
   modalSheet: { flex: 1, backgroundColor: COLORS.surface },
-  modalHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 18, paddingVertical: 16 },
+  modalHead: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: LAYOUT.screenX,
+    paddingVertical: LAYOUT.cardPadY,
+  },
   modalCancel: { fontSize: 15.5, color: COLORS.textCaption, letterSpacing: -0.2 },
-  modalTitle: { flex: 1, textAlign: 'center', marginHorizontal: 8, fontSize: 17, fontWeight: '700', color: COLORS.text, letterSpacing: -0.3 },
+  modalTitle: { flex: 1, textAlign: 'center', marginHorizontal: LAYOUT.cardGap, fontSize: 15.5, fontWeight: '700', color: COLORS.text, letterSpacing: -0.3 },
   modalSave: { fontSize: 15.5, fontWeight: '700', color: COLORS.primary, letterSpacing: -0.2 },
 
-  sectionTitle: { fontSize: 15, fontWeight: '700', color: COLORS.text, letterSpacing: -0.3 },
-  body: { fontSize: 13, color: COLORS.textSecondary, lineHeight: 19, letterSpacing: -0.2 },
+  sectionTitle: { fontSize: 15.5, fontWeight: '700', color: COLORS.text, letterSpacing: -0.3 },
+  body: { fontSize: 13, color: COLORS.textSecondary, lineHeight: 18.5, letterSpacing: -0.2 },
   linkAction: { fontSize: 13, fontWeight: '700', color: COLORS.primary, letterSpacing: -0.2 },
 
   input: {
     backgroundColor: COLORS.grey50,
-    borderRadius: 12,
-    paddingHorizontal: 14,
-    paddingVertical: 13,
+    borderRadius: LAYOUT.cardRadius,
+    paddingHorizontal: LAYOUT.cardPadX,
+    paddingVertical: LAYOUT.cardPadY,
     fontSize: 15,
     color: COLORS.text,
   },
-  textarea: { minHeight: 110, textAlignVertical: 'top' },
+  textarea: { minHeight: 100, textAlignVertical: 'top' },
 
   // 선택 칩 — 검정 활성 pill
   pillChip: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 13,
-    paddingVertical: 8,
-    borderRadius: 16,
+    paddingVertical: 7,
+    borderRadius: LAYOUT.cardRadius,
     backgroundColor: COLORS.surface,
     borderWidth: 1,
     borderColor: COLORS.border,
@@ -520,13 +560,42 @@ const makeStyles = (COLORS: ThemeColors) => StyleSheet.create({
   pillChipTextActive: { color: COLORS.textInverse, fontWeight: '700' },
 
   // 주요 버튼
-  primaryBtn: { backgroundColor: COLORS.primary, borderRadius: 14, paddingVertical: 15, alignItems: 'center' },
+  primaryBtn: {
+    backgroundColor: COLORS.primary,
+    borderRadius: LAYOUT.cardRadius,
+    paddingVertical: LAYOUT.cardPadY,
+    alignItems: 'center',
+  },
   primaryBtnText: { fontSize: 15.5, fontWeight: '700', color: COLORS.textInverse, letterSpacing: -0.2 },
 
-  // 소속/검색 행
-  memberRow: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: COLORS.grey50, borderRadius: 12, paddingHorizontal: 14, paddingVertical: 12 },
-  memberName: { fontSize: 14, fontWeight: '600', color: COLORS.text, letterSpacing: -0.2 },
-  resultRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: COLORS.grey50, borderRadius: 12, paddingHorizontal: 14, paddingVertical: 12 },
-  roleBadge: { backgroundColor: COLORS.grey100, paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 },
-  roleBadgeText: { fontSize: 11, fontWeight: '600', color: COLORS.textSecondary, letterSpacing: -0.2 },
+  // 소속/검색 행 — 모달 안 그룹 행도 같은 토큰
+  memberRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: LAYOUT.cardGap,
+    backgroundColor: COLORS.grey50,
+    borderRadius: LAYOUT.cardRadius,
+    paddingHorizontal: LAYOUT.rowPadX,
+    paddingVertical: LAYOUT.rowPadY,
+  },
+  memberName: { fontSize: 15.5, fontWeight: '700', color: COLORS.text, letterSpacing: -0.3, flexShrink: 1 },
+  resultRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: LAYOUT.cardGap,
+    backgroundColor: COLORS.grey50,
+    borderRadius: LAYOUT.cardRadius,
+    paddingHorizontal: LAYOUT.rowPadX,
+    paddingVertical: LAYOUT.rowPadY,
+  },
+  roleBadge: {
+    backgroundColor: COLORS.grey100,
+    paddingHorizontal: 7,
+    paddingVertical: 2.5,
+    borderRadius: 6,
+    flexShrink: 0,
+    maxWidth: '40%',
+  },
+  roleBadgeText: { fontSize: 10.5, fontWeight: '700', color: COLORS.textSecondary, letterSpacing: -0.2 },
 });

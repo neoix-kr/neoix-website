@@ -13,11 +13,13 @@ import Header from '../components/Header';
 import GlassIconButton from '../components/GlassIconButton';
 import PressableScale from '../components/PressableScale';
 import { UnderlineTabs, EmptyState } from '../components/PolyUI';
+import InitialAvatar from '../components/InitialAvatar';
 import { useAuth } from '../contexts/AuthContext';
 import { uploadPostImage, mediaUrl } from '../lib/media';
 import { timeAgo } from '../lib/time';
 import { useTheme, type ThemeColors } from '../theme/ThemeContext';
 import { SHADOWS } from '../theme/colors';
+import { LAYOUT } from '../theme/layout';
 import type { MpCase, MpContact, MpMeeting, CaseStatus, CaseChannel } from '../types/db';
 
 type CaseRow = MpCase & { mp_contacts: { name: string } | null };
@@ -134,7 +136,7 @@ export default function CasesScreen() {
       <FlatList
         data={list}
         keyExtractor={i => i.id}
-        contentContainerStyle={{ paddingTop: 12, paddingBottom: 120 }}
+        contentContainerStyle={{ paddingTop: LAYOUT.cardGap, paddingBottom: 120 }}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={COLORS.textCaption} />}
         ListHeaderComponent={
           cases.length === 0 ? null : (
@@ -168,10 +170,11 @@ export default function CasesScreen() {
         renderItem={({ item }) => {
           const sc = statusColors(item.status);
           const media = item.media ?? [];
-          // 진행 흐름 — 접수(0) → 처리중(1) → 해결(2). 해결/종결은 전 구간 success.
-          const done = item.status === 'resolved' || item.status === 'closed';
-          const step = item.status === 'open' ? 0 : item.status === 'progress' ? 1 : 2;
-          const stepColor = (i: number) => (done ? COLORS.success : i <= step ? COLORS.primary : COLORS.grey200);
+          // 진행 표시 — 접수 1/3(주황) → 처리중 2/3(인디고) → 해결·종결 3/3(초록).
+          const barFill = item.status === 'open' ? '33%' : item.status === 'progress' ? '66%' : '100%';
+          const barColor = item.status === 'open'
+            ? COLORS.warning
+            : item.status === 'progress' ? COLORS.primary : COLORS.success;
           return (
             <PressableScale style={s.card} scaleTo={0.98} onPress={() => setSelected(item)}>
               <View style={s.cardTop}>
@@ -191,28 +194,25 @@ export default function CasesScreen() {
               </View>
               <Text style={s.cardTitle} numberOfLines={1}>{item.title}</Text>
               {item.body ? <Text style={s.cardBody} numberOfLines={2}>{item.body}</Text> : null}
-              {media.length > 0 ? (
-                <View style={s.previewWrap}>
-                  <Image source={{ uri: mediaUrl(media[0].path) }} style={s.previewImg} />
-                  {media.length > 1 ? (
-                    <View style={s.previewMore}>
-                      <Text style={s.previewMoreText}>+{media.length - 1}</Text>
+              {/* 바 위 한 줄 메타 — 연결 연락처 · 첨부 장수(카드 안 68px 썸네일은 밀도를 깎아 메타로 압축) */}
+              {item.mp_contacts?.name || media.length > 0 ? (
+                <View style={s.cardMeta}>
+                  {item.mp_contacts?.name ? (
+                    <View style={s.cardMetaItem}>
+                      <Ionicons name="person-outline" size={11} color={COLORS.textTertiary} />
+                      <Text style={s.cardMetaText} numberOfLines={1}>{item.mp_contacts.name}</Text>
+                    </View>
+                  ) : null}
+                  {media.length > 0 ? (
+                    <View style={[s.cardMetaItem, { flexShrink: 0 }]}>
+                      <Ionicons name="image-outline" size={11} color={COLORS.textTertiary} />
+                      <Text style={s.cardMetaText}>{media.length}</Text>
                     </View>
                   ) : null}
                 </View>
               ) : null}
-              {item.mp_contacts?.name ? (
-                <View style={s.cardContact}>
-                  <Ionicons name="person-outline" size={12} color={COLORS.textTertiary} />
-                  <Text style={s.cardContactText} numberOfLines={1}>{item.mp_contacts.name}</Text>
-                </View>
-              ) : null}
-              <View style={s.steps}>
-                <View style={[s.stepDot, { backgroundColor: stepColor(0) }]} />
-                <View style={[s.stepLine, { backgroundColor: stepColor(1) }]} />
-                <View style={[s.stepDot, { backgroundColor: stepColor(1) }]} />
-                <View style={[s.stepLine, { backgroundColor: stepColor(2) }]} />
-                <View style={[s.stepDot, { backgroundColor: stepColor(2) }]} />
+              <View style={s.bar}>
+                <View style={[s.barFill, { width: barFill, backgroundColor: barColor }]} />
               </View>
             </PressableScale>
           );
@@ -303,7 +303,10 @@ function DetailModal({ item, statusColors, onClose, onChanged }: {
           <Text style={s.modalTitle}>민원 상세</Text>
           <View style={{ width: 40 }} />
         </View>
-        <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: insets.bottom + 32, gap: 12 }} keyboardShouldPersistTaps="handled">
+        <ScrollView
+          contentContainerStyle={{ padding: LAYOUT.screenX, paddingBottom: insets.bottom + 32, gap: LAYOUT.rowGap }}
+          keyboardShouldPersistTaps="handled"
+        >
           <View style={s.cardTop}>
             <View style={s.catBadge}>
               <Text style={s.catBadgeText}>{catLabel(item.category)}</Text>
@@ -320,12 +323,17 @@ function DetailModal({ item, statusColors, onClose, onChanged }: {
             <Text style={s.cardDate}>{fmtDate(item.created_at)}</Text>
           </View>
           <Text style={s.detailTitle}>{item.title}</Text>
-          {item.mp_contacts?.name ? <Text style={s.cardMeta}>연결 연락처 · {item.mp_contacts.name}</Text> : null}
+          {item.mp_contacts?.name ? (
+            <View style={[s.cardMetaItem, { marginTop: -6 }]}>
+              <Ionicons name="person-outline" size={11} color={COLORS.textTertiary} />
+              <Text style={s.cardMetaText} numberOfLines={1}>{item.mp_contacts.name}</Text>
+            </View>
+          ) : null}
           {item.body ? <Text style={s.detailBody}>{item.body}</Text> : null}
 
           {/* 첨부 캡처 — 가로 스크롤 */}
           {(item.media ?? []).length > 0 ? (
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8 }}>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: LAYOUT.cardGap }}>
               {(item.media ?? []).map((m, i) => (
                 <Image key={`${m.path}-${i}`} source={{ uri: mediaUrl(m.path) }} style={s.detailImg} />
               ))}
@@ -341,7 +349,7 @@ function DetailModal({ item, statusColors, onClose, onChanged }: {
           </PressableScale>
 
           {/* 메모 추가 */}
-          <View style={{ flexDirection: 'row', gap: 8 }}>
+          <View style={{ flexDirection: 'row', gap: LAYOUT.cardGap }}>
             <TextInput
               style={[s.formInput, { flex: 1 }]}
               placeholder="처리 메모를 남겨 주세요"
@@ -357,12 +365,16 @@ function DetailModal({ item, statusColors, onClose, onChanged }: {
           <Text style={s.sectionTitle}>처리 기록</Text>
           {meetings.length === 0 ? (
             <Text style={s.metaText}>아직 기록이 없어요. 첫 메모를 남겨 보세요.</Text>
-          ) : meetings.map(m => (
-            <View key={m.id} style={s.memoCard}>
-              <Text style={s.metaText}>{fmtDate(m.met_at)}{m.place ? ` · ${m.place}` : ''}</Text>
-              {m.summary ? <Text style={s.memoBody}>{m.summary}</Text> : null}
+          ) : (
+            <View style={{ gap: LAYOUT.cardGap }}>
+              {meetings.map(m => (
+                <View key={m.id} style={s.memoCard}>
+                  <Text style={s.timeMeta}>{fmtDate(m.met_at)}{m.place ? ` · ${m.place}` : ''}</Text>
+                  {m.summary ? <Text style={s.memoBody}>{m.summary}</Text> : null}
+                </View>
+              ))}
             </View>
-          ))}
+          )}
         </ScrollView>
       </KeyboardAvoidingView>
     </Modal>
@@ -461,9 +473,12 @@ function ComposeModal({ visible, onClose, onSaved }: {
           <Text style={s.modalTitle}>민원 직접 등록</Text>
           <Pressable onPress={save} disabled={busy}><Text style={s.modalSave}>저장</Text></Pressable>
         </View>
-        <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: insets.bottom + 32, gap: 12 }} keyboardShouldPersistTaps="handled">
+        <ScrollView
+          contentContainerStyle={{ padding: LAYOUT.screenX, paddingBottom: insets.bottom + 32, gap: LAYOUT.rowGap }}
+          keyboardShouldPersistTaps="handled"
+        >
           {/* 접수 경로 — 검정 활성 pill */}
-          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+          <View style={s.chipRow}>
             {CHANNELS.map(c => (
               <PressableScale
                 key={c.key}
@@ -479,7 +494,7 @@ function ComposeModal({ visible, onClose, onSaved }: {
           <TextInput style={s.formInput} placeholder="민원 제목" placeholderTextColor={COLORS.textTertiary} value={title} onChangeText={setTitle} />
 
           {/* 분류 — 검정 활성 pill */}
-          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+          <View style={s.chipRow}>
             {CATEGORIES.map(c => (
               <PressableScale
                 key={c.key}
@@ -500,7 +515,7 @@ function ComposeModal({ visible, onClose, onSaved }: {
 
           {/* 캡처 첨부 — 최대 4장 */}
           <Text style={s.photoLabel}>캡처 첨부 (문자·카톡 스크린샷)</Text>
-          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+          <View style={s.chipRow}>
             {photos.map((p, i) => (
               <View key={`${p.uri}-${i}`}>
                 <Image source={{ uri: p.uri }} style={s.thumb} />
@@ -520,24 +535,37 @@ function ComposeModal({ visible, onClose, onSaved }: {
           {/* 연락처 연결 */}
           <Text style={s.sectionTitle}>연락처 연결 (선택)</Text>
           {selectedContact ? (
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: LAYOUT.cardGap }}>
               <View style={s.linkedChip}>
-                <Text style={s.linkedChipText}>{selectedContact.name}</Text>
+                <Text style={s.linkedChipText} numberOfLines={1}>{selectedContact.name}</Text>
               </View>
-              <Pressable onPress={() => setContactId(null)}>
+              <Pressable onPress={() => setContactId(null)} hitSlop={8}>
                 <Text style={s.unlinkText}>연결 해제</Text>
               </Pressable>
             </View>
           ) : (
             <>
               <TextInput style={s.formInput} placeholder="이름으로 검색" placeholderTextColor={COLORS.textTertiary} value={query} onChangeText={setQuery} />
-              {filtered.map(c => (
-                <Pressable key={c.id} style={s.contactRow} onPress={() => setContactId(c.id)}>
-                  <Text style={s.contactName}>{c.name}</Text>
-                  {c.title ? <Text style={s.metaText}>{c.title}</Text> : null}
-                </Pressable>
-              ))}
-              {filtered.length === 0 ? <Text style={s.metaText}>검색 결과가 없어요.</Text> : null}
+              {/* 그룹 리스트 — 흰 카드 하나 + 행 사이 hairline(마지막 행 뒤에는 없음) */}
+              {filtered.length === 0 ? (
+                <Text style={s.metaText}>검색 결과가 없어요.</Text>
+              ) : (
+                <View style={s.listCard}>
+                  {filtered.map((c, idx) => (
+                    <React.Fragment key={c.id}>
+                      <Pressable style={s.contactRow} onPress={() => setContactId(c.id)}>
+                        <InitialAvatar name={c.name} size={LAYOUT.rowAvatar} />
+                        <View style={{ flex: 1 }}>
+                          <Text style={s.contactName} numberOfLines={1}>{c.name}</Text>
+                          {c.title ? <Text style={s.contactSub} numberOfLines={1}>{c.title}</Text> : null}
+                        </View>
+                        <Ionicons name="chevron-forward" size={15} color={COLORS.textTertiary} />
+                      </Pressable>
+                      {idx < filtered.length - 1 ? <View style={s.rowDivider} /> : null}
+                    </React.Fragment>
+                  ))}
+                </View>
+              )}
             </>
           )}
         </ScrollView>
@@ -546,135 +574,148 @@ function ComposeModal({ visible, onClose, onSaved }: {
   );
 }
 
-/* ── 스타일 — 폴리 본체 ComplaintScreen 실측값 그대로 ── */
+/* ── 스타일 — 여백·반경은 LAYOUT 토큰, 타이포는 폴리 공통 규칙 ── */
 const makeStyles = (COLORS: ThemeColors) => StyleSheet.create({
   // 요약 스트립 — 접수/처리중/해결 3칸
   statWrap: {
     flexDirection: 'row',
-    marginHorizontal: 16,
-    marginBottom: 10,
+    marginHorizontal: LAYOUT.screenX,
+    marginBottom: LAYOUT.cardGap,
     backgroundColor: COLORS.surface,
-    borderRadius: 18,
-    paddingVertical: 14,
+    borderRadius: LAYOUT.cardRadius,
+    paddingVertical: 12,
     ...SHADOWS.subtle,
   },
-  statCell: { flex: 1, alignItems: 'center', gap: 3 },
+  statCell: { flex: 1, alignItems: 'center', gap: 2 },
   statDivider: { width: StyleSheet.hairlineWidth, backgroundColor: COLORS.divider, marginVertical: 2 },
-  statNum: { fontSize: 19, fontWeight: '800', color: COLORS.text, letterSpacing: -0.4 },
-  statLabel: { fontSize: 11.5, color: COLORS.textTertiary, letterSpacing: -0.2 },
+  statNum: { fontSize: 18, fontWeight: '800', color: COLORS.text, letterSpacing: -0.4 },
+  statLabel: { fontSize: 11, color: COLORS.textTertiary, letterSpacing: -0.2 },
 
   // 리스트 카드
   card: {
     backgroundColor: COLORS.surface,
-    marginHorizontal: 16,
-    marginBottom: 10,
-    paddingHorizontal: 16,
-    paddingTop: 15,
-    paddingBottom: 12,
-    borderRadius: 18,
+    marginHorizontal: LAYOUT.screenX,
+    marginBottom: LAYOUT.cardGap,
+    paddingHorizontal: LAYOUT.cardPadX,
+    paddingVertical: LAYOUT.cardPadY,
+    borderRadius: LAYOUT.cardRadius,
     ...SHADOWS.subtle,
   },
-  cardTop: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 8 },
-  catBadge: { backgroundColor: COLORS.primaryLight, paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 },
-  catBadgeText: { fontSize: 10, fontWeight: '600', color: COLORS.primary, letterSpacing: -0.1 },
-  chanBadge: { backgroundColor: COLORS.grey100, paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 },
-  chanBadgeText: { fontSize: 10, fontWeight: '600', color: COLORS.textSecondary, letterSpacing: -0.1 },
-  statusBadge: { paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6 },
-  statusBadgeText: { fontSize: 11, fontWeight: '700', letterSpacing: -0.1 },
-  cardDate: { fontSize: 11.5, color: COLORS.textTertiary },
-  cardTitle: { fontSize: 15, fontWeight: '700', color: COLORS.text, letterSpacing: -0.2 },
-  cardBody: { fontSize: 13, color: COLORS.textSecondary, lineHeight: 19, letterSpacing: -0.2, marginTop: 4 },
-  cardMeta: { fontSize: 12, color: COLORS.textTertiary, letterSpacing: -0.1 },
-  cardContact: { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 8 },
-  cardContactText: { fontSize: 12, color: COLORS.textTertiary, letterSpacing: -0.1, flexShrink: 1 },
+  cardTop: { flexDirection: 'row', alignItems: 'center', gap: 5 },
+  catBadge: { backgroundColor: COLORS.primaryLight, paddingHorizontal: 7, paddingVertical: 2.5, borderRadius: 6 },
+  catBadgeText: { fontSize: 10.5, fontWeight: '700', color: COLORS.primary, letterSpacing: -0.2 },
+  chanBadge: { backgroundColor: COLORS.grey100, paddingHorizontal: 7, paddingVertical: 2.5, borderRadius: 6 },
+  chanBadgeText: { fontSize: 10.5, fontWeight: '700', color: COLORS.textSecondary, letterSpacing: -0.2 },
+  statusBadge: { paddingHorizontal: 7, paddingVertical: 2.5, borderRadius: 6 },
+  statusBadgeText: { fontSize: 10.5, fontWeight: '700', letterSpacing: -0.2 },
+  cardDate: { fontSize: 11.5, color: COLORS.textTertiary, letterSpacing: -0.2, flexShrink: 0 },
+  cardTitle: { fontSize: 15.5, fontWeight: '700', color: COLORS.text, letterSpacing: -0.3, marginTop: 6 },
+  cardBody: { fontSize: 13, color: COLORS.textSecondary, lineHeight: 18.5, letterSpacing: -0.2, marginTop: 3 },
+  cardMeta: { flexDirection: 'row', alignItems: 'center', gap: LAYOUT.cardGap, marginTop: 7 },
+  cardMetaItem: { flexDirection: 'row', alignItems: 'center', gap: 4, flexShrink: 1 },
+  cardMetaText: { fontSize: 11.5, color: COLORS.textTertiary, letterSpacing: -0.2, flexShrink: 1 },
 
-  // 진행 흐름 미니 인디케이터 (접수→처리중→해결)
-  steps: { flexDirection: 'row', alignItems: 'center', marginTop: 10 },
-  stepDot: { width: 7, height: 7, borderRadius: 3.5 },
-  stepLine: { flex: 1, height: 1.5 },
-
-  // 카드 하단 첨부 미리보기
-  previewWrap: { marginTop: 8, alignSelf: 'flex-start' },
-  previewImg: { width: 72, height: 72, borderRadius: 8, backgroundColor: COLORS.backgroundSecondary },
-  previewMore: {
-    position: 'absolute', right: 0, bottom: 0, left: 0, top: 0, borderRadius: 8,
-    backgroundColor: COLORS.overlayStrong, alignItems: 'center', justifyContent: 'center',
-  },
-  previewMoreText: { fontSize: 13, fontWeight: '700', color: COLORS.textInverse, letterSpacing: -0.2 },
+  // 진행 표시 — 접수 1/3 · 처리중 2/3 · 해결 3/3
+  bar: { height: 3, borderRadius: 2, backgroundColor: COLORS.grey200, marginTop: 10, overflow: 'hidden' },
+  barFill: { height: '100%', borderRadius: 2 },
 
   // 모달 크롬 (pageSheet 헤더 — 구조 유지, 타이포만 폴리 자간)
-  modalHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 16 },
-  modalCancel: { fontSize: 16, color: COLORS.textCaption, letterSpacing: -0.2 },
-  modalTitle: { fontSize: 17, fontWeight: '700', color: COLORS.grey900, letterSpacing: -0.3 },
-  modalSave: { fontSize: 16, fontWeight: '700', color: COLORS.primary, letterSpacing: -0.2 },
+  modalHead: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+    paddingHorizontal: LAYOUT.screenX, paddingVertical: LAYOUT.cardPadY,
+  },
+  modalCancel: { fontSize: 15.5, color: COLORS.textCaption, letterSpacing: -0.2 },
+  modalTitle: { fontSize: 16.5, fontWeight: '700', color: COLORS.grey900, letterSpacing: -0.3 },
+  modalSave: { fontSize: 15.5, fontWeight: '700', color: COLORS.primary, letterSpacing: -0.2 },
 
   // 상세
-  detailTitle: { fontSize: 19, fontWeight: '700', color: COLORS.text, letterSpacing: -0.4, lineHeight: 26 },
-  detailBody: { fontSize: 14, color: COLORS.textBody, lineHeight: 22, letterSpacing: -0.2 },
-  detailImg: { width: 120, height: 120, borderRadius: 10, backgroundColor: COLORS.backgroundSecondary },
-  sectionTitle: { fontSize: 15, fontWeight: '700', color: COLORS.text, letterSpacing: -0.3, marginTop: 8 },
-  metaText: { fontSize: 12, color: COLORS.textTertiary, letterSpacing: -0.1 },
+  detailTitle: { fontSize: 18, fontWeight: '700', color: COLORS.text, letterSpacing: -0.4, lineHeight: 24 },
+  detailBody: { fontSize: 13, color: COLORS.textSecondary, lineHeight: 18.5, letterSpacing: -0.2 },
+  detailImg: { width: 68, height: 68, borderRadius: 8, backgroundColor: COLORS.backgroundSecondary },
+  sectionTitle: { fontSize: 15.5, fontWeight: '700', color: COLORS.text, letterSpacing: -0.3, marginTop: 4 },
+  metaText: { fontSize: 12, color: COLORS.textTertiary, letterSpacing: -0.2 },
+  timeMeta: { fontSize: 11.5, color: COLORS.textTertiary, letterSpacing: -0.2 },
 
   // 주요 버튼 (폴리 인디고 풀폭)
-  primaryBtn: { backgroundColor: COLORS.primary, borderRadius: 14, paddingVertical: 15, alignItems: 'center' },
-  primaryBtnText: { fontSize: 15.5, fontWeight: '700', color: COLORS.textInverse, letterSpacing: -0.2 },
+  primaryBtn: { backgroundColor: COLORS.primary, borderRadius: LAYOUT.cardRadius, paddingVertical: 13, alignItems: 'center' },
+  primaryBtnText: { fontSize: 15.5, fontWeight: '700', color: COLORS.textInverse, letterSpacing: -0.3 },
 
   // 폼 입력 (grey50)
   formInput: {
     backgroundColor: COLORS.grey50,
-    borderRadius: 12,
-    paddingHorizontal: 14,
-    paddingVertical: 13,
+    borderRadius: LAYOUT.cardRadius,
+    paddingHorizontal: LAYOUT.cardPadX,
+    paddingVertical: LAYOUT.cardPadY,
     fontSize: 15,
+    letterSpacing: -0.2,
     color: COLORS.text,
   },
-  formInputMultiline: { minHeight: 110, textAlignVertical: 'top', paddingTop: 13 },
-  memoBtn: { backgroundColor: COLORS.primary, borderRadius: 14, paddingHorizontal: 18, alignItems: 'center', justifyContent: 'center' },
-  memoBtnText: { fontSize: 15, fontWeight: '700', color: COLORS.textInverse, letterSpacing: -0.2 },
+  formInputMultiline: { minHeight: 96, textAlignVertical: 'top', paddingTop: LAYOUT.cardPadY },
+  memoBtn: {
+    backgroundColor: COLORS.primary, borderRadius: LAYOUT.cardRadius,
+    paddingHorizontal: 18, alignItems: 'center', justifyContent: 'center',
+  },
+  memoBtnText: { fontSize: 14.5, fontWeight: '700', color: COLORS.textInverse, letterSpacing: -0.2 },
 
   // 처리 기록 카드
   memoCard: {
     backgroundColor: COLORS.surface,
-    borderRadius: 14,
-    paddingHorizontal: 14,
-    paddingTop: 12,
-    paddingBottom: 11,
+    borderRadius: LAYOUT.cardRadius,
+    paddingHorizontal: LAYOUT.cardPadX,
+    paddingVertical: LAYOUT.cardPadY,
     ...SHADOWS.subtle,
   },
-  memoBody: { fontSize: 13, color: COLORS.textSecondary, lineHeight: 19, letterSpacing: -0.2, marginTop: 4 },
+  memoBody: { fontSize: 13, color: COLORS.textSecondary, lineHeight: 18.5, letterSpacing: -0.2, marginTop: 3 },
 
   // 분류 칩 (검정 활성 pill)
-  chipPill: { paddingHorizontal: 13, paddingVertical: 7, borderRadius: 16, backgroundColor: COLORS.surface, ...SHADOWS.subtle },
+  chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: LAYOUT.cardGap },
+  chipPill: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 14, backgroundColor: COLORS.surface, ...SHADOWS.subtle },
   chipPillActive: { backgroundColor: COLORS.text },
   chipPillText: { fontSize: 13, fontWeight: '600', color: COLORS.textSecondary, letterSpacing: -0.2 },
   chipPillTextActive: { color: COLORS.textInverse, fontWeight: '700' },
 
   // 캡처 첨부 (컴포즈)
-  photoLabel: { fontSize: 12.5, fontWeight: '600', color: COLORS.textTertiary, letterSpacing: -0.1 },
-  thumb: { width: 72, height: 72, borderRadius: 10, backgroundColor: COLORS.backgroundSecondary },
+  photoLabel: { fontSize: 12, fontWeight: '600', color: COLORS.textTertiary, letterSpacing: -0.2 },
+  thumb: { width: 68, height: 68, borderRadius: 8, backgroundColor: COLORS.backgroundSecondary },
   thumbX: {
     position: 'absolute', top: -6, right: -6, width: 20, height: 20, borderRadius: 10,
     backgroundColor: COLORS.overlayStrong, alignItems: 'center', justifyContent: 'center',
   },
   thumbXText: { color: COLORS.textInverse, fontSize: 13, fontWeight: '700', marginTop: -1 },
   thumbAdd: {
-    width: 72, height: 72, borderRadius: 10, borderWidth: 1, borderColor: COLORS.border,
+    width: 68, height: 68, borderRadius: 8, borderWidth: 1, borderColor: COLORS.border,
     borderStyle: 'dashed', alignItems: 'center', justifyContent: 'center', gap: 2,
   },
-  thumbAddText: { fontSize: 11, color: COLORS.textCaption, letterSpacing: -0.1 },
+  thumbAddText: { fontSize: 11.5, color: COLORS.textTertiary, letterSpacing: -0.2 },
 
   // 연락처 연결
-  linkedChip: { backgroundColor: COLORS.primaryLight, paddingHorizontal: 10, paddingVertical: 5, borderRadius: 8 },
+  linkedChip: {
+    backgroundColor: COLORS.primaryLight,
+    paddingHorizontal: 10, paddingVertical: 5, borderRadius: 8,
+    flexShrink: 1,
+  },
   linkedChipText: { fontSize: 13, fontWeight: '700', color: COLORS.primary, letterSpacing: -0.2 },
-  unlinkText: { fontSize: 12, color: COLORS.textTertiary, letterSpacing: -0.1, textDecorationLine: 'underline' },
+  unlinkText: { fontSize: 12, color: COLORS.textTertiary, letterSpacing: -0.2, textDecorationLine: 'underline' },
+
+  // 연락처 검색 결과 — 그룹 리스트(한 카드 안에 여러 행)
+  listCard: {
+    backgroundColor: COLORS.surface,
+    borderRadius: LAYOUT.cardRadius,
+    overflow: 'hidden',
+    ...SHADOWS.subtle,
+  },
   contactRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: COLORS.grey50,
-    borderRadius: 12,
-    paddingHorizontal: 14,
-    paddingVertical: 13,
+    gap: LAYOUT.rowGap,
+    paddingHorizontal: LAYOUT.rowPadX,
+    paddingVertical: LAYOUT.rowPadY,
   },
-  contactName: { fontSize: 15, fontWeight: '600', color: COLORS.text, letterSpacing: -0.2 },
+  rowDivider: {
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: COLORS.divider,
+    marginLeft: LAYOUT.rowDividerInset,
+  },
+  contactName: { fontSize: 15.5, fontWeight: '700', color: COLORS.text, letterSpacing: -0.3 },
+  contactSub: { fontSize: 12, color: COLORS.textTertiary, letterSpacing: -0.2, marginTop: 2 },
 });
